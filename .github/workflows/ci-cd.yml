@@ -81,6 +81,8 @@ jobs:
   security:
     runs-on: ubuntu-latest
     name: Security Scanning
+    permissions:
+      security-events: write
 
     steps:
       - uses: actions/checkout@v4
@@ -94,7 +96,7 @@ jobs:
           output: "trivy-results.sarif"
 
       - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: "trivy-results.sarif"
