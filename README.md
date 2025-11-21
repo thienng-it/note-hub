@@ -4,6 +4,17 @@ A modern, clean, and feature-rich personal notes application built with Flask. P
 
 ## 🚀 Live Demo
 
+### 🌐 Live Website
+**[🎯 Click here to try the live app](https://note-hub.onrender.com)** (Deployed on Render)
+
+Login with:
+- Username: `admin`
+- Password: `change-me`
+
+---
+
+### 💻 Run Locally
+
 **Try it now!** The app is ready to run locally:
 
 ```bash
@@ -14,6 +25,7 @@ python simple_app.py
 ```
 
 **Default Credentials:**
+
 - Username: `admin`
 - Password: `change-me`
 
@@ -33,17 +45,20 @@ python simple_app.py
 ## 🎯 Demo Walkthrough
 
 ### Step 1: Login
+
 1. Navigate to `http://127.0.0.1:5000`
 2. Enter the default credentials above
 3. Click "Login"
 
 ### Step 2: Create a Note
+
 1. Click the "New Note" button
 2. Add a title and content using markdown
 3. Add tags (e.g., `demo`, `personal`)
 4. Click "Save Note"
 
 ### Step 3: Explore Features
+
 - **Search:** Use the search bar to find notes by title or content
 - **Filter by Tags:** Click on tags to filter notes
 - **Dark Mode:** Toggle the theme in the top right
@@ -52,6 +67,7 @@ python simple_app.py
 - **Edit/Delete:** Manage your notes from the note view
 
 ### Step 4: Change Password
+
 1. Go to "Settings" or "Profile"
 2. Change your password to something secure
 3. Save your changes
@@ -59,16 +75,19 @@ python simple_app.py
 ## 🔧 Detailed Quick Start
 
 1. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 2. **Run the app:**
+
    ```bash
    python simple_app.py
    ```
 
 3. **Open your browser:**
+
    ```
    http://127.0.0.1:5000
    ```
@@ -76,7 +95,6 @@ python simple_app.py
 4. **Login with default credentials:**
    - Username: `admin`
    - Password: `change-me`
-   
 5. **Stop the server:**
    - Press `Ctrl+C` in your terminal
 
@@ -142,14 +160,13 @@ export FLASK_SECRET="your-secret-key"        # Flask secret key
 - **Bleach** - HTML sanitization
 - **Tailwind CSS** - Modern styling
 
-
 ## 📝 Markdown Support
 
 The app supports full markdown syntax:
 
 - Headers: `# H1`, `## H2`, `### H3`
 - **Bold**: `**text**`
-- *Italic*: `*text*`
+- _Italic_: `*text*`
 - Lists: `- item` or `1. item`
 - Links: `[text](url)`
 - Code: `` `code` ``
@@ -177,6 +194,7 @@ For production use:
 5. Consider using PostgreSQL instead of SQLite
 
 Example with Gunicorn:
+
 ```bash
 pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:8000 "simple_app:app"
