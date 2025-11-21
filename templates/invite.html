@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Invite Users - Beautiful Notes{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold flex items-center">
+            <i class="fas fa-user-plus mr-3 text-blue-600"></i>Invite Users
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Invite others to join Beautiful Notes</p>
+    </div>
+
+    <!-- Invite Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Create Invitation</h2>
+        <form method="POST" class="space-y-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <i class="fas fa-envelope mr-2"></i>Email (optional)
+                </label>
+                {{ form.email(class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100", placeholder="user@example.com") }}
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Optional: Add email for reference</p>
+            </div>
+            
+            <div>
+                <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <i class="fas fa-comment mr-2"></i>Message (optional)
+                </label>
+                {{ form.message(class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100", rows="3", placeholder="Add a personal message...") }}
+            </div>
+            
+            <button type="submit" class="btn-primary px-6 py-2 rounded-lg font-medium">
+                <i class="fas fa-plus mr-2"></i>Create Invitation Link
+            </button>
+        </form>
+    </div>
+
+    <!-- Invitation Link Display -->
+    {% if invite_url %}
+    <div class="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-xl p-6 mb-6">
+        <h3 class="text-lg font-semibold text-green-800 dark:text-green-200 mb-3">
+            <i class="fas fa-check-circle mr-2"></i>Invitation Created!
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-green-700 dark:text-green-300 mb-2">Invitation Link:</label>
+                <div class="flex items-center space-x-2">
+                    <input type="text" value="{{ invite_url }}" readonly 
+                           class="flex-1 px-4 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded-lg text-gray-900 dark:text-gray-100 font-mono text-sm"
+                           id="inviteLink">
+                    <button onclick="copyInviteLink()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-copy mr-2"></i>Copy
+                    </button>
+                </div>
+            </div>
+            <p class="text-sm text-green-700 dark:text-green-300">
+                <i class="fas fa-info-circle mr-1"></i>This link expires in 7 days. Share it with anyone you want to invite.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Invitations List -->
+    {% if invitations %}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-xl font-semibold mb-4">Your Invitations</h2>
+        <div class="space-y-3">
+            {% for invitation in invitations %}
+            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' if invitation.used else 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' }}">
+                            {% if invitation.used %}
+                                <i class="fas fa-check mr-1"></i>Used
+                            {% else %}
+                                <i class="fas fa-clock mr-1"></i>Active
+                            {% endif %}
+                        </span>
+                        {% if invitation.email %}
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                            <i class="fas fa-envelope mr-1"></i>{{ invitation.email }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if invitation.message %}
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ invitation.message }}</p>
+                    {% endif %}
+                    <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                        <span>
+                            <i class="fas fa-calendar mr-1"></i>Created {{ invitation.created_at.strftime('%b %d, %Y') }}
+                        </span>
+                        {% if invitation.used and invitation.used_by %}
+                        <span>
+                            <i class="fas fa-user mr-1"></i>Used by {{ invitation.used_by.username }}
+                        </span>
+                        {% elif not invitation.used %}
+                        <span>
+                            <i class="fas fa-hourglass-half mr-1"></i>Expires {{ invitation.expires_at.strftime('%b %d, %Y') }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if not invitation.used %}
+                <div class="ml-4">
+                    <button onclick="copyInviteToken('{{ invitation.token }}')" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        <i class="fas fa-copy mr-1"></i>Copy Link
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 text-center">
+        <i class="fas fa-inbox text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+        <p class="text-gray-600 dark:text-gray-400">You haven't created any invitations yet.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyInviteLink() {
+    const linkInput = document.getElementById('inviteLink');
+    linkInput.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = event.target.closest('button');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
+    button.classList.add('bg-green-600');
+    button.classList.remove('bg-green-600');
+    
+    setTimeout(() => {
+        button.innerHTML = originalHTML;
+    }, 2000);
+}
+
+function copyInviteToken(token) {
+    const baseUrl = window.location.origin;
+    const inviteUrl = baseUrl + '/register?token=' + token;
+    
+    navigator.clipboard.writeText(inviteUrl).then(() => {
+        // Show feedback
+        const button = event.target.closest('button');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}
+

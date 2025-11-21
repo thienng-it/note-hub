@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" class="{{ current_theme or 'light' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Beautiful Notes{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        .dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+        }
+
+        .light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .sidebar {
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .flash-message {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .note-content h1, .note-content h2, .note-content h3 {
+            color: var(--primary-color);
+            margin: 1rem 0 0.5rem;
+        }
+        
+        .note-content pre {
+            background-color: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+        
+        .note-content code {
+            background-color: var(--bg-tertiary);
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .note-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+        
+        .tag {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tag:hover {
+            transform: scale(1.05);
+        }
+        
+        .search-input {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Sidebar collapse styles */
+        .sidebar.collapsed {
+            width: 4rem !important;
+            min-width: 4rem !important;
+        }
+        
+        .sidebar.collapsed .sidebar-text,
+        .sidebar.collapsed .nav-text {
+            display: none !important;
+        }
+        
+        .sidebar.collapsed .sidebar-title {
+            justify-content: center !important;
+            padding: 0;
+        }
+        
+        .sidebar.collapsed .sidebar-title i {
+            margin-right: 0 !important;
+        }
+        
+        .sidebar.collapsed nav a {
+            justify-content: center !important;
+            padding: 0.75rem !important;
+            min-width: auto;
+        }
+        
+        .sidebar.collapsed nav a i {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+        }
+        
+        .sidebar.collapsed .flex.items-center.justify-between {
+            justify-content: center !important;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .sidebar.collapsed .p-4 {
+            padding: 1rem 0.5rem !important;
+        }
+        
+        .sidebar.collapsed nav {
+            padding: 1rem 0.5rem !important;
+        }
+        
+        .sidebar.collapsed .space-y-2 > * {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar.collapsed .border-t,
+        .sidebar.collapsed .border-b {
+            margin: 0 0.5rem;
+        }
+        
+        .sidebar.collapsed .sidebar-username {
+            display: none;
+        }
+        
+        .sidebar.collapsed .mt-4 {
+            margin-top: 0.5rem;
+        }
+        
+        .sidebar.collapsed .pt-4 {
+            padding-top: 0.5rem;
+        }
+        
+        .sidebar.collapsed .space-x-2 {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        /* Theme-aware text colors */
+        .text-theme-primary {
+            color: var(--text-primary);
+        }
+        
+        .text-theme-secondary {
+            color: var(--text-secondary);
+        }
+        
+        .text-theme-muted {
+            color: var(--text-muted);
+        }
+        
+        .bg-theme-primary {
+            background-color: var(--bg-primary);
+        }
+        
+        .bg-theme-secondary {
+            background-color: var(--bg-secondary);
+        }
+        
+        .bg-theme-tertiary {
+            background-color: var(--bg-tertiary);
+        }
+        
+        .border-theme {
+            border-color: var(--border-color);
+        }
+        
+        .hover-bg-theme:hover {
+            background-color: var(--bg-tertiary);
+        }
+        
+        /* Notification animation */
+        @keyframes slide-up {
+            from {
+                transform: translate(-50%, 100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+        
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
+        }
+        
+        .flash-message {
+            animation: slide-up 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar w-64 flex-shrink-0 hidden md:flex flex-col transition-all duration-300">
+            <div class="p-4 border-b border-theme">
+                <div class="flex items-center justify-between sidebar-title">
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        <i class="fas fa-sticky-note mr-2"></i><span class="sidebar-text">Beautiful Notes</span>
+                    </h1>
+                    {% if current_user %}
+                    <div class="flex items-center space-x-2">
+                        <button id="sidebarToggle" class="p-2 rounded-full hover-bg-theme transition-colors text-theme-primary" title="Toggle Sidebar">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <form action="{{ url_for('toggle_theme') }}" method="post" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="p-2 rounded-full hover-bg-theme transition-colors text-theme-primary">
+                                <i class="fas fa-{{ 'sun' if current_theme == 'dark' else 'moon' }} text-yellow-500"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if current_user %}
+            <nav class="flex-1 p-4">
+                <div class="space-y-2">
+                    <a href="{{ url_for('index') }}" class="flex items-center px-3 py-2 rounded-lg hover-bg-theme transition-colors text-theme-primary {{ 'bg-blue-500/20 text-blue-600 dark:text-blue-400' if request.endpoint == 'index' and not request.args.get('view') }}">
+                        <i class="fas fa-home mr-3"></i><span class="nav-text">All Notes</span>
+                    </a>
+                    <a href="{{ url_for('index', view='favorites') }}" class="flex items-center px-3 py-2 rounded-lg hover-bg-theme transition-colors text-theme-primary {{ 'bg-blue-500/20 text-blue-600 dark:text-blue-400' if request.args.get('view') == 'favorites' }}">
+                        <i class="fas fa-heart mr-3 text-red-500"></i><span class="nav-text">Favorites</span>
+                    </a>
+                    <a href="{{ url_for('index', view='archived') }}" class="flex items-center px-3 py-2 rounded-lg hover-bg-theme transition-colors text-theme-primary {{ 'bg-blue-500/20 text-blue-600 dark:text-blue-400' if request.args.get('view') == 'archived' }}">
+                        <i class="fas fa-archive mr-3"></i><span class="nav-text">Archived</span>
+                    </a>
+                    <a href="{{ url_for('index', view='shared') }}" class="flex items-center px-3 py-2 rounded-lg hover-bg-theme transition-colors text-theme-primary {{ 'bg-blue-500/20 text-blue-600 dark:text-blue-400' if request.args.get('view') == 'shared' }}">
+                        <i class="fas fa-share-alt mr-3"></i><span class="nav-text">Shared With Me</span>
+                    </a>
+                    <a href="{{ url_for('new_note') }}" class="flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-plus mr-3"></i><span class="nav-text">New Note</span>
+                    </a>
+                    <a href="{{ url_for('tasks') }}" class="flex items-center px-3 py-2 rounded-lg hover-bg-theme transition-colors text-theme-primary {{ 'bg-blue-500/20 text-blue-600 dark:text-blue-400' if request.endpoint == 'tasks' }}">
+                        <i class="fas fa-tasks mr-3"></i><span class="nav-text">Tasks</span>
+                    </a>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-theme">
+                    <a href="{{ url_for('invite') }}" class="flex items-center px-3 py-2 rounded-lg hover-bg-theme transition-colors text-theme-primary">
+                        <i class="fas fa-user-plus mr-3"></i><span class="nav-text">Invite Users</span>
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="flex items-center px-3 py-2 rounded-lg hover-bg-theme transition-colors text-theme-primary {{ 'bg-blue-500/20 text-blue-600 dark:text-blue-400' if request.endpoint == 'profile' }}">
+                        <i class="fas fa-user-circle mr-3"></i><span class="nav-text">Profile</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="p-4 border-t border-theme">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-theme-secondary sidebar-username">{{ current_user.username }}</span>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden" style="background-color: var(--bg-primary);">
+            <!-- Top Bar for Mobile -->
+            <header class="md:hidden bg-theme-secondary border-b border-theme p-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-lg font-semibold text-theme-primary">Beautiful Notes</h1>
+                    {% if current_user %}
+                    <div class="flex items-center space-x-2">
+                        <form action="{{ url_for('toggle_theme') }}" method="post" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="p-2 rounded-full hover-bg-theme text-theme-primary">
+                                <i class="fas fa-{{ 'sun' if current_theme == 'dark' else 'moon' }} text-yellow-500"></i>
+                            </button>
+                        </form>
+                        <a href="{{ url_for('logout') }}" class="text-red-600 dark:text-red-400">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- Flash Messages - Bottom of page -->
+            <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 space-y-2 max-w-md w-full px-4" id="flash-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash-message px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 {{ 'bg-green-500' if category == 'success' else 'bg-red-500' if category == 'error' else 'bg-yellow-500' if category == 'warning' else 'bg-blue-500' }} text-white animate-slide-up">
+                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category in ['error', 'warning'] else 'info-circle' }}"></i>
+                                <span class="flex-1">{{ message }}</span>
+                                <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Page Content -->
+            <div class="flex-1 overflow-auto" style="background-color: var(--bg-primary);">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar collapse functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        
+        // Load sidebar state from localStorage
+        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (sidebarCollapsed && sidebar) {
+            sidebar.classList.add('collapsed');
+            if (sidebarToggle) {
+                sidebarToggle.querySelector('i').classList.remove('fa-chevron-left');
+                sidebarToggle.querySelector('i').classList.add('fa-chevron-right');
+            }
+        }
+        
+        // Toggle sidebar
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                if (sidebar) {
+                    sidebar.classList.toggle('collapsed');
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    localStorage.setItem('sidebarCollapsed', isCollapsed);
+                    
+                    const icon = this.querySelector('i');
+                    if (isCollapsed) {
+                        icon.classList.remove('fa-chevron-left');
+                        icon.classList.add('fa-chevron-right');
+                    } else {
+                        icon.classList.remove('fa-chevron-right');
+                        icon.classList.add('fa-chevron-left');
+                    }
+                }
+            });
+        }
+        
+        // Auto-hide flash messages (slide down instead of right)
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translate(-50%, 100%)';
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 5000);
+
+        // Theme persistence - sync with server-side theme
+        const currentTheme = '{{ current_theme or "light" }}';
+        if (currentTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+        } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</body>
+</html>

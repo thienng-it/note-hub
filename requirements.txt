@@ -1,0 +1,20 @@
+# Flask Notes App - Requirements
+# Lightweight requirements for personal use
+
+# Core Flask
+Flask==3.0.0
+Flask-WTF==1.2.1
+WTForms==3.1.1
+
+# Database
+SQLAlchemy>=2.0.23
+
+# Security & passwords
+Werkzeug==3.0.1
+
+# Content processing
+Markdown==3.5.1
+bleach==6.1.0
+
+# Environment
+python-dotenv==1.0.0

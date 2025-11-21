@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Edit Note" if is_edit else "New Note" }} - Beautiful Notes{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+                <a href="{{ url_for('view_note', note_id=note.id) if note else url_for('index') }}" 
+                   class="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors mr-4">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    {{ "Back to Note" if note else "Back to Notes" }}
+                </a>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    <i class="fas fa-{{ 'edit' if is_edit else 'plus' }} mr-2"></i>
+                    {{ "Edit Note" if is_edit else "Create New Note" }}
+                </h1>
+            </div>
+
+            <!-- Save & Preview Buttons -->
+            <div class="flex items-center space-x-3">
+                <button type="button" id="previewToggle"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-eye mr-2"></i>Preview
+                </button>
+                <button type="submit" form="noteForm"
+                        class="btn-primary px-6 py-2 rounded-lg font-medium">
+                    <i class="fas fa-save mr-2"></i>{{ "Update" if is_edit else "Create" }}
+                </button>
+            </div>
+        </div>
+
+        {% if note %}
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+            Created {{ note.created_at.strftime('%B %d, %Y') }}
+            {% if note.updated_at != note.created_at %}
+                • Last updated {{ note.updated_at.strftime('%B %d, %Y') }}
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <form method="POST" id="noteForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Editor Panel -->
+            <div class="space-y-6">
+                <!-- Title -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-heading mr-2"></i>Note Title
+                    </label>
+                    {{ form.title(class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100", placeholder="Enter a descriptive title...") }}
+                    {% if form.title.errors %}
+                        <div class="mt-2 text-sm text-red-600">{{ form.title.errors[0] }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Content Editor -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <i class="fas fa-file-alt mr-2"></i>Content (Markdown supported)
+                            </label>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                Supports markdown formatting
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        {{ form.body(class="w-full h-96 p-6 border-0 focus:ring-0 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100", placeholder="Start writing your note...\n\n# You can use markdown!\n\n- Lists\n- **Bold text**\n- *Italic text**\n- [Links](https://example.com)\n- `code`\n\n```python\n# Code blocks\nprint('Hello, world!')\n```") }}
+                        
+                        <!-- Character count -->
+                        <div class="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500">
+                            <span id="charCount">{{ form.body.data|length if form.body.data else 0 }}</span> characters
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tags and Options -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div class="space-y-4">
+                        <!-- Tags -->
+                        <div>
+                            <label for="tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <i class="fas fa-tags mr-2"></i>Tags
+                            </label>
+                            {{ form.tags(class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100", placeholder="tag1, tag2, tag3...") }}
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Separate tags with commas. Tags help organize and find your notes.
+                            </p>
+                        </div>
+                        
+                        <!-- Options -->
+                        <div class="space-y-3">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Options</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-3">
+                                    {{ form.pinned(class="rounded border-gray-300 text-blue-600 focus:ring-blue-500") }}
+                                    <span class="text-sm text-gray-700 dark:text-gray-300 flex items-center">
+                                        <i class="fas fa-thumbtack mr-2 text-yellow-500"></i>Pin this note
+                                    </span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3">
+                                    {{ form.favorite(class="rounded border-gray-300 text-red-600 focus:ring-red-500") }}
+                                    <span class="text-sm text-gray-700 dark:text-gray-300 flex items-center">
+                                        <i class="fas fa-heart mr-2 text-red-500"></i>Mark as favorite
+                                    </span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3">
+                                    {{ form.archived(class="rounded border-gray-300 text-gray-600 focus:ring-gray-500") }}
+                                    <span class="text-sm text-gray-700 dark:text-gray-300 flex items-center">
+                                        <i class="fas fa-archive mr-2 text-gray-500"></i>Archive this note
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preview Panel -->
+            <div class="space-y-6">
+                <div id="previewPanel" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+                        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                            <i class="fas fa-eye mr-2"></i>Live Preview
+                        </h3>
+                    </div>
+                    <div id="previewContent" class="note-content prose prose-lg max-w-none p-6 dark:prose-invert min-h-96">
+                        {% if note and note.body %}
+                            {{ note.render_markdown() | safe }}
+                        {% else %}
+                            <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                                <i class="fas fa-eye-slash text-4xl mb-4"></i>
+                                <p>Start typing to see a preview</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Quick Formatting Help -->
+                <div class="bg-blue-50 dark:bg-blue-900 rounded-xl p-4 text-sm">
+                    <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i>Markdown Quick Reference
+                    </h4>
+                    <div class="text-blue-800 dark:text-blue-200 space-y-1">
+                        <div><code># Heading 1</code> • <code>## Heading 2</code></div>
+                        <div><code>**Bold**</code> • <code>*Italic*</code></div>
+                        <div><code>- List item</code> • <code>1. Numbered list</code></div>
+                        <div><code>[Link](url)</code> • <code>`Code`</code></div>
+                        <div><code>```language</code> for code blocks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Save Button -->
+        <div class="mt-6 lg:hidden">
+            <button type="submit" 
+                    class="w-full btn-primary py-3 rounded-lg font-medium text-lg">
+                <i class="fas fa-save mr-2"></i>{{ "Update Note" if is_edit else "Create Note" }}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bodyTextarea = document.querySelector('#body');
+        const previewContent = document.querySelector('#previewContent');
+        const charCount = document.querySelector('#charCount');
+        const previewToggle = document.querySelector('#previewToggle');
+        const previewPanel = document.querySelector('#previewPanel');
+        
+        // Character counter
+        function updateCharCount() {
+            if (charCount && bodyTextarea) {
+                charCount.textContent = bodyTextarea.value.length;
+            }
+        }
+        
+        // Live preview update (simplified - full markdown rendering happens server-side)
+        function updatePreview() {
+            if (!bodyTextarea || !previewContent) return;
+            
+            const content = bodyTextarea.value;
+            if (!content.trim()) {
+                previewContent.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                        <i class="fas fa-eye-slash text-4xl mb-4"></i>
+                        <p>Start typing to see a preview</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Basic markdown preview (full rendering happens server-side on save)
+            let html = content
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/^\- (.*$)/gm, '<li>$1</li>')
+                .replace(/^(\d+)\. (.*$)/gm, '<li>$2</li>')
+                .replace(/\n/g, '<br>');
+            
+            // Wrap lists
+            html = html.replace(/(<li>.*?<\/li>)/g, '<ul>$1</ul>');
+            
+            previewContent.innerHTML = html || '<p class="text-gray-500">Start typing to see preview...</p>';
+        }
+        
+        // Event listeners
+        if (bodyTextarea) {
+            bodyTextarea.addEventListener('input', function() {
+                updateCharCount();
+                updatePreview();
+            });
+            
+            // Initial update
+            updateCharCount();
+            updatePreview();
+        }
+        
+        // Preview toggle for mobile
+        if (previewToggle && previewPanel) {
+            previewToggle.addEventListener('click', function() {
+                previewPanel.classList.toggle('hidden');
+                const isHidden = previewPanel.classList.contains('hidden');
+                previewToggle.innerHTML = `
+                    <i class="fas fa-${isHidden ? 'eye' : 'eye-slash'} mr-2"></i>
+                    ${isHidden ? 'Show' : 'Hide'} Preview
+                `;
+            });
+        }
+    });
+</script>
+
+<style>
+    /* Responsive preview */
+    @media (max-width: 1024px) {
+        #previewPanel {
+            display: none;
+        }
+        
+        #previewPanel:not(.hidden) {
+            display: block;
+        }
+    }
+</style>
+{% endblock %}
