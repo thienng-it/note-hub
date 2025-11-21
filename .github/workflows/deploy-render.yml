@@ -10,15 +10,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Render
+      - name: Verify deployment files
         run: |
-          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
-            echo "⚠️ RENDER_DEPLOY_HOOK not configured"
-            echo "To deploy to Render:"
-            echo "1. Go to https://render.com"
-            echo "2. Connect your GitHub repo"
-            echo "3. Create a new Web Service"
-            echo "4. Set the deploy hook in GitHub secrets"
-          else
-            curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
-          fi
+          echo "✅ Checking deployment files..."
+          test -f Procfile && echo "✅ Procfile found"
+          test -f requirements.txt && echo "✅ requirements.txt found"
+          test -f runtime.txt && echo "✅ runtime.txt found"
+          test -f simple_app.py && echo "✅ simple_app.py found"
+
+      - name: Deploy to Render
+        if: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          echo "🚀 Deploying to Render..."
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          echo ""
+          echo "✅ Deployment triggered!"
+          echo "📍 Your app will be deployed at: https://note-hub.onrender.com"
+
+      - name: Setup deployment instructions
+        if: ${{ !secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          echo "⚠️ RENDER_DEPLOY_HOOK not configured"
+          echo ""
+          echo "📋 Setup Instructions:"
+          echo "1. Go to https://render.com and sign up"
+          echo "2. Create a new Web Service"
+          echo "3. Connect your GitHub repository"
+          echo "4. Set Build Command: pip install -r requirements.txt"
+          echo "5. Set Start Command: gunicorn simple_app:app"
+          echo "6. Add Environment Variables:"
+          echo "   - NOTES_ADMIN_USERNAME: admin"
+          echo "   - NOTES_ADMIN_PASSWORD: your-secure-password"
+          echo "   - FLASK_SECRET: your-secret-key"
+          echo "7. Copy the Deploy Hook URL from Render"
+          echo "8. Go to GitHub Repo → Settings → Secrets → New repository secret"
+          echo "9. Name: RENDER_DEPLOY_HOOK, Value: paste the hook URL"
+          echo ""
+          echo "After setup, every push to main will auto-deploy! 🎉"
