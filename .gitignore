@@ -2,11 +2,38 @@
 .env
 .env.local
 .env.*.local
+.env.production
+.env.production.local
+*.env
 
-# Database files
+# Database files (SENSITIVE - never commit)
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+notes.db
+simple_notes.db
+
+# Secrets and credentials (SENSITIVE - never commit)
+secrets.json
+config.json
+credentials.json
+*.key
+*.pem
+*.crt
+.aws/
+.ssh/
+private/
+secrets/
+
+# API keys and tokens
+.apikey
+.token
+.access_token
+api_key.txt
 
 # Python
 __pycache__/
@@ -38,28 +65,51 @@ venv/
 ENV/
 env/
 .venv
+virtualenv/
 
-# IDE
+# IDE and OS
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+Thumbs.db
+.project
+.pydevproject
+.settings/
 
-# Logs
+# Logs and temporary files
 *.log
 logs/
+log/
+*.pot
 
 # Cache
 .cache/
 .pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 # Flask
 instance/
 .webassets-cache
 
-# Sensitive files
-secrets.json
-config.json
-credentials.json
+# Testing
+.tox/
+.hypothesis/
+*.cover
+
+# Node.js (if used)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*~
