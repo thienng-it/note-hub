@@ -2,6 +2,23 @@
 
 A modern, clean, and feature-rich personal notes application built with Flask. Perfect for personal note-taking, journaling, and idea capture.
 
+## 🚀 Live Demo
+
+**Try it now!** The app is ready to run locally:
+
+```bash
+# Quick Start (3 steps)
+pip install -r requirements.txt
+python simple_app.py
+# Open http://127.0.0.1:5000 in your browser
+```
+
+**Default Credentials:**
+- Username: `admin`
+- Password: `change-me`
+
+⚠️ **Important:** Change the default password immediately after first login!
+
 ## ✨ Features
 
 - **📝 Rich Markdown Editing** - Full markdown support with live preview
@@ -13,7 +30,33 @@ A modern, clean, and feature-rich personal notes application built with Flask. P
 - **🔐 Secure** - CSRF protection, input validation, and HTML sanitization
 - **📊 Reading Time** - Automatic reading time estimation
 
-## 🚀 Quick Start
+## 🎯 Demo Walkthrough
+
+### Step 1: Login
+1. Navigate to `http://127.0.0.1:5000`
+2. Enter the default credentials above
+3. Click "Login"
+
+### Step 2: Create a Note
+1. Click the "New Note" button
+2. Add a title and content using markdown
+3. Add tags (e.g., `demo`, `personal`)
+4. Click "Save Note"
+
+### Step 3: Explore Features
+- **Search:** Use the search bar to find notes by title or content
+- **Filter by Tags:** Click on tags to filter notes
+- **Dark Mode:** Toggle the theme in the top right
+- **Mark as Favorite:** Star your favorite notes
+- **Pin Notes:** Keep important notes at the top
+- **Edit/Delete:** Manage your notes from the note view
+
+### Step 4: Change Password
+1. Go to "Settings" or "Profile"
+2. Change your password to something secure
+3. Save your changes
+
+## 🔧 Detailed Quick Start
 
 1. **Install dependencies:**
    ```bash
@@ -30,11 +73,12 @@ A modern, clean, and feature-rich personal notes application built with Flask. P
    http://127.0.0.1:5000
    ```
 
-4. **Login:**
+4. **Login with default credentials:**
    - Username: `admin`
    - Password: `change-me`
    
-   ⚠️ **Important:** Change the default password immediately!
+5. **Stop the server:**
+   - Press `Ctrl+C` in your terminal
 
 ## 📁 Project Structure
 
@@ -97,6 +141,7 @@ export FLASK_SECRET="your-secret-key"        # Flask secret key
 - **Markdown** - Content rendering
 - **Bleach** - HTML sanitization
 - **Tailwind CSS** - Modern styling
+
 
 ## 📝 Markdown Support
 
