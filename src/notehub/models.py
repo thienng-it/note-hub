@@ -37,9 +37,15 @@ class User(Base):
 
     def set_password(self, password: str):
         from werkzeug.security import generate_password_hash
+        import logging
 
+        logger = logging.getLogger(__name__)
+        
         enforce_password_policy(password)
         self.password_hash = generate_password_hash(password)
+        
+        # Log password update for audit trail
+        logger.info(f"Password set for user: {self.username} (ID: {self.id if self.id else 'new'})")
 
     def check_password(self, password: str) -> bool:
         from werkzeug.security import check_password_hash

@@ -40,6 +40,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
 .Python
 build/
 develop-eggs/
@@ -59,6 +60,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.pyo
+*.pyd
 
 # Virtual environments
 venv/
@@ -98,10 +101,19 @@ dmypy.json
 instance/
 .webassets-cache
 
-# Testing
+# Documentation (temporary/generated)
+docs/_build/
+site/
+
+# Test coverage
+.coverage
+.coverage.*
+htmlcov/
 .tox/
 .hypothesis/
 *.cover
+coverage.xml
+*.coveragerc
 
 # Node.js (if used)
 node_modules/
