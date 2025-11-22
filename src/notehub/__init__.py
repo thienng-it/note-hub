@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from flask import Flask, render_template
+from flask_wtf.csrf import CSRFError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import AppConfig
@@ -21,14 +22,16 @@ def create_app(config: AppConfig | None = None) -> Flask:
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     csrf.init_app(app)
-    
-    # Add CSRF error handler
-    @csrf.error_handler
-    def csrf_error(reason):
-        return render_template('error.html', 
-                             error_title="Security Error",
-                             error_message="The form token has expired or is invalid. Please try again.",
-                             error_code=400), 400
+
+    # Add CSRF error handler to surface friendlier messaging
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(error):
+        return render_template(
+            "error.html",
+            error_title="Security Error",
+            error_message="The form token has expired or is invalid. Please try again.",
+            error_code=400,
+        ), 400
     
     init_database(config.database_uri)
     migrate_database()
