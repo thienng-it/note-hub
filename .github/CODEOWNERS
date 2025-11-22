@@ -6,16 +6,16 @@
 *                                   @thienng-it
 
 # Main application
-simple_app.py                        @thienng-it
-test_app.py                          @thienng-it
+/scripts/dev_server.py               @thienng-it
+/tests/test_app.py                   @thienng-it
 
 # Templates
-/templates/                          @thienng-it
+/src/templates/                      @thienng-it
 
 # Configuration files
 requirements.txt                     @thienng-it
-runtime.txt                          @thienng-it
-Procfile                             @thienng-it
+/netlify.toml                        @thienng-it
+/infra/netlify/                      @thienng-it
 
 # CI/CD Pipeline
 /.github/workflows/                  @thienng-it

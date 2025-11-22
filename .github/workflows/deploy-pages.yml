@@ -23,6 +23,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build GitHub Pages Site
+    env:
+      PYTHONPATH: src
 
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +41,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest test_app.py -v --tb=short || true
+          python -m pytest tests/test_app.py -v --tb=short || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

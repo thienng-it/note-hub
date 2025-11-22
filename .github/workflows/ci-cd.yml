@@ -10,6 +10,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Test (Python ${{ matrix.python-version }})
+    env:
+      PYTHONPATH: src
 
     strategy:
       matrix:
@@ -40,7 +42,7 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          python -m pytest test_app.py -v --cov=. --cov-report=xml --cov-report=term || true
+          python -m pytest tests/test_app.py -v --cov=. --cov-report=xml --cov-report=term || true
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
@@ -52,6 +54,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     name: Code Quality
+    env:
+      PYTHONPATH: src
 
     steps:
       - uses: actions/checkout@v4
@@ -67,13 +71,13 @@ jobs:
           pip install flake8 black isort bandit pylint
 
       - name: Check code formatting with black
-        run: black --check simple_app.py || true
+        run: black --check scripts/dev_server.py || true
 
       - name: Sort imports with isort
-        run: isort --check-only simple_app.py || true
+        run: isort --check-only scripts/dev_server.py || true
 
       - name: Lint with flake8
-        run: flake8 simple_app.py --count --select=E9,F63,F7,F82 --show-source --statistics || true
+        run: flake8 scripts/dev_server.py --count --select=E9,F63,F7,F82 --show-source --statistics || true
 
       - name: Security scan with bandit
         run: bandit -r . -ll || true
