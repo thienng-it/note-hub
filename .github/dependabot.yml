@@ -1,0 +1,73 @@
+version: 2
+updates:
+  # Enable version updates for Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "thienng-it"
+    assignees:
+      - "thienng-it"
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "chore"
+      prefix-scope: "deps"
+      include: "scope"
+    pull-request-branch-name:
+      separator: "/"
+    rebase-strategy: "auto"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      # Ignore major version updates for stable packages
+      - dependency-name: "Flask"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "SQLAlchemy"
+        update-types: ["version-update:semver-major"]
+    versioning-strategy: "auto"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:30"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "thienng-it"
+    assignees:
+      - "thienng-it"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      prefix-scope: "actions"
+      include: "scope"
+
+  # Enable security updates with higher priority
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    security-updates-only: true
+    open-pull-requests-limit: 10
+    reviewers:
+      - "thienng-it"
+    assignees:
+      - "thienng-it"
+    labels:
+      - "security"
+      - "critical"
+    commit-message:
+      prefix: "security"
+      prefix-scope: "deps"
+      include: "scope"
+    rebase-strategy: "auto"
