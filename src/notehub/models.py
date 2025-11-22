@@ -33,13 +33,13 @@ class User(Base):
     )
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(64), unique=True, nullable=False, index=True)
+    username = Column(String(64), unique=True, nullable=False)  # Removed index=True to avoid duplication
     password_hash = Column(String(255), nullable=False)
     theme = Column(String(20), default="light", nullable=False)
     bio = Column(Text, nullable=True)
-    email = Column(String(255), nullable=True, index=True)
+    email = Column(String(255), nullable=True)  # Removed index=True to avoid duplication
     totp_secret = Column(String(32), nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)  # Removed index=True
     last_login = Column(DateTime, nullable=True)
 
     def set_password(self, password: str):
