@@ -27,5 +27,5 @@ Pillow>=11.0.0  # Image processing for QR codes
 python-dotenv==1.0.0
 
 # Production Server
-gunicorn==21.2.0
+gunicorn==22.0.0
 serverless-wsgi==3.0.4
