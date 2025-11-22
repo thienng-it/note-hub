@@ -2,11 +2,12 @@ services:
   - type: web
     name: joseph-note-hub
     runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT --pythonpath src notehub:app
+    startCommand: gunicorn --bind 0.0.0.0:$PORT wsgi:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: "3.11"
       - key: NOTES_ADMIN_USERNAME
         value: admin
       - key: NOTES_ADMIN_PASSWORD
@@ -15,3 +16,7 @@ services:
         generateValue: true
       - key: NOTES_DB_PATH
         value: /opt/render/project/data/notes.db
+    disk:
+      name: data
+      mountPath: /opt/render/project/data
+      sizeGB: 1
