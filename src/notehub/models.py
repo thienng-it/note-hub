@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import bleach
 import markdown as md
 from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
-                        Table, Text)
+                        Table, Text, Index, UniqueConstraint)
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -24,15 +24,22 @@ note_tag = Table(
 
 class User(Base):
     __tablename__ = "users"
+    
+    # Add table arguments for additional constraints and indexes
+    __table_args__ = (
+        Index('ix_users_username', 'username', unique=True),  # Explicit unique index
+        Index('ix_users_email', 'email'),  # Index for email lookups
+        Index('ix_users_created_at', 'created_at'),  # Index for time-based queries
+    )
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(64), unique=True, nullable=False)
+    username = Column(String(64), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     theme = Column(String(20), default="light", nullable=False)
     bio = Column(Text, nullable=True)
-    email = Column(String(255), nullable=True)
+    email = Column(String(255), nullable=True, index=True)
     totp_secret = Column(String(32), nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
     last_login = Column(DateTime, nullable=True)
 
     def set_password(self, password: str):
@@ -44,8 +51,12 @@ class User(Base):
         enforce_password_policy(password)
         self.password_hash = generate_password_hash(password)
         
-        # Log password update for audit trail
-        logger.info(f"Password set for user: {self.username} (ID: {self.id if self.id else 'new'})")
+        # Enhanced logging for audit trail
+        logger.info(
+            f"🔐 Password set for user: {self.username} | "
+            f"ID: {self.id if self.id else 'new'} | "
+            f"Action: {'Update' if self.id else 'Create'}"
+        )
 
     def check_password(self, password: str) -> bool:
         from werkzeug.security import check_password_hash
@@ -68,6 +79,9 @@ class User(Base):
             return True
         totp = pyotp.TOTP(self.totp_secret)
         return totp.verify(token)
+    
+    def __repr__(self) -> str:
+        return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"
 
 
 class PasswordResetToken(Base):

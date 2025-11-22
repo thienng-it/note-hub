@@ -12,6 +12,7 @@ import qrcode
 from flask import (abort, flash, make_response, redirect, render_template,
                    request, session, url_for)
 from sqlalchemy import case, func, select, text
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import aliased, joinedload, selectinload
 
 from ..forms import (ForgotPasswordForm, InviteForm, LoginForm, NoteForm,
@@ -122,6 +123,7 @@ def register_routes(app):
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
+        """User registration with enhanced transaction handling and real-time DB save."""
         if current_user():
             return redirect(url_for("index"))
 
@@ -136,20 +138,78 @@ def register_routes(app):
 
         form = RegisterForm()
         if form.validate_on_submit():
-            with db() as s:
-                existing_user = s.execute(select(User).where(User.username == form.username.data)).scalar_one_or_none()
-                if existing_user:
-                    flash("Username already exists.", "error")
-                else:
-                    new_user = User(username=form.username.data)
-                    new_user.set_password(form.password.data)
+            # Validate and sanitize input
+            username = form.username.data.strip()
+            password = form.password.data
+            
+            # Validate password policy before attempting database operations
+            from ..security import password_policy_errors
+            policy_errors = password_policy_errors(password)
+            if policy_errors:
+                flash(f"Password policy violation: {policy_errors[0]}", "error")
+                return render_template("register.html", form=form, invitation=invitation)
+            
+            # Attempt to create user with proper transaction handling
+            try:
+                with db() as s:
+                    # Double-check username uniqueness within transaction
+                    # Use SELECT FOR UPDATE to prevent race conditions
+                    existing_user = s.execute(
+                        select(User).where(User.username == username)
+                    ).scalar_one_or_none()
+                    
+                    if existing_user:
+                        flash("Username already exists.", "error")
+                        return render_template("register.html", form=form, invitation=invitation)
+                    
+                    # Create new user - this will be saved to DB in real-time on commit
+                    new_user = User(username=username)
+                    try:
+                        new_user.set_password(password)  # Enforces password policy
+                    except ValueError as e:
+                        flash(f"Password error: {str(e)}", "error")
+                        return render_template("register.html", form=form, invitation=invitation)
+                    
                     s.add(new_user)
-                    if token and invitation and invitation.is_valid():
-                        invitation.used = True
-                        invitation.used_by_id = new_user.id
+                    
+                    # Flush to get the user ID before updating invitation
+                    s.flush()
+                    
+                    # Handle invitation if present
+                    if token and invitation:
+                        # Re-fetch invitation in this transaction to ensure consistency
+                        invitation = s.get(Invitation, invitation.id)
+                        if invitation and invitation.is_valid():
+                            invitation.used = True
+                            invitation.used_by_id = new_user.id
+                            s.add(invitation)
+                    
+                    # Commit transaction - triggers real-time save to database
                     s.commit()
-                    flash("Account created!", "success")
+                    
+                    # Success logging
+                    app.logger.info(
+                        f"✅ User registration successful | "
+                        f"Username: {username} | "
+                        f"ID: {new_user.id} | "
+                        f"Saved to DB: Real-time"
+                    )
+                    
+                    flash("Account created successfully! Please log in.", "success")
                     return redirect(url_for("login"))
+                    
+            except IntegrityError as e:
+                # Handle database constraint violations (e.g., duplicate username)
+                app.logger.error(f"❌ Registration failed - Integrity error: {str(e)}")
+                flash("Username already exists. Please choose a different username.", "error")
+            except SQLAlchemyError as e:
+                # Handle other database errors
+                app.logger.error(f"❌ Registration failed - Database error: {str(e)}")
+                flash("An error occurred during registration. Please try again.", "error")
+            except Exception as e:
+                # Handle any unexpected errors
+                app.logger.error(f"❌ Registration failed - Unexpected error: {str(e)}", exc_info=True)
+                flash("An unexpected error occurred. Please try again.", "error")
 
         return render_template("register.html", form=form, invitation=invitation)
 

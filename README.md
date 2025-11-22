@@ -18,8 +18,6 @@ A secure, feature-rich personal notes application built with Flask. Supports mar
 
 ## ✨ Features
 
-## ✨ Features
-
 - **📝 Rich Markdown Editing** - Full markdown support with live preview
 - **🏷️ Smart Tagging** - Organize notes with tags and filter by them
 - **🔍 Powerful Search** - Search notes by title, content, or tags
