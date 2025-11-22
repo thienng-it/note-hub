@@ -57,7 +57,7 @@ This document provides the configuration for protecting the `main` branch with G
 
 ### 8. **Require Deployments to Succeed Before Merging**
 
-- ✅ Render Deployment
+- ✅ Netlify Deployment
 - ✅ GitHub Pages Deployment
 
 ### 9. **Lock Branch**
@@ -129,7 +129,7 @@ This document provides the configuration for protecting the `main` branch with G
 
    - Enable: ✅ "Require deployments to succeed before merging"
    - Select deployments:
-     - `Render` (if applicable)
+     - `Netlify`
      - `GitHub Pages`
 
 5. **Bypass List** (Optional)

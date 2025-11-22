@@ -5,8 +5,13 @@
 
 [build.environment]
   PYTHONPATH = "src"
+  PYTHON_VERSION = "3.11"
+
+[functions]
+  included_files = ["src/**", "templates/**"]
 
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/app"
   status = 200
+  force = true
