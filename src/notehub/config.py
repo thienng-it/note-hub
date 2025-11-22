@@ -29,9 +29,12 @@ class AppConfig:
             "WTF_CSRF_ENABLED": True,
             "WTF_CSRF_TIME_LIMIT": None,  # No time limit for CSRF tokens
             "WTF_CSRF_SSL_STRICT": False,  # Allow both HTTP and HTTPS
+            "WTF_CSRF_CHECK_DEFAULT": True,
             "SESSION_COOKIE_SECURE": False,  # Allow cookies over HTTP (Render uses proxy)
             "SESSION_COOKIE_HTTPONLY": True,
             "SESSION_COOKIE_SAMESITE": "Lax",
+            "SESSION_COOKIE_NAME": "notehub_session",
+            "SESSION_COOKIE_DOMAIN": None,  # Let Flask handle domain automatically
             "PERMANENT_SESSION_LIFETIME": 3600,  # 1 hour
             "MAX_CONTENT_LENGTH": self.max_content_length,
         }
