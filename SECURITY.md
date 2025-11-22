@@ -89,7 +89,7 @@ The Note Hub application takes security very seriously. This document outlines t
 - **Production Deployment**
 
   - Always use HTTPS in production
-  - Render (deployment platform) handles SSL/TLS automatically
+  - Netlify (deployment platform) provisions SSL/TLS automatically via Let's Encrypt
   - Redirect HTTP to HTTPS
 
 - **Certificates**
@@ -262,13 +262,13 @@ The project includes automated security scanning:
 pip install bandit safety pylint
 
 # Run bandit security scan
-bandit -r simple_app.py
+bandit -r scripts/dev_server.py
 
 # Check dependencies for vulnerabilities
 safety check
 
 # Run full code analysis
-pylint simple_app.py
+pylint scripts/dev_server.py
 ```
 
 ---

@@ -12,7 +12,7 @@ Add these badges to your README to show the current status:
 
 ```markdown
 ![CI/CD Pipeline](https://github.com/thienng-it/note-hub/actions/workflows/ci-cd.yml/badge.svg?branch=main)
-![Deploy to Render](https://github.com/thienng-it/note-hub/actions/workflows/deploy-render.yml/badge.svg?branch=main)
+![Deploy Netlify](https://github.com/thienng-it/note-hub/actions/workflows/deploy-netlify.yml/badge.svg?branch=main)
 ![Deploy GitHub Pages](https://github.com/thienng-it/note-hub/actions/workflows/deploy-pages.yml/badge.svg?branch=main)
 ```
 
@@ -37,7 +37,7 @@ Add these badges to your README to show the current status:
 
 ```bash
 # Equivalent local command:
-python -m pytest test_app.py -v --cov=. --cov-report=xml
+python -m pytest tests/test_app.py -v --cov=. --cov-report=xml
 ```
 
 #### Lint Job
@@ -50,10 +50,10 @@ python -m pytest test_app.py -v --cov=. --cov-report=xml
 
 ```bash
 # Equivalent local commands:
-black --check simple_app.py
-isort --check-only simple_app.py
-flake8 simple_app.py
-bandit -r . -ll
+black --check src/notehub scripts/dev_server.py
+isort --check-only src/notehub scripts/dev_server.py
+flake8 src/notehub
+bandit -r src/notehub -ll
 ```
 
 #### Security Job
@@ -69,51 +69,35 @@ bandit -r . -ll
 
 ---
 
-### 2. **Deploy to Render** (`deploy-render.yml`)
+### 2. **Deploy to Netlify** (`deploy-netlify.yml`)
 
-**Triggers:** Push to `main` branch (excluding docs and markdown files)
+**Triggers:** Push to `main` branch (excluding docs/markdown to reduce noise)
 
 **Prerequisites:**
 
-1. Create a web service on [Render.com](https://render.com)
-2. Get the Deploy Hook URL from Render settings
-3. Add it as a GitHub secret
+1. Create a [Netlify](https://www.netlify.com/) site pointing at this repo
+2. Generate a **Deploy Hook** from the Netlify dashboard (Site settings → Build & deploy → Build hooks)
+3. Add the hook URL as a GitHub secret named `NETLIFY_DEPLOY_HOOK`
 
 **Steps:**
 
-1. **Verify Deployment Files**
-
-   - Checks for `Procfile`, `requirements.txt`, `runtime.txt`, `simple_app.py`
-
-2. **Validate Application**
-
-   - Installs dependencies
-   - Tests Python imports
-
-3. **Deploy**
-   - Sends webhook to Render to trigger deployment
-   - Deployment typically takes 2-5 minutes
+1. Workflow checks that `NETLIFY_DEPLOY_HOOK` exists
+2. Issues a `curl` POST to the Netlify deploy hook
+3. Netlify builds using `netlify.toml`, installs Python deps, bundles the serverless function, and publishes the result
 
 **Setup Instructions:**
 
 ```bash
-# 1. Go to https://render.com and create account/login
+# 1. netlify init --manual  # connect repo if not already linked
 
-# 2. Create a new Web Service with these settings:
-#    Build Command: pip install -r requirements.txt
-#    Start Command: gunicorn simple_app:app
-#    Environment Variables:
-#      - NOTES_ADMIN_USERNAME=admin
-#      - NOTES_ADMIN_PASSWORD=your-secure-password
-#      - FLASK_SECRET=your-secret-key
+# 2. In the Netlify UI:
+#    Site settings → Build & deploy → Build hooks → Add build hook
+#    Copy the generated URL
 
-# 3. Get Deploy Hook from Render:
-#    Settings → Deploy Hook → Copy URL
-
-# 4. Add to GitHub Secrets:
+# 3. Add to GitHub Secrets:
 #    Repo → Settings → Secrets and variables → Actions
-#    Secret name: RENDER_DEPLOY_HOOK
-#    Secret value: [paste Render hook URL]
+#    Secret name: NETLIFY_DEPLOY_HOOK
+#    Secret value: [paste hook URL]
 ```
 
 ---
@@ -141,12 +125,12 @@ bandit -r . -ll
 
 ```
 Developer Push to main
-       ↓
+   ↓
 GitHub Actions Triggered
-       ├─→ CI/CD Pipeline (test + lint + security)
-       ├─→ Deploy to Render (if RENDER_DEPLOY_HOOK is set)
-       └─→ Deploy GitHub Pages (if docs changed)
-       ↓
+   ├─→ CI/CD Pipeline (test + lint + security)
+   ├─→ Deploy to Netlify (if NETLIFY_DEPLOY_HOOK is set)
+   └─→ Deploy GitHub Pages (if docs changed)
+   ↓
 All Workflows Complete ✅
 ```
 
@@ -161,7 +145,7 @@ All Workflows Complete ✅
 pip install pytest pytest-cov
 
 # Run tests
-python -m pytest test_app.py -v --cov=. --cov-report=term
+python -m pytest tests/test_app.py -v --cov=. --cov-report=term
 ```
 
 ### Code Quality
@@ -171,13 +155,13 @@ python -m pytest test_app.py -v --cov=. --cov-report=term
 pip install black isort flake8 bandit
 
 # Check formatting
-black --check simple_app.py
+black --check scripts/dev_server.py
 
 # Check import sorting
-isort --check-only simple_app.py
+isort --check-only scripts/dev_server.py
 
 # Run linter
-flake8 simple_app.py
+flake8 scripts/dev_server.py
 
 # Security scan
 bandit -r . -ll
@@ -199,9 +183,9 @@ safety check
 
 **Required Secrets:**
 
-| Secret Name          | Where to Get        | Purpose               |
-| -------------------- | ------------------- | --------------------- |
-| `RENDER_DEPLOY_HOOK` | Render.com Settings | Auto-deploy to Render |
+| Secret Name           | Where to Get               | Purpose                          |
+| --------------------- | -------------------------- | -------------------------------- |
+| `NETLIFY_DEPLOY_HOOK` | Netlify Site → Build hooks | Auto-deploy to Netlify Functions |
 
 **To Add Secrets:**
 
@@ -218,8 +202,8 @@ safety check
 1. **Always test locally before pushing**
 
    ```bash
-   pytest test_app.py
-   black --check simple_app.py
+   pytest tests/test_app.py
+   black --check scripts/dev_server.py
    ```
 
 2. **Commit with conventional messages** (already set up)
@@ -243,16 +227,15 @@ safety check
 
 ## 🐛 Troubleshooting
 
-### Render Deployment Not Triggering
+### Netlify Deployment Not Triggering
 
-**Issue:** Deploy to Render shows warning about `RENDER_DEPLOY_HOOK`
+**Issue:** Deploy Netlify workflow skipped and site not updated
 
 **Solution:**
 
-1. Verify secret is added: Settings → Secrets and variables → Actions
-2. Secret name must be exactly: `RENDER_DEPLOY_HOOK`
-3. Render hook URL must be valid
-4. Restart deployment in Render dashboard
+1. Confirm the `NETLIFY_DEPLOY_HOOK` secret exists and is spelled correctly
+2. Verify the hook URL has not been rotated or deleted in Netlify
+3. Check Netlify dashboard → Deploys for errors during the build
 
 ### Tests Failing in CI but Passing Locally
 
@@ -266,7 +249,7 @@ safety check
 
 ```bash
 # Test with same Python version as CI
-python3.11 -m pytest test_app.py -v
+python3.11 -m pytest tests/test_app.py -v
 
 # Check environment
 echo $FLASK_ENV
@@ -309,7 +292,7 @@ echo $NOTES_DB_PATH
 
 ## 🎯 Next Steps
 
-1. ✅ Add `RENDER_DEPLOY_HOOK` secret for auto-deployment
+1. ✅ Add `NETLIFY_DEPLOY_HOOK` secret for auto-deployment (or let Netlify auto-build via Git integration)
 2. ✅ Push changes to trigger workflows
 3. ✅ Verify all workflows pass in Actions tab
 4. ✅ Add badges to README.md
@@ -319,7 +302,7 @@ echo $NOTES_DB_PATH
 ## 📚 Resources
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Render Deploy Hooks](https://render.com/docs/deploy-hooks)
+- [Netlify Build Hooks](https://docs.netlify.com/configure-builds/build-hooks/)
 - [GitHub Pages Documentation](https://docs.github.com/en/pages)
 - [Python Testing with pytest](https://docs.pytest.org/)
 - [Code Formatting with Black](https://black.readthedocs.io/)

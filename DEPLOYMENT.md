@@ -1,27 +1,18 @@
 # Deployment Guide for Note Hub
 
-## Deploy to Render (Recommended)
+## Deploy to Netlify (Recommended)
 
-### Step 1: Create Render Account
+Netlify hosts the Flask backend through **Netlify Functions** using `serverless-wsgi`. Every HTTP request is proxied to the serverless function described in `infra/netlify/functions/app.py` and orchestrated by `netlify.toml`.
 
-1. Go to https://render.com
-2. Sign up with your GitHub account
-3. Connect your GitHub repository
+### Step 1: Create Netlify Site
 
-### Step 2: Create Web Service
+1. Install the CLI (optional but handy): `npm install -g netlify-cli`
+2. Run `netlify init` inside the repo or connect the GitHub repo directly from the Netlify dashboard
+3. When prompted for build settings, simply accept the defaults (the CLI/dashboard will read `netlify.toml`)
 
-1. Click "New +" → "Web Service"
-2. Select your `note-hub` repository
-3. Configure the following:
-   - **Name:** `note-hub` (or any name)
-   - **Environment:** `Python 3`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `gunicorn simple_app:app`
-   - **Free tier:** Select if you want free (may sleep after 15 mins of inactivity)
+### Step 2: Configure Environment Variables
 
-### Step 3: Environment Variables
-
-Add these in Render dashboard under "Environment":
+In Netlify → Site settings → Environment variables, add:
 
 ```
 NOTES_ADMIN_USERNAME=admin
@@ -30,53 +21,17 @@ FLASK_SECRET=your-secret-key-here
 NOTES_DB_PATH=/tmp/notes.db
 ```
 
-### Step 4: Deploy
+### Step 3: Enable Deploy Hooks (optional)
 
-- Render will automatically deploy on every push to `main`
-- Your app will be available at: `https://note-hub.onrender.com`
-
-## Deploy to Railway
-
-### Step 1: Create Railway Account
-
-1. Go to https://railway.app
-2. Sign up with GitHub
-
-### Step 2: Create Project
-
-1. Click "Create New Project"
-2. Select "Deploy from GitHub repo"
-3. Choose your `note-hub` repository
-
-### Step 3: Configure
-
-1. Add environment variables (same as above)
-2. Railway will auto-detect Procfile
+If you want GitHub Actions to trigger deployments, create a Build Hook (Site settings → Build & deploy → Build hooks) and copy the URL into the `NETLIFY_DEPLOY_HOOK` secret in GitHub.
 
 ### Step 4: Deploy
 
-- Your app will be live automatically
-- Get URL from Railway dashboard
+- **Manual:** `netlify deploy --prod`
+- **Git-integrated:** Every push to `main` automatically triggers a build on Netlify
+- **Via GitHub Action:** The `deploy-netlify.yml` workflow will POST to your build hook and Netlify will perform the deploy
 
-## Deploy to PythonAnywhere
-
-### Step 1: Create Account
-
-1. Go to https://www.pythonanywhere.com
-2. Sign up for free account
-
-### Step 2: Upload Code
-
-- Clone your repo or upload files manually
-
-### Step 3: Configure Web App
-
-1. Create new Web app (Python 3.11 + Flask)
-2. Configure WSGI file to point to `simple_app:app`
-
-### Step 4: Set Environment Variables
-
-- Add in "Web" section
+Your app will be available at `https://<your-site>.netlify.app` once the first deploy succeeds.
 
 ## Local Deployment Notes
 
