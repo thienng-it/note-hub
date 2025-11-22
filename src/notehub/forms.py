@@ -23,7 +23,12 @@ def validate_password_complexity(form, field):
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=3, max=64)])
     password = PasswordField("Password", validators=[DataRequired()])
-    recaptcha = RecaptchaField()
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only add recaptcha field if CAPTCHA is enabled
+        if current_app.config.get('RECAPTCHA_ENABLED', False):
+            self.recaptcha = RecaptchaField()
 
 
 class Verify2FAForm(FlaskForm):
@@ -45,7 +50,12 @@ class RegisterForm(FlaskForm):
         "Confirm Password",
         validators=[DataRequired(), EqualTo("password", message="Passwords must match")],
     )
-    recaptcha = RecaptchaField()
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only add recaptcha field if CAPTCHA is enabled
+        if current_app.config.get('RECAPTCHA_ENABLED', False):
+            self.recaptcha = RecaptchaField()
 
 
 class NoteForm(FlaskForm):
@@ -64,7 +74,12 @@ class SearchForm(FlaskForm):
 
 class ForgotPasswordForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=3, max=64)])
-    recaptcha = RecaptchaField()
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only add recaptcha field if CAPTCHA is enabled
+        if current_app.config.get('RECAPTCHA_ENABLED', False):
+            self.recaptcha = RecaptchaField()
 
 
 class ResetPasswordForm(FlaskForm):
