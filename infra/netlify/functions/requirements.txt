@@ -1,1 +1,0 @@
-serverless-wsgi==3.0.4
