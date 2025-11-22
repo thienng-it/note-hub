@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: joseph-note-hub
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --pythonpath src notehub:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: NOTES_ADMIN_USERNAME
+        value: admin
+      - key: NOTES_ADMIN_PASSWORD
+        generateValue: true
+      - key: FLASK_SECRET
+        generateValue: true
+      - key: NOTES_DB_PATH
+        value: /opt/render/project/data/notes.db
