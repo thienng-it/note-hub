@@ -73,8 +73,8 @@ def register_note_routes(app):
                         if tag not in note.tags:
                             note.tags.append(tag)
                     s.add(note)
-                    s.commit()
-                    # Clean up orphaned tags after commit
+                    s.flush()  # Flush to make note visible to cleanup query
+                    # Clean up orphaned tags in the same transaction
                     cleanup_orphaned_tags(s)
                     s.commit()
                     note_id = note.id
@@ -141,8 +141,8 @@ def register_note_routes(app):
                         # Only add if not already attached to avoid duplicate key error
                         if tag not in note.tags:
                             note.tags.append(tag)
-                    s.commit()
-                    # Clean up orphaned tags after commit
+                    s.flush()  # Flush to make changes visible to cleanup query
+                    # Clean up orphaned tags in the same transaction
                     cleanup_orphaned_tags(s)
                     s.commit()
                     flash("Note updated!", "success")
