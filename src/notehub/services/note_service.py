@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import List, Optional, Tuple
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, aliased, selectinload
 
 from ..models import Note, ShareNote, Tag, User, note_tag
@@ -23,8 +24,6 @@ class NoteService:
             note: Note to attach tags to
             tags_str: Comma-separated tag names
         """
-        from sqlalchemy.exc import IntegrityError
-        
         note.tags.clear()
         session.flush()  # Flush the clear operation
         

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 
 from flask import flash, redirect, render_template, request, url_for
@@ -12,6 +13,8 @@ from ..forms import TaskForm
 from ..models import Task
 from ..services.task_service import TaskService
 from ..services.utils import current_user, db, login_required
+
+logger = logging.getLogger(__name__)
 
 
 def register_task_routes(app):
@@ -37,9 +40,6 @@ def register_task_routes(app):
     @app.route("/task/new", methods=["GET", "POST"])
     @login_required
     def new_task():
-        import logging
-        logger = logging.getLogger(__name__)
-        
         user = current_user()
         form = TaskForm()
         if form.validate_on_submit():
@@ -72,9 +72,6 @@ def register_task_routes(app):
     @app.route("/task/<int:task_id>/edit", methods=["GET", "POST"])
     @login_required
     def edit_task(task_id: int):
-        import logging
-        logger = logging.getLogger(__name__)
-        
         user = current_user()
         with db() as s:
             task = s.get(Task, task_id)

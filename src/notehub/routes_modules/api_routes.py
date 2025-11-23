@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from functools import wraps
 
 from flask import jsonify, request
@@ -16,6 +17,8 @@ from ..services.jwt_service import JWTService
 from ..services.note_service import NoteService
 from ..services.task_service import TaskService
 from ..services.utils import db
+
+logger = logging.getLogger(__name__)
 
 
 def jwt_required(f):
@@ -313,9 +316,6 @@ def register_api_routes(app):
     @jwt_required
     def api_create_note(user_id):
         """Create a new note."""
-        import logging
-        logger = logging.getLogger(__name__)
-        
         data = request.get_json()
         
         if not data or 'title' not in data:
