@@ -195,7 +195,7 @@ def register_auth_routes(app):
 
                     return render_template("forgot_password.html", form=form, token=None, token_generated=True)
                 else:
-                    flash("If that username exists, a password reset token has been generated.", "success")
+                    flash("If an account exists with that username, a password reset token will be displayed above. Please check the username and try again.", "info")
                     return redirect(url_for("login"))
 
         return render_template("forgot_password.html", form=form, token=None, token_generated=False)
