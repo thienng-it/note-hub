@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 from flask import flash, redirect, render_template, request, url_for
 from sqlalchemy import case, func, select
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ..forms import TaskForm
 from ..models import Task
@@ -36,6 +37,9 @@ def register_task_routes(app):
     @app.route("/task/new", methods=["GET", "POST"])
     @login_required
     def new_task():
+        import logging
+        logger = logging.getLogger(__name__)
+        
         user = current_user()
         form = TaskForm()
         if form.validate_on_submit():
@@ -49,8 +53,18 @@ def register_task_routes(app):
                     s.commit()
                     flash("Task created!", "success")
                     return redirect(url_for("tasks"))
+            except IntegrityError as exc:
+                s.rollback()
+                logger.error(f"Integrity error creating task: {exc}")
+                flash("Error: Database constraint violation. Please check your data.", "error")
+            except SQLAlchemyError as exc:
+                s.rollback()
+                logger.error(f"Database error creating task: {exc}")
+                flash("Error: Database error occurred. Please try again.", "error")
             except Exception as exc:
-                flash(f"Error creating task: {exc}", "error")
+                s.rollback()
+                logger.error(f"Unexpected error creating task: {exc}")
+                flash("Error creating task. Please try again.", "error")
         if request.method == "GET":
             form = TaskForm()
         return render_template("edit_task.html", form=form, task=None, is_edit=False)
@@ -58,6 +72,9 @@ def register_task_routes(app):
     @app.route("/task/<int:task_id>/edit", methods=["GET", "POST"])
     @login_required
     def edit_task(task_id: int):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         user = current_user()
         with db() as s:
             task = s.get(Task, task_id)
@@ -79,8 +96,18 @@ def register_task_routes(app):
                     s.commit()
                     flash("Task updated!", "success")
                     return redirect(url_for("tasks"))
+                except IntegrityError as exc:
+                    s.rollback()
+                    logger.error(f"Integrity error updating task: {exc}")
+                    flash("Error: Database constraint violation. Please check your data.", "error")
+                except SQLAlchemyError as exc:
+                    s.rollback()
+                    logger.error(f"Database error updating task: {exc}")
+                    flash("Error: Database error occurred. Please try again.", "error")
                 except Exception as exc:
-                    flash(f"Error updating task: {exc}", "error")
+                    s.rollback()
+                    logger.error(f"Unexpected error updating task: {exc}")
+                    flash("Error updating task. Please try again.", "error")
             return render_template("edit_task.html", form=form, task=task, is_edit=True)
 
     @app.route("/task/<int:task_id>/toggle", methods=["POST"])
