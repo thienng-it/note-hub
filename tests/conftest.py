@@ -1,7 +1,5 @@
 """Pytest configuration and fixtures for testing."""
 
-import os
-import tempfile
 from datetime import datetime, timezone
 
 import pytest
