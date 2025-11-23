@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from flask import abort, flash, make_response, redirect, render_template, request, url_for
 from sqlalchemy import select, text
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import aliased, joinedload, selectinload
 
 from ..forms import NoteForm, SearchForm, ShareNoteForm
@@ -63,26 +64,47 @@ def register_note_routes(app):
                         archived=form.archived.data or False,
                         owner_id=user.id
                     )
+                    # Add note to session first to avoid SQLAlchemy warnings
+                    s.add(note)
+                    s.flush()  # Flush to get note ID and make it visible
+                    
+                    # Process tags after note is in session
                     tag_names = parse_tags(form.tags.data)
                     for tag_name in tag_names:
                         tag = s.execute(select(Tag).where(Tag.name == tag_name)).scalar_one_or_none()
                         if not tag:
                             tag = Tag(name=tag_name)
                             s.add(tag)
+                            s.flush()  # Flush to ensure tag has an ID
                         # Only add if not already attached to avoid duplicate key error
                         if tag not in note.tags:
                             note.tags.append(tag)
-                    s.add(note)
-                    s.flush()  # Flush to make note visible to cleanup query
+                    
+                    s.flush()  # Flush tag associations
                     # Clean up orphaned tags in the same transaction
                     cleanup_orphaned_tags(s)
                     s.commit()
                     note_id = note.id
                     flash("Note created!", "success")
                     return redirect(url_for("view_note", note_id=note_id))
+            except IntegrityError as exc:
+                import logging
+                s.rollback()
+                logging.error(f"Integrity error creating note: {exc}")
+                # Check if it's a duplicate tag issue
+                if 'tag' in str(exc).lower() or 'duplicate' in str(exc).lower():
+                    flash("Error: Duplicate tag detected. Please check your tags and try again.", "error")
+                else:
+                    flash("Error: Database constraint violation. Please try again.", "error")
+            except SQLAlchemyError as exc:
+                import logging
+                s.rollback()
+                logging.error(f"Database error creating note: {exc}")
+                flash("Error: Database error occurred. Please try again.", "error")
             except Exception as exc:
                 import logging
-                logging.error(f"Error creating note: {exc}")
+                s.rollback()
+                logging.error(f"Unexpected error creating note: {exc}")
                 flash("Error creating note. Please try again.", "error")
         if request.method == "GET":
             form = NoteForm()
@@ -131,25 +153,47 @@ def register_note_routes(app):
                         note.pinned = form.pinned.data
                         note.favorite = form.favorite.data
                         note.archived = form.archived.data
+                    
+                    # Clear existing tags
                     note.tags.clear()
+                    s.flush()  # Flush the clear operation
+                    
+                    # Process new tags
                     tag_names = parse_tags(form.tags.data)
                     for tag_name in tag_names:
                         tag = s.execute(select(Tag).where(Tag.name == tag_name)).scalar_one_or_none()
                         if not tag:
                             tag = Tag(name=tag_name)
                             s.add(tag)
+                            s.flush()  # Flush to ensure tag has an ID
                         # Only add if not already attached to avoid duplicate key error
                         if tag not in note.tags:
                             note.tags.append(tag)
-                    s.flush()  # Flush to make changes visible to cleanup query
+                    
+                    s.flush()  # Flush tag associations
                     # Clean up orphaned tags in the same transaction
                     cleanup_orphaned_tags(s)
                     s.commit()
                     flash("Note updated!", "success")
                     return redirect(url_for("view_note", note_id=note_id))
+                except IntegrityError as exc:
+                    import logging
+                    s.rollback()
+                    logging.error(f"Integrity error updating note: {exc}")
+                    # Check if it's a duplicate tag issue
+                    if 'tag' in str(exc).lower() or 'duplicate' in str(exc).lower():
+                        flash("Error: Duplicate tag detected. Please check your tags and try again.", "error")
+                    else:
+                        flash("Error: Database constraint violation. Please try again.", "error")
+                except SQLAlchemyError as exc:
+                    import logging
+                    s.rollback()
+                    logging.error(f"Database error updating note: {exc}")
+                    flash("Error: Database error occurred. Please try again.", "error")
                 except Exception as exc:
                     import logging
-                    logging.error(f"Error updating note: {exc}")
+                    s.rollback()
+                    logging.error(f"Unexpected error updating note: {exc}")
                     flash("Error updating note. Please try again.", "error")
 
             preview_html = note.render_markdown()
@@ -173,9 +217,20 @@ def register_note_routes(app):
                     cleanup_orphaned_tags(s)
                     s.commit()
                     flash("Note deleted", "success")
+        except IntegrityError as exc:
+            import logging
+            s.rollback()
+            logging.error(f"Integrity error deleting note: {exc}")
+            flash("Error: Cannot delete note due to database constraint. Please try again.", "error")
+        except SQLAlchemyError as exc:
+            import logging
+            s.rollback()
+            logging.error(f"Database error deleting note: {exc}")
+            flash("Error: Database error occurred while deleting note. Please try again.", "error")
         except Exception as exc:
             import logging
-            logging.error(f"Error deleting note: {exc}")
+            s.rollback()
+            logging.error(f"Unexpected error deleting note: {exc}")
             flash("Error deleting note. Please try again.", "error")
         return redirect(url_for("index"))
 

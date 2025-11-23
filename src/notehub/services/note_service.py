@@ -23,7 +23,11 @@ class NoteService:
             note: Note to attach tags to
             tags_str: Comma-separated tag names
         """
+        from sqlalchemy.exc import IntegrityError
+        
         note.tags.clear()
+        session.flush()  # Flush the clear operation
+        
         tag_names = parse_tags(tags_str)
         for tag_name in tag_names:
             tag = session.execute(
@@ -32,6 +36,16 @@ class NoteService:
             if not tag:
                 tag = Tag(name=tag_name)
                 session.add(tag)
+                try:
+                    session.flush()  # Flush to ensure tag has an ID before adding to note
+                except IntegrityError:
+                    # Tag was created by another request, fetch it
+                    session.rollback()
+                    tag = session.execute(
+                        select(Tag).where(Tag.name == tag_name)
+                    ).scalar_one_or_none()
+                    if not tag:
+                        raise
             # Only add if not already attached to avoid duplicate key error
             if tag not in note.tags:
                 note.tags.append(tag)
@@ -203,10 +217,13 @@ class NoteService:
             owner_id=user.id
         )
         
-        # Process tags
+        # Add note to session first to avoid SQLAlchemy warnings
+        session.add(note)
+        session.flush()  # Flush to get note ID
+        
+        # Process tags after note is in session
         NoteService._process_tags(session, note, tags)
         
-        session.add(note)
         return note
     
     @staticmethod
