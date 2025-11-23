@@ -45,10 +45,21 @@ def migrate_database():
 
 
 def ensure_admin(username: str, password: str):
+    """Ensure admin user exists in database.
+    
+    Creates admin user only if no users exist in the database.
+    This function is called on every app startup.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
     session = SessionLocal()
     try:
-        has_user = session.execute(select(User.id)).first()
-        if not has_user:
+        # Count total users in database
+        user_count = session.execute(select(User.id)).first()
+        
+        if not user_count:
+            logger.info("🆕 No users found in database. Creating admin user...")
             admin = User(username=username)
             try:
                 admin.set_password(password)
@@ -60,6 +71,14 @@ def ensure_admin(username: str, password: str):
             admin.created_at = datetime.now(timezone.utc)
             session.add(admin)
             session.commit()
+            logger.info(f"✅ Created admin user: {username} / {password}")
             print(f"Created admin user: {username} / {password}")
+        else:
+            logger.info(f"✅ Database already has users. Skipping admin creation.")
+            logger.info(f"📊 If you can't log in, the database is persisting correctly but you may have the wrong credentials.")
+    except Exception as e:
+        logger.error(f"❌ Error during admin user check/creation: {e}")
+        session.rollback()
+        raise
     finally:
         session.close()

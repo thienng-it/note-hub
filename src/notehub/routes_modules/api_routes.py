@@ -56,6 +56,58 @@ def jwt_required(f):
 def register_api_routes(app):
     """Register API routes with JWT authentication."""
     
+    @app.route("/api/health", methods=["GET"])
+    def api_health():
+        """Health check endpoint for monitoring database connectivity.
+        ---
+        tags:
+          - System
+        responses:
+          200:
+            description: System is healthy
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                database:
+                  type: string
+                user_count:
+                  type: integer
+        """
+        import os
+        from sqlalchemy import text
+        
+        try:
+            with db() as s:
+                # Test database connectivity
+                s.execute(text("SELECT 1"))
+                
+                # Count users
+                result = s.execute(select(User.id))
+                user_count = len(result.fetchall())
+                
+                # Get database path from environment or config
+                db_path = os.getenv("NOTES_DB_PATH", "notes.db")
+                db_exists = os.path.exists(db_path) if not db_path.startswith('sqlite:') else os.path.exists(db_path.replace('sqlite:///', ''))
+                
+                return jsonify({
+                    'status': 'healthy',
+                    'database': 'connected',
+                    'database_path': db_path,
+                    'database_exists': db_exists,
+                    'user_count': user_count,
+                    'message': 'Database is accessible and contains data' if user_count > 0 else 'Database is accessible but empty'
+                }), 200
+        except Exception as e:
+            import logging
+            logging.error(f"Health check failed: {e}")
+            return jsonify({
+                'status': 'unhealthy',
+                'database': 'error',
+                'error': str(e)
+            }), 503
+    
     @app.route("/api/auth/login", methods=["POST"])
     @limiter.limit("10 per minute")
     def api_login():
