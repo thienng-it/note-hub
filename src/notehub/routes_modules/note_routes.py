@@ -23,6 +23,11 @@ def register_note_routes(app):
         tag_filter = form.tag_filter.data or ""
         view_type = request.args.get('view', 'all')
         user = current_user()
+        
+        # Only apply search if query has at least 3 characters
+        if query and len(query.strip()) < 3:
+            query = ""
+            flash("Search query must be at least 3 characters long.", "warning")
 
         with db() as s:
             notes, all_tags = NoteService.get_notes_for_user(

@@ -226,4 +226,26 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.querySelector('form[method="GET"]');
+    const queryInput = document.querySelector('input[name="query"]');
+    const searchButton = searchForm.querySelector('button[type="submit"]');
+    
+    if (searchForm && queryInput && searchButton) {
+        searchForm.addEventListener('submit', function(e) {
+            const query = queryInput.value.trim();
+            
+            // If query is not empty but less than 3 characters, prevent submission
+            if (query && query.length < 3) {
+                e.preventDefault();
+                alert('Search query must be at least 3 characters long.');
+                queryInput.focus();
+                return false;
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
