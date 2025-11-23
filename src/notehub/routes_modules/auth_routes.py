@@ -94,7 +94,8 @@ def register_auth_routes(app):
                     s,
                     form.username.data,
                     form.password.data,
-                    token
+                    token,
+                    form.email.data if form.email.data else None
                 )
                 
                 if success:
@@ -102,6 +103,7 @@ def register_auth_routes(app):
                     app.logger.info(
                         f"✅ User registration successful | "
                         f"Username: {new_user.username} | "
+                        f"Email: {new_user.email or 'N/A'} | "
                         f"ID: {new_user.id} | "
                         f"Saved to DB: Real-time"
                     )

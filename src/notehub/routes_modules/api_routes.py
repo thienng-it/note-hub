@@ -73,7 +73,7 @@ def register_api_routes(app):
               properties:
                 username:
                   type: string
-                  description: Username for authentication
+                  description: Username or email for authentication
                 password:
                   type: string
                   description: User password
@@ -109,7 +109,7 @@ def register_api_routes(app):
         data = request.get_json()
         
         if not data or 'username' not in data or 'password' not in data:
-            return jsonify({'error': 'Username and password required'}), 400
+            return jsonify({'error': 'Username/email and password required'}), 400
         
         with db() as s:
             user = AuthService.authenticate_user(s, data['username'], data['password'])

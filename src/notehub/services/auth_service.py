@@ -20,21 +20,24 @@ class AuthService:
     @staticmethod
     def authenticate_user(
         session: Session,
-        username: str,
+        username_or_email: str,
         password: str
     ) -> Optional[User]:
-        """Authenticate a user with username and password.
+        """Authenticate a user with username/email and password.
         
         Args:
             session: Database session
-            username: Username
+            username_or_email: Username or email address
             password: Password to check
             
         Returns:
             User if authentication successful, None otherwise
         """
+        # Try to find user by username first, then by email
         user = session.execute(
-            select(User).where(User.username == username)
+            select(User).where(
+                (User.username == username_or_email) | (User.email == username_or_email)
+            )
         ).scalar_one_or_none()
         
         if user and user.check_password(password):
@@ -47,7 +50,8 @@ class AuthService:
         session: Session,
         username: str,
         password: str,
-        invitation_token: Optional[str] = None
+        invitation_token: Optional[str] = None,
+        email: Optional[str] = None
     ) -> Tuple[bool, str, Optional[User]]:
         """Register a new user.
         
@@ -56,12 +60,15 @@ class AuthService:
             username: Desired username
             password: Password
             invitation_token: Optional invitation token
+            email: Optional email address
             
         Returns:
             Tuple of (success, message, user)
         """
         # Validate and sanitize input
         username = username.strip()
+        if email:
+            email = email.strip().lower()
         
         # Validate password policy
         policy_errors = password_policy_errors(password)
@@ -77,8 +84,17 @@ class AuthService:
             if existing_user:
                 return False, "Username already exists.", None
             
+            # Check email uniqueness if provided
+            if email:
+                existing_email = session.execute(
+                    select(User).where(User.email == email)
+                ).scalar_one_or_none()
+                
+                if existing_email:
+                    return False, "Email already in use.", None
+            
             # Create new user
-            new_user = User(username=username)
+            new_user = User(username=username, email=email)
             try:
                 new_user.set_password(password)
             except ValueError as e:

@@ -21,7 +21,7 @@ def validate_password_complexity(form, field):
 
 
 class LoginForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired(), Length(min=3, max=64)])
+    username = StringField("Username or Email", validators=[DataRequired(), Length(min=3, max=255)])
     password = PasswordField("Password", validators=[DataRequired()])
     
     def __init__(self, *args, **kwargs):
@@ -37,6 +37,7 @@ class Verify2FAForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=3, max=64)])
+    email = StringField("Email (optional)", validators=[OptionalValidator(), Length(max=255)])
     password = PasswordField(
         "Password",
         validators=[
