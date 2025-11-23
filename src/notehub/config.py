@@ -31,14 +31,23 @@ class AppConfig:
         logger = logging.getLogger(__name__)
         
         # Log database configuration for debugging
-        logger.info(f"📊 MySQL Database configured: {self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}")
+        logger.info(f"📊 Database configured: {self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}")
         
-        # Warn if using default credentials in production
-        if self.db_password == "" and os.getenv("PORT"):
-            logger.warning(
-                "⚠️  MySQL password is empty in production! "
-                "Set MYSQL_PASSWORD environment variable for security."
-            )
+        # Check if running in production (Render sets PORT env var)
+        is_production = bool(os.getenv("PORT"))
+        
+        # Warn about missing MySQL configuration in production
+        if is_production:
+            if not self.db_password:
+                logger.error(
+                    "❌ MYSQL_PASSWORD not set! Your app will fail to start.\n"
+                    "   Set up external MySQL: See docs/guides/EXTERNAL_MYSQL_SETUP.md"
+                )
+            if self.db_host == "localhost":
+                logger.error(
+                    "❌ MYSQL_HOST is 'localhost'! This won't work on Render.\n"
+                    "   Set MYSQL_HOST to your external database host."
+                )
 
     @property
     def flask_settings(self) -> dict[str, object]:
@@ -70,14 +79,28 @@ class AppConfig:
 
     @property
     def database_uri(self) -> str:
-        """Build MySQL connection URI with proper encoding."""
+        """Build database connection URI.
+        
+        Supports external MySQL with SSL (PlanetScale, Railway, etc.)
+        """
         from urllib.parse import quote_plus
+        import logging
+        logger = logging.getLogger(__name__)
         
         # Encode password to handle special characters
         encoded_password = quote_plus(self.db_password) if self.db_password else ""
         
         # Build MySQL URI with pymysql driver
+        # Add SSL for cloud providers (PlanetScale, etc.)
+        ssl_args = "charset=utf8mb4&ssl_disabled=false"
+        
         if encoded_password:
-            return f"mysql+pymysql://{self.db_user}:{encoded_password}@{self.db_host}:{self.db_port}/{self.db_name}?charset=utf8mb4"
+            uri = f"mysql+pymysql://{self.db_user}:{encoded_password}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
         else:
-            return f"mysql+pymysql://{self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}?charset=utf8mb4"
+            uri = f"mysql+pymysql://{self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
+        
+        # Log connection details (hide password)
+        safe_uri = uri.replace(encoded_password, "***") if encoded_password else uri
+        logger.debug(f"Database URI: {safe_uri}")
+        
+        return uri

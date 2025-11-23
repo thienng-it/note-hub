@@ -57,7 +57,8 @@ def init_database(database_uri: str):
     global _engine
     
     # Log database connection information
-    logger.info(f"🗄️  Initializing database connection: {database_uri.split('@')[-1] if '@' in database_uri else database_uri}")
+    safe_uri = database_uri.split('@')[-1] if '@' in database_uri else database_uri
+    logger.info(f"🗄️  Initializing database connection: {safe_uri}")
     
     # Database-specific configuration
     engine_args = {
@@ -72,10 +73,14 @@ def init_database(database_uri: str):
             'pool_size': 10,        # Connection pool size (good for MySQL)
             'max_overflow': 20,     # Allow up to 20 additional connections
             'connect_args': {
-                'connect_timeout': 10,
+                'connect_timeout': 30,  # Increased timeout for cloud databases
                 'charset': 'utf8mb4'
             }
         })
+        # SSL configuration for cloud providers (PlanetScale, Railway, etc.)
+        if 'ssl_disabled=false' in database_uri or 'psdb.cloud' in database_uri:
+            engine_args['connect_args']['ssl'] = {'check_hostname': False}
+            logger.info("🔒 SSL enabled for MySQL connection")
     elif database_uri.startswith('sqlite'):
         # SQLite-specific configuration (no pooling needed for single-file DB)
         engine_args.update({

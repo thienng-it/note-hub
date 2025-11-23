@@ -1,0 +1,159 @@
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║        PLANETSCALE + RENDER SETUP - STEP BY STEP GUIDE            ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+
+Follow these steps in order. Mark [X] when complete.
+
+
+PART 1: PLANETSCALE SETUP (2 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1.1: Create Account
+  [ ] Go to: https://planetscale.com/
+  [ ] Click "Sign up" (use GitHub for fastest signup)
+  [ ] Complete registration
+
+Step 1.2: Create Database
+  [ ] Click "Create a database" button (big purple button)
+  [ ] Database name: notehub-db
+  [ ] Region: US East (or closest to you)
+  [ ] Plan: Select "Hobby" (FREE)
+  [ ] Click "Create database"
+  [ ] Wait for database to initialize (~30 seconds)
+
+Step 1.3: Generate Password
+  [ ] Click "Connect" button in your database dashboard
+  [ ] Click "New password" button
+  [ ] Click "Create password"
+  
+  ⚠️  IMPORTANT: Copy these details NOW (shown only once!)
+  
+  [ ] Copy and save these 4 values:
+      
+      Host:     _________________________________
+      Username: _________________________________
+      Password: _________________________________
+      Database: notehub-db
+
+
+PART 2: RENDER CONFIGURATION (2 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 2.1: Open Render Dashboard
+  [ ] Go to: https://dashboard.render.com/
+  [ ] Find your "joseph-note-hub" service
+  [ ] Click on the service name
+
+Step 2.2: Add Environment Variables
+  [ ] Click "Environment" in the left sidebar
+  [ ] Click "Add Environment Variable" button
+
+Add each of these 5 variables:
+
+  [ ] Variable 1:
+      Key:   MYSQL_HOST
+      Value: aws.connect.psdb.cloud
+      (or the host from PlanetScale if different)
+
+  [ ] Variable 2:
+      Key:   MYSQL_PORT
+      Value: 3306
+
+  [ ] Variable 3:
+      Key:   MYSQL_USER
+      Value: <paste username from PlanetScale>
+
+  [ ] Variable 4:
+      Key:   MYSQL_PASSWORD
+      Value: <paste password from PlanetScale>
+
+  [ ] Variable 5:
+      Key:   MYSQL_DATABASE
+      Value: notehub-db
+
+Step 2.3: Save and Deploy
+  [ ] Scroll to bottom and click "Save Changes"
+  [ ] Wait for "Manual Deploy" dialog
+  [ ] Render will automatically start redeploying
+  [ ] Watch the deployment progress (takes ~2 minutes)
+
+
+PART 3: VERIFICATION (1 minute)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 3.1: Check Deployment Logs
+  [ ] Click "Logs" in Render dashboard
+  [ ] Scroll through recent logs
+  [ ] Look for these SUCCESS messages:
+
+      ✓ "📊 Database configured: <user>@aws.connect.psdb.cloud..."
+      ✓ "🗄️  Initializing database connection..."
+      ✓ "🔒 SSL enabled for MySQL connection"
+      ✓ "✅ Database initialized successfully"
+      ✓ "✅ Created admin user: admin / <password>"
+
+Step 3.2: Test Your App
+  [ ] Click on your app URL (at top of Render dashboard)
+  [ ] App should load without errors
+  [ ] Try logging in with admin credentials from logs
+
+Step 3.3: Verify in PlanetScale
+  [ ] Go back to PlanetScale dashboard
+  [ ] Click "Insights" or "Console" tab
+  [ ] You should see database activity
+  [ ] Tables should be created (users, notes, tasks, etc.)
+
+
+🎉 SUCCESS CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [ ] PlanetScale database created and running
+  [ ] All 5 environment variables set in Render
+  [ ] Render deployment successful
+  [ ] No connection errors in logs
+  [ ] App is accessible and working
+  [ ] Can login with admin credentials
+
+
+⚠️  TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+If you see "Can't connect to MySQL server":
+  → Double-check MYSQL_HOST (should be aws.connect.psdb.cloud)
+  → Verify all 5 variables are set correctly
+  → Look for typos or extra spaces
+
+If you see "Access denied":
+  → Regenerate password in PlanetScale
+  → Copy the NEW password carefully
+  → Update MYSQL_PASSWORD in Render
+  → Save changes to redeploy
+
+If you see "Unknown database":
+  → Check MYSQL_DATABASE is exactly: notehub-db
+  → Make sure there are no quotes around the value
+
+Still having issues?
+  → Run locally: python scripts/test_mysql_connection.py
+  → Check: docs/guides/EXTERNAL_MYSQL_SETUP.md
+  → Review full Render logs for specific errors
+
+
+📝 NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• PlanetScale password is shown ONLY ONCE. Save it immediately!
+• Both PlanetScale and Render are on FREE tier = $0 cost
+• Your database will auto-backup (PlanetScale handles this)
+• You can upgrade either service later if needed
+
+• Default admin login shown in Render logs after first deployment
+• Change admin password immediately after first login!
+
+• Total setup time: ~5 minutes
+• Both services have excellent uptime and support
+
+
+🚀 READY TO START? BEGIN WITH STEP 1.1 ABOVE!

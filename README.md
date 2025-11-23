@@ -2,6 +2,25 @@
 
 Welcome to NoteHub! A secure, feature-rich personal notes application built with Flask.
 
+## 🗄️ Database Setup (Required for Render Deployment)
+
+**This app requires a MySQL database.** Render's free tier doesn't include MySQL, so you'll need to use an external provider:
+
+### Quick Setup (5 minutes):
+
+1. **See [QUICK_START_MYSQL.md](QUICK_START_MYSQL.md)** for fastest setup with PlanetScale (free)
+2. **Or see [docs/guides/EXTERNAL_MYSQL_SETUP.md](docs/guides/EXTERNAL_MYSQL_SETUP.md)** for detailed guide with multiple providers
+
+### Set these 5 environment variables in Render:
+
+```
+MYSQL_HOST=<your-database-host>
+MYSQL_PORT=3306
+MYSQL_USER=<your-username>
+MYSQL_PASSWORD=<your-password>
+MYSQL_DATABASE=<your-database-name>
+```
+
 ## 📚 Documentation
 
 All project documentation is organized in the `docs/` folder:

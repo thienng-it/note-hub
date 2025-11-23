@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: joseph-note-hub
+    runtime: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: NOTES_ADMIN_USERNAME
+        value: admin
+      - key: NOTES_ADMIN_PASSWORD
+        generateValue: true
+      - key: FLASK_SECRET
+        generateValue: true
+      # External MySQL Database Configuration
+      # Set these in Render Dashboard after creating external MySQL database
+      # See docs/guides/EXTERNAL_MYSQL_SETUP.md for setup instructions
+      - key: MYSQL_HOST
+        sync: false # Set manually in Render dashboard (e.g., aws.connect.psdb.cloud)
+      - key: MYSQL_PORT
+        value: "3306"
+      - key: MYSQL_USER
+        sync: false # Set manually in Render dashboard
+      - key: MYSQL_PASSWORD
+        sync: false # Set manually in Render dashboard
+      - key: MYSQL_DATABASE
+        sync: false # Set manually in Render dashboard
