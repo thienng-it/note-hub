@@ -14,6 +14,8 @@ SQLAlchemy>=2.0.23
 Werkzeug==3.0.1
 pyotp==2.9.0  # Two-Factor Authentication (TOTP)
 Flask-ReCaptcha==0.4.2  # CAPTCHA protection against bots
+PyJWT==2.8.0  # JWT token authentication
+flasgger==0.9.7.1  # OpenAPI/Swagger documentation
 
 # Content Processing & Rendering
 Markdown==3.5.1
@@ -25,6 +27,9 @@ Pillow>=11.0.0  # Image processing for QR codes
 
 # Environment & Configuration
 python-dotenv==1.0.0
+
+# Rate Limiting & Attack Prevention
+Flask-Limiter==3.5.0
 
 # Production Server
 gunicorn==21.2.0

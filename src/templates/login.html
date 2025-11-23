@@ -35,8 +35,9 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user mr-2"></i>Username</label>
-                {{ form.username(class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500", placeholder="Enter your username") }}
+                <label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user mr-2"></i>Username or Email</label>
+                {{ form.username(class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500", placeholder="Enter your username or email") }}
+                <p class="mt-1 text-xs text-gray-500"><i class="fas fa-info-circle mr-1"></i>You can log in with either your username or email address</p>
             </div>
             
             <div>
