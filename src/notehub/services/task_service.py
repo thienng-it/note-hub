@@ -15,6 +15,22 @@ class TaskService:
     """Service class for task business logic."""
     
     @staticmethod
+    def _convert_to_datetime(date_value: Optional[datetime]) -> Optional[datetime]:
+        """Convert date to datetime with timezone if needed.
+        
+        Args:
+            date_value: Date or datetime value
+            
+        Returns:
+            Datetime with timezone or None
+        """
+        if not date_value:
+            return None
+        if not isinstance(date_value, datetime):
+            return datetime.combine(date_value, datetime.min.time()).replace(tzinfo=timezone.utc)
+        return date_value
+    
+    @staticmethod
     def get_tasks_for_user(
         session: Session,
         user: User,
@@ -104,14 +120,10 @@ class TaskService:
         Returns:
             Created task
         """
-        # Convert date to datetime if provided
-        if due_date and not isinstance(due_date, datetime):
-            due_date = datetime.combine(due_date, datetime.min.time()).replace(tzinfo=timezone.utc)
-        
         task = Task(
             title=title.strip(),
             description=description or None,
-            due_date=due_date,
+            due_date=TaskService._convert_to_datetime(due_date),
             priority=priority,
             owner_id=user.id
         )
@@ -143,16 +155,7 @@ class TaskService:
         """
         task.title = title.strip()
         task.description = description or None
-        
-        # Convert date to datetime if provided
-        if due_date:
-            if not isinstance(due_date, datetime):
-                task.due_date = datetime.combine(due_date, datetime.min.time()).replace(tzinfo=timezone.utc)
-            else:
-                task.due_date = due_date
-        else:
-            task.due_date = None
-        
+        task.due_date = TaskService._convert_to_datetime(due_date)
         task.priority = priority
         
         return task

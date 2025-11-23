@@ -9,6 +9,7 @@ from sqlalchemy import case, func, select
 
 from ..forms import TaskForm
 from ..models import Task
+from ..services.task_service import TaskService
 from ..services.utils import current_user, db, login_required
 
 
@@ -21,17 +22,16 @@ def register_task_routes(app):
         user = current_user()
         filter_type = request.args.get('filter', 'all')
         with db() as s:
-            stmt = select(Task).where(Task.owner_id == user.id)
-            if filter_type == 'active':
-                stmt = stmt.where(Task.completed == False)
-            elif filter_type == 'completed':
-                stmt = stmt.where(Task.completed == True)
-            priority_order = case((Task.priority == 'high', 1), (Task.priority == 'medium', 2), (Task.priority == 'low', 3), else_=2)
-            tasks_list = s.execute(stmt.order_by(Task.completed.asc(), priority_order, Task.due_date.asc().nullslast(), Task.created_at.desc())).scalars().all()
-            total_tasks = s.execute(select(func.count(Task.id)).where(Task.owner_id == user.id)).scalar() or 0
-            completed_tasks = s.execute(select(func.count(Task.id)).where(Task.owner_id == user.id, Task.completed == True)).scalar() or 0
-            active_tasks = total_tasks - completed_tasks
-        return render_template("tasks.html", tasks=tasks_list, filter_type=filter_type, total_tasks=total_tasks, completed_tasks=completed_tasks, active_tasks=active_tasks)
+            tasks_list = TaskService.get_tasks_for_user(s, user, filter_type)
+            task_counts = TaskService.get_task_counts(s, user)
+        return render_template(
+            "tasks.html",
+            tasks=tasks_list,
+            filter_type=filter_type,
+            total_tasks=task_counts['total'],
+            completed_tasks=task_counts['completed'],
+            active_tasks=task_counts['active']
+        )
 
     @app.route("/task/new", methods=["GET", "POST"])
     @login_required

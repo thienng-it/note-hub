@@ -8,6 +8,7 @@ from sqlalchemy.orm import aliased, joinedload, selectinload
 
 from ..forms import NoteForm, SearchForm, ShareNoteForm
 from ..models import Note, ShareNote, Tag, User, note_tag
+from ..services.note_service import NoteService
 from ..services.utils import current_user, db, login_required, parse_tags
 
 
@@ -24,38 +25,17 @@ def register_note_routes(app):
         user = current_user()
 
         with db() as s:
-            stmt = select(Note).distinct()
-            if view_type == 'favorites':
-                if user:
-                    shared_note_ids = select(ShareNote.note_id).where(ShareNote.shared_with_id == user.id)
-                    stmt = stmt.where(Note.favorite == True, Note.archived == False, ((Note.owner_id == user.id) | (Note.id.in_(shared_note_ids))))
-                else: stmt = stmt.where(False)
-            elif view_type == 'archived':
-                if user: stmt = stmt.where(Note.archived == True, Note.owner_id == user.id)
-                else: stmt = stmt.where(False)
-            elif view_type == 'shared':
-                if user: stmt = stmt.join(ShareNote).where(ShareNote.shared_with_id == user.id, Note.archived == False)
-                else: stmt = stmt.where(False)
-            else:
-                if user:
-                    shared_note_ids = select(ShareNote.note_id).where(ShareNote.shared_with_id == user.id)
-                    stmt = stmt.where(((Note.owner_id == user.id) | (Note.id.in_(shared_note_ids))) & (Note.archived == False))
-                else: stmt = stmt.where(False)
+            notes, all_tags = NoteService.get_notes_for_user(
+                s, user, view_type, query, tag_filter
+            )
 
-            if query:
-                like_term = f"%{query}%"
-                tag_alias = aliased(Tag)
-                stmt = stmt.outerjoin(note_tag).outerjoin(tag_alias).where(Note.title.ilike(like_term) | Note.body.ilike(like_term) | tag_alias.name.ilike(like_term))
-
-            if tag_filter:
-                tag_alias2 = aliased(Tag)
-                stmt = stmt.join(note_tag).join(tag_alias2).where(tag_alias2.name.ilike(f"%{tag_filter}%"))
-
-            stmt = stmt.options(joinedload(Note.tags)).order_by(Note.pinned.desc(), Note.updated_at.desc())
-            notes = s.execute(stmt).scalars().unique().all()
-            all_tags = s.execute(select(Tag).options(selectinload(Tag.notes)).order_by(Tag.name)).scalars().all()
-
-        response = make_response(render_template("index.html", notes=notes, form=form, all_tags=all_tags, view_type=view_type))
+        response = make_response(render_template(
+            "index.html",
+            notes=notes,
+            form=form,
+            all_tags=all_tags,
+            view_type=view_type
+        ))
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         return response
 
@@ -101,19 +81,9 @@ def register_note_routes(app):
     def view_note(note_id: int):
         user = current_user()
         with db() as s:
-            note = s.execute(select(Note).options(joinedload(Note.tags)).where(Note.id == note_id)).unique().scalar_one_or_none()
+            note, has_access, can_edit = NoteService.check_note_access(s, note_id, user)
             if not note:
                 abort(404)
-            has_access = False
-            can_edit = False
-            if note.owner_id is not None and note.owner_id == user.id:
-                has_access = True
-                can_edit = True
-            else:
-                share = s.execute(select(ShareNote).where(ShareNote.note_id == note_id, ShareNote.shared_with_id == user.id)).scalar_one_or_none()
-                if share:
-                    has_access = True
-                    can_edit = share.can_edit
             if not has_access:
                 flash("You don't have access to this note.", "error")
                 return redirect(url_for("index"))

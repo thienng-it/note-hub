@@ -15,6 +15,26 @@ class NoteService:
     """Service class for note business logic."""
     
     @staticmethod
+    def _process_tags(session: Session, note: Note, tags_str: str) -> None:
+        """Process and attach tags to a note.
+        
+        Args:
+            session: Database session
+            note: Note to attach tags to
+            tags_str: Comma-separated tag names
+        """
+        note.tags.clear()
+        tag_names = parse_tags(tags_str)
+        for tag_name in tag_names:
+            tag = session.execute(
+                select(Tag).where(Tag.name == tag_name)
+            ).scalar_one_or_none()
+            if not tag:
+                tag = Tag(name=tag_name)
+                session.add(tag)
+            note.tags.append(tag)
+    
+    @staticmethod
     def get_notes_for_user(
         session: Session,
         user: User,
@@ -165,15 +185,7 @@ class NoteService:
         )
         
         # Process tags
-        tag_names = parse_tags(tags)
-        for tag_name in tag_names:
-            tag = session.execute(
-                select(Tag).where(Tag.name == tag_name)
-            ).scalar_one_or_none()
-            if not tag:
-                tag = Tag(name=tag_name)
-                session.add(tag)
-            note.tags.append(tag)
+        NoteService._process_tags(session, note, tags)
         
         session.add(note)
         return note
@@ -220,16 +232,7 @@ class NoteService:
                 note.archived = archived
         
         # Update tags
-        note.tags.clear()
-        tag_names = parse_tags(tags)
-        for tag_name in tag_names:
-            tag = session.execute(
-                select(Tag).where(Tag.name == tag_name)
-            ).scalar_one_or_none()
-            if not tag:
-                tag = Tag(name=tag_name)
-                session.add(tag)
-            note.tags.append(tag)
+        NoteService._process_tags(session, note, tags)
         
         return note
     
