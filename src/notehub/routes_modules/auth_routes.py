@@ -13,6 +13,7 @@ from flask import flash, redirect, render_template, request, session, url_for
 from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
+from ..extensions import limiter
 from ..forms import (ForgotPasswordForm, LoginForm, RegisterForm,
                      ResetPasswordForm, Setup2FAForm, Verify2FAForm)
 from ..models import Invitation, PasswordResetToken, User
@@ -24,6 +25,7 @@ def register_auth_routes(app):
     """Register authentication-related routes."""
     
     @app.route("/login", methods=["GET", "POST"])
+    @limiter.limit("10 per minute")
     def login():
         if current_user():
             return redirect(url_for("index"))
@@ -48,6 +50,7 @@ def register_auth_routes(app):
         return render_template("login.html", form=form)
 
     @app.route("/verify-2fa", methods=["GET", "POST"])
+    @limiter.limit("5 per minute")
     def verify_2fa():
         if current_user():
             return redirect(url_for("index"))
@@ -73,6 +76,7 @@ def register_auth_routes(app):
         return render_template("verify_2fa.html", form=form)
 
     @app.route("/register", methods=["GET", "POST"])
+    @limiter.limit("5 per hour")
     def register():
         """User registration with enhanced transaction handling and real-time DB save."""
         if current_user():
@@ -163,6 +167,7 @@ def register_auth_routes(app):
         return redirect(url_for("profile"))
 
     @app.route("/forgot-password", methods=["GET", "POST"])
+    @limiter.limit("3 per hour")
     def forgot_password():
         if current_user():
             return redirect(url_for("index"))
@@ -224,6 +229,7 @@ def register_auth_routes(app):
         return render_template("verify_2fa_reset.html", form=form)
 
     @app.route("/reset-password/<token>", methods=["GET", "POST"])
+    @limiter.limit("5 per hour")
     def reset_password(token: str):
         if current_user():
             return redirect(url_for("index"))

@@ -7,7 +7,7 @@ from flask_wtf.csrf import CSRFError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import AppConfig
-from .extensions import csrf
+from .extensions import csrf, limiter
 from .database import init_database
 from .routes import register_routes
 from .services.bootstrap import ensure_admin, migrate_database
@@ -22,6 +22,7 @@ def create_app(config: AppConfig | None = None) -> Flask:
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     csrf.init_app(app)
+    limiter.init_app(app)
     
     # Initialize Swagger/OpenAPI documentation
     try:

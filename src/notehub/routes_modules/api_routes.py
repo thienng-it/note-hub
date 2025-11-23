@@ -8,6 +8,7 @@ from flask import jsonify, request
 from flasgger import swag_from
 from sqlalchemy import select
 
+from ..extensions import limiter
 from ..models import Note, Task, User
 from ..services.auth_service import AuthService
 from ..services.jwt_service import JWTService
@@ -56,6 +57,7 @@ def register_api_routes(app):
     """Register API routes with JWT authentication."""
     
     @app.route("/api/auth/login", methods=["POST"])
+    @limiter.limit("10 per minute")
     def api_login():
         """API login endpoint - returns JWT tokens.
         ---

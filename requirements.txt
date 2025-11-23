@@ -28,6 +28,9 @@ Pillow>=11.0.0  # Image processing for QR codes
 # Environment & Configuration
 python-dotenv==1.0.0
 
+# Rate Limiting & Attack Prevention
+Flask-Limiter==3.5.0
+
 # Production Server
 gunicorn==21.2.0
 serverless-wsgi==3.0.4
