@@ -64,14 +64,18 @@ def register_note_routes(app):
                         if not tag:
                             tag = Tag(name=tag_name)
                             s.add(tag)
-                        note.tags.append(tag)
+                        # Only add if not already attached to avoid duplicate key error
+                        if tag not in note.tags:
+                            note.tags.append(tag)
                     s.add(note)
                     s.commit()
                     note_id = note.id
                     flash("Note created!", "success")
                     return redirect(url_for("view_note", note_id=note_id))
             except Exception as exc:
-                flash(f"Error creating note: {exc}", "error")
+                import logging
+                logging.error(f"Error creating note: {exc}")
+                flash("Error creating note. Please try again.", "error")
         if request.method == "GET":
             form = NoteForm()
         return render_template("edit_note.html", form=form, note=None, is_edit=False)
@@ -126,12 +130,16 @@ def register_note_routes(app):
                         if not tag:
                             tag = Tag(name=tag_name)
                             s.add(tag)
-                        note.tags.append(tag)
+                        # Only add if not already attached to avoid duplicate key error
+                        if tag not in note.tags:
+                            note.tags.append(tag)
                     s.commit()
                     flash("Note updated!", "success")
                     return redirect(url_for("view_note", note_id=note_id))
                 except Exception as exc:
-                    flash(f"Error updating note: {exc}", "error")
+                    import logging
+                    logging.error(f"Error updating note: {exc}")
+                    flash("Error updating note. Please try again.", "error")
 
             preview_html = note.render_markdown()
             return render_template("edit_note.html", form=form, note=note, preview_html=preview_html, is_edit=True)
@@ -153,7 +161,9 @@ def register_note_routes(app):
                     s.commit()
                     flash("Note deleted", "success")
         except Exception as exc:
-            flash(f"Error deleting note: {exc}", "error")
+            import logging
+            logging.error(f"Error deleting note: {exc}")
+            flash("Error deleting note. Please try again.", "error")
         return redirect(url_for("index"))
 
     @app.route("/note/<int:note_id>/toggle-pin", methods=["POST"])
