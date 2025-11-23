@@ -145,7 +145,7 @@ class TestTaskService:
         assert task.description == 'Test description'
         assert task.priority == 'high'
         assert task.owner_id == test_user.id
-        assert task.completed == False  # Default value from model
+        assert task.completed is False  # Default value from model
     
     def test_get_tasks_for_user(self, db_session, test_user):
         """Test getting tasks for a user."""

@@ -68,14 +68,7 @@ class JWTService:
             secret_key = current_app.config['SECRET_KEY']
             payload = jwt.decode(token, secret_key, algorithms=['HS256'])
             
-            # Check if token is expired
-            exp = payload.get('exp')
-            if exp:
-                exp_time = datetime.fromtimestamp(exp, tz=timezone.utc)
-                if datetime.now(timezone.utc) > exp_time:
-                    return False, None, 'Token has expired'
-            
-            # Check token type
+            # Check token type (expiration already handled by PyJWT)
             token_type = payload.get('type', 'access')
             if token_type not in ['access', 'refresh']:
                 return False, None, 'Invalid token type'
