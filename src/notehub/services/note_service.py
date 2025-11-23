@@ -44,6 +44,11 @@ class NoteService:
     ) -> Tuple[List[Note], List[Tag]]:
         """Get notes for a user with filtering and search.
         
+        Performance optimized with:
+        - Eager loading of relationships
+        - Indexed queries on owner_id and archived
+        - Selective loading based on view type
+        
         Args:
             session: Database session
             user: Current user
@@ -54,7 +59,11 @@ class NoteService:
         Returns:
             Tuple of (filtered notes, all tags)
         """
-        stmt = select(Note).distinct()
+        # Eager load relationships to avoid N+1 queries
+        stmt = select(Note).distinct().options(
+            selectinload(Note.tags),
+            selectinload(Note.owner)
+        )
         
         # Apply view type filter
         if view_type == 'favorites':

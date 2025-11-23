@@ -122,6 +122,15 @@ class Tag(Base):
 
 class Note(Base):
     __tablename__ = "notes"
+    
+    # Add table arguments for performance indexes
+    __table_args__ = (
+        Index('ix_notes_owner_archived', 'owner_id', 'archived'),  # Composite index for common queries
+        Index('ix_notes_favorite', 'favorite'),  # Index for favorite queries
+        Index('ix_notes_pinned', 'pinned'),  # Index for pinned notes
+        Index('ix_notes_created_at', 'created_at'),  # Index for sorting by date
+        Index('ix_notes_updated_at', 'updated_at'),  # Index for sorting by updated date
+    )
 
     id = Column(Integer, primary_key=True)
     title = Column(String(200), nullable=False, default="Untitled")
@@ -209,6 +218,13 @@ class Note(Base):
 
 class ShareNote(Base):
     __tablename__ = "share_notes"
+    
+    # Add table arguments for performance indexes
+    __table_args__ = (
+        Index('ix_share_notes_shared_with', 'shared_with_id'),  # Index for shared with queries
+        Index('ix_share_notes_note', 'note_id'),  # Index for note lookups
+        Index('ix_share_notes_shared_by', 'shared_by_id'),  # Index for shared by queries
+    )
 
     id = Column(Integer, primary_key=True)
     note_id = Column(Integer, ForeignKey("notes.id"), nullable=False)
@@ -252,6 +268,14 @@ class Invitation(Base):
 
 class Task(Base):
     __tablename__ = "tasks"
+    
+    # Add table arguments for performance indexes
+    __table_args__ = (
+        Index('ix_tasks_owner_completed', 'owner_id', 'completed'),  # Composite index for common queries
+        Index('ix_tasks_due_date', 'due_date'),  # Index for due date queries
+        Index('ix_tasks_priority', 'priority'),  # Index for priority filtering
+        Index('ix_tasks_created_at', 'created_at'),  # Index for sorting by date
+    )
 
     id = Column(Integer, primary_key=True)
     title = Column(String(200), nullable=False)

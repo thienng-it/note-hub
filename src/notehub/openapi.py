@@ -12,7 +12,17 @@ openapi_config = {
     ],
     "static_url_path": "/flasgger_static",
     "swagger_ui": True,
-    "specs_route": "/api/docs"
+    "specs_route": "/api/docs",
+    # Auto-update configuration
+    "auto_scan": True,  # Automatically scan for new endpoints
+    "swagger_ui_config": {
+        "docExpansion": "list",  # Show all endpoints
+        "defaultModelsExpandDepth": 3,
+        "displayRequestDuration": True,  # Show request duration
+        "filter": True,  # Enable filtering of endpoints
+        "showExtensions": True,
+        "showCommonExtensions": True
+    }
 }
 
 openapi_template = {
