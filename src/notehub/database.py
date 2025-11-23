@@ -59,24 +59,30 @@ def init_database(database_uri: str):
     # Log database connection information
     logger.info(f"🗄️  Initializing database connection: {database_uri.split('@')[-1] if '@' in database_uri else database_uri}")
     
-    # MySQL-specific connection arguments
-    connect_args = {}
-    if database_uri.startswith('mysql'):
-        # Configure MySQL connection pooling and timeout settings
-        connect_args = {
-            'connect_timeout': 10,
-            'charset': 'utf8mb4'
-        }
+    # Database-specific configuration
+    engine_args = {
+        'echo': False,
+    }
     
-    _engine = create_engine(
-        database_uri, 
-        echo=False,
-        pool_pre_ping=True,  # Verify connections before use
-        pool_recycle=3600,   # Recycle connections after 1 hour
-        pool_size=10,        # Connection pool size (good for MySQL)
-        max_overflow=20,     # Allow up to 20 additional connections
-        connect_args=connect_args
-    )
+    if database_uri.startswith('mysql'):
+        # MySQL-specific connection arguments and pooling settings
+        engine_args.update({
+            'pool_pre_ping': True,  # Verify connections before use
+            'pool_recycle': 3600,   # Recycle connections after 1 hour
+            'pool_size': 10,        # Connection pool size (good for MySQL)
+            'max_overflow': 20,     # Allow up to 20 additional connections
+            'connect_args': {
+                'connect_timeout': 10,
+                'charset': 'utf8mb4'
+            }
+        })
+    elif database_uri.startswith('sqlite'):
+        # SQLite-specific configuration (no pooling needed for single-file DB)
+        engine_args.update({
+            'connect_args': {'check_same_thread': False}  # Allow multi-threaded access
+        })
+    
+    _engine = create_engine(database_uri, **engine_args)
     SessionLocal.remove()
     SessionLocal.configure(bind=_engine, expire_on_commit=False)
     

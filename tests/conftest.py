@@ -12,22 +12,23 @@ from src.notehub.database import Base, SessionLocal, init_database
 from src.notehub.models import User
 
 
+class TestConfig(AppConfig):
+    """Test configuration that uses SQLite instead of MySQL."""
+    
+    @property
+    def database_uri(self) -> str:
+        """Return SQLite in-memory database URI for testing."""
+        return "sqlite:///:memory:"
+
+
 @pytest.fixture(scope='session')
 def test_config():
     """Create test configuration."""
-    # Create temporary database
-    db_fd, db_path = tempfile.mkstemp()
-    
-    config = AppConfig()
-    config.db_path = db_path
+    config = TestConfig()
     config.admin_username = 'testadmin'
     config.admin_password = 'TestPassword123!@#'
     
     yield config
-    
-    # Cleanup
-    os.close(db_fd)
-    os.unlink(db_path)
 
 
 @pytest.fixture(scope='function')
