@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Iterator
 
 from sqlalchemy import create_engine, event
@@ -53,6 +55,15 @@ def _log_user_update(mapper, connection, target):
 def init_database(database_uri: str):
     """Bind the SQLAlchemy session/metadata to the configured database."""
     global _engine
+    
+    # Ensure database directory exists for SQLite databases
+    if database_uri.startswith('sqlite:///'):
+        db_path = database_uri.replace('sqlite:///', '')
+        db_dir = os.path.dirname(db_path)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+            logger.info(f"Created database directory: {db_dir}")
+    
     _engine = create_engine(
         database_uri, 
         echo=False,
