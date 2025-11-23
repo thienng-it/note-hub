@@ -367,6 +367,9 @@
                                 <i class="fas fa-{{ 'sun' if current_theme == 'dark' else 'moon' }} text-yellow-500"></i>
                             </button>
                         </form>
+                        <a href="{{ url_for('profile') }}" class="p-2 rounded-full hover-bg-theme text-theme-primary">
+                            <i class="fas fa-user-circle"></i>
+                        </a>
                         <a href="{{ url_for('logout') }}" class="text-red-600 dark:text-red-400">
                             <i class="fas fa-sign-out-alt"></i>
                         </a>
