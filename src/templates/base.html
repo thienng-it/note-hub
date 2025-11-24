@@ -31,6 +31,8 @@
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(255, 255, 255, 0.18);
             --glass-shadow: rgba(31, 38, 135, 0.15);
+            --glass-blur: blur(15px) saturate(180%);
+            --glass-blur-light: blur(10px);
         }
 
         .dark {
@@ -44,6 +46,8 @@
             --glass-bg: rgba(30, 41, 59, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-shadow: rgba(0, 0, 0, 0.3);
+            --glass-blur: blur(15px) saturate(180%);
+            --glass-blur-light: blur(10px);
         }
 
         .light {
@@ -57,6 +61,8 @@
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(255, 255, 255, 0.18);
             --glass-shadow: rgba(31, 38, 135, 0.15);
+            --glass-blur: blur(15px) saturate(180%);
+            --glass-blur-light: blur(10px);
         }
 
         body {
@@ -81,11 +87,24 @@
             animation: gradientShift 15s ease infinite;
             pointer-events: none;
             z-index: 0;
+            will-change: transform, opacity;
         }
 
         @keyframes gradientShift {
             0%, 100% { opacity: 0.5; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        
+        /* Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            body::before {
+                animation: none;
+            }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
 
         .dark body {
@@ -104,23 +123,23 @@
 
         .card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             box-shadow: 0 8px 32px 0 var(--glass-shadow);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card:hover {
-            transform: translateY(-2px) scale(1.01);
+            transform: translateY(-2px) scale(1.02);
             box-shadow: 0 12px 40px 0 var(--glass-shadow);
             border-color: rgba(59, 130, 246, 0.3);
         }
 
         .btn-primary {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
@@ -135,16 +154,16 @@
 
         .sidebar {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border-right: 1px solid var(--glass-border);
             box-shadow: 4px 0 24px 0 var(--glass-shadow);
         }
 
         .flash-message {
             animation: slideIn 0.5s ease;
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
@@ -161,8 +180,8 @@
         
         .note-content pre {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             padding: 1rem;
             border-radius: 0.5rem;
             overflow-x: auto;
@@ -172,8 +191,8 @@
         
         .note-content code {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             padding: 0.125rem 0.25rem;
             border-radius: 0.25rem;
             font-size: 0.875rem;
@@ -190,8 +209,8 @@
         
         .tag {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             color: white;
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
@@ -202,14 +221,14 @@
         }
         
         .tag:hover {
-            transform: scale(1.08) translateY(-1px);
+            transform: translateY(-2px) scale(1.02);
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
         }
         
         .search-input {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             color: var(--text-primary);
             box-shadow: 0 4px 16px 0 var(--glass-shadow);
@@ -219,7 +238,7 @@
         .search-input:focus {
             border-color: rgba(59, 130, 246, 0.5);
             box-shadow: 0 8px 24px 0 rgba(59, 130, 246, 0.3);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
         .line-clamp-1 {
@@ -363,8 +382,8 @@
         /* Glassmorphism utility classes */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             box-shadow: 0 8px 32px 0 var(--glass-shadow);
             border-radius: 12px;
@@ -372,14 +391,14 @@
         
         .glass-button {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             border: 1px solid var(--glass-border);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .glass-button:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.02);
             box-shadow: 0 8px 20px 0 var(--glass-shadow);
             border-color: rgba(59, 130, 246, 0.3);
         }
@@ -387,8 +406,8 @@
         /* Enhanced hover effects */
         .hover-glass:hover {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
         }
         
         /* Mobile-specific improvements */
@@ -460,8 +479,8 @@
                 left: 0;
                 right: 0;
                 background: var(--glass-bg);
-                backdrop-filter: blur(20px) saturate(180%);
-                -webkit-backdrop-filter: blur(20px) saturate(180%);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
                 border-top: 1px solid var(--glass-border);
                 padding: 0.5rem 0;
                 z-index: 50;
