@@ -135,6 +135,10 @@ def register_auth_routes(app):
         user = current_user()
         form = Setup2FAForm()
 
+        # Generate or reuse secret
+        regenerate_secret = False
+        secret = None
+        
         if form.validate_on_submit():
             secret = form.secret.data
             totp = pyotp.TOTP(secret)
@@ -148,9 +152,15 @@ def register_auth_routes(app):
                 flash("2FA enabled successfully!", "success")
                 return redirect(url_for("profile"))
             else:
-                flash("Invalid code. Please scan the QR code and try again.", "error")
+                # On verification failure, generate a new secret so user can retry with fresh code
+                flash("Invalid verification code. A new QR code has been generated. Please scan it and try again.", "error")
+                regenerate_secret = True
 
-        secret = pyotp.random_base32()
+        # Generate new secret for initial GET request or after verification failure
+        if secret is None or regenerate_secret:
+            secret = pyotp.random_base32()
+        
+        # Generate QR code
         uri = pyotp.totp.TOTP(secret).provisioning_uri(name=user.username, issuer_name="Beautiful Notes")
         img = qrcode.make(uri)
         buffered = BytesIO()
