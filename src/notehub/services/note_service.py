@@ -161,11 +161,12 @@ class NoteService:
                 tag_alias2.name.ilike(f"%{tag_filter}%")
             )
         
-        # Order and execute
+        # Order and execute with limit to avoid loading too many notes
+        # Limit to 1000 notes to prevent memory issues and improve performance
         stmt = stmt.order_by(
             Note.pinned.desc(),
             Note.updated_at.desc()
-        )
+        ).limit(1000)
         notes = session.execute(stmt).scalars().unique().all()
         
         # Get all tags with note count via scalar subquery (much more efficient)

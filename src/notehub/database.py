@@ -93,7 +93,14 @@ def init_database(database_uri: str):
     
     _engine = create_engine(database_uri, **engine_args)
     SessionLocal.remove()
-    SessionLocal.configure(bind=_engine, expire_on_commit=False)
+    # Configure session with optimizations for performance
+    # - expire_on_commit=False: Avoid unnecessary refreshes after commit
+    # - autoflush=False: Manual control over when to flush (better performance)
+    SessionLocal.configure(
+        bind=_engine,
+        expire_on_commit=False,
+        autoflush=False
+    )
     
     # Create tables and indexes, handling existing ones gracefully
     try:
