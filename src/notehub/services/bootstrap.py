@@ -79,6 +79,9 @@ def _ensure_performance_indexes(session, migrations_applied):
     This is called during migrate_database() for MySQL databases only.
     Creates FULLTEXT index for body search performance.
     """
+    import logging
+    logger = logging.getLogger(__name__)
+    
     try:
         # Check if FULLTEXT index exists on notes.body and notes.title
         result = session.execute(text("""
@@ -100,13 +103,16 @@ def _ensure_performance_indexes(session, migrations_applied):
                 """))
                 migrations_applied.append("notes.fulltext_index")
                 print("✅ Created FULLTEXT index for notes search")
+                logger.info("Created FULLTEXT index for notes search")
             except Exception as e:
                 # If index creation fails (e.g., InnoDB doesn't support FULLTEXT in old MySQL),
                 # continue without it - search will still work, just slower
                 print(f"⚠️  Could not create FULLTEXT index: {e}")
+                logger.warning(f"Could not create FULLTEXT index: {e}")
                 
     except Exception as e:
         print(f"⚠️  Could not check FULLTEXT indexes: {e}")
+        logger.warning(f"Could not check FULLTEXT indexes: {e}")
 
 
 def ensure_admin(username: str, password: str):

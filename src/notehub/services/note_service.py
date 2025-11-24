@@ -124,8 +124,9 @@ class NoteService:
                     if session.bind.dialect.name == 'mysql':
                         # Use FULLTEXT MATCH AGAINST for MySQL (requires FULLTEXT index)
                         # This is 10-100x faster than LIKE on large text fields
+                        # Note: Using explicit table name 'notes' as it matches the model __tablename__
                         fulltext_condition = sql_text(
-                            f"MATCH(notes.title, notes.body) AGAINST (:search_term IN BOOLEAN MODE)"
+                            "MATCH(notes.title, notes.body) AGAINST (:search_term IN BOOLEAN MODE)"
                         )
                         stmt = stmt.outerjoin(note_tag_alias).outerjoin(tag_alias).where(
                             fulltext_condition.bindparams(search_term=f"+{query}*") |
@@ -138,7 +139,7 @@ class NoteService:
                             (tag_alias.name.ilike(like_term)) |
                             (Note.body.ilike(like_term))
                         )
-                except:
+                except Exception:
                     # If FULLTEXT fails (index not created yet), fall back to ILIKE
                     stmt = stmt.outerjoin(note_tag_alias).outerjoin(tag_alias).where(
                         (Note.title.ilike(like_term)) |
