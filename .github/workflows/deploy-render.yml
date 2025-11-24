@@ -13,6 +13,8 @@ jobs:
   deploy:
     if: ${{ secrets.RENDER_DEPLOY_HOOK != '' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Trigger Render deployment
         run: |

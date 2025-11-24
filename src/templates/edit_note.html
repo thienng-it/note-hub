@@ -277,8 +277,10 @@
         }
         
         /* Make editor panels full width on mobile */
-        .grid.lg\\:grid-cols-2 {
-            grid-template-columns: 1fr;
+        @media (max-width: 1023px) {
+            .lg\:grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
         }
         
         /* Reduce padding on mobile for more space */
