@@ -7,8 +7,9 @@ Note Hub now includes a built-in, simple mathematical CAPTCHA as an alternative 
 ## Features
 
 - **No External Dependencies**: Works completely offline, no API keys needed
-- **Simple Math Problems**: Addition and subtraction with numbers 1-20
-- **Session-Based Validation**: Secure token-based answer verification
+- **Enhanced Math Problems**: Addition, subtraction, and multiplication with varied ranges
+- **HMAC-Secured Validation**: Cryptographically signed tokens prevent tampering
+- **Time-Based Expiration**: Tokens expire after 5 minutes to prevent replay attacks
 - **Automatic Integration**: Works seamlessly with existing forms
 - **Easy Configuration**: Simple environment variable to enable/disable
 
@@ -17,22 +18,29 @@ Note Hub now includes a built-in, simple mathematical CAPTCHA as an alternative 
 ### Challenge Generation
 
 When a user visits a form with CAPTCHA enabled:
-1. A random math problem is generated (e.g., "What is 7 + 3?")
-2. The answer and a random salt are combined into a secure token
+1. A random math problem is generated with varied difficulty:
+   - Addition: numbers 1-30 (e.g., "What is 17 + 23?")
+   - Subtraction: numbers 10-40 (e.g., "What is 35 - 12?")
+   - Multiplication: numbers 2-12 (e.g., "What is 7 × 8?")
+2. The answer, timestamp, and HMAC signature are combined into a secure token
 3. The question is displayed to the user
 4. The token is stored in a hidden form field
 
 ### Answer Validation
 
 When the user submits the form:
-1. The user's answer is compared with the token
-2. The token is validated to prevent tampering
-3. Form submission proceeds only if the answer is correct
+1. The token's HMAC signature is verified to ensure it wasn't tampered with
+2. The token's timestamp is checked for expiration (5-minute window)
+3. The user's answer is compared with the correct answer
+4. Form submission proceeds only if all validations pass
 
-### Security Features
+### Enhanced Security Features
 
-- **Random Salt**: Each challenge includes a unique random salt
-- **Token-Based**: Answers are verified against cryptographically secure tokens
+- **HMAC Signatures**: SHA-256 HMAC prevents token tampering
+- **Time-Based Expiration**: Tokens expire after 5 minutes
+- **Constant-Time Comparison**: Prevents timing attacks on HMAC verification
+- **Increased Difficulty Range**: Larger number ranges make brute-forcing harder
+- **Multiple Operations**: Three operation types (addition, subtraction, multiplication)
 - **Non-Reusable**: Each token is unique and cannot be reused
 - **Session Isolation**: Challenges are tied to the user's session
 
@@ -90,18 +98,21 @@ When simple CAPTCHA is enabled, users will see:
 - An input field to enter their answer
 - Clear error messages if the answer is incorrect
 
-Example:
+Examples:
 ```
-Security Question: What is 14 + 8?
+Security Question: What is 17 + 23?
+Security Question: What is 35 - 12?
+Security Question: What is 7 × 8?
 [Input field for answer]
 ```
 
 ### Accessibility
 
 - Clear, simple questions that are easy to understand
-- Only uses basic arithmetic (addition and subtraction)
-- Numbers range from 1 to 20, keeping problems simple
+- Uses basic arithmetic (addition, subtraction, multiplication)
+- Varied number ranges appropriate for each operation
 - Subtraction always produces non-negative results
+- Multiplication uses numbers 2-12 (standard multiplication table range)
 
 ## Advantages of Simple CAPTCHA
 
@@ -169,6 +180,44 @@ Security Question: What is 14 + 8?
 - You're running automated tests
 - You have other protection mechanisms
 - User experience is critical
+
+## Enhanced Security Features (v2.0)
+
+The simple CAPTCHA has been significantly strengthened with the following improvements:
+
+### 1. HMAC-Based Token Validation
+
+- Uses SHA-256 HMAC signatures to cryptographically sign each token
+- Prevents token tampering and forging
+- Constant-time comparison prevents timing attacks
+
+### 2. Time-Based Expiration
+
+- Tokens automatically expire after 5 minutes
+- Prevents token replay attacks
+- Forces users to solve fresh challenges
+
+### 3. Expanded Operation Types
+
+- **Addition**: Numbers 1-30 (e.g., "What is 17 + 23?" = 40)
+- **Subtraction**: Numbers 10-40 (e.g., "What is 35 - 12?" = 23)
+- **Multiplication**: Numbers 2-12 (e.g., "What is 7 × 8?" = 56)
+
+### 4. Increased Difficulty Range
+
+- Larger number ranges make brute-forcing significantly harder
+- Answers can range from 4 to 144, providing thousands of possibilities
+- Multiple operation types increase complexity
+
+### 5. Token Format
+
+Old format (v1.0): `answer|salt`
+New format (v2.0): `answer|timestamp|hmac_signature`
+
+The new format provides:
+- Tamper detection via HMAC
+- Expiration via timestamp
+- Replay attack prevention
 
 ## Best Practices
 

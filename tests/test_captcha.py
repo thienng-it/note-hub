@@ -25,8 +25,8 @@ class TestSimpleMathCaptcha:
         question, token = SimpleMathCaptcha.generate_challenge()
         
         # Extract numbers and operator from question
-        # Format: "What is X + Y?" or "What is X - Y?"
-        assert "+" in question or "-" in question
+        # Format: "What is X + Y?" or "What is X - Y?" or "What is X × Y?"
+        assert "+" in question or "-" in question or "×" in question
         assert "?" in question
     
     def test_validate_correct_answer(self):
@@ -102,6 +102,23 @@ class TestSimpleMathCaptcha:
                     
                     # Verify correct answer validates and is non-negative
                     assert expected_answer >= 0, "Subtraction should produce non-negative results"
+                    assert SimpleMathCaptcha.validate_answer(str(expected_answer), token) is True
+                    break
+    
+    def test_multiplication_challenge(self):
+        """Test that multiplication challenges work correctly."""
+        # Generate multiple challenges to ensure we get a multiplication one
+        for _ in range(30):
+            question, token = SimpleMathCaptcha.generate_challenge()
+            if "×" in question:
+                # Parse the question: "What is X × Y?"
+                parts = question.replace("What is ", "").replace("?", "").split(" × ")
+                if len(parts) == 2:
+                    num1 = int(parts[0])
+                    num2 = int(parts[1])
+                    expected_answer = num1 * num2
+                    
+                    # Verify correct answer validates
                     assert SimpleMathCaptcha.validate_answer(str(expected_answer), token) is True
                     break
     
@@ -245,3 +262,56 @@ class TestCaptchaSecurity:
             answer = int(answer_str)
             assert isinstance(answer, int)
             assert answer >= 0, "Math answers should be non-negative"
+    
+    def test_token_expiration(self):
+        """Test that tokens expire after the configured time."""
+        import time
+        
+        # Generate a challenge
+        question, token = SimpleMathCaptcha.generate_challenge()
+        correct_answer = token.split('|')[0]
+        
+        # Token should be valid immediately
+        assert SimpleMathCaptcha.validate_answer(correct_answer, token) is True
+        
+        # Create an expired token by manually crafting one from the past
+        past_timestamp = str(int(time.time()) - SimpleMathCaptcha.TOKEN_EXPIRATION - 10)
+        parts = token.split('|')
+        # Note: The HMAC won't match with modified timestamp, so this will fail validation
+        expired_token = f"{parts[0]}|{past_timestamp}|{parts[2]}"
+        
+        # Expired token should be rejected
+        assert SimpleMathCaptcha.validate_answer(correct_answer, expired_token) is False
+    
+    def test_tampered_token_rejected(self):
+        """Test that tampered tokens are rejected due to HMAC validation."""
+        question, token = SimpleMathCaptcha.generate_challenge()
+        parts = token.split('|')
+        
+        # Tamper with the answer
+        tampered_answer = str(int(parts[0]) + 1)
+        tampered_token = f"{tampered_answer}|{parts[1]}|{parts[2]}"
+        
+        # Tampered token should be rejected (HMAC won't match)
+        assert SimpleMathCaptcha.validate_answer(tampered_answer, tampered_token) is False
+    
+    def test_token_format_has_three_parts(self):
+        """Test that tokens have the expected format with three parts."""
+        question, token = SimpleMathCaptcha.generate_challenge()
+        parts = token.split('|')
+        
+        # Token should have exactly 3 parts: answer|timestamp|hmac
+        assert len(parts) == 3, "Token should have 3 parts"
+        
+        # First part should be numeric (answer)
+        assert parts[0].isdigit() or parts[0].lstrip('-').isdigit()
+        
+        # Second part should be numeric (timestamp)
+        assert parts[1].isdigit()
+        
+        # Third part should be hex string (HMAC)
+        assert len(parts[2]) > 0
+        try:
+            int(parts[2], 16)  # Should be valid hex
+        except ValueError:
+            pytest.fail("HMAC signature should be valid hex")

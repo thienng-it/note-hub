@@ -6,73 +6,118 @@ to Google reCAPTCHA. It doesn't require external API keys or network calls.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import random
 import secrets
+import time
 from typing import Tuple
 
 
 class SimpleMathCaptcha:
-    """Simple mathematical CAPTCHA generator.
+    """Enhanced mathematical CAPTCHA generator with improved security.
     
-    Generates simple arithmetic problems (addition and subtraction) for CAPTCHA verification.
-    The answer is hashed and stored in the session for validation.
+    Generates arithmetic problems (addition, subtraction, multiplication) for CAPTCHA verification.
+    Uses HMAC-based token validation with timestamp expiration.
     """
+    
+    # Token expiration time in seconds (5 minutes)
+    TOKEN_EXPIRATION = 300
+    
+    # Secret key for HMAC (should be consistent per session but unique per instance)
+    _SECRET_KEY = secrets.token_bytes(32)
     
     @staticmethod
     def generate_challenge() -> Tuple[str, str]:
-        """Generate a simple math challenge.
+        """Generate a simple math challenge with enhanced security.
         
         Returns:
             Tuple of (question, answer_token) where:
             - question: Human-readable math problem (e.g., "What is 7 + 3?")
-            - answer_token: Token combining answer with random salt for validation
+            - answer_token: HMAC-secured token with timestamp for validation
         """
-        # Generate two random numbers between 1 and 20
-        num1 = random.randint(1, 20)
-        num2 = random.randint(1, 20)
-        
-        # Randomly choose operation (addition or subtraction)
-        operation = random.choice(['+', '-'])
+        # Generate two random numbers with varied ranges for different operations
+        operation = random.choice(['+', '-', '*'])
         
         if operation == '+':
+            # Addition: 1-30 range for variety
+            num1 = random.randint(1, 30)
+            num2 = random.randint(1, 30)
             answer = num1 + num2
             question = f"What is {num1} + {num2}?"
-        else:
-            # Ensure positive result for subtraction
-            if num1 < num2:
-                num1, num2 = num2, num1
+        elif operation == '-':
+            # Subtraction: ensure positive result
+            num1 = random.randint(10, 40)
+            num2 = random.randint(1, num1)  # num2 <= num1
             answer = num1 - num2
             question = f"What is {num1} - {num2}?"
+        else:  # multiplication
+            # Multiplication: smaller numbers for easier calculation
+            num1 = random.randint(2, 12)
+            num2 = random.randint(2, 12)
+            answer = num1 * num2
+            question = f"What is {num1} × {num2}?"
         
-        # Create a secure token that includes the answer
-        # Format: answer|random_salt
-        salt = secrets.token_hex(16)
-        answer_token = f"{answer}|{salt}"
+        # Create secure token with HMAC
+        # Format: answer|timestamp|hmac
+        timestamp = str(int(time.time()))
+        message = f"{answer}|{timestamp}"
+        signature = hmac.new(
+            SimpleMathCaptcha._SECRET_KEY,
+            message.encode(),
+            hashlib.sha256
+        ).hexdigest()
+        answer_token = f"{message}|{signature}"
         
         return question, answer_token
     
     @staticmethod
     def validate_answer(user_answer: str, answer_token: str) -> bool:
-        """Validate user's answer against the token.
+        """Validate user's answer against the HMAC-secured token with expiration check.
         
         Args:
             user_answer: User's submitted answer as string
-            answer_token: Token from generate_challenge containing correct answer and salt
-                         Format: "answer|salt" where answer is the correct numeric answer
+            answer_token: Token from generate_challenge
+                         Format: "answer|timestamp|hmac"
             
         Returns:
-            True if answer is correct, False otherwise
+            True if answer is correct and token is valid and not expired, False otherwise
         """
         if not user_answer or not answer_token:
             return False
         
         try:
-            # Extract the correct answer from token
-            correct_answer = int(answer_token.split('|')[0])
+            # Parse the token
+            parts = answer_token.split('|')
+            if len(parts) != 3:
+                return False
+            
+            correct_answer_str, timestamp_str, received_signature = parts
+            correct_answer = int(correct_answer_str)
+            timestamp = int(timestamp_str)
             submitted_answer = int(user_answer.strip())
             
+            # Check if token has expired
+            current_time = int(time.time())
+            if current_time - timestamp > SimpleMathCaptcha.TOKEN_EXPIRATION:
+                return False
+            
+            # Verify HMAC signature to prevent tampering
+            message = f"{correct_answer}|{timestamp}"
+            expected_signature = hmac.new(
+                SimpleMathCaptcha._SECRET_KEY,
+                message.encode(),
+                hashlib.sha256
+            ).hexdigest()
+            
+            # Use constant-time comparison to prevent timing attacks
+            if not hmac.compare_digest(expected_signature, received_signature):
+                return False
+            
+            # Finally, check if the answer is correct
             return submitted_answer == correct_answer
-        except (ValueError, IndexError):
+            
+        except (ValueError, IndexError, AttributeError):
             return False
 
 
