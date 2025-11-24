@@ -7,7 +7,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.recaptcha import RecaptchaField
 from wtforms import (BooleanField, DateField, PasswordField, SelectField,
                      StringField, TextAreaField)
-from wtforms.validators import (DataRequired, EqualTo, Length,
+from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 Optional as OptionalValidator, ValidationError)
 
 from .security import (PASSWORD_POLICY_MIN_LENGTH, PASSWORD_POLICY_MESSAGE,
@@ -37,7 +37,7 @@ class Verify2FAForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=3, max=64)])
-    email = StringField("Email (optional)", validators=[OptionalValidator(), Length(max=255)])
+    email = StringField("Email (optional)", validators=[OptionalValidator(), Email(), Length(max=255)])
     password = PasswordField(
         "Password",
         validators=[
@@ -105,7 +105,7 @@ class ShareNoteForm(FlaskForm):
 
 
 class InviteForm(FlaskForm):
-    email = StringField("Email (optional)", validators=[OptionalValidator()])
+    email = StringField("Email (optional)", validators=[OptionalValidator(), Email()])
     message = TextAreaField("Message (optional)", validators=[OptionalValidator()])
 
 
@@ -124,7 +124,7 @@ class TaskForm(FlaskForm):
 class ProfileEditForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=3, max=64)])
     bio = TextAreaField("Bio", validators=[OptionalValidator(), Length(max=500)])
-    email = StringField("Email", validators=[OptionalValidator(), Length(max=255)])
+    email = StringField("Email", validators=[OptionalValidator(), Email(), Length(max=255)])
 
 
 class Setup2FAForm(FlaskForm):
