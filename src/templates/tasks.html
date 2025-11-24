@@ -34,11 +34,11 @@
     <div class="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg text-xs sm:text-sm">
         <a href="{{ url_for('tasks', filter='all') }}" 
            class="flex-1 text-center py-2 px-2 sm:px-4 rounded-md transition-all {{ 'bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400' if filter_type == 'all' else 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}">
-            <i class="fas fa-list mr-1 sm:mr-2"></i><span class="hidden sm:inline">All</span><span class="sm:hidden">All</span>
+            <i class="fas fa-list mr-1 sm:mr-2"></i><span>All</span>
         </a>
         <a href="{{ url_for('tasks', filter='active') }}" 
            class="flex-1 text-center py-2 px-2 sm:px-4 rounded-md transition-all {{ 'bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400' if filter_type == 'active' else 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}">
-            <i class="fas fa-circle-notch mr-1 sm:mr-2"></i><span class="hidden sm:inline">Active</span><span class="sm:hidden">Active</span>
+            <i class="fas fa-circle-notch mr-1 sm:mr-2"></i><span>Active</span>
         </a>
         <a href="{{ url_for('tasks', filter='completed') }}" 
            class="flex-1 text-center py-2 px-2 sm:px-4 rounded-md transition-all {{ 'bg-white dark:bg-gray-700 shadow-sm text-green-600 dark:text-green-400' if filter_type == 'completed' else 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}">
@@ -72,7 +72,7 @@
                                         {{ task.title }}
                                     </h3>
                                     {% if task.description %}
-                                    <p class="text-gray-600 dark:text-gray-400 mt-1 text-xs sm:text-sm line-clamp-2">
+                                    <p class="text-gray-600 dark:text-gray-400 mt-1 text-xs sm:text-sm" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                         {{ task.description }}
                                     </p>
                                     {% endif %}

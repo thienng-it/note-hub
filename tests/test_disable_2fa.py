@@ -4,6 +4,15 @@ import pyotp
 import pytest
 
 
+def get_csrf_token(client):
+    """Helper to get CSRF token for testing."""
+    # When CSRF is disabled in tests, return a dummy token
+    if not client.application.config.get('WTF_CSRF_ENABLED', False):
+        return 'test'
+    # Otherwise, fetch a real CSRF token from the app
+    return client.application.config.get('WTF_CSRF_SECRET_KEY', 'test')
+
+
 class TestDisable2FA:
     """Test cases for disabling 2FA with verification."""
     
@@ -35,7 +44,7 @@ class TestDisable2FA:
         
         response = client.post('/profile/disable-2fa', data={
             'totp_code': code,
-            'csrf_token': client.application.config.get('WTF_CSRF_ENABLED', False) or 'test'
+            'csrf_token': get_csrf_token(client)
         }, follow_redirects=True)
         
         assert response.status_code == 200
@@ -45,7 +54,7 @@ class TestDisable2FA:
         """Test that disabling 2FA fails with invalid OTP code."""
         response = client.post('/profile/disable-2fa', data={
             'totp_code': '000000',
-            'csrf_token': client.application.config.get('WTF_CSRF_ENABLED', False) or 'test'
+            'csrf_token': get_csrf_token(client)
         }, follow_redirects=False)
         
         assert response.status_code == 200
@@ -54,7 +63,7 @@ class TestDisable2FA:
     def test_disable_2fa_form_validation(self, client, logged_in_user_with_2fa):
         """Test that disable 2FA form requires all fields."""
         response = client.post('/profile/disable-2fa', data={
-            'csrf_token': client.application.config.get('WTF_CSRF_ENABLED', False) or 'test'
+            'csrf_token': get_csrf_token(client)
         }, follow_redirects=False)
         
         assert response.status_code == 200
