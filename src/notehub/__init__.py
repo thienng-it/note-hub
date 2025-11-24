@@ -24,7 +24,7 @@ from .services.bootstrap import ensure_admin, migrate_database
 
 def create_app(config: AppConfig | None = None) -> Flask:
     config = config or AppConfig()
-    app = Flask(__name__, template_folder="../templates")
+    app = Flask(__name__, template_folder="../templates", static_folder="../static")
     app.config.update(config.flask_settings)
     
     # Handle proxy headers from Render
