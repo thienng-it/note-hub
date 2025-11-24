@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 
 from ..forms import InviteForm, ProfileEditForm
 from ..models import Invitation, Note, ShareNote, Tag, User
-from ..services.utils import current_user, db, login_required
+from ..services.utils import current_user, db, invalidate_user_cache, login_required
 
 
 def register_profile_routes(app):
@@ -51,6 +51,8 @@ def register_profile_routes(app):
                 db_user.bio = form.bio.data or None
                 db_user.email = form.email.data or None
                 s.commit()
+                # Invalidate user cache after profile update
+                invalidate_user_cache()
                 flash("Profile updated successfully!", "success")
                 return redirect(url_for("profile"))
         return render_template("edit_profile.html", form=form, user=user)
@@ -97,4 +99,6 @@ def register_profile_routes(app):
                 db_user.theme = "dark" if db_user.theme == "light" else "light"
                 s.commit()
                 session["theme"] = db_user.theme
+                # Invalidate user cache after theme toggle
+                invalidate_user_cache()
         return redirect(request.referrer or url_for("index"))

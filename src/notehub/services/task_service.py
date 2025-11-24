@@ -66,7 +66,7 @@ class TaskService:
             priority_order,
             Task.due_date.asc().nullslast(),
             Task.created_at.desc()
-        )
+        ).limit(500)  # Limit to avoid loading too many tasks
         
         return session.execute(stmt).scalars().all()
     

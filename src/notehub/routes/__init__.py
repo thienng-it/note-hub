@@ -24,15 +24,19 @@ def register_routes(app):
     # Context processor and error handlers
     @app.context_processor
     def inject_user():
+        """Inject current user and theme into template context.
+        
+        Optimized to avoid database queries by using session-cached data.
+        """
         user = current_user()
-        theme = session.get("theme")
-        if user and not theme:
-            with db() as s:
-                db_user = s.get(type(user), user.id)
-                theme = db_user.theme if db_user else "light"
-                session["theme"] = theme
-        if not theme:
-            theme = "light"
+        
+        # Theme is now cached in current_user() function
+        # This avoids the extra DB query that was causing performance issues
+        if user:
+            theme = user.theme if hasattr(user, 'theme') else session.get("theme", "light")
+        else:
+            theme = session.get("theme", "light")
+        
         return dict(current_user=user, current_theme=theme)
 
     @app.errorhandler(404)

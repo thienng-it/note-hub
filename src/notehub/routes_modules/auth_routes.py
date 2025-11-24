@@ -18,7 +18,7 @@ from ..forms import (ForgotPasswordForm, LoginForm, RegisterForm,
                      ResetPasswordForm, Setup2FAForm, Verify2FAForm)
 from ..models import Invitation, PasswordResetToken, User
 from ..services.auth_service import AuthService
-from ..services.utils import current_user, db, login_required
+from ..services.utils import cache_user_in_session, current_user, db, invalidate_user_cache, login_required
 
 
 def register_auth_routes(app):
@@ -42,6 +42,8 @@ def register_auth_routes(app):
                     session["user_id"] = user.id
                     AuthService.update_last_login(s, user)
                     s.commit()
+                    # Cache user data in session for performance (after last_login update)
+                    cache_user_in_session(user)
                     flash(f"Welcome back, {user.username}!", "success")
                     return redirect(url_for("index"))
 
@@ -68,6 +70,8 @@ def register_auth_routes(app):
                     session['user_id'] = user.id
                     user.last_login = datetime.now(timezone.utc)
                     s.commit()
+                    # Cache user data in session for performance (after last_login update)
+                    cache_user_in_session(user)
                     flash(f"Welcome back, {user.username}!", "success")
                     return redirect(url_for("index"))
                 else:
@@ -139,6 +143,8 @@ def register_auth_routes(app):
                     db_user = s.get(User, user.id)
                     db_user.totp_secret = secret
                     s.commit()
+                # Invalidate user cache after 2FA setup
+                invalidate_user_cache()
                 flash("2FA enabled successfully!", "success")
                 return redirect(url_for("profile"))
             else:
@@ -163,6 +169,8 @@ def register_auth_routes(app):
             db_user = s.get(User, user.id)
             db_user.totp_secret = None
             s.commit()
+        # Invalidate user cache after 2FA disable
+        invalidate_user_cache()
         flash("2FA has been disabled.", "warning")
         return redirect(url_for("profile"))
 

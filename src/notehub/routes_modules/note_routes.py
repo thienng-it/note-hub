@@ -23,6 +23,7 @@ def register_note_routes(app):
     @app.route("/")
     @login_required
     def index():
+        """Main index page with optimized loading and error handling."""
         form = SearchForm(request.args)
         query = form.query.data or ""
         tag_filter = form.tag_filter.data or ""
@@ -34,10 +35,16 @@ def register_note_routes(app):
             query = ""
             flash("Search query must be at least 3 characters long.", "warning")
 
-        with db() as s:
-            notes, all_tags = NoteService.get_notes_for_user(
-                s, user, view_type, query, tag_filter
-            )
+        try:
+            with db() as s:
+                notes, all_tags = NoteService.get_notes_for_user(
+                    s, user, view_type, query, tag_filter
+                )
+        except Exception as e:
+            # If database query fails, show error instead of blank page
+            logger.error(f"Error loading notes for user {user.id}: {e}")
+            flash("Error loading notes. Please try again.", "error")
+            notes, all_tags = [], []
 
         response = make_response(render_template(
             "index.html",
