@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from functools import wraps
 
 from flask import jsonify, request
 from flasgger import swag_from
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ..extensions import limiter
 from ..models import Note, Task, User
@@ -15,6 +17,8 @@ from ..services.jwt_service import JWTService
 from ..services.note_service import NoteService
 from ..services.task_service import TaskService
 from ..services.utils import db
+
+logger = logging.getLogger(__name__)
 
 
 def jwt_required(f):
@@ -317,34 +321,44 @@ def register_api_routes(app):
         if not data or 'title' not in data:
             return jsonify({'error': 'Title is required'}), 400
         
-        with db() as s:
-            user = s.get(User, user_id)
-            if not user:
-                return jsonify({'error': 'User not found'}), 404
-            
-            note = NoteService.create_note(
-                s, user,
-                data['title'],
-                data.get('body', ''),
-                data.get('tags', ''),
-                data.get('pinned', False),
-                data.get('favorite', False),
-                data.get('archived', False)
-            )
-            s.commit()
-            
-            return jsonify({
-                'note': {
-                    'id': note.id,
-                    'title': note.title,
-                    'body': note.body,
-                    'pinned': note.pinned,
-                    'favorite': note.favorite,
-                    'archived': note.archived,
-                    'created_at': note.created_at.isoformat() if note.created_at else None,
-                    'tags': [{'id': tag.id, 'name': tag.name} for tag in note.tags]
-                }
-            }), 201
+        try:
+            with db() as s:
+                user = s.get(User, user_id)
+                if not user:
+                    return jsonify({'error': 'User not found'}), 404
+                
+                note = NoteService.create_note(
+                    s, user,
+                    data['title'],
+                    data.get('body', ''),
+                    data.get('tags', ''),
+                    data.get('pinned', False),
+                    data.get('favorite', False),
+                    data.get('archived', False)
+                )
+                s.commit()
+                
+                return jsonify({
+                    'note': {
+                        'id': note.id,
+                        'title': note.title,
+                        'body': note.body,
+                        'pinned': note.pinned,
+                        'favorite': note.favorite,
+                        'archived': note.archived,
+                        'created_at': note.created_at.isoformat() if note.created_at else None,
+                        'tags': [{'id': tag.id, 'name': tag.name} for tag in note.tags]
+                    }
+                }), 201
+        except IntegrityError as e:
+            logger.error(f"Integrity error creating note via API: {e}")
+            return jsonify({'error': 'Database constraint violation. Please check your data.'}), 400
+        except SQLAlchemyError as e:
+            logger.error(f"Database error creating note via API: {e}")
+            return jsonify({'error': 'Database error occurred. Please try again.'}), 500
+        except Exception as e:
+            logger.error(f"Unexpected error creating note via API: {e}")
+            return jsonify({'error': 'An unexpected error occurred. Please try again.'}), 500
     
     @app.route("/api/tasks", methods=["GET"])
     @jwt_required

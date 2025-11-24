@@ -42,9 +42,23 @@ def normalize_tag(name: str) -> str:
 
 
 def parse_tags(tag_string: str) -> List[str]:
+    """Parse comma-separated tags and return unique list.
+    
+    Args:
+        tag_string: Comma-separated tag names
+        
+    Returns:
+        List of unique, normalized tag names
+    """
     if not tag_string:
         return []
-    return [normalize_tag(tag.strip()) for tag in tag_string.split(",") if tag.strip()]
+    # Use dict.fromkeys to preserve order while removing duplicates
+    seen = {}
+    for tag in tag_string.split(","):
+        normalized = normalize_tag(tag.strip())
+        if normalized and normalized not in seen:
+            seen[normalized] = None
+    return list(seen.keys())
 
 
 def cleanup_orphaned_tags(session):
