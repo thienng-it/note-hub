@@ -18,7 +18,7 @@ from ..forms import (ForgotPasswordForm, LoginForm, RegisterForm,
                      ResetPasswordForm, Setup2FAForm, Verify2FAForm)
 from ..models import Invitation, PasswordResetToken, User
 from ..services.auth_service import AuthService
-from ..services.utils import current_user, db, invalidate_user_cache, login_required
+from ..services.utils import cache_user_in_session, current_user, db, invalidate_user_cache, login_required
 
 
 def register_auth_routes(app):
@@ -43,17 +43,7 @@ def register_auth_routes(app):
                     AuthService.update_last_login(s, user)
                     s.commit()
                     # Cache user data in session for performance (after last_login update)
-                    session["_cached_user_data"] = {
-                        "id": user.id,
-                        "username": user.username,
-                        "theme": user.theme,
-                        "email": user.email,
-                        "bio": user.bio,
-                        "totp_secret": user.totp_secret,
-                        "created_at": user.created_at.isoformat() if user.created_at else None,
-                        "last_login": user.last_login.isoformat() if user.last_login else None,
-                    }
-                    session["theme"] = user.theme
+                    cache_user_in_session(user)
                     flash(f"Welcome back, {user.username}!", "success")
                     return redirect(url_for("index"))
 
@@ -81,17 +71,7 @@ def register_auth_routes(app):
                     user.last_login = datetime.now(timezone.utc)
                     s.commit()
                     # Cache user data in session for performance (after last_login update)
-                    session["_cached_user_data"] = {
-                        "id": user.id,
-                        "username": user.username,
-                        "theme": user.theme,
-                        "email": user.email,
-                        "bio": user.bio,
-                        "totp_secret": user.totp_secret,
-                        "created_at": user.created_at.isoformat() if user.created_at else None,
-                        "last_login": user.last_login.isoformat() if user.last_login else None,
-                    }
-                    session["theme"] = user.theme
+                    cache_user_in_session(user)
                     flash(f"Welcome back, {user.username}!", "success")
                     return redirect(url_for("index"))
                 else:
