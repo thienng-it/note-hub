@@ -76,7 +76,7 @@ class AppConfig:
             "SESSION_COOKIE_SAMESITE": "Lax",
             "SESSION_COOKIE_NAME": "notehub_session",
             "SESSION_COOKIE_DOMAIN": None,  # Let Flask handle domain automatically
-            "PERMANENT_SESSION_LIFETIME": 3600,  # 1 hour
+            "PERMANENT_SESSION_LIFETIME": 86400,  # 24 hours (extended from 1 hour)
             "MAX_CONTENT_LENGTH": self.max_content_length,
             "CAPTCHA_ENABLED": captcha_enabled,
             "CAPTCHA_TYPE": captcha_type,

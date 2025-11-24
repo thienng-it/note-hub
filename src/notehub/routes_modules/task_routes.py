@@ -30,6 +30,9 @@ def register_task_routes(app):
             return redirect(url_for("login"))
         
         filter_type = request.args.get('filter', 'all')
+        tasks_list = []
+        task_counts = {'total': 0, 'completed': 0, 'active': 0}
+        error_occurred = False
         
         try:
             with db() as s:
@@ -37,9 +40,11 @@ def register_task_routes(app):
                 task_counts = TaskService.get_task_counts(s, user)
         except Exception as e:
             logger.error(f"Error loading tasks for user {user.id}: {e}")
+            error_occurred = True
+        
+        # Only flash error if an actual exception occurred
+        if error_occurred:
             flash("Error loading tasks. Please try again.", "error")
-            tasks_list = []
-            task_counts = {'total': 0, 'completed': 0, 'active': 0}
         
         return render_template(
             "tasks.html",

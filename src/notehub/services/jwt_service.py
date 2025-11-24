@@ -13,12 +13,12 @@ class JWTService:
     """Service for JWT token generation and validation."""
     
     @staticmethod
-    def generate_token(user_id: int, expires_in: int = 3600) -> str:
+    def generate_token(user_id: int, expires_in: int = 86400) -> str:
         """Generate a JWT token for a user.
         
         Args:
             user_id: User ID to encode in token
-            expires_in: Token expiration time in seconds (default 1 hour)
+            expires_in: Token expiration time in seconds (default 24 hours, extended from 1 hour)
             
         Returns:
             JWT token string
