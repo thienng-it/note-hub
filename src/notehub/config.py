@@ -24,6 +24,7 @@ class AppConfig:
     max_content_length: int = 16 * 1024 * 1024
     recaptcha_site_key: str = field(default_factory=lambda: os.getenv("RECAPTCHA_SITE_KEY", ""))
     recaptcha_secret_key: str = field(default_factory=lambda: os.getenv("RECAPTCHA_SECRET_KEY", ""))
+    captcha_type: str = field(default_factory=lambda: os.getenv("CAPTCHA_TYPE", "simple"))
     
     def __post_init__(self):
         """Validate configuration after initialization."""
@@ -55,6 +56,14 @@ class AppConfig:
         secret = self.secret_key
         if not secret or len(secret) < 16:
             secret = secrets.token_hex(32)
+        
+        # Determine CAPTCHA configuration
+        # CAPTCHA_TYPE can be: "simple", "recaptcha", or "none"
+        captcha_type = self.captcha_type.lower()
+        use_recaptcha = (captcha_type == "recaptcha" and 
+                        bool(self.recaptcha_site_key and self.recaptcha_secret_key))
+        use_simple_captcha = (captcha_type == "simple")
+        captcha_enabled = use_recaptcha or use_simple_captcha
             
         return {
             "SECRET_KEY": secret,
@@ -69,7 +78,9 @@ class AppConfig:
             "SESSION_COOKIE_DOMAIN": None,  # Let Flask handle domain automatically
             "PERMANENT_SESSION_LIFETIME": 3600,  # 1 hour
             "MAX_CONTENT_LENGTH": self.max_content_length,
-            "RECAPTCHA_ENABLED": bool(self.recaptcha_site_key and self.recaptcha_secret_key),
+            "CAPTCHA_ENABLED": captcha_enabled,
+            "CAPTCHA_TYPE": captcha_type,
+            "RECAPTCHA_ENABLED": use_recaptcha,
             "RECAPTCHA_SITE_KEY": self.recaptcha_site_key,
             "RECAPTCHA_SECRET_KEY": self.recaptcha_secret_key,
             "RECAPTCHA_THEME": "light",

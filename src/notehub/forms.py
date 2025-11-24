@@ -2,16 +2,17 @@
 
 from __future__ import annotations
 
-from flask import current_app
+from flask import current_app, session
 from flask_wtf import FlaskForm
 from flask_wtf.recaptcha import RecaptchaField
-from wtforms import (BooleanField, DateField, PasswordField, SelectField,
-                     StringField, TextAreaField)
+from wtforms import (BooleanField, DateField, HiddenField, PasswordField, 
+                     SelectField, StringField, TextAreaField)
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 Optional as OptionalValidator, ValidationError)
 
 from .security import (PASSWORD_POLICY_MIN_LENGTH, PASSWORD_POLICY_MESSAGE,
                        password_policy_errors)
+from .simple_captcha import get_captcha_question, verify_captcha_answer
 
 
 def validate_password_complexity(form, field):
@@ -20,15 +21,41 @@ def validate_password_complexity(form, field):
         raise ValidationError(errors[0])
 
 
+def validate_simple_captcha(form, field):
+    """Validator for simple math CAPTCHA."""
+    if not field.data:
+        raise ValidationError("Please answer the security question.")
+    
+    # Get the captcha token from the hidden field
+    captcha_token = form.captcha_token.data if hasattr(form, 'captcha_token') else None
+    if not captcha_token:
+        raise ValidationError("CAPTCHA session expired. Please refresh the page.")
+    
+    # Validate the answer
+    if not verify_captcha_answer(field.data, captcha_token):
+        raise ValidationError("Incorrect answer. Please try again.")
+
+
 class LoginForm(FlaskForm):
     username = StringField("Username or Email", validators=[DataRequired(), Length(min=3, max=255)])
     password = PasswordField("Password", validators=[DataRequired()])
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Only add recaptcha field if CAPTCHA is enabled
-        if current_app.config.get('RECAPTCHA_ENABLED', False):
+        captcha_type = current_app.config.get('CAPTCHA_TYPE', 'none')
+        
+        # Add appropriate CAPTCHA field based on configuration
+        if captcha_type == 'recaptcha' and current_app.config.get('RECAPTCHA_ENABLED', False):
             self.recaptcha = RecaptchaField()
+        elif captcha_type == 'simple':
+            # Generate a new CAPTCHA question
+            question, token = get_captcha_question()
+            session['captcha_question'] = question
+            self.captcha_answer = StringField(
+                "Security Question", 
+                validators=[DataRequired(), validate_simple_captcha]
+            )
+            self.captcha_token = HiddenField(default=token)
 
 
 class Verify2FAForm(FlaskForm):
@@ -54,9 +81,20 @@ class RegisterForm(FlaskForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Only add recaptcha field if CAPTCHA is enabled
-        if current_app.config.get('RECAPTCHA_ENABLED', False):
+        captcha_type = current_app.config.get('CAPTCHA_TYPE', 'none')
+        
+        # Add appropriate CAPTCHA field based on configuration
+        if captcha_type == 'recaptcha' and current_app.config.get('RECAPTCHA_ENABLED', False):
             self.recaptcha = RecaptchaField()
+        elif captcha_type == 'simple':
+            # Generate a new CAPTCHA question
+            question, token = get_captcha_question()
+            session['captcha_question'] = question
+            self.captcha_answer = StringField(
+                "Security Question", 
+                validators=[DataRequired(), validate_simple_captcha]
+            )
+            self.captcha_token = HiddenField(default=token)
 
 
 class NoteForm(FlaskForm):
@@ -78,9 +116,20 @@ class ForgotPasswordForm(FlaskForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Only add recaptcha field if CAPTCHA is enabled
-        if current_app.config.get('RECAPTCHA_ENABLED', False):
+        captcha_type = current_app.config.get('CAPTCHA_TYPE', 'none')
+        
+        # Add appropriate CAPTCHA field based on configuration
+        if captcha_type == 'recaptcha' and current_app.config.get('RECAPTCHA_ENABLED', False):
             self.recaptcha = RecaptchaField()
+        elif captcha_type == 'simple':
+            # Generate a new CAPTCHA question
+            question, token = get_captcha_question()
+            session['captcha_question'] = question
+            self.captcha_answer = StringField(
+                "Security Question", 
+                validators=[DataRequired(), validate_simple_captcha]
+            )
+            self.captcha_token = HiddenField(default=token)
 
 
 class ResetPasswordForm(FlaskForm):

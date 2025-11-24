@@ -11,6 +11,7 @@ A secure, feature-rich personal notes application built with Flask and MySQL.
 - ✅ **Task Management** - Create and track tasks with priorities and due dates
 - 🔐 **Two-Factor Authentication** - TOTP-based 2FA with QR code setup
 - 🔒 **Security First** - CSRF protection, password policy, HTML sanitization
+- 🤖 **CAPTCHA Protection** - Built-in math CAPTCHA or Google reCAPTCHA options
 - 👥 **Collaboration** - Share notes with other users with view/edit permissions
 - 🎨 **Customizable UI** - Light/dark mode, responsive design
 - 📱 **Mobile-Friendly** - Works seamlessly on all devices
@@ -69,6 +70,11 @@ export MYSQL_PASSWORD="your_password"
 export MYSQL_DATABASE="notehub"
 export FLASK_SECRET="your-secret-key-here"
 export NOTES_ADMIN_PASSWORD="your-secure-password"
+# CAPTCHA is enabled by default with simple math CAPTCHA
+# To use Google reCAPTCHA instead:
+# export CAPTCHA_TYPE="recaptcha"
+# export RECAPTCHA_SITE_KEY="your_site_key"
+# export RECAPTCHA_SECRET_KEY="your_secret_key"
 ```
 
 6. Run the application:
