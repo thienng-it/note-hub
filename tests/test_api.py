@@ -201,3 +201,34 @@ class TestAPITasks:
         data = json.loads(response.data)
         assert 'task' in data
         assert data['task']['title'] == 'API Test Task'
+
+
+class TestAPIErrorHandling:
+    """Test API error handling returns JSON responses."""
+    
+    def test_api_404_returns_json(self, client):
+        """Test 404 errors on API routes return JSON."""
+        response = client.get('/api/nonexistent')
+        assert response.status_code == 404
+        assert response.content_type == 'application/json'
+        data = json.loads(response.data)
+        assert 'error' in data
+        assert data['error'] == 'Resource not found'
+    
+    def test_api_405_returns_json(self, client):
+        """Test 405 errors on API routes return JSON."""
+        # POST to GET-only endpoint
+        response = client.post('/api/health')
+        assert response.status_code == 405
+        assert response.content_type == 'application/json'
+        data = json.loads(response.data)
+        assert 'error' in data
+        assert data['error'] == 'Method not allowed'
+    
+    def test_non_api_404_returns_html(self, client):
+        """Test 404 errors on non-API routes return HTML."""
+        response = client.get('/nonexistent')
+        assert response.status_code == 404
+        assert 'text/html' in response.content_type
+        # HTML response should contain error page content
+        assert b'404' in response.data or b'not found' in response.data.lower()

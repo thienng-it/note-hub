@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask import render_template, session
+from flask import jsonify, render_template, request, session
 
 from ..routes_modules import (register_admin_routes, register_api_routes,
                                register_auth_routes, register_note_routes,
@@ -41,8 +41,21 @@ def register_routes(app):
 
     @app.errorhandler(404)
     def not_found(error):
+        # Return JSON for API routes
+        if request.path.startswith('/api/'):
+            return jsonify({'error': 'Resource not found'}), 404
         return render_template("error.html", error="Page not found", code=404), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        # Return JSON for API routes
+        if request.path.startswith('/api/'):
+            return jsonify({'error': 'Method not allowed'}), 405
+        return render_template("error.html", error="Method not allowed", code=405), 405
 
     @app.errorhandler(500)
     def server_error(error):
+        # Return JSON for API routes
+        if request.path.startswith('/api/'):
+            return jsonify({'error': 'Internal server error'}), 500
         return render_template("error.html", error="Internal server error", code=500), 500
