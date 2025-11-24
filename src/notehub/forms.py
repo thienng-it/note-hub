@@ -220,3 +220,7 @@ class ChangePasswordForm(FlaskForm):
         "Confirm New Password",
         validators=[DataRequired(), EqualTo("new_password", message="Passwords must match")],
     )
+
+
+class Disable2FAForm(FlaskForm):
+    totp_code = StringField("2FA Code", validators=[DataRequired(), Length(min=6, max=6)])

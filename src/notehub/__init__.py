@@ -11,7 +11,7 @@ env_path = Path(__file__).resolve().parents[2] / '.env'
 if env_path.exists():
     load_dotenv(env_path)
 
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 from flask_wtf.csrf import CSRFError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -52,6 +52,24 @@ def create_app(config: AppConfig | None = None) -> Flask:
             error_message="The form token has expired or is invalid. Please try again.",
             error_code=400,
         ), 400
+    
+    # Add 503 error handler for service unavailable
+    @app.errorhandler(503)
+    def handle_503_error(error):
+        return render_template(
+            "error.html",
+            code=503,
+            error="Service Temporarily Unavailable",
+        ), 503
+    
+    # Auto-refresh session on activity to keep users logged in longer
+    @app.before_request
+    def refresh_session():
+        """Refresh session lifetime on each request to keep users logged in."""
+        if 'user_id' in session:
+            session.permanent = True
+            # Update session modified time to extend its lifetime
+            session.modified = True
     
     init_database(config.database_uri)
     migrate_database()

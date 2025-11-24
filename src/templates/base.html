@@ -28,6 +28,11 @@
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --error-color: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --glass-shadow: rgba(31, 38, 135, 0.15);
+            --glass-blur: blur(15px) saturate(180%);
+            --glass-blur-light: blur(10px);
         }
 
         .dark {
@@ -38,6 +43,11 @@
             --text-secondary: #cbd5e1;
             --text-muted: #94a3b8;
             --border-color: #475569;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: rgba(0, 0, 0, 0.3);
+            --glass-blur: blur(15px) saturate(180%);
+            --glass-blur-light: blur(10px);
         }
 
         .light {
@@ -48,43 +58,114 @@
             --text-secondary: #334155;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --glass-shadow: rgba(31, 38, 135, 0.15);
+            --glass-blur: blur(15px) saturate(180%);
+            --glass-blur-light: blur(10px);
         }
 
         body {
-            background-color: var(--bg-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: var(--text-primary);
             transition: all 0.3s ease;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(239, 83, 80, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 30%, rgba(59, 130, 246, 0.3) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+            will-change: transform, opacity;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        
+        /* Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            body::before {
+                animation: none;
+            }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .dark body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        .light body {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        /* Ensure content is above the animated background */
+        body > div {
+            position: relative;
+            z-index: 1;
         }
 
         .card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--glass-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 40px 0 var(--glass-shadow);
+            border-color: rgba(59, 130, 246, 0.3);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             color: white;
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 1), rgba(37, 99, 235, 1));
         }
 
         .sidebar {
-            background-color: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--glass-border);
+            box-shadow: 4px 0 24px 0 var(--glass-shadow);
         }
 
         .flash-message {
             animation: slideIn 0.5s ease;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
 
         @keyframes slideIn {
@@ -98,17 +179,24 @@
         }
         
         .note-content pre {
-            background-color: var(--bg-tertiary);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             padding: 1rem;
             border-radius: 0.5rem;
             overflow-x: auto;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 16px 0 var(--glass-shadow);
         }
         
         .note-content code {
-            background-color: var(--bg-tertiary);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             padding: 0.125rem 0.25rem;
             border-radius: 0.25rem;
             font-size: 0.875rem;
+            border: 1px solid var(--glass-border);
         }
         
         .note-content blockquote {
@@ -120,27 +208,37 @@
         }
         
         .tag {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
             color: white;
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
             font-size: 0.75rem;
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .tag:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
         }
         
         .search-input {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
             color: var(--text-primary);
+            box-shadow: 0 4px 16px 0 var(--glass-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .search-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 8px 24px 0 rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
         }
 
         .line-clamp-1 {
@@ -280,6 +378,159 @@
         .flash-message {
             animation: slide-up 0.3s ease-out;
         }
+        
+        /* Glassmorphism utility classes */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--glass-shadow);
+            border-radius: 12px;
+        }
+        
+        .glass-button {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px 0 var(--glass-shadow);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Enhanced hover effects */
+        .hover-glass:hover {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur-light);
+            -webkit-backdrop-filter: var(--glass-blur-light);
+        }
+        
+        /* Mobile-specific improvements */
+        @media (max-width: 768px) {
+            /* Adjust font sizes for mobile */
+            body {
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 1.75rem !important;
+            }
+            
+            h2 {
+                font-size: 1.5rem !important;
+            }
+            
+            h3 {
+                font-size: 1.25rem !important;
+            }
+            
+            /* Better spacing for mobile */
+            .p-6 {
+                padding: 1rem !important;
+            }
+            
+            .p-4 {
+                padding: 0.75rem !important;
+            }
+            
+            /* Make cards more compact on mobile */
+            .card {
+                margin-bottom: 0.75rem;
+            }
+            
+            /* Adjust button sizes for mobile */
+            .btn-primary {
+                padding: 0.625rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            /* Make flash messages more visible on mobile */
+            .flash-message {
+                font-size: 0.875rem;
+                padding: 0.75rem 1rem;
+            }
+            
+            /* Adjust bottom padding for mobile navigation */
+            #main-content {
+                padding-bottom: 80px !important;
+            }
+            
+            /* Hide back-to-top button on mobile */
+            #backToTop {
+                display: none;
+            }
+        }
+        
+        /* Mobile bottom navigation */
+        .mobile-nav {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--glass-bg);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                border-top: 1px solid var(--glass-border);
+                padding: 0.5rem 0;
+                z-index: 50;
+                box-shadow: 0 -4px 20px 0 var(--glass-shadow);
+            }
+            
+            .mobile-nav-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 0.5rem;
+                color: var(--text-secondary);
+                text-decoration: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                font-size: 0.75rem;
+                position: relative;
+            }
+            
+            .mobile-nav-item i {
+                font-size: 1.25rem;
+                margin-bottom: 0.25rem;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            .mobile-nav-item.active {
+                color: var(--primary-color);
+            }
+            
+            .mobile-nav-item.active::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 3px;
+                background: linear-gradient(90deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8));
+                border-radius: 0 0 3px 3px;
+                box-shadow: 0 2px 10px rgba(59, 130, 246, 0.5);
+            }
+            
+            .mobile-nav-item:active {
+                transform: scale(0.95);
+            }
+            
+            .mobile-nav-item:active i {
+                transform: scale(1.1);
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans antialiased">
@@ -412,6 +663,32 @@
                 <i class="fas fa-arrow-up text-white"></i>
             </button>
         </main>
+        
+        <!-- Mobile Bottom Navigation -->
+        {% if current_user %}
+        <nav class="mobile-nav">
+            <a href="{{ url_for('index') }}" class="mobile-nav-item {{ 'active' if request.endpoint == 'index' and not request.args.get('view') }}">
+                <i class="fas fa-home"></i>
+                <span>Notes</span>
+            </a>
+            <a href="{{ url_for('tasks') }}" class="mobile-nav-item {{ 'active' if request.endpoint == 'tasks' }}">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="{{ url_for('new_note') }}" class="mobile-nav-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>New</span>
+            </a>
+            <a href="{{ url_for('index', view='favorites') }}" class="mobile-nav-item {{ 'active' if request.args.get('view') == 'favorites' }}">
+                <i class="fas fa-heart"></i>
+                <span>Favorites</span>
+            </a>
+            <a href="{{ url_for('profile') }}" class="mobile-nav-item {{ 'active' if request.endpoint == 'profile' }}">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
+        {% endif %}
     </div>
 
     <script>

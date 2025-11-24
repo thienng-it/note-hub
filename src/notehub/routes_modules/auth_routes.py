@@ -14,7 +14,7 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ..extensions import limiter
-from ..forms import (ForgotPasswordForm, LoginForm, RegisterForm,
+from ..forms import (Disable2FAForm, ForgotPasswordForm, LoginForm, RegisterForm,
                      ResetPasswordForm, Setup2FAForm, Verify2FAForm)
 from ..models import Invitation, PasswordResetToken, User
 from ..services.auth_service import AuthService
@@ -171,18 +171,34 @@ def register_auth_routes(app):
 
         return render_template("setup_2fa.html", form=form, qr_code=qr_base64, secret=secret)
 
-    @app.route("/profile/disable-2fa", methods=["POST"])
+    @app.route("/profile/disable-2fa", methods=["GET", "POST"])
     @login_required
     def disable_2fa():
+        """Disable 2FA with OTP verification."""
         user = current_user()
-        with db() as s:
-            db_user = s.get(User, user.id)
-            db_user.totp_secret = None
-            s.commit()
-        # Invalidate user cache after 2FA disable
-        invalidate_user_cache()
-        flash("2FA has been disabled.", "warning")
-        return redirect(url_for("profile"))
+        
+        # If user doesn't have 2FA enabled, redirect
+        if not user.totp_secret:
+            flash("2FA is not enabled for your account.", "info")
+            return redirect(url_for("profile"))
+        
+        form = Disable2FAForm()
+        
+        if form.validate_on_submit():
+            # Verify the OTP code before disabling
+            if user.verify_totp(form.totp_code.data):
+                with db() as s:
+                    db_user = s.get(User, user.id)
+                    db_user.totp_secret = None
+                    s.commit()
+                # Invalidate user cache after 2FA disable
+                invalidate_user_cache()
+                flash("2FA has been disabled successfully.", "warning")
+                return redirect(url_for("profile"))
+            else:
+                flash("Invalid 2FA code. Please try again.", "error")
+        
+        return render_template("disable_2fa.html", form=form)
 
     @app.route("/forgot-password", methods=["GET", "POST"])
     @limiter.limit("3 per hour")

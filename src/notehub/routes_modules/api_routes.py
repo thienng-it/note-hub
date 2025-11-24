@@ -60,6 +60,14 @@ def jwt_required(f):
 def register_api_routes(app):
     """Register API routes with JWT authentication."""
     
+    @app.after_request
+    def set_api_content_type(response):
+        """Ensure API routes return application/json content type."""
+        if request.path.startswith('/api/'):
+            if not response.content_type or 'text/html' in response.content_type:
+                response.content_type = 'application/json'
+        return response
+    
     @app.route("/api/health", methods=["GET"])
     def api_health():
         """Health check endpoint for monitoring database connectivity.
@@ -204,7 +212,7 @@ def register_api_routes(app):
                 'access_token': access_token,
                 'refresh_token': refresh_token,
                 'token_type': 'Bearer',
-                'expires_in': 3600,
+                'expires_in': 86400,  # 24 hours (extended from 1 hour)
                 'user': {
                     'id': user.id,
                     'username': user.username,
@@ -228,7 +236,7 @@ def register_api_routes(app):
         return jsonify({
             'access_token': new_token,
             'token_type': 'Bearer',
-            'expires_in': 3600
+            'expires_in': 86400  # 24 hours (extended from 1 hour)
         }), 200
     
     @app.route("/api/auth/validate", methods=["GET"])

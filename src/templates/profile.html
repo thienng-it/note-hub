@@ -157,10 +157,9 @@
                         </div>
                         
                         {% if user.totp_secret %}
-                        <form action="{{ url_for('disable_2fa') }}" method="POST" onsubmit="return confirm('Are you sure you want to disable 2FA? Your account will be less secure.')">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                            <button type="submit" class="text-sm text-red-600 hover:text-red-800">Disable</button>
-                        </form>
+                        <a href="{{ url_for('disable_2fa') }}" class="text-sm text-red-600 hover:text-red-800 font-medium">
+                            Disable
+                        </a>
                         {% else %}
                         <a href="{{ url_for('setup_2fa') }}" class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
                             Enable 2FA
