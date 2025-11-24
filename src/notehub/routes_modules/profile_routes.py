@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from flask import flash, redirect, render_template, request, session, url_for
 from sqlalchemy import func, select
 
-from ..forms import InviteForm, ProfileEditForm
+from ..forms import ChangePasswordForm, InviteForm, ProfileEditForm
 from ..models import Invitation, Note, ShareNote, Tag, User
 from ..services.utils import current_user, db, invalidate_user_cache, login_required
 
@@ -56,6 +56,30 @@ def register_profile_routes(app):
                 flash("Profile updated successfully!", "success")
                 return redirect(url_for("profile"))
         return render_template("edit_profile.html", form=form, user=user)
+
+    @app.route("/profile/change-password", methods=["GET", "POST"])
+    @login_required
+    def change_password():
+        user = current_user()
+        form = ChangePasswordForm()
+        if form.validate_on_submit():
+            with db() as s:
+                db_user = s.get(User, user.id)
+                if not db_user:
+                    flash("User not found.", "error")
+                    return redirect(url_for("profile"))
+                
+                # Verify current password
+                if not db_user.check_password(form.current_password.data):
+                    flash("Current password is incorrect.", "error")
+                    return render_template("change_password.html", form=form, user=user)
+                
+                # Update password
+                db_user.set_password(form.new_password.data)
+                s.commit()
+                flash("Password changed successfully!", "success")
+                return redirect(url_for("profile"))
+        return render_template("change_password.html", form=form, user=user)
 
     @app.route("/user/<int:user_id>")
     @login_required
