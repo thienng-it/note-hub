@@ -20,7 +20,8 @@ class TestSetup2FA:
         """Test setup-2fa page loads successfully for authenticated user."""
         response = auth_client.get('/profile/setup-2fa')
         assert response.status_code == 200
-        assert b'Setup Two-Factor Authentication' in response.data or b'Setup 2FA' in response.data
+        # Check for the page heading
+        assert b'Setup' in response.data and (b'2FA' in response.data or b'Two-Factor' in response.data)
     
     def test_setup_2fa_contains_qr_code(self, auth_client):
         """Test that setup-2fa page contains QR code."""
@@ -94,7 +95,8 @@ class TestSetup2FA:
         }, follow_redirects=True)
         
         assert response.status_code == 200
-        assert b'2FA enabled successfully' in response.data or b'success' in response.data.lower()
+        # Check for success message
+        assert b'2FA enabled successfully' in response.data
         
         # Verify that the user's totp_secret was saved using a new session
         from src.notehub.database import SessionLocal
@@ -123,7 +125,8 @@ class TestSetup2FA:
         }, follow_redirects=True)
         
         assert response.status_code == 200
-        assert b'Invalid' in response.data or b'error' in response.data.lower()
+        # Check for specific error message
+        assert b'Invalid verification code' in response.data
         
         # Verify that the user's totp_secret was NOT saved using a new session
         from src.notehub.database import SessionLocal

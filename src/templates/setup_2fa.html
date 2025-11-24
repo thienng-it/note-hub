@@ -105,16 +105,22 @@ function copySecret() {
     const secretCode = document.getElementById('secretCode').textContent;
     const copyBtnText = document.getElementById('copyBtnText');
     
-    navigator.clipboard.writeText(secretCode).then(function() {
-        const originalText = copyBtnText.textContent;
-        copyBtnText.textContent = 'Copied!';
-        setTimeout(function() {
-            copyBtnText.textContent = originalText;
-        }, 2000);
-    }).catch(function(err) {
-        console.error('Failed to copy:', err);
-        alert('Failed to copy. Please select and copy manually.');
-    });
+    // Check if clipboard API is available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(secretCode).then(function() {
+            const originalText = copyBtnText.textContent;
+            copyBtnText.textContent = 'Copied!';
+            setTimeout(function() {
+                copyBtnText.textContent = originalText;
+            }, 2000);
+        }).catch(function(err) {
+            console.error('Failed to copy:', err);
+            alert('Failed to copy. Please select and copy manually.');
+        });
+    } else {
+        // Fallback for older browsers
+        alert('Copy not supported. Please select the text and copy manually (Ctrl+C or Cmd+C).');
+    }
 }
 
 function refreshSecret() {
