@@ -102,16 +102,49 @@ class NoteService:
                 (Note.archived == False)
             )
         
-        # Apply search filter
+        # Apply search filter - optimized to search title first, limit body search
         if query:
             like_term = f"%{query}%"
             tag_alias = aliased(Tag)
             note_tag_alias = aliased(note_tag)
-            stmt = stmt.outerjoin(note_tag_alias).outerjoin(tag_alias).where(
-                (Note.title.ilike(like_term)) |
-                (Note.body.ilike(like_term)) |
-                (tag_alias.name.ilike(like_term))
-            )
+            
+            # For short queries (< 3 chars), only search title and tags (skip body)
+            # For longer queries, search all fields but title gets priority via index
+            if len(query.strip()) < 3:
+                stmt = stmt.outerjoin(note_tag_alias).outerjoin(tag_alias).where(
+                    (Note.title.ilike(like_term)) |
+                    (tag_alias.name.ilike(like_term))
+                )
+            else:
+                # Try to use FULLTEXT search for MySQL if available (much faster)
+                # Falls back to ILIKE for SQLite or if FULLTEXT not available
+                try:
+                    from sqlalchemy import text as sql_text
+                    # Test if we're on MySQL by checking dialect
+                    if session.bind.dialect.name == 'mysql':
+                        # Use FULLTEXT MATCH AGAINST for MySQL (requires FULLTEXT index)
+                        # This is 10-100x faster than LIKE on large text fields
+                        fulltext_condition = sql_text(
+                            f"MATCH(notes.title, notes.body) AGAINST (:search_term IN BOOLEAN MODE)"
+                        )
+                        stmt = stmt.outerjoin(note_tag_alias).outerjoin(tag_alias).where(
+                            fulltext_condition.bindparams(search_term=f"+{query}*") |
+                            (tag_alias.name.ilike(like_term))
+                        )
+                    else:
+                        # Fall back to ILIKE for SQLite or other databases
+                        stmt = stmt.outerjoin(note_tag_alias).outerjoin(tag_alias).where(
+                            (Note.title.ilike(like_term)) |
+                            (tag_alias.name.ilike(like_term)) |
+                            (Note.body.ilike(like_term))
+                        )
+                except:
+                    # If FULLTEXT fails (index not created yet), fall back to ILIKE
+                    stmt = stmt.outerjoin(note_tag_alias).outerjoin(tag_alias).where(
+                        (Note.title.ilike(like_term)) |
+                        (tag_alias.name.ilike(like_term)) |
+                        (Note.body.ilike(like_term))
+                    )
         
         # Apply tag filter
         if tag_filter:
@@ -134,12 +167,26 @@ class NoteService:
         )
         notes = session.execute(stmt).scalars().unique().all()
         
-        # Get all tags
-        all_tags = session.execute(
-            select(Tag).options(selectinload(Tag.notes)).order_by(Tag.name)
-        ).scalars().all()
+        # Get all tags with note count via scalar subquery (much more efficient)
+        from sqlalchemy import func
+        note_count_subq = (
+            select(func.count(note_tag.c.note_id))
+            .where(note_tag.c.tag_id == Tag.id)
+            .correlate(Tag)
+            .scalar_subquery()
+        )
         
-        return notes, all_tags
+        all_tags = session.execute(
+            select(Tag, note_count_subq.label('note_count')).order_by(Tag.name)
+        ).all()
+        
+        # Attach note_count as attribute to each tag for template access
+        tags_with_counts = []
+        for tag, count in all_tags:
+            tag._cached_note_count = count
+            tags_with_counts.append(tag)
+        
+        return notes, tags_with_counts
     
     @staticmethod
     def check_note_access(

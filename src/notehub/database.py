@@ -67,14 +67,18 @@ def init_database(database_uri: str):
     
     if database_uri.startswith('mysql'):
         # MySQL-specific connection arguments and pooling settings
+        # Optimized for better performance and connection reuse
         engine_args.update({
-            'pool_pre_ping': True,  # Verify connections before use
-            'pool_recycle': 3600,   # Recycle connections after 1 hour
-            'pool_size': 10,        # Connection pool size (good for MySQL)
-            'max_overflow': 20,     # Allow up to 20 additional connections
+            'pool_pre_ping': True,  # Verify connections before use (prevents stale connections)
+            'pool_recycle': 1800,   # Recycle connections after 30 minutes (reduced from 1 hour)
+            'pool_size': 15,        # Increased from 10 for better concurrency
+            'max_overflow': 30,     # Increased from 20 to handle traffic spikes
+            'pool_timeout': 10,     # Wait up to 10 seconds for available connection
             'connect_args': {
-                'connect_timeout': 30,  # Increased timeout for cloud databases
-                'charset': 'utf8mb4'
+                'connect_timeout': 20,  # Reduced from 30 for faster failure detection
+                'charset': 'utf8mb4',
+                'read_timeout': 30,     # Add read timeout to prevent hanging queries
+                'write_timeout': 30     # Add write timeout
             }
         })
         # SSL configuration for cloud providers (PlanetScale, Railway, etc.)

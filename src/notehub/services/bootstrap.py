@@ -11,7 +11,7 @@ from ..models import User
 
 
 def migrate_database():
-    """Ensure legacy databases gain the newer columns."""
+    """Ensure legacy databases gain the newer columns and performance indexes."""
     session = SessionLocal()
     try:
         migrations_applied = []
@@ -59,14 +59,54 @@ def migrate_database():
             ensure("email", "ALTER TABLE users ADD COLUMN email VARCHAR(255)")
             ensure("totp_secret", "ALTER TABLE users ADD COLUMN totp_secret VARCHAR(32)")
 
+        # Add performance indexes for MySQL
+        if is_mysql:
+            _ensure_performance_indexes(session, migrations_applied)
+
         if migrations_applied:
             session.commit()
-            print(f"✅ Added columns: {', '.join(migrations_applied)}")
+            print(f"✅ Added columns/indexes: {', '.join(migrations_applied)}")
     except Exception as exc:  # pragma: no cover - defensive logging
         print(f"⚠️  Migration error: {exc}")
         session.rollback()
     finally:
         session.close()
+
+
+def _ensure_performance_indexes(session, migrations_applied):
+    """Ensure critical performance indexes exist for MySQL.
+    
+    This is called during migrate_database() for MySQL databases only.
+    Creates FULLTEXT index for body search performance.
+    """
+    try:
+        # Check if FULLTEXT index exists on notes.body and notes.title
+        result = session.execute(text("""
+            SELECT DISTINCT INDEX_NAME 
+            FROM INFORMATION_SCHEMA.STATISTICS 
+            WHERE TABLE_SCHEMA = DATABASE() 
+            AND TABLE_NAME = 'notes'
+            AND INDEX_TYPE = 'FULLTEXT'
+        """))
+        fulltext_indexes = {row[0] for row in result.fetchall()}
+        
+        # Create FULLTEXT index if it doesn't exist
+        # FULLTEXT indexes dramatically improve search performance on TEXT columns
+        if 'idx_notes_fulltext_search' not in fulltext_indexes:
+            try:
+                session.execute(text("""
+                    ALTER TABLE notes 
+                    ADD FULLTEXT INDEX idx_notes_fulltext_search (title, body)
+                """))
+                migrations_applied.append("notes.fulltext_index")
+                print("✅ Created FULLTEXT index for notes search")
+            except Exception as e:
+                # If index creation fails (e.g., InnoDB doesn't support FULLTEXT in old MySQL),
+                # continue without it - search will still work, just slower
+                print(f"⚠️  Could not create FULLTEXT index: {e}")
+                
+    except Exception as e:
+        print(f"⚠️  Could not check FULLTEXT indexes: {e}")
 
 
 def ensure_admin(username: str, password: str):

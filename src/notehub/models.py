@@ -117,6 +117,9 @@ class Tag(Base):
 
     @property
     def note_count(self):
+        """Return cached note count if available, otherwise compute from relationship."""
+        if hasattr(self, '_cached_note_count'):
+            return self._cached_note_count
         return len(self.notes)
 
 
@@ -130,6 +133,7 @@ class Note(Base):
         Index('ix_notes_pinned', 'pinned'),  # Index for pinned notes
         Index('ix_notes_created_at', 'created_at'),  # Index for sorting by date
         Index('ix_notes_updated_at', 'updated_at'),  # Index for sorting by updated date
+        Index('ix_notes_title', 'title'),  # Index for title searches
     )
 
     id = Column(Integer, primary_key=True)
@@ -152,13 +156,19 @@ class Note(Base):
 
     @property
     def excerpt(self) -> str:
-        plain_text = bleach.clean(self.body or "", tags=[], strip=True)
-        return plain_text[:150] + "..." if len(plain_text) > 150 else plain_text
+        """Generate excerpt with caching to avoid repeated bleach.clean() calls."""
+        if not hasattr(self, '_cached_excerpt') or self._cached_excerpt is None:
+            plain_text = bleach.clean(self.body or "", tags=[], strip=True)
+            self._cached_excerpt = plain_text[:150] + "..." if len(plain_text) > 150 else plain_text
+        return self._cached_excerpt
 
     @property
     def reading_time(self) -> int:
-        word_count = len((self.body or "").split())
-        return max(1, word_count // 200)
+        """Calculate reading time with caching to avoid repeated text splitting."""
+        if not hasattr(self, '_cached_reading_time') or self._cached_reading_time is None:
+            word_count = len((self.body or "").split())
+            self._cached_reading_time = max(1, word_count // 200)
+        return self._cached_reading_time
 
     def render_markdown(self) -> str:
         if not self.body:
