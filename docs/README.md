@@ -36,6 +36,9 @@ A secure, feature-rich personal notes application built with Flask. Supports mar
 
 ```
 note-hub/
+├── frontend/                  # Vite + React frontend
+│   ├── src/                   # React components
+│   └── vite.config.ts         # Vite configuration
 ├── src/
 │   ├── notehub/               # Flask application package
 │   │   ├── __init__.py        # Application factory
@@ -48,10 +51,11 @@ note-hub/
 │   │   └── services/          # Business logic
 │   └── templates/             # HTML templates
 ├── tests/                     # Test suite
+├── docs/                      # Documentation
+├── fly.toml                   # Fly.io configuration
+├── Dockerfile                 # Docker build file
 ├── requirements.txt           # Python dependencies
-├── wsgi.py                    # WSGI entry point
-├── render.yaml                # Render.com configuration
-└── Procfile                   # Process file for deployment
+└── wsgi.py                    # WSGI entry point
 ```
 
 ---

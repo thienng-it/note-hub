@@ -56,9 +56,6 @@ COPY wsgi.py .
 # Copy built frontend from stage 1 to static directory
 COPY --from=frontend-builder /frontend/dist ./static/frontend
 
-# Create a health check endpoint script
-RUN echo 'from flask import Flask; app = Flask(__name__); @app.route("/health"); def health(): return "OK"' > /app/health_check.py
-
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app

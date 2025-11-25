@@ -223,15 +223,12 @@ def register_note_routes(app):
                     s.commit()
                     flash("Note deleted", "success")
         except IntegrityError as exc:
-            s.rollback()
             logger.error(f"Integrity error deleting note: {exc}")
             flash("Error: Cannot delete note due to database constraint. Please try again.", "error")
         except SQLAlchemyError as exc:
-            s.rollback()
             logger.error(f"Database error deleting note: {exc}")
             flash("Error: Database error occurred while deleting note. Please try again.", "error")
         except Exception as exc:
-            s.rollback()
             logger.error(f"Unexpected error deleting note: {exc}")
             flash("Error deleting note. Please try again.", "error")
         return redirect(url_for("index"))
