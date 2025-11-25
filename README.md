@@ -1,10 +1,21 @@
-# Note Hub
+# NoteHub 📝
 
-A secure, feature-rich personal notes application built with Flask and MySQL.
+A secure, feature-rich personal notes application with modern architecture.
 
 ![CI/CD Pipeline](https://github.com/thienng-it/note-hub/actions/workflows/ci-cd.yml/badge.svg?branch=main)
+![Deploy to Fly.io](https://github.com/thienng-it/note-hub/actions/workflows/fly-deploy.yml/badge.svg)
 
-## Features
+## 🏗️ Tech Stack
+
+| Layer          | Technology                     |
+| -------------- | ------------------------------ |
+| **Frontend**   | Vite + React + TypeScript      |
+| **Backend**    | Python Flask 3.x               |
+| **Database**   | MySQL 8.0+ with SQLAlchemy ORM |
+| **Deployment** | Fly.io (Docker-based)          |
+| **CI/CD**      | GitHub Actions                 |
+
+## ✨ Features
 
 - 📝 **Rich Markdown Editor** - Full markdown support with live preview
 - 🏷️ **Smart Organization** - Tags, favorites, pinning, and powerful search
@@ -19,50 +30,36 @@ A secure, feature-rich personal notes application built with Flask and MySQL.
 - 👤 **User Profiles** - Customizable profiles with themes and bio
 - 🛡️ **Admin Dashboard** - User management and analytics
 
-## Tech Stack
-
-- **Backend**: Flask 3.x, Python 3.11+
-- **Database**: MySQL 8.0+ with SQLAlchemy ORM
-- **Authentication**: Flask-Login, PyOTP (2FA)
-- **Frontend**: Jinja2, Bootstrap 5, JavaScript
-- **Security**: WTForms, CSRF protection, Bleach (HTML sanitization)
-- **API**: RESTful endpoints with JWT authentication
-- **Deployment**: Gunicorn, Render, Netlify
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.11 or higher
-- MySQL 8.0 or higher
+- Node.js 18+ and npm
+- Python 3.11+
+- MySQL 8.0+
 - Git
 
-### Installation
+### Local Development
 
-1. Clone the repository:
+#### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/thienng-it/note-hub.git
 cd note-hub
 ```
 
-2. Create and activate virtual environment:
+#### 2. Backend Setup (Python Flask)
+
 ```bash
+# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+source venv/bin/activate  # macOS/Linux
+# venv\Scripts\activate   # Windows
 
-3. Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-4. Set up MySQL database:
-```bash
-mysql -u root -p -e "CREATE DATABASE notehub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
-
-5. Configure environment variables:
-```bash
+# Configure environment
 export MYSQL_HOST="localhost"
 export MYSQL_PORT="3306"
 export MYSQL_USER="root"
@@ -70,101 +67,149 @@ export MYSQL_PASSWORD="your_password"
 export MYSQL_DATABASE="notehub"
 export FLASK_SECRET="your-secret-key-here"
 export NOTES_ADMIN_PASSWORD="your-secure-password"
-# CAPTCHA is enabled by default with simple math CAPTCHA
-# To use Google reCAPTCHA instead:
-# export CAPTCHA_TYPE="recaptcha"
-# export RECAPTCHA_SITE_KEY="your_site_key"
-# export RECAPTCHA_SECRET_KEY="your_secret_key"
-```
 
-6. Run the application:
-```bash
+# Run the backend
 python wsgi.py
+# Backend runs at http://localhost:5000
 ```
 
-7. Open your browser and navigate to `http://127.0.0.1:5000`
+#### 3. Frontend Setup (Vite + React)
 
-**Default Login**: `admin` / `ChangeMeNow!42` (⚠️ change immediately after first login)
+```bash
+cd frontend
 
-## Project Structure
+# Install dependencies
+npm install
+
+# Run development server (proxies API to Flask)
+npm run dev
+# Frontend runs at http://localhost:3000
+```
+
+### 🐳 Docker Development
+
+```bash
+# Build and run with Docker Compose (optional)
+docker build -t notehub .
+docker run -p 8080:8080 \
+  -e MYSQL_HOST="your-db-host" \
+  -e MYSQL_PASSWORD="your-password" \
+  notehub
+```
+
+## 📦 Project Structure
 
 ```
 note-hub/
+├── frontend/                  # Vite + React frontend
+│   ├── src/                   # React components and logic
+│   ├── public/                # Static assets
+│   ├── vite.config.ts         # Vite configuration
+│   └── package.json           # Frontend dependencies
 ├── src/
-│   ├── notehub/               # Main application package
+│   ├── notehub/               # Flask application
 │   │   ├── routes_modules/    # Route handlers
 │   │   ├── services/          # Business logic
 │   │   ├── models.py          # Database models
-│   │   ├── config.py          # Configuration
-│   │   └── ...
-│   └── templates/             # HTML templates
+│   │   └── config.py          # Configuration
+│   ├── templates/             # Jinja2 HTML templates
+│   └── static/                # Backend static files
 ├── tests/                     # Test suite
 ├── docs/                      # Documentation
-├── scripts/                   # Utility scripts
+│   └── guides/
+│       └── FLY_IO_DEPLOYMENT.md  # Fly.io deployment guide
+├── fly.toml                   # Fly.io configuration
+├── Dockerfile                 # Multi-stage Docker build
 ├── requirements.txt           # Python dependencies
 └── wsgi.py                    # Application entry point
 ```
 
-## Deployment
+## 🌐 Deployment to Fly.io
 
-### Render (Recommended)
+### 1. Install Fly CLI
 
-1. Fork this repository
-2. Create a [Render](https://render.com) account
-3. Set up a MySQL database (PlanetScale or Aiven free tier)
-4. Create a new Web Service and connect your GitHub repository
-5. Render will automatically detect the `render.yaml` configuration
-6. Add environment variables in the Render dashboard
-7. Deploy!
-
-See [QUICK_START_MYSQL.md](QUICK_START_MYSQL.md) for detailed deployment instructions.
-
-### Other Platforms
-
-- **Netlify**: See deployment guides in `docs/guides/DEPLOYMENT.md`
-- **Heroku**: Use with ClearDB or JawsDB MySQL add-on
-- **AWS**: Deploy with EC2 + RDS MySQL
-
-## Documentation
-
-All documentation is available in the `docs/` folder:
-
-- [Complete Documentation](docs/README.md) - Full feature documentation
-- [Architecture](docs/architecture/ARCHITECTURE.md) - System design and architecture
-- [API Documentation](docs/api/JWT_API.md) - REST API reference
-- [Deployment Guide](docs/guides/DEPLOYMENT.md) - Production deployment
-- [Security Guide](docs/security/SECURITY.md) - Security best practices
-- [Contributing](docs/guides/CONTRIBUTING.md) - Development guidelines
-
-## Testing
-
-Run the test suite:
 ```bash
+# macOS
+brew install flyctl
+
+# Linux
+curl -L https://fly.io/install.sh | sh
+```
+
+### 2. Login and Launch
+
+```bash
+fly auth login
+fly launch --no-deploy
+```
+
+### 3. Configure Secrets
+
+```bash
+fly secrets set MYSQL_HOST="your-mysql-host"
+fly secrets set MYSQL_USER="your-username"
+fly secrets set MYSQL_PASSWORD="your-password"
+fly secrets set MYSQL_DATABASE="notehub"
+fly secrets set FLASK_SECRET="$(openssl rand -hex 32)"
+fly secrets set NOTES_ADMIN_PASSWORD="SecurePassword123!"
+```
+
+### 4. Deploy
+
+```bash
+fly deploy
+fly open
+```
+
+For detailed instructions, see [Fly.io Deployment Guide](docs/guides/FLY_IO_DEPLOYMENT.md).
+
+## 🧪 Testing
+
+```bash
+# Run all tests
 pytest tests/ -v
-```
 
-Run with coverage:
-```bash
+# Run with coverage
 pytest tests/ --cov=src/notehub --cov-report=html
+
+# Run frontend tests
+cd frontend && npm run lint
 ```
 
-## Contributing
+## 📚 Documentation
+
+| Document                                              | Description             |
+| ----------------------------------------------------- | ----------------------- |
+| [Fly.io Deployment](docs/guides/FLY_IO_DEPLOYMENT.md) | Deploy to Fly.io        |
+| [Architecture](docs/architecture/ARCHITECTURE.md)     | System design           |
+| [API Documentation](docs/api/JWT_API.md)              | REST API reference      |
+| [Security Guide](docs/security/SECURITY.md)           | Security best practices |
+| [Contributing](docs/guides/CONTRIBUTING.md)           | Development guidelines  |
+
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch:
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m 'feat: add amazing feature'
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature/amazing-feature
+   ```
 5. Open a Pull Request
 
-See [CONTRIBUTING.md](docs/guides/CONTRIBUTING.md) for more details.
-
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Links
+## 🔗 Links
 
 - [GitHub Repository](https://github.com/thienng-it/note-hub)
 - [Report Issues](https://github.com/thienng-it/note-hub/issues)

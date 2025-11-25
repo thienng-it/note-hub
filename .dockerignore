@@ -1,0 +1,74 @@
+# Docker ignore file for optimized builds
+
+# Git
+
+.git
+.gitignore
+
+# Documentation
+
+docs/
+\*.md
+!README.md
+
+# IDE and editor files
+
+.vscode/
+.idea/
+_.swp
+_.swo
+
+# Python cache and virtual environments
+
+**pycache**/
+_.py[cod]
+_$py.class
+_.so
+.Python
+venv/
+env/
+.env
+.env._
+\*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Node modules (will be installed in build stage)
+
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Test files
+
+tests/
+_.test.py
+_.spec.ts
+\*.spec.tsx
+
+# Deployment configs (not needed in container)
+
+netlify.toml
+render.yaml
+Procfile
+infra/
+deployment_guides/
+config/
+
+# Scripts not needed in production
+
+scripts/
+
+# Public folder (using Vite build output instead)
+
+public/
+
+# Logs
+
+\*.log
+logs/

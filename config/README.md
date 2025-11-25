@@ -1,19 +1,19 @@
-# Configuration Files
+# Configuration Directory
 
-This directory contains all configuration files for deployment and environment setup.
+This directory contains configuration files and environment examples for NoteHub.
 
 ## Files
 
-### Deployment Configuration
+- `.env.example` - Example environment variables for local development
 
-- **`Procfile`** - Heroku/Railway deployment configuration
-- **`render.yaml`** - Render.com deployment configuration
-- **`netlify.toml`** - Netlify serverless deployment configuration
-- **`runtime.txt`** - Python runtime version specification
+## Deployment
 
-### Environment Configuration
+NoteHub now uses **Fly.io** for deployment. Configuration files:
 
-- **`.env.example`** - Example environment variables template
+- `fly.toml` - Fly.io configuration (in project root)
+- `Dockerfile` - Multi-stage Docker build (in project root)
+
+See the deployment guide: [Fly.io Deployment Guide](../docs/guides/FLY_IO_DEPLOYMENT.md)
 
 ## Usage
 
@@ -25,9 +25,9 @@ This directory contains all configuration files for deployment and environment s
 
 2. Update the `.env` file with your actual configuration values.
 
-3. The deployment configuration files are symlinked to the root directory as deployment platforms expect them there.
+## Legacy Configurations
 
-## Notes
+Previous deployment configurations (Netlify, Render, Heroku) have been deprecated in favor of Fly.io. If you need to use these platforms, refer to the git history.
 
 - Never commit `.env` files with sensitive data to version control
 - The `.env.example` file should be kept up-to-date with all required environment variables

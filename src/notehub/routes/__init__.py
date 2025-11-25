@@ -20,6 +20,12 @@ def register_routes(app):
     register_profile_routes(app)
     register_admin_routes(app)
     register_api_routes(app)  # JWT-based API routes
+    
+    # Health check endpoint for Fly.io and other platforms
+    @app.route('/health')
+    def health_check():
+        """Health check endpoint for load balancers and monitoring."""
+        return jsonify({'status': 'healthy', 'service': 'notehub'}), 200
 
     # Context processor and error handlers
     @app.context_processor
