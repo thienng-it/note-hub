@@ -1,0 +1,64 @@
+# Render.com Blueprint Configuration
+# Deploy NoteHub with Python Flask backend + Vite frontend
+# See: https://render.com/docs/blueprint-spec
+
+services:
+  # Main Web Service (Flask + Static Frontend)
+  - type: web
+    name: notehub
+    runtime: python
+    plan: free
+    region: oregon
+
+    # Build configuration
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      cd frontend && npm ci && npm run build && cd ..
+      mkdir -p src/static/frontend
+      cp -r frontend/dist/* src/static/frontend/
+
+    # Start command
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 wsgi:app
+
+    # Health check
+    healthCheckPath: /health
+
+    # Environment variables
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.4"
+      - key: NODE_VERSION
+        value: "20"
+
+      # Application settings
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_SECRET
+        generateValue: true
+
+      # Admin credentials (change after first deploy!)
+      - key: NOTES_ADMIN_USERNAME
+        value: admin
+      - key: NOTES_ADMIN_PASSWORD
+        generateValue: true
+
+      # CAPTCHA configuration
+      - key: CAPTCHA_TYPE
+        value: simple
+
+      # MySQL Database Configuration
+      # Set these manually in Render Dashboard after connecting external DB
+      - key: MYSQL_HOST
+        sync: false
+      - key: MYSQL_PORT
+        value: "3306"
+      - key: MYSQL_USER
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        sync: false
+
+    # Auto-deploy on push to main
+    autoDeploy: true

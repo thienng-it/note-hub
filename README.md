@@ -12,7 +12,7 @@ A secure, feature-rich personal notes application with modern architecture.
 | **Frontend**   | Vite + React + TypeScript      |
 | **Backend**    | Python Flask 3.x               |
 | **Database**   | MySQL 8.0+ with SQLAlchemy ORM |
-| **Deployment** | Fly.io (Docker-based)          |
+| **Deployment** | Render.com / Fly.io            |
 | **CI/CD**      | GitHub Actions                 |
 
 ## ✨ Features
@@ -119,49 +119,38 @@ note-hub/
 │   └── guides/
 │       └── FLY_IO_DEPLOYMENT.md  # Fly.io deployment guide
 ├── fly.toml                   # Fly.io configuration
+├── render.yaml                # Render.com configuration
 ├── Dockerfile                 # Multi-stage Docker build
 ├── requirements.txt           # Python dependencies
 └── wsgi.py                    # Application entry point
 ```
 
-## 🌐 Deployment to Fly.io
+## 🌐 Deployment
 
-### 1. Install Fly CLI
+### Option 1: Render.com (Recommended - Free, No Credit Card)
+
+1. Fork this repository
+2. Go to [Render Dashboard](https://dashboard.render.com)
+3. Click "New" → "Blueprint" → Connect your repo
+4. Set MySQL environment variables in the dashboard
+5. Deploy!
+
+See [Render Deployment Guide](docs/guides/RENDER_DEPLOYMENT.md) for details.
+
+### Option 2: Fly.io (Requires Credit Card)
 
 ```bash
-# macOS
-brew install flyctl
+# Install CLI
+brew install flyctl  # macOS
 
-# Linux
-curl -L https://fly.io/install.sh | sh
-```
-
-### 2. Login and Launch
-
-```bash
+# Deploy
 fly auth login
 fly launch --no-deploy
-```
-
-### 3. Configure Secrets
-
-```bash
-fly secrets set MYSQL_HOST="your-mysql-host"
-fly secrets set MYSQL_USER="your-username"
-fly secrets set MYSQL_PASSWORD="your-password"
-fly secrets set MYSQL_DATABASE="notehub"
-fly secrets set FLASK_SECRET="$(openssl rand -hex 32)"
-fly secrets set NOTES_ADMIN_PASSWORD="SecurePassword123!"
-```
-
-### 4. Deploy
-
-```bash
+fly secrets set MYSQL_HOST="..." MYSQL_PASSWORD="..."
 fly deploy
-fly open
 ```
 
-For detailed instructions, see [Fly.io Deployment Guide](docs/guides/FLY_IO_DEPLOYMENT.md).
+See [Fly.io Deployment Guide](docs/guides/FLY_IO_DEPLOYMENT.md) for details.
 
 ## 🧪 Testing
 
@@ -180,6 +169,7 @@ cd frontend && npm run lint
 
 | Document                                              | Description             |
 | ----------------------------------------------------- | ----------------------- |
+| [Render Deployment](docs/guides/RENDER_DEPLOYMENT.md) | Deploy to Render (Free) |
 | [Fly.io Deployment](docs/guides/FLY_IO_DEPLOYMENT.md) | Deploy to Fly.io        |
 | [Architecture](docs/architecture/ARCHITECTURE.md)     | System design           |
 | [API Documentation](docs/api/JWT_API.md)              | REST API reference      |
