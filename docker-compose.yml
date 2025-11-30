@@ -2,19 +2,12 @@
 # Docker Compose for NoteHub - Hetzner VPS Deployment
 # =============================================================================
 #
-# Deploy NoteHub on Hetzner VPS (€3.29/month) with Cloudflare Tunnel (free)
-#
-# Benefits:
-# - Unlimited bandwidth via Cloudflare CDN
-# - Automatic HTTPS & DDoS protection
-# - MySQL included (no external DB needed)
-# - Full control over your server
-# - No port forwarding required
+# Deploy NoteHub on Hetzner VPS (€2.99/month)
 #
 # Quick Start:
 #   1. Copy .env.example to .env and configure
 #   2. Run: docker compose up -d
-#   3. Access via your Cloudflare domain
+#   3. Access via http://YOUR_SERVER_IP:8080
 #
 # =============================================================================
 
@@ -28,6 +21,8 @@ services:
       dockerfile: Dockerfile
     container_name: notehub-app
     restart: unless-stopped
+    ports:
+      - "8080:8080"
     environment:
       # Flask Configuration
       - FLASK_ENV=production
@@ -79,22 +74,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    networks:
-      - notehub-network
-
-  # ==========================================================================
-  # Cloudflare Tunnel (exposes app to internet securely)
-  # ==========================================================================
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: notehub-tunnel
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
-    depends_on:
-      notehub:
-        condition: service_healthy
     networks:
       - notehub-network
 
