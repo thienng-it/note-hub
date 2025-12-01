@@ -25,9 +25,21 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security middleware
+// Security middleware with CSP configured for SPA
 app.use(helmet({
-  contentSecurityPolicy: false, // Disable for SPA
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"]
+    }
+  },
   crossOriginEmbedderPolicy: false
 }));
 
@@ -37,13 +49,20 @@ app.use(cors({
   credentials: true
 }));
 
-// Rate limiting
-const limiter = rateLimit({
+// Rate limiting for API routes
+const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: { error: 'Too many requests, please try again later' }
 });
-app.use('/api/', limiter);
+app.use('/api/', apiLimiter);
+
+// Rate limiting for static files (less restrictive)
+const staticLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 500, // Higher limit for static assets
+  message: { error: 'Too many requests' }
+});
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
@@ -74,13 +93,13 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Serve static files from React frontend build
+// Serve static files from React frontend build with rate limiting
 const frontendPath = path.join(__dirname, '../../frontend/dist');
 if (fs.existsSync(frontendPath)) {
-  app.use(express.static(frontendPath));
+  app.use(staticLimiter, express.static(frontendPath));
   
   // SPA fallback - serve index.html for non-API routes
-  app.get('*', (req, res, next) => {
+  app.get('*', staticLimiter, (req, res, next) => {
     if (req.path.startsWith('/api/')) {
       return next();
     }
