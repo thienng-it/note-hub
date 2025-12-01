@@ -83,7 +83,7 @@ export function ShareNotePage() {
 
     try {
       await apiClient.delete(`/api/notes/${id}/shares/${userId}`);
-      setSharedWith(sharedWith.filter((u) => u.id !== userId));
+      setSharedWith(prev => prev.filter((u) => u.id !== userId));
       setSuccess(`Share removed for ${userName}`);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to remove share';

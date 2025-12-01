@@ -64,7 +64,8 @@ export function InvitePage() {
     try {
       await navigator.clipboard.writeText(text);
     } catch {
-      // Fallback for browsers that don't support clipboard API
+      // Fallback for older browsers that don't support the Clipboard API
+      // Note: execCommand('copy') is deprecated but provides necessary fallback for IE11 and older browsers
       const textArea = document.createElement('textarea');
       textArea.value = text;
       document.body.appendChild(textArea);

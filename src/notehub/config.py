@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import secrets
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass(slots=True)
@@ -115,7 +116,6 @@ class AppConfig:
             db_path = self.sqlite_path
             if not db_path.startswith('/'):
                 # For relative paths, make sure parent directory exists
-                from pathlib import Path
                 parent = Path(db_path).parent
                 if parent != Path('.') and not parent.exists():
                     parent.mkdir(parents=True, exist_ok=True)

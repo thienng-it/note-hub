@@ -58,7 +58,8 @@ export function Setup2FAPage() {
       await navigator.clipboard.writeText(secret);
       // Could add a toast notification here
     } catch {
-      // Fallback for browsers that don't support clipboard API
+      // Fallback for older browsers that don't support the Clipboard API
+      // Note: execCommand('copy') is deprecated but provides necessary fallback for IE11 and older browsers
       const textArea = document.createElement('textarea');
       textArea.value = secret;
       document.body.appendChild(textArea);

@@ -103,15 +103,27 @@ export function ProfilePage() {
           <div className="flex items-center justify-between py-3">
             <div>
               <span className="font-medium text-[var(--text-primary)]">Two-Factor Authentication</span>
-              <p className="text-sm text-[var(--text-muted)]">Add an extra layer of security</p>
+              <p className="text-sm text-[var(--text-muted)]">
+                {user.has_2fa ? 'Enabled - Your account is protected' : 'Add an extra layer of security'}
+              </p>
             </div>
-            <Link
-              to="/profile/2fa/setup"
-              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center"
-            >
-              <i className="fas fa-shield-alt mr-2"></i>
-              Setup 2FA
-            </Link>
+            {user.has_2fa ? (
+              <Link
+                to="/profile/2fa/disable"
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors inline-flex items-center"
+              >
+                <i className="fas fa-shield-alt mr-2"></i>
+                Disable 2FA
+              </Link>
+            ) : (
+              <Link
+                to="/profile/2fa/setup"
+                className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center"
+              >
+                <i className="fas fa-shield-alt mr-2"></i>
+                Setup 2FA
+              </Link>
+            )}
           </div>
         </div>
       </div>
