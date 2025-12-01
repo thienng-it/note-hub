@@ -11,8 +11,11 @@ from dataclasses import dataclass, field
 class AppConfig:
     """Simple configuration container with sane defaults."""
 
-    # MySQL configuration
-    db_host: str = field(default_factory=lambda: os.getenv("MYSQL_HOST", "localhost"))
+    # SQLite configuration (default, used when NOTES_DB_PATH is set)
+    sqlite_path: str = field(default_factory=lambda: os.getenv("NOTES_DB_PATH", ""))
+    
+    # MySQL configuration (used when MYSQL_HOST is explicitly set)
+    db_host: str = field(default_factory=lambda: os.getenv("MYSQL_HOST", ""))
     db_port: int = field(default_factory=lambda: int(os.getenv("MYSQL_PORT", "3306")))
     db_user: str = field(default_factory=lambda: os.getenv("MYSQL_USER", "notehub"))
     db_password: str = field(default_factory=lambda: os.getenv("MYSQL_PASSWORD", ""))
@@ -31,14 +34,20 @@ class AppConfig:
         import logging
         logger = logging.getLogger(__name__)
         
-        # Log database configuration for debugging
-        logger.info(f"📊 Database configured: {self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}")
+        # Determine database type
+        if self.sqlite_path:
+            logger.info(f"📊 Database configured: SQLite at {self.sqlite_path}")
+        elif self.db_host:
+            logger.info(f"📊 Database configured: MySQL {self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}")
+        else:
+            # Default to SQLite
+            logger.info("📊 Database configured: SQLite (default notes.db)")
         
         # Check if running in production (Render sets PORT env var)
         is_production = bool(os.getenv("PORT"))
         
-        # Warn about missing MySQL configuration in production
-        if is_production:
+        # Warn about missing MySQL configuration in production when using MySQL
+        if is_production and self.db_host:
             if not self.db_password:
                 logger.error(
                     "❌ MYSQL_PASSWORD not set! Your app will fail to start.\n"
@@ -92,16 +101,37 @@ class AppConfig:
     def database_uri(self) -> str:
         """Build database connection URI.
         
-        Supports external MySQL with SSL (PlanetScale, Railway, etc.)
+        Supports:
+        - SQLite (default, or via NOTES_DB_PATH)
+        - MySQL with SSL (PlanetScale, Railway, etc.)
         """
         from urllib.parse import quote_plus
         import logging
         logger = logging.getLogger(__name__)
         
-        # Encode password to handle special characters
-        encoded_password = quote_plus(self.db_password) if self.db_password else ""
+        # Use SQLite if NOTES_DB_PATH is set or if MYSQL_HOST is not set
+        if self.sqlite_path:
+            # Handle both relative and absolute paths
+            db_path = self.sqlite_path
+            if not db_path.startswith('/'):
+                # For relative paths, make sure parent directory exists
+                from pathlib import Path
+                parent = Path(db_path).parent
+                if parent != Path('.') and not parent.exists():
+                    parent.mkdir(parents=True, exist_ok=True)
+            uri = f"sqlite:///{db_path}"
+            logger.debug(f"Database URI: {uri}")
+            return uri
+        
+        if not self.db_host:
+            # Default to SQLite in current directory
+            uri = "sqlite:///notes.db"
+            logger.debug(f"Database URI: {uri}")
+            return uri
         
         # Build MySQL URI with pymysql driver
+        encoded_password = quote_plus(self.db_password) if self.db_password else ""
+        
         # Add SSL for cloud providers (PlanetScale, etc.)
         ssl_args = "charset=utf8mb4&ssl_disabled=false"
         

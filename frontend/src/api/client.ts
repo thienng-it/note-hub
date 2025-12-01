@@ -234,3 +234,35 @@ export const healthApi = {
     return apiRequest('/api/health');
   },
 };
+
+// Generic API client for custom endpoints
+export const apiClient = {
+  async get<T = unknown>(endpoint: string): Promise<T> {
+    return apiRequest<T>(endpoint);
+  },
+
+  async post<T = unknown>(endpoint: string, data?: unknown): Promise<T> {
+    return apiRequest<T>(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  },
+
+  async put<T = unknown>(endpoint: string, data?: unknown): Promise<T> {
+    return apiRequest<T>(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  },
+
+  async patch<T = unknown>(endpoint: string, data?: unknown): Promise<T> {
+    return apiRequest<T>(endpoint, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  },
+
+  async delete<T = unknown>(endpoint: string): Promise<T> {
+    return apiRequest<T>(endpoint, { method: 'DELETE' });
+  },
+};

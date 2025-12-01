@@ -10,9 +10,17 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { NotesPage } from './pages/NotesPage';
 import { NoteViewPage } from './pages/NoteViewPage';
 import { NoteEditPage } from './pages/NoteEditPage';
+import { ShareNotePage } from './pages/ShareNotePage';
 import { TasksPage } from './pages/TasksPage';
+import { EditTaskPage } from './pages/EditTaskPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { EditProfilePage } from './pages/EditProfilePage';
+import { ChangePasswordPage } from './pages/ChangePasswordPage';
+import { Setup2FAPage } from './pages/Setup2FAPage';
+import { Disable2FAPage } from './pages/Disable2FAPage';
+import { InvitePage } from './pages/InvitePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { ErrorPage } from './pages/ErrorPage';
 import './App.css';
 
 function AppRoutes() {
@@ -46,10 +54,19 @@ function AppRoutes() {
         <Route path="/notes/new" element={<NoteEditPage />} />
         <Route path="/notes/:id" element={<NoteViewPage />} />
         <Route path="/notes/:id/edit" element={<NoteEditPage />} />
+        <Route path="/notes/:id/share" element={<ShareNotePage />} />
         <Route path="/tasks" element={<TasksPage />} />
+        <Route path="/tasks/new" element={<EditTaskPage />} />
+        <Route path="/tasks/:id/edit" element={<EditTaskPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/edit" element={<EditProfilePage />} />
+        <Route path="/profile/change-password" element={<ChangePasswordPage />} />
+        <Route path="/profile/2fa/setup" element={<Setup2FAPage />} />
+        <Route path="/profile/2fa/disable" element={<Disable2FAPage />} />
+        <Route path="/invite" element={<InvitePage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
       </Route>
+      <Route path="/error" element={<ErrorPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

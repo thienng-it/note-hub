@@ -3,8 +3,10 @@ export interface User {
   id: number;
   username: string;
   email?: string;
+  bio?: string;
   created_at?: string;
   theme?: 'light' | 'dark';
+  has_2fa?: boolean;
 }
 
 // Auth types
