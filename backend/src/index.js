@@ -148,6 +148,9 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-start();
+// Only start server if this file is run directly (not imported for testing)
+if (require.main === module) {
+  start();
+}
 
 module.exports = app;

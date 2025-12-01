@@ -11,5 +11,9 @@ module.exports = {
   moduleFileExtensions: ['js', 'json'],
   clearMocks: true,
   resetMocks: true,
-  restoreMocks: true
+  restoreMocks: true,
+  // Ensure tests exit properly
+  testTimeout: 10000,
+  forceExit: true,
+  detectOpenHandles: false
 };
