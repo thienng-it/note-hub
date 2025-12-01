@@ -132,17 +132,29 @@ class AppConfig:
             # Build MySQL URI with pymysql driver
             encoded_password = quote_plus(self.db_password) if self.db_password else ""
             
-            # Disable SSL for local Docker containers, enable for external hosts
-            is_docker_network = self.db_host in ('mysql', 'db', 'database', 'localhost', '127.0.0.1')
-            ssl_args = "charset=utf8mb4" if is_docker_network else "charset=utf8mb4&ssl_disabled=false"
+            # Disable SSL for local/Docker containers (configurable via MYSQL_SSL_DISABLED)
+            # Default: disable SSL for common Docker network hostnames and local IPs
+            ssl_disabled_env = os.getenv("MYSQL_SSL_DISABLED", "").lower()
+            if ssl_disabled_env == "true":
+                is_local = True
+            elif ssl_disabled_env == "false":
+                is_local = False
+            else:
+                # Auto-detect: disable SSL for common Docker/local hostnames
+                is_local = (
+                    self.db_host in ('mysql', 'db', 'database', 'localhost', '127.0.0.1') or
+                    self.db_host.startswith('10.') or
+                    self.db_host.startswith('172.') or
+                    self.db_host.startswith('192.168.')
+                )
+            
+            ssl_args = "charset=utf8mb4" if is_local else "charset=utf8mb4&ssl_disabled=false"
             
             if encoded_password:
                 uri = f"mysql+pymysql://{self.db_user}:{encoded_password}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
             else:
                 uri = f"mysql+pymysql://{self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
             
-            # Log connection details (hide password)
-            safe_uri = uri.replace(encoded_password, "***") if encoded_password else uri
             logger.info(f"📊 Using MySQL database: {self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}")
             return uri
         
