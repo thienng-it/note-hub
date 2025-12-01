@@ -1,3 +1,6 @@
+/* Import Tailwind CSS v4 */
+@import "tailwindcss";
+
 /* CSS Custom Properties for theming */
 :root {
   --primary-color: #3b82f6;
