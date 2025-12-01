@@ -15,11 +15,11 @@
 #   3. Run: docker compose --profile mysql up -d
 #
 # Database Seeding:
-#   docker compose exec backend python scripts/seed_db.py
+#   docker compose exec backend node scripts/seed_db.js
 #
 # Services:
 #   - frontend: React SPA served by nginx (port 80)
-#   - backend: Flask API with Gunicorn (internal port 5000)
+#   - backend: Node.js/Express API (internal port 5000)
 #   - mysql: MySQL 8.0 database (optional, internal port 3306)
 #
 # =============================================================================
@@ -51,17 +51,17 @@ services:
       start_period: 5s
 
   # ==========================================================================
-  # Backend - Flask API with Gunicorn
+  # Backend - Node.js/Express API
   # ==========================================================================
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile.backend.node
     container_name: notehub-backend
     restart: unless-stopped
     environment:
-      # Flask Configuration
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      # JWT Configuration
+      - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
       - PORT=5000
 
       # Admin Credentials (REQUIRED: set in .env file)
@@ -70,34 +70,31 @@ services:
 
       # Database - SQLite (default)
       - NOTES_DB_PATH=${NOTES_DB_PATH:-/app/data/notes.db}
-
-      # CAPTCHA
-      - CAPTCHA_TYPE=${CAPTCHA_TYPE:-simple}
     volumes:
       - notehub-data:/app/data
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 20s
     networks:
       - notehub-network
 
   # ==========================================================================
-  # Backend with MySQL - Flask API with Gunicorn (use --profile mysql)
+  # Backend with MySQL - Node.js/Express API (use --profile mysql)
   # ==========================================================================
   backend-mysql:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile.backend.node
     container_name: notehub-backend-mysql
     restart: unless-stopped
     profiles:
       - mysql
     environment:
-      # Flask Configuration
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      # JWT Configuration
+      - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
       - PORT=5000
 
       # Admin Credentials (REQUIRED: set in .env file)
@@ -111,18 +108,15 @@ services:
       - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
-
-      # CAPTCHA
-      - CAPTCHA_TYPE=${CAPTCHA_TYPE:-simple}
     depends_on:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
+      start_period: 30s
     networks:
       - notehub-network
 

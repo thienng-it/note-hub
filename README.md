@@ -1,6 +1,6 @@
 # NoteHub 📝
 
-A modern, secure, and feature-rich personal notes application with a React SPA frontend and Flask API backend.
+A modern, secure, and feature-rich personal notes application with a React SPA frontend and Node.js/Express API backend.
 
 ![CI/CD Pipeline](https://github.com/thienng-it/note-hub/actions/workflows/ci-cd.yml/badge.svg?branch=main)
 
@@ -28,14 +28,14 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 
 ## 🏗️ Tech Stack
 
-| Layer          | Technology                      |
-| -------------- | ------------------------------- |
-| **Frontend**   | Vite + React 19 + TypeScript    |
-| **Backend**    | Python Flask 3.x + Gunicorn     |
-| **Database**   | SQLite (dev) / MySQL (prod)     |
-| **API**        | RESTful with JWT authentication |
-| **Deployment** | Docker + nginx + Hetzner VPS    |
-| **CI/CD**      | GitHub Actions + GitHub Pages   |
+| Layer          | Technology                       |
+| -------------- | -------------------------------- |
+| **Frontend**   | Vite + React 19 + TypeScript     |
+| **Backend**    | Node.js + Express                |
+| **Database**   | SQLite (dev) / MySQL (prod)      |
+| **API**        | RESTful with JWT authentication  |
+| **Deployment** | Docker + nginx + Hetzner VPS     |
+| **CI/CD**      | GitHub Actions + GitHub Pages    |
 
 ## ✨ Features
 
@@ -43,8 +43,7 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 - 🏷️ **Smart Organization** - Tags, favorites, pinning, and powerful search
 - ✅ **Task Management** - Create and track tasks with priorities and due dates
 - 🔐 **Two-Factor Authentication** - TOTP-based 2FA with QR code setup
-- 🔒 **Security First** - JWT auth, CSRF protection, password policy, HTML sanitization
-- 🤖 **CAPTCHA Protection** - Built-in math CAPTCHA or Google reCAPTCHA options
+- 🔒 **Security First** - JWT auth, password policy, HTML sanitization
 - 👥 **Collaboration** - Share notes with other users with view/edit permissions
 - 🎨 **Customizable UI** - Light/dark mode, responsive glassmorphism design
 - 📱 **Mobile-Friendly** - Works seamlessly on all devices
@@ -57,7 +56,6 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Python 3.11+
 - Git
 
 ### Local Development
@@ -69,23 +67,20 @@ git clone https://github.com/thienng-it/note-hub.git
 cd note-hub
 ```
 
-#### 2. Backend Setup (Python Flask API)
+#### 2. Backend Setup (Node.js/Express API)
 
 ```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-# venv\Scripts\activate   # Windows
+cd backend
 
 # Install dependencies
-pip install -r requirements.txt
+npm install
 
 # Configure environment (optional - uses SQLite by default)
-export SECRET_KEY="your-secret-key-here"
+export JWT_SECRET="your-secret-key-here"
 export NOTES_ADMIN_PASSWORD="your-secure-password"
 
 # Run the backend API
-python wsgi.py
+npm run dev
 # Backend API runs at http://localhost:5000
 ```
 
@@ -97,7 +92,7 @@ cd frontend
 # Install dependencies
 npm install
 
-# Run development server (proxies API to Flask)
+# Run development server (proxies API to backend)
 npm run dev
 # Frontend runs at http://localhost:3000
 ```
@@ -115,7 +110,7 @@ nano .env  # Set NOTES_ADMIN_PASSWORD and other values
 docker compose up -d
 
 # Seed the database with sample data
-docker compose exec backend python scripts/seed_db.py
+docker compose exec backend node scripts/seed_db.js
 
 # Access at http://localhost
 ```
@@ -130,7 +125,7 @@ docker compose exec backend python scripts/seed_db.py
 docker compose --profile mysql up -d
 
 # Seed the MySQL database
-docker compose exec backend-mysql python scripts/seed_db.py
+docker compose exec backend-mysql node scripts/seed_db.js
 
 # Access at http://localhost
 ```
@@ -139,7 +134,7 @@ Or build individual images:
 
 ```bash
 # Build backend
-docker build -f Dockerfile.backend -t notehub-backend .
+docker build -f Dockerfile.backend.node -t notehub-backend .
 
 # Build frontend
 docker build -f Dockerfile.frontend -t notehub-frontend .
@@ -149,7 +144,7 @@ docker build -f Dockerfile.frontend -t notehub-frontend .
 
 After running the seed script, use these credentials to login:
 - **Admin**: `admin` / (password set in `NOTES_ADMIN_PASSWORD` env var)
-- **Demo**: `demo` / `demo123456789`
+- **Demo**: `demo` / `Demo12345678!`
 
 ## 📦 Project Structure
 
@@ -166,31 +161,33 @@ note-hub/
 │   ├── public/                # Static assets
 │   ├── vite.config.ts         # Vite + Vitest configuration
 │   └── package.json           # Frontend dependencies
-├── src/
-│   └── notehub/               # Flask API application
-│       ├── routes_modules/    # API route handlers
-│       │   └── api_routes.py  # JWT-authenticated REST API
-│       ├── services/          # Business logic
-│       ├── models.py          # SQLAlchemy models
-│       └── config.py          # Configuration
-├── scripts/                   # Utility scripts
-│   └── seed_db.py             # Database seeding script
-├── tests/                     # Backend test suite
+├── backend/                   # Node.js/Express API
+│   ├── src/
+│   │   ├── routes/            # API route handlers
+│   │   ├── services/          # Business logic
+│   │   ├── middleware/        # Authentication middleware
+│   │   ├── config/            # Database configuration
+│   │   └── index.js           # Application entry point
+│   ├── scripts/               # Utility scripts
+│   │   └── seed_db.js         # Database seeding script
+│   ├── tests/                 # Backend test suite
+│   └── package.json           # Backend dependencies
 ├── docker/                    # Docker configuration
 │   └── nginx.conf             # nginx config for frontend
 ├── docker-compose.yml         # Full stack deployment
-├── Dockerfile.backend         # Backend Docker image
-├── Dockerfile.frontend        # Frontend Docker image
-├── requirements.txt           # Python dependencies
-└── wsgi.py                    # Application entry point
+├── Dockerfile.backend.node    # Backend Docker image
+└── Dockerfile.frontend        # Frontend Docker image
 ```
 
 ## 🧪 Testing
 
 ```bash
 # Backend tests
-cd /path/to/note-hub
-PYTHONPATH=src pytest tests/ -v
+cd backend
+npm test
+
+# Backend with coverage
+npm test -- --coverage
 
 # Frontend tests
 cd frontend
@@ -199,7 +196,7 @@ npm run test
 # Frontend with coverage
 npm run test:coverage
 
-# Lint frontend
+# Lint
 npm run lint
 ```
 
