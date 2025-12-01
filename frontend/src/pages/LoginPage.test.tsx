@@ -23,8 +23,8 @@ describe('LoginPage', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText('Beautiful Notes')).toBeInTheDocument();
-    expect(screen.getByText('Sign in to your account')).toBeInTheDocument();
+    expect(screen.getByText('NoteHub')).toBeInTheDocument();
+    expect(screen.getByText('Welcome back! Sign in to continue')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Enter your username or email')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Enter your password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
@@ -47,6 +47,21 @@ describe('LoginPage', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText('Sign up')).toBeInTheDocument();
+    expect(screen.getByText('Create an account')).toBeInTheDocument();
+  });
+
+  it('has proper accessibility attributes', () => {
+    render(
+      <TestWrapper>
+        <LoginPage />
+      </TestWrapper>
+    );
+
+    // Check for proper form labeling
+    expect(screen.getByLabelText('Username or Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    
+    // Check for proper input types
+    expect(screen.getByPlaceholderText('Enter your username or email')).toHaveAttribute('type', 'text');
   });
 });
