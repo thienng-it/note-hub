@@ -102,15 +102,19 @@ class AppConfig:
     def database_uri(self) -> str:
         """Build database connection URI.
         
-        Supports:
-        - SQLite (default, or via NOTES_DB_PATH)
-        - MySQL with SSL (PlanetScale, Railway, etc.)
+        Priority:
+        1. SQLite if NOTES_DB_PATH is set (Docker default)
+        2. MySQL if MYSQL_HOST is set and NOTES_DB_PATH is not set
+        3. SQLite (notes.db) as fallback
+        
+        This ensures Docker SQLite deployment works even if MySQL vars exist in .env
         """
         from urllib.parse import quote_plus
         import logging
         logger = logging.getLogger(__name__)
         
-        # Use SQLite if NOTES_DB_PATH is set or if MYSQL_HOST is not set
+        # Priority 1: Use SQLite if NOTES_DB_PATH is explicitly set
+        # This takes precedence over MYSQL_HOST to support Docker SQLite deployment
         if self.sqlite_path:
             # Handle both relative and absolute paths
             db_path = self.sqlite_path
@@ -120,28 +124,29 @@ class AppConfig:
                 if parent != Path('.') and not parent.exists():
                     parent.mkdir(parents=True, exist_ok=True)
             uri = f"sqlite:///{db_path}"
-            logger.debug(f"Database URI: {uri}")
+            logger.info(f"📊 Using SQLite database: {db_path}")
             return uri
         
-        if not self.db_host:
-            # Default to SQLite in current directory
-            uri = "sqlite:///notes.db"
-            logger.debug(f"Database URI: {uri}")
+        # Priority 2: Use MySQL if MYSQL_HOST is set
+        if self.db_host:
+            # Build MySQL URI with pymysql driver
+            encoded_password = quote_plus(self.db_password) if self.db_password else ""
+            
+            # Disable SSL for local Docker containers, enable for external hosts
+            is_docker_network = self.db_host in ('mysql', 'db', 'database', 'localhost', '127.0.0.1')
+            ssl_args = "charset=utf8mb4" if is_docker_network else "charset=utf8mb4&ssl_disabled=false"
+            
+            if encoded_password:
+                uri = f"mysql+pymysql://{self.db_user}:{encoded_password}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
+            else:
+                uri = f"mysql+pymysql://{self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
+            
+            # Log connection details (hide password)
+            safe_uri = uri.replace(encoded_password, "***") if encoded_password else uri
+            logger.info(f"📊 Using MySQL database: {self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}")
             return uri
         
-        # Build MySQL URI with pymysql driver
-        encoded_password = quote_plus(self.db_password) if self.db_password else ""
-        
-        # Add SSL for cloud providers (PlanetScale, etc.)
-        ssl_args = "charset=utf8mb4&ssl_disabled=false"
-        
-        if encoded_password:
-            uri = f"mysql+pymysql://{self.db_user}:{encoded_password}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
-        else:
-            uri = f"mysql+pymysql://{self.db_user}@{self.db_host}:{self.db_port}/{self.db_name}?{ssl_args}"
-        
-        # Log connection details (hide password)
-        safe_uri = uri.replace(encoded_password, "***") if encoded_password else uri
-        logger.debug(f"Database URI: {safe_uri}")
-        
+        # Priority 3: Default to SQLite in current directory
+        uri = "sqlite:///notes.db"
+        logger.info("📊 Using SQLite database: notes.db (default)")
         return uri

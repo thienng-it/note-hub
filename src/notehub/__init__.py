@@ -6,10 +6,12 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables from .env file ONLY if not already set
+# In Docker, environment variables are set by docker-compose, so .env should not override them
 env_path = Path(__file__).resolve().parents[2] / '.env'
 if env_path.exists():
-    load_dotenv(env_path)
+    # override=False means existing environment variables take precedence
+    load_dotenv(env_path, override=False)
 
 from flask import Flask, jsonify, send_from_directory, session
 from flask_wtf.csrf import CSRFError
