@@ -35,7 +35,7 @@ RUN mkdir -p /app/data
 ENV PORT=5000
 ENV NOTES_DB_PATH=/app/data/notes.db
 ENV SECRET_KEY=change-me-in-production
-ENV NOTES_ADMIN_PASSWORD=admin123456789
+# Note: NOTES_ADMIN_PASSWORD should be set at runtime via docker-compose or environment
 
 # Expose port
 EXPOSE 5000

@@ -41,7 +41,7 @@ def seed_database():
                 password=generate_password_hash(admin_password)
             )
             db.session.add(admin)
-            print(f"✅ Created admin user (password: {admin_password})")
+            print("✅ Created admin user")
 
         # Create demo user
         demo = User.query.filter_by(username='demo').first()
@@ -293,7 +293,7 @@ SELECT * FROM users WHERE active = true;
 
         print("\n🎉 Database seeding completed successfully!")
         print("\n📋 Login credentials:")
-        print(f"   Admin: admin / {os.environ.get('NOTES_ADMIN_PASSWORD', 'admin123456789')}")
+        print("   Admin: admin / (see NOTES_ADMIN_PASSWORD env var)")
         print("   Demo:  demo / demo123456789")
 
 

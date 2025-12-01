@@ -64,9 +64,9 @@ services:
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
       - PORT=5000
 
-      # Admin Credentials
+      # Admin Credentials (REQUIRED: set in .env file)
       - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
-      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:-admin123456789}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
 
       # Database - SQLite (default)
       - NOTES_DB_PATH=${NOTES_DB_PATH:-/app/data/notes.db}
@@ -100,16 +100,16 @@ services:
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
       - PORT=5000
 
-      # Admin Credentials
+      # Admin Credentials (REQUIRED: set in .env file)
       - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
-      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:-admin123456789}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
 
       # MySQL Database Configuration
       # IMPORTANT: Use container name 'mysql' not 'localhost'
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
-      - MYSQL_USER=${MYSQL_USER:-notehub}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-notehub_password}
+      - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
 
       # CAPTCHA
@@ -136,10 +136,10 @@ services:
     profiles:
       - mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_password}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env file}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
-      - MYSQL_USER=${MYSQL_USER:-notehub}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-notehub_password}
+      - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:

@@ -107,9 +107,9 @@ npm run dev
 Deploy the full stack with Docker Compose:
 
 ```bash
-# Copy and configure environment
+# Copy and configure environment (REQUIRED)
 cp .env.example .env
-nano .env  # Edit with your values
+nano .env  # Set NOTES_ADMIN_PASSWORD and other values
 
 # Build and run (uses SQLite by default)
 docker compose up -d
@@ -123,6 +123,9 @@ docker compose exec backend python scripts/seed_db.py
 #### With MySQL Database
 
 ```bash
+# Set required MySQL credentials in .env first
+# MYSQL_ROOT_PASSWORD, MYSQL_USER, MYSQL_PASSWORD
+
 # Run with MySQL profile
 docker compose --profile mysql up -d
 
@@ -144,12 +147,9 @@ docker build -f Dockerfile.frontend -t notehub-frontend .
 
 ### Default Credentials
 
-After running the seed script:
-
-| User  | Password          | Role  |
-|-------|-------------------|-------|
-| admin | admin123456789    | Admin |
-| demo  | demo123456789     | User  |
+After running the seed script, use these credentials to login:
+- **Admin**: `admin` / (password set in `NOTES_ADMIN_PASSWORD` env var)
+- **Demo**: `demo` / `demo123456789`
 
 ## 📦 Project Structure
 
