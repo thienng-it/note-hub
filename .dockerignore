@@ -60,9 +60,12 @@ infra/
 deployment_guides/
 config/
 
-# Scripts not needed in production
-
-scripts/
+# Scripts - keep seed_db.py for database seeding
+# Only ignore monitoring scripts
+scripts/monitoring/
+scripts/setup*.sh
+scripts/quick_test.sh
+scripts/manual_e2e_test.py
 
 # Public folder (using Vite build output instead)
 

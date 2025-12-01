@@ -24,7 +24,7 @@ class AppConfig:
     
     admin_username: str = field(default_factory=lambda: os.getenv("NOTES_ADMIN_USERNAME", "admin"))
     admin_password: str = field(default_factory=lambda: os.getenv("NOTES_ADMIN_PASSWORD", "ChangeMeNow!42"))
-    secret_key: str = field(default_factory=lambda: os.getenv("FLASK_SECRET") or secrets.token_hex(32))
+    secret_key: str = field(default_factory=lambda: os.getenv("SECRET_KEY") or os.getenv("FLASK_SECRET") or secrets.token_hex(32))
     max_content_length: int = 16 * 1024 * 1024
     recaptcha_site_key: str = field(default_factory=lambda: os.getenv("RECAPTCHA_SITE_KEY", ""))
     recaptcha_secret_key: str = field(default_factory=lambda: os.getenv("RECAPTCHA_SECRET_KEY", ""))
