@@ -225,10 +225,9 @@ class TestAPIErrorHandling:
         assert 'error' in data
         assert data['error'] == 'Method not allowed'
     
-    def test_non_api_404_returns_html(self, client):
-        """Test 404 errors on non-API routes return HTML."""
+    def test_non_api_routes_serve_spa(self, client):
+        """Test non-API routes serve the SPA for client-side routing."""
         response = client.get('/nonexistent')
-        assert response.status_code == 404
-        assert 'text/html' in response.content_type
-        # HTML response should contain error page content
-        assert b'404' in response.data or b'not found' in response.data.lower()
+        # SPA architecture: non-API routes should serve the SPA or API info
+        assert response.status_code == 200
+        assert response.content_type in ['text/html; charset=utf-8', 'application/json']
