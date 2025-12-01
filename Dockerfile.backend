@@ -25,6 +25,7 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
 # Copy application code
 COPY src/ ./src/
+COPY scripts/ ./scripts/
 COPY wsgi.py .
 
 # Create data directory for SQLite
@@ -34,7 +35,7 @@ RUN mkdir -p /app/data
 ENV PORT=5000
 ENV NOTES_DB_PATH=/app/data/notes.db
 ENV SECRET_KEY=change-me-in-production
-ENV ADMIN_PASSWORD=change-me
+ENV NOTES_ADMIN_PASSWORD=admin123456789
 
 # Expose port
 EXPOSE 5000

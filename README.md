@@ -111,8 +111,23 @@ Deploy the full stack with Docker Compose:
 cp .env.example .env
 nano .env  # Edit with your values
 
-# Build and run
+# Build and run (uses SQLite by default)
 docker compose up -d
+
+# Seed the database with sample data
+docker compose exec backend python scripts/seed_db.py
+
+# Access at http://localhost
+```
+
+#### With MySQL Database
+
+```bash
+# Run with MySQL profile
+docker compose --profile mysql up -d
+
+# Seed the MySQL database
+docker compose exec backend-mysql python scripts/seed_db.py
 
 # Access at http://localhost
 ```
@@ -126,6 +141,15 @@ docker build -f Dockerfile.backend -t notehub-backend .
 # Build frontend
 docker build -f Dockerfile.frontend -t notehub-frontend .
 ```
+
+### Default Credentials
+
+After running the seed script:
+
+| User  | Password          | Role  |
+|-------|-------------------|-------|
+| admin | admin123456789    | Admin |
+| demo  | demo123456789     | User  |
 
 ## 📦 Project Structure
 
@@ -149,6 +173,8 @@ note-hub/
 │       ├── services/          # Business logic
 │       ├── models.py          # SQLAlchemy models
 │       └── config.py          # Configuration
+├── scripts/                   # Utility scripts
+│   └── seed_db.py             # Database seeding script
 ├── tests/                     # Backend test suite
 ├── docker/                    # Docker configuration
 │   └── nginx.conf             # nginx config for frontend
