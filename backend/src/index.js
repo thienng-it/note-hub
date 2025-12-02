@@ -5,14 +5,15 @@
  * Supports both SQLite (default) and MySQL databases.
  */
 const path = require('path');
+const fs = require('fs');
+
+// Load .env from project root
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const path = require('path');
-const fs = require('fs');
 
 const db = require('./config/database');
 

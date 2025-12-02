@@ -2,10 +2,17 @@
  * Database Seed Script
  * 
  * Creates default admin and demo users with sample data.
- * Run with: node scripts/seed_db.js
  * 
- * From root folder: NOTES_DB_PATH=./data/notes.db node scripts/seed_db.js
- * From Docker: docker compose exec backend node scripts/seed_db.js
+ * IMPORTANT: This script should only be used in development/staging environments.
+ * In production, connect to a cloud database with pre-configured data.
+ * 
+ * Usage:
+ *   From root folder: NOTES_DB_PATH=./data/notes.db node scripts/seed_db.js
+ *   From Docker:      docker compose exec backend node scripts/seed_db.js
+ * 
+ * Environment:
+ *   - NODE_ENV=production: Will exit with error (use cloud DB instead)
+ *   - NODE_ENV=development (default): Runs seed script
  */
 const path = require('path');
 const fs = require('fs');
@@ -16,6 +23,17 @@ if (fs.existsSync(envPath)) {
   require('dotenv').config({ path: envPath });
 } else {
   require('dotenv').config();
+}
+
+// Check environment - do not seed in production
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const FORCE_SEED = process.env.FORCE_SEED === 'true';
+
+if (NODE_ENV === 'production' && !FORCE_SEED) {
+  console.error('❌ Cannot run seed script in production mode.');
+  console.error('   Production environments should connect to a pre-configured cloud database.');
+  console.error('   If you really need to seed production, set FORCE_SEED=true');
+  process.exit(1);
 }
 
 // Resolve database module path (works in both local dev and Docker)
@@ -36,7 +54,7 @@ const bcrypt = require('bcryptjs');
 
 async function seed() {
   try {
-    console.log('🌱 Starting database seed...');
+    console.log(`🌱 Starting database seed (${NODE_ENV} mode)...`);
     
     await db.connect();
     await db.initSchema();

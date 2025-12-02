@@ -4,29 +4,32 @@
 #
 # Deploy NoteHub on any VPS (Hetzner, DigitalOcean, etc.)
 #
-# Quick Start:
-#   1. Copy .env.example to .env and configure
-#   2. Run: docker compose up -d
-#   3. Access via http://YOUR_SERVER_IP
-#
-# With MySQL (optional):
-#   1. Uncomment the mysql service below
-#   2. Set MYSQL_* environment variables in backend
-#   3. Run: docker compose --profile mysql up -d
-#
-# Database Seeding:
+# Development Mode (default - uses SQLite with local data):
+#   docker compose up -d
 #   docker compose exec backend node scripts/seed_db.js
+#
+# Production Mode (uses environment variables for cloud DB):
+#   docker compose --profile production up -d
+#   # Do NOT run seed script - use pre-configured cloud database
+#
+# With MySQL (development):
+#   docker compose --profile mysql up -d
+#   docker compose exec backend-mysql node scripts/seed_db.js
 #
 # Services:
 #   - frontend: React SPA served by nginx (port 80)
 #   - backend: Node.js/Express API (internal port 5000)
 #   - mysql: MySQL 8.0 database (optional, internal port 3306)
 #
+# Environment Modes:
+#   - NODE_ENV=development: Local SQLite, seeding allowed
+#   - NODE_ENV=production: Cloud DB URL, seeding blocked
+#
 # =============================================================================
 
 services:
   # ==========================================================================
-  # Frontend - React SPA with nginx
+  # Frontend - React SPA with nginx (Development)
   # ==========================================================================
   frontend:
     build:
@@ -51,7 +54,7 @@ services:
       start_period: 5s
 
   # ==========================================================================
-  # Backend - Node.js/Express API
+  # Backend - Node.js/Express API (Development - SQLite)
   # ==========================================================================
   backend:
     build:
@@ -60,6 +63,9 @@ services:
     container_name: notehub-backend
     restart: unless-stopped
     environment:
+      # Development mode (allows seeding)
+      - NODE_ENV=development
+      
       # JWT Configuration
       - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
       - PORT=5000
@@ -68,7 +74,7 @@ services:
       - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
       - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
 
-      # Database - SQLite (default)
+      # Database - SQLite (default for development)
       - NOTES_DB_PATH=${NOTES_DB_PATH:-/app/data/notes.db}
     volumes:
       - notehub-data:/app/data
@@ -78,6 +84,75 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+    networks:
+      - notehub-network
+
+  # ==========================================================================
+  # Frontend - React SPA with nginx (Production)
+  # ==========================================================================
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL:-}
+    container_name: notehub-frontend-prod
+    restart: unless-stopped
+    profiles:
+      - production
+    ports:
+      - "80:80"
+    depends_on:
+      backend-prod:
+        condition: service_healthy
+    networks:
+      - notehub-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ==========================================================================
+  # Backend - Node.js/Express API (Production - Cloud DB)
+  # ==========================================================================
+  backend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+    container_name: notehub-backend-prod
+    restart: unless-stopped
+    profiles:
+      - production
+    environment:
+      # Production mode (blocks seeding)
+      - NODE_ENV=production
+      
+      # JWT Configuration (REQUIRED: use strong secret in production)
+      - JWT_SECRET=${SECRET_KEY:?Set SECRET_KEY in .env file for production}
+      - PORT=5000
+
+      # Admin Credentials (REQUIRED: set in .env file)
+      - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+
+      # Database URL for cloud DB (MySQL/PostgreSQL)
+      # Example: mysql://user:pass@host:3306/database
+      - DATABASE_URL=${DATABASE_URL:-}
+      
+      # OR separate MySQL config
+      - MYSQL_HOST=${MYSQL_HOST:-}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USER=${MYSQL_USER:-}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - notehub-network
 
@@ -93,6 +168,9 @@ services:
     profiles:
       - mysql
     environment:
+      # Development mode (allows seeding)
+      - NODE_ENV=development
+      
       # JWT Configuration
       - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
       - PORT=5000

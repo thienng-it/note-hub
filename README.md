@@ -99,7 +99,9 @@ npm run dev
 
 ### 🐳 Docker Deployment
 
-Deploy the full stack with Docker Compose:
+NoteHub supports multiple deployment modes:
+
+#### Development Mode (SQLite, local testing)
 
 ```bash
 # Copy and configure environment (REQUIRED)
@@ -115,7 +117,7 @@ docker compose exec backend node scripts/seed_db.js
 # Access at http://localhost
 ```
 
-#### With MySQL Database
+#### Development with MySQL
 
 ```bash
 # Set required MySQL credentials in .env first
@@ -129,6 +131,31 @@ docker compose exec backend-mysql node scripts/seed_db.js
 
 # Access at http://localhost
 ```
+
+#### Production Mode (Cloud Database)
+
+For production deployments connecting to external databases (PlanetScale, AWS RDS, etc.):
+
+```bash
+# Configure production environment
+cp .env.example .env
+nano .env
+
+# Set these variables for production:
+# SECRET_KEY=<strong-random-key>
+# DATABASE_URL=mysql://user:password@your-cloud-db:3306/notehub
+# NOTES_ADMIN_PASSWORD=<secure-admin-password>
+
+# Run with production profile
+docker compose --profile production up -d
+
+# NOTE: Do NOT run seed script in production!
+# Database should be pre-configured via cloud provider's management console.
+
+# Access at http://localhost (or configure reverse proxy)
+```
+
+**Important**: The seed script is blocked in production mode to prevent accidental data modification. Use your cloud database provider's tools to manage production data.
 
 Or build individual images:
 
