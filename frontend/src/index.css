@@ -214,6 +214,19 @@ body.dark {
   font-size: 0.875rem;
 }
 
+/* Alert Glass Success */
+.alert-glass-success {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.3);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  color: var(--apple-green);
+  font-size: 0.875rem;
+}
+
 /* Primary Button */
 .btn-primary {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
