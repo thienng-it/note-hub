@@ -79,7 +79,7 @@ export function InvitePage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
           <p className="text-[var(--text-secondary)]">Loading invitations...</p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function InvitePage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="fas fa-user-plus mr-3 text-blue-600" aria-hidden="true"></i>
+          <i className="glass-i fas fa-user-plus mr-3 text-blue-600" aria-hidden="true"></i>
           Invite Users
         </h1>
         <p className="mt-2 text-[var(--text-secondary)]">Invite others to join NoteHub</p>
@@ -103,7 +103,7 @@ export function InvitePage() {
           className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
           role="alert"
         >
-          <i className="fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
+          <i className="glass-i fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
           <span>{error}</span>
         </div>
       )}
@@ -117,7 +117,7 @@ export function InvitePage() {
               htmlFor="email"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-envelope mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-envelope mr-2" aria-hidden="true"></i>
               Email (optional)
             </label>
             <input
@@ -136,7 +136,7 @@ export function InvitePage() {
               htmlFor="message"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-comment mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-comment mr-2" aria-hidden="true"></i>
               Message (optional)
             </label>
             <textarea
@@ -156,12 +156,12 @@ export function InvitePage() {
           >
             {isSubmitting ? (
               <>
-                <i className="fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
                 Creating...
               </>
             ) : (
               <>
-                <i className="fas fa-plus mr-2" aria-hidden="true"></i>
+                <i className="glass-i fas fa-plus mr-2" aria-hidden="true"></i>
                 Create Invitation Link
               </>
             )}
@@ -173,7 +173,7 @@ export function InvitePage() {
       {inviteUrl && (
         <div className="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl">
           <h3 className="text-lg font-semibold text-green-800 dark:text-green-200 mb-3">
-            <i className="fas fa-check-circle mr-2" aria-hidden="true"></i>
+            <i className="glass-i fas fa-check-circle mr-2" aria-hidden="true"></i>
             Invitation Created!
           </h3>
           <div className="space-y-3">
@@ -192,13 +192,13 @@ export function InvitePage() {
                   onClick={() => copyToClipboard(inviteUrl)}
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
-                  <i className="fas fa-copy mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-copy mr-2" aria-hidden="true"></i>
                   Copy
                 </button>
               </div>
             </div>
             <p className="text-sm text-green-700 dark:text-green-300">
-              <i className="fas fa-info-circle mr-1" aria-hidden="true"></i>
+              <i className="glass-i fas fa-info-circle mr-1" aria-hidden="true"></i>
               This link expires in 7 days. Share it with anyone you want to invite.
             </p>
           </div>
@@ -226,19 +226,19 @@ export function InvitePage() {
                     >
                       {invitation.used ? (
                         <>
-                          <i className="fas fa-check mr-1" aria-hidden="true"></i>
+                          <i className="glass-i fas fa-check mr-1" aria-hidden="true"></i>
                           Used
                         </>
                       ) : (
                         <>
-                          <i className="fas fa-clock mr-1" aria-hidden="true"></i>
+                          <i className="glass-i fas fa-clock mr-1" aria-hidden="true"></i>
                           Active
                         </>
                       )}
                     </span>
                     {invitation.email && (
                       <span className="text-sm text-[var(--text-muted)]">
-                        <i className="fas fa-envelope mr-1" aria-hidden="true"></i>
+                        <i className="glass-i fas fa-envelope mr-1" aria-hidden="true"></i>
                         {invitation.email}
                       </span>
                     )}
@@ -248,17 +248,17 @@ export function InvitePage() {
                   )}
                   <div className="flex items-center space-x-4 text-xs text-[var(--text-muted)]">
                     <span>
-                      <i className="fas fa-calendar mr-1" aria-hidden="true"></i>
+                      <i className="glass-i fas fa-calendar mr-1" aria-hidden="true"></i>
                       Created {new Date(invitation.created_at).toLocaleDateString()}
                     </span>
                     {invitation.used && invitation.used_by ? (
                       <span>
-                        <i className="fas fa-user mr-1" aria-hidden="true"></i>
+                        <i className="glass-i fas fa-user mr-1" aria-hidden="true"></i>
                         Used by {invitation.used_by.username}
                       </span>
                     ) : (
                       <span>
-                        <i className="fas fa-hourglass-half mr-1" aria-hidden="true"></i>
+                        <i className="glass-i fas fa-hourglass-half mr-1" aria-hidden="true"></i>
                         Expires {new Date(invitation.expires_at).toLocaleDateString()}
                       </span>
                     )}
@@ -270,9 +270,9 @@ export function InvitePage() {
                       onClick={() =>
                         copyToClipboard(`${window.location.origin}/register?token=${invitation.token}`)
                       }
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      className="btn-apple px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                     >
-                      <i className="fas fa-copy mr-1" aria-hidden="true"></i>
+                      <i className="glass-i fas fa-copy mr-1" aria-hidden="true"></i>
                       Copy Link
                     </button>
                   </div>
@@ -282,7 +282,7 @@ export function InvitePage() {
           </div>
         ) : (
           <div className="text-center py-8">
-            <i className="fas fa-inbox text-4xl text-[var(--text-muted)] mb-4" aria-hidden="true"></i>
+            <i className="glass-i fas fa-inbox text-4xl text-[var(--text-muted)] mb-4" aria-hidden="true"></i>
             <p className="text-[var(--text-secondary)]">You haven't created any invitations yet.</p>
           </div>
         )}

@@ -68,7 +68,7 @@ export function Layout() {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                <i className="fas fa-sticky-note text-white" aria-hidden="true"></i>
+                <i className="glass-i fas fa-sticky-note text-white" aria-hidden="true"></i>
               </div>
               {!sidebarCollapsed && (
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -101,19 +101,19 @@ export function Layout() {
           <>
             <nav className="flex-1 p-4 space-y-2 overflow-y-auto" aria-label="Primary navigation">
               <Link to="/" className={linkClass(isActive('/'))}>
-                <i className="fas fa-home w-5 text-center" aria-hidden="true"></i>
+                <i className="glass-i fas fa-home w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>All Notes</span>}
               </Link>
               <Link to="/?view=favorites" className={linkClass(isActive('/', 'favorites'))}>
-                <i className="fas fa-heart w-5 text-center text-red-500" aria-hidden="true"></i>
+                <i className="glass-i fas fa-heart w-5 text-center text-red-500" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Favorites</span>}
               </Link>
               <Link to="/?view=archived" className={linkClass(isActive('/', 'archived'))}>
-                <i className="fas fa-archive w-5 text-center" aria-hidden="true"></i>
+                <i className="glass-i fas fa-archive w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Archived</span>}
               </Link>
               <Link to="/?view=shared" className={linkClass(isActive('/', 'shared'))}>
-                <i className="fas fa-share-alt w-5 text-center text-green-500" aria-hidden="true"></i>
+                <i className="glass-i fas fa-share-alt w-5 text-center text-green-500" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Shared With Me</span>}
               </Link>
 
@@ -122,25 +122,25 @@ export function Layout() {
                   to="/notes/new"
                   className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg shadow-blue-500/25"
                 >
-                  <i className="fas fa-plus w-5 text-center" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-plus w-5 text-center" aria-hidden="true"></i>
                   {!sidebarCollapsed && <span className="font-medium">New Note</span>}
                 </Link>
               </div>
 
               <Link to="/tasks" className={linkClass(isActive('/tasks'))}>
-                <i className="fas fa-tasks w-5 text-center" aria-hidden="true"></i>
+                <i className="glass-i fas fa-tasks w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Tasks</span>}
               </Link>
 
               <div className="pt-4 mt-4 border-t border-[var(--border-color)] space-y-2">
                 {user.username === 'admin' && (
                   <Link to="/admin" className={linkClass(isActive('/admin'))}>
-                    <i className="fas fa-users-cog w-5 text-center" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-users-cog w-5 text-center" aria-hidden="true"></i>
                     {!sidebarCollapsed && <span>Admin Dashboard</span>}
                   </Link>
                 )}
                 <Link to="/profile" className={linkClass(isActive('/profile'))}>
-                  <i className="fas fa-user-circle w-5 text-center" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-user-circle w-5 text-center" aria-hidden="true"></i>
                   {!sidebarCollapsed && <span>Profile</span>}
                 </Link>
               </div>
@@ -163,7 +163,7 @@ export function Layout() {
                   className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors flex-shrink-0"
                   aria-label="Sign out"
                 >
-                  <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-sign-out-alt" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
@@ -178,7 +178,7 @@ export function Layout() {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <i className="fas fa-sticky-note text-white text-sm" aria-hidden="true"></i>
+                <i className="glass-i fas fa-sticky-note text-white text-sm" aria-hidden="true"></i>
               </div>
               <span className="text-lg font-bold text-[var(--text-primary)]">NoteHub</span>
             </Link>
@@ -191,19 +191,19 @@ export function Layout() {
                 >
                   <i className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'}`} aria-hidden="true"></i>
                 </button>
-                <Link 
-                  to="/profile" 
+                <Link
+                  to="/profile"
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
                   aria-label="View profile"
                 >
-                  <i className="fas fa-user-circle" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-user-circle" aria-hidden="true"></i>
                 </Link>
-                <button 
-                  onClick={handleLogout} 
+                <button
+                  onClick={handleLogout}
                   className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10"
                   aria-label="Sign out"
                 >
-                  <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-sign-out-alt" aria-hidden="true"></i>
                 </button>
               </div>
             )}
@@ -230,56 +230,56 @@ export function Layout() {
           style={{ background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))' }}
           aria-label="Scroll to top"
         >
-          <i className="fas fa-arrow-up text-white" aria-hidden="true"></i>
+          <i className="glass-i fas fa-arrow-up text-white" aria-hidden="true"></i>
         </button>
       </main>
 
       {/* Mobile Bottom Navigation */}
       {user && (
-        <nav 
+        <nav
           className="mobile-nav lg:hidden safe-area-bottom"
           role="navigation"
           aria-label="Mobile navigation"
         >
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`}
             aria-current={isActive('/') ? 'page' : undefined}
           >
-            <i className="fas fa-home" aria-hidden="true"></i>
+            <i className="glass-i fas fa-home" aria-hidden="true"></i>
             <span>Notes</span>
           </Link>
-          <Link 
-            to="/tasks" 
+          <Link
+            to="/tasks"
             className={`mobile-nav-item ${isActive('/tasks') ? 'active' : ''}`}
             aria-current={isActive('/tasks') ? 'page' : undefined}
           >
-            <i className="fas fa-tasks" aria-hidden="true"></i>
+            <i className="glass-i fas fa-tasks" aria-hidden="true"></i>
             <span>Tasks</span>
           </Link>
-          <Link 
-            to="/notes/new" 
+          <Link
+            to="/notes/new"
             className="mobile-nav-item create-btn"
             aria-label="Create new note"
           >
             <div className="w-12 h-12 -mt-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <i className="fas fa-plus text-white text-lg" aria-hidden="true"></i>
+              <i className="glass-i fas fa-plus text-white text-lg" aria-hidden="true"></i>
             </div>
           </Link>
-          <Link 
-            to="/?view=favorites" 
+          <Link
+            to="/?view=favorites"
             className={`mobile-nav-item ${isActive('/', 'favorites') ? 'active' : ''}`}
             aria-current={isActive('/', 'favorites') ? 'page' : undefined}
           >
-            <i className="fas fa-heart" aria-hidden="true"></i>
+            <i className="glass-i fas fa-heart" aria-hidden="true"></i>
             <span>Favorites</span>
           </Link>
-          <Link 
-            to="/profile" 
+          <Link
+            to="/profile"
             className={`mobile-nav-item ${isActive('/profile') ? 'active' : ''}`}
             aria-current={isActive('/profile') ? 'page' : undefined}
           >
-            <i className="fas fa-user" aria-hidden="true"></i>
+            <i className="glass-i fas fa-user" aria-hidden="true"></i>
             <span>Profile</span>
           </Link>
         </nav>

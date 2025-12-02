@@ -37,7 +37,7 @@ deployment_guides/
 config/
 
 # Environment files
-.env
+#.env
 .env.*
 
 # Coverage reports

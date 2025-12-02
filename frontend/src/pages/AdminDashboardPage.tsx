@@ -85,7 +85,7 @@ export function AdminDashboardPage() {
       <div className="p-6 max-w-4xl mx-auto">
         <div className="glass-card p-8 rounded-2xl text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 mb-6">
-            <i className="fas fa-ban text-3xl text-red-500" aria-hidden="true"></i>
+            <i className="glass-i fas fa-ban text-3xl text-red-500" aria-hidden="true"></i>
           </div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Access Denied</h1>
           <p className="text-[var(--text-secondary)] mb-6">
@@ -95,7 +95,7 @@ export function AdminDashboardPage() {
             to="/"
             className="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium"
           >
-            <i className="fas fa-arrow-left" aria-hidden="true"></i>
+            <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
             <span>Back to Notes</span>
           </Link>
         </div>
@@ -110,7 +110,7 @@ export function AdminDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] flex items-center gap-3">
-              <i className="fas fa-users-cog text-blue-600" aria-hidden="true"></i>
+              <i className="glass-i fas fa-users-cog text-blue-600" aria-hidden="true"></i>
               Admin Dashboard
             </h1>
             <p className="text-[var(--text-secondary)] mt-2">Manage users and view system statistics</p>
@@ -119,7 +119,7 @@ export function AdminDashboardPage() {
             to="/"
             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
           >
-            <i className="fas fa-arrow-left" aria-hidden="true"></i>
+            <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
             <span>Back to Notes</span>
           </Link>
         </div>
@@ -134,7 +134,7 @@ export function AdminDashboardPage() {
               <p className="text-3xl sm:text-4xl font-bold">{stats.total_users}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-users text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i className="glass-i fas fa-users text-xl sm:text-2xl" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ export function AdminDashboardPage() {
               <p className="text-3xl sm:text-4xl font-bold">{stats.users_with_2fa}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-shield-alt text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i className="glass-i fas fa-shield-alt text-xl sm:text-2xl" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@ export function AdminDashboardPage() {
               <p className="text-3xl sm:text-4xl font-bold">{stats.users_with_email}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-envelope text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i className="glass-i fas fa-envelope text-xl sm:text-2xl" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -168,7 +168,7 @@ export function AdminDashboardPage() {
       <div className="glass-card p-4 sm:p-6 rounded-xl mb-6">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" aria-hidden="true"></i>
+            <i className="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" aria-hidden="true"></i>
             <input
               type="text"
               value={searchQuery}
@@ -182,7 +182,7 @@ export function AdminDashboardPage() {
               type="submit"
               className="btn-primary px-6 py-3 rounded-lg font-medium flex items-center gap-2"
             >
-              <i className="fas fa-search" aria-hidden="true"></i>
+              <i className="glass-i fas fa-search" aria-hidden="true"></i>
               <span>Search</span>
             </button>
             {searchQuery && (
@@ -191,7 +191,7 @@ export function AdminDashboardPage() {
                 onClick={clearSearch}
                 className="px-6 py-3 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
               >
-                <i className="fas fa-times" aria-hidden="true"></i>
+                <i className="glass-i fas fa-times" aria-hidden="true"></i>
                 <span>Clear</span>
               </button>
             )}
@@ -211,7 +211,7 @@ export function AdminDashboardPage() {
       {/* Error State */}
       {error && (
         <div className="glass-card p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 mb-6">
-          <i className="fas fa-exclamation-circle mr-2" aria-hidden="true"></i>
+          <i className="glass-i fas fa-exclamation-circle mr-2" aria-hidden="true"></i>
           {error}
         </div>
       )}
@@ -219,7 +219,7 @@ export function AdminDashboardPage() {
       {/* Loading State */}
       {isLoading ? (
         <div className="glass-card p-12 rounded-xl text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
           <p className="text-[var(--text-secondary)]">Loading users...</p>
         </div>
       ) : (
@@ -242,7 +242,7 @@ export function AdminDashboardPage() {
                   {users.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-12 text-center text-[var(--text-secondary)]">
-                        <i className="fas fa-users text-4xl mb-4 text-[var(--text-muted)]" aria-hidden="true"></i>
+                        <i className="glass-i fas fa-users text-4xl mb-4 text-[var(--text-muted)]" aria-hidden="true"></i>
                         <p className="text-lg">No users found</p>
                         {searchQuery && <p className="text-sm mt-2">Try adjusting your search criteria</p>}
                       </td>
@@ -273,7 +273,7 @@ export function AdminDashboardPage() {
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden sm:table-cell">
                           {u.email ? (
                             <span className="flex items-center gap-2">
-                              <i className="fas fa-envelope text-[var(--text-muted)]" aria-hidden="true"></i>
+                              <i className="glass-i fas fa-envelope text-[var(--text-muted)]" aria-hidden="true"></i>
                               {u.email}
                             </span>
                           ) : (
@@ -282,14 +282,14 @@ export function AdminDashboardPage() {
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden md:table-cell">
                           <span className="flex items-center gap-2">
-                            <i className="fas fa-calendar-plus text-[var(--text-muted)]" aria-hidden="true"></i>
+                            <i className="glass-i fas fa-calendar-plus text-[var(--text-muted)]" aria-hidden="true"></i>
                             {u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}
                           </span>
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden lg:table-cell">
                           {u.last_login ? (
                             <span className="flex items-center gap-2">
-                              <i className="fas fa-sign-in-alt text-[var(--text-muted)]" aria-hidden="true"></i>
+                              <i className="glass-i fas fa-sign-in-alt text-[var(--text-muted)]" aria-hidden="true"></i>
                               {new Date(u.last_login).toLocaleDateString()}
                             </span>
                           ) : (
@@ -299,12 +299,12 @@ export function AdminDashboardPage() {
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           {u.totp_secret ? (
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-600 dark:text-green-400">
-                              <i className="fas fa-shield-alt mr-1" aria-hidden="true"></i>
+                              <i className="glass-i fas fa-shield-alt mr-1" aria-hidden="true"></i>
                               Enabled
                             </span>
                           ) : (
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--bg-tertiary)] text-[var(--text-muted)]">
-                              <i className="fas fa-shield-alt mr-1" aria-hidden="true"></i>
+                              <i className="glass-i fas fa-shield-alt mr-1" aria-hidden="true"></i>
                               Disabled
                             </span>
                           )}
@@ -329,11 +329,11 @@ export function AdminDashboardPage() {
                     onClick={() => setPage(page - 1)}
                     className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
                   >
-                    <i className="fas fa-chevron-left" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-chevron-left" aria-hidden="true"></i>
                     <span className="hidden sm:inline">Previous</span>
                   </button>
                 )}
-                
+
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   const pageNum = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
                   if (pageNum > totalPages) return null;
@@ -351,14 +351,14 @@ export function AdminDashboardPage() {
                     </button>
                   );
                 })}
-                
+
                 {page < totalPages && (
                   <button
                     onClick={() => setPage(page + 1)}
                     className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
                   >
                     <span className="hidden sm:inline">Next</span>
-                    <i className="fas fa-chevron-right" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-chevron-right" aria-hidden="true"></i>
                   </button>
                 )}
               </div>

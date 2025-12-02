@@ -10,7 +10,7 @@ export function ErrorPage() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const state = location.state as LocationState | null;
-  
+
   const code = state?.code || 404;
   const error = state?.error || 'Page Not Found';
 
@@ -103,7 +103,7 @@ export function ErrorPage() {
               to="/"
               className="btn-primary inline-flex items-center px-6 py-3 rounded-lg text-lg font-medium"
             >
-              <i className="fas fa-home mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-home mr-2" aria-hidden="true"></i>
               Go to Notes
             </Link>
           ) : (
@@ -111,7 +111,7 @@ export function ErrorPage() {
               to="/login"
               className="btn-primary inline-flex items-center px-6 py-3 rounded-lg text-lg font-medium"
             >
-              <i className="fas fa-sign-in-alt mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-sign-in-alt mr-2" aria-hidden="true"></i>
               Login
             </Link>
           )}
@@ -119,7 +119,7 @@ export function ErrorPage() {
             onClick={() => window.history.back()}
             className="inline-flex items-center px-6 py-3 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] rounded-lg hover:opacity-80 transition-colors"
           >
-            <i className="fas fa-arrow-left mr-2" aria-hidden="true"></i>
+            <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
             Go Back
           </button>
         </div>

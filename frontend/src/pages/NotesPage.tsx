@@ -151,9 +151,9 @@ export function NotesPage() {
             <span className="text-sm text-[var(--text-secondary)]">{notes.length} notes</span>
             <Link
               to="/notes/new"
-              className="btn-primary px-4 py-2 rounded-lg font-medium whitespace-nowrap"
+              className="btn-apple"
             >
-              <i className="fas fa-plus mr-2"></i>Add Note
+              <i className="glass-i fas fa-plus mr-2"></i>Add Note
             </Link>
           </div>
         </div>
@@ -163,7 +163,6 @@ export function NotesPage() {
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
                 <input
                   type="text"
                   value={query}
@@ -171,11 +170,12 @@ export function NotesPage() {
                   placeholder="Search notes..."
                   className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                  <i className="glass-i fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
               </div>
             </div>
             <div className="sm:w-48">
               <div className="relative">
-                <i className="fas fa-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+                <i className="glass-i fas fa-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
                 <input
                   type="text"
                   value={tagFilter}
@@ -185,16 +185,16 @@ export function NotesPage() {
                 />
               </div>
             </div>
-            <button type="submit" className="btn-primary px-6 py-2 rounded-lg font-medium">
-              <i className="fas fa-search mr-2"></i>Search
+            <button type="submit" className="btn-apple">
+              <i className="glass-i fas fa-search mr-2"></i>Search
             </button>
             {(query || tagFilter) && (
               <button
                 type="button"
                 onClick={clearSearch}
-                className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                className="btn-secondary-glass"
               >
-                <i className="fas fa-times mr-2"></i>Clear
+                <i className="glass-i fas fa-times mr-2"></i>Clear
               </button>
             )}
           </form>
@@ -209,7 +209,7 @@ export function NotesPage() {
             view === 'all' ? 'shadow-sm text-blue-600 dark:text-blue-400 bg-[var(--bg-secondary)]' : 'text-[var(--text-secondary)]'
           }`}
         >
-          <i className="fas fa-home mr-2"></i>All
+          <i className="glass-i fas fa-home mr-2"></i>All
         </Link>
         <Link
           to="/?view=favorites"
@@ -217,7 +217,7 @@ export function NotesPage() {
             view === 'favorites' ? 'shadow-sm text-red-600 dark:text-red-400 bg-[var(--bg-secondary)]' : 'text-[var(--text-secondary)]'
           }`}
         >
-          <i className="fas fa-heart mr-2"></i>Favorites
+          <i className="glass-i fas fa-heart mr-2"></i>Favorites
         </Link>
         <Link
           to="/?view=archived"
@@ -225,7 +225,7 @@ export function NotesPage() {
             view === 'archived' ? 'shadow-sm bg-[var(--bg-secondary)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
           }`}
         >
-          <i className="fas fa-archive mr-2"></i>Archived
+          <i className="glass-i fas fa-archive mr-2"></i>Archived
         </Link>
         <Link
           to="/?view=shared"
@@ -233,14 +233,14 @@ export function NotesPage() {
             view === 'shared' ? 'shadow-sm text-green-600 dark:text-green-400 bg-[var(--bg-secondary)]' : 'text-[var(--text-secondary)]'
           }`}
         >
-          <i className="fas fa-share-alt mr-2"></i>Shared
+          <i className="glass-i fas fa-share-alt mr-2"></i>Shared
         </Link>
       </div>
 
       {/* Error Message */}
       {error && (
         <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
-          <i className="fas fa-exclamation-triangle mr-2"></i>
+          <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
           {error}
         </div>
       )}
@@ -248,7 +248,7 @@ export function NotesPage() {
       {/* Loading State */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
         </div>
       ) : notes.length > 0 ? (
         /* Notes Grid */
@@ -259,17 +259,17 @@ export function NotesPage() {
               <div className="absolute top-3 right-3 flex space-x-2">
                 {note.pinned && (
                   <span className="text-yellow-500" title="Pinned">
-                    <i className="fas fa-thumbtack"></i>
+                    <i className="glass-i fas fa-thumbtack"></i>
                   </span>
                 )}
                 {note.favorite && (
                   <span className="text-red-500" title="Favorite">
-                    <i className="fas fa-heart"></i>
+                    <i className="glass-i fas fa-heart"></i>
                   </span>
                 )}
                 {note.archived && (
                   <span className="text-gray-500" title="Archived">
-                    <i className="fas fa-archive"></i>
+                    <i className="glass-i fas fa-archive"></i>
                   </span>
                 )}
               </div>
@@ -309,7 +309,7 @@ export function NotesPage() {
               <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                 <div className="flex items-center space-x-3">
                   <span title="Reading time">
-                    <i className="fas fa-clock mr-1"></i>
+                    <i className="glass-i fas fa-clock mr-1"></i>
                     {note.reading_time || Math.ceil((note.body?.length || 0) / 1000)}m
                   </span>
                   <span title="Last updated">
@@ -324,14 +324,14 @@ export function NotesPage() {
                     className="text-blue-600 hover:text-blue-800 transition-colors"
                     title="Edit"
                   >
-                    <i className="fas fa-edit"></i>
+                    <i className="glass-i fas fa-edit"></i>
                   </Link>
                   <button
                     onClick={() => handleToggleFavorite(note)}
                     className={`${note.favorite ? 'text-red-600 hover:text-red-800' : 'text-gray-400 hover:text-red-600'} transition-colors`}
                     title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
                   >
-                    <i className="fas fa-heart"></i>
+                    <i className="glass-i fas fa-heart"></i>
                   </button>
                 </div>
               </div>
@@ -340,7 +340,7 @@ export function NotesPage() {
         </div>
       ) : (
         /* Empty State */
-        <div className="text-center py-12">
+        <div className="glass-div glass-div-center">
           <div className="max-w-md mx-auto">
             {(() => {
               const emptyState = getEmptyState();
@@ -354,7 +354,7 @@ export function NotesPage() {
                       to={emptyState.action.to}
                       className="btn-primary inline-flex items-center px-6 py-3 rounded-lg"
                     >
-                      <i className="fas fa-plus mr-2"></i>
+                      <i className="glass-i fas fa-plus mr-2"></i>
                       {emptyState.action.label}
                     </Link>
                   ) : emptyState.action.onClick ? (
@@ -362,7 +362,7 @@ export function NotesPage() {
                       onClick={emptyState.action.onClick}
                       className="btn-primary inline-flex items-center px-6 py-3 rounded-lg"
                     >
-                      <i className="fas fa-times mr-2"></i>
+                      <i className="glass-i fas fa-times mr-2"></i>
                       {emptyState.action.label}
                     </button>
                   ) : null}
@@ -377,7 +377,7 @@ export function NotesPage() {
       {allTags.length > 0 && (
         <div className="mt-8">
           <h3 className="text-lg font-semibold mb-4 flex items-center text-[var(--text-primary)]">
-            <i className="fas fa-tags mr-2 text-blue-600"></i>Popular Tags
+            <i className="glass-i fas fa-tags mr-2 text-blue-600"></i>Popular Tags
           </h3>
           <div className="flex flex-wrap gap-2">
             {allTags.slice(0, 10).map((tag) => (

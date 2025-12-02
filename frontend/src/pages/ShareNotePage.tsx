@@ -95,7 +95,7 @@ export function ShareNotePage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
           <p className="text-[var(--text-secondary)]">Loading...</p>
         </div>
       </div>
@@ -111,11 +111,11 @@ export function ShareNotePage() {
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
           aria-label="Back to Note"
         >
-          <i className="fas fa-arrow-left mr-2" aria-hidden="true"></i>
+          <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Note
         </Link>
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="fas fa-share-alt mr-3 text-blue-600" aria-hidden="true"></i>
+          <i className="glass-i fas fa-share-alt mr-3 text-blue-600" aria-hidden="true"></i>
           Share Note
         </h1>
         {note && (
@@ -129,7 +129,7 @@ export function ShareNotePage() {
           className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
           role="alert"
         >
-          <i className="fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
+          <i className="glass-i fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
           <span>{error}</span>
         </div>
       )}
@@ -139,7 +139,7 @@ export function ShareNotePage() {
           className="mb-6 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 flex items-start"
           role="status"
         >
-          <i className="fas fa-check-circle mr-2 mt-0.5" aria-hidden="true"></i>
+          <i className="glass-i fas fa-check-circle mr-2 mt-0.5" aria-hidden="true"></i>
           <span>{success}</span>
         </div>
       )}
@@ -153,7 +153,7 @@ export function ShareNotePage() {
               htmlFor="username"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-user mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-user mr-2" aria-hidden="true"></i>
               Username
             </label>
             <input
@@ -186,12 +186,12 @@ export function ShareNotePage() {
           >
             {isSubmitting ? (
               <>
-                <i className="fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
                 Sharing...
               </>
             ) : (
               <>
-                <i className="fas fa-share mr-2" aria-hidden="true"></i>
+                <i className="glass-i fas fa-share mr-2" aria-hidden="true"></i>
                 Share Note
               </>
             )}
@@ -227,14 +227,14 @@ export function ShareNotePage() {
                   className="text-red-600 hover:text-red-800 transition-colors p-2"
                   aria-label={`Remove share for ${user.username}`}
                 >
-                  <i className="fas fa-times" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-times" aria-hidden="true"></i>
                 </button>
               </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-8">
-            <i className="fas fa-users text-4xl text-[var(--text-muted)] mb-4" aria-hidden="true"></i>
+            <i className="glass-i fas fa-users text-4xl text-[var(--text-muted)] mb-4" aria-hidden="true"></i>
             <p className="text-[var(--text-secondary)]">This note hasn't been shared with anyone yet.</p>
           </div>
         )}

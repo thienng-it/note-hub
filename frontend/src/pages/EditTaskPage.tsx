@@ -76,7 +76,7 @@ export function EditTaskPage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
           <p className="text-[var(--text-secondary)]">Loading task...</p>
         </div>
       </div>
@@ -92,7 +92,7 @@ export function EditTaskPage() {
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
           aria-label="Back to Tasks"
         >
-          <i className="fas fa-arrow-left mr-2" aria-hidden="true"></i>
+          <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Tasks
         </Link>
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
@@ -108,7 +108,7 @@ export function EditTaskPage() {
             className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
             role="alert"
           >
-            <i className="fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
+            <i className="glass-i fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
             <span>{error}</span>
           </div>
         )}
@@ -120,7 +120,7 @@ export function EditTaskPage() {
               htmlFor="title"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-heading mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-heading mr-2" aria-hidden="true"></i>
               Task Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -141,7 +141,7 @@ export function EditTaskPage() {
               htmlFor="description"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-align-left mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-align-left mr-2" aria-hidden="true"></i>
               Description
             </label>
             <textarea
@@ -162,7 +162,7 @@ export function EditTaskPage() {
                 htmlFor="priority"
                 className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
               >
-                <i className="fas fa-flag mr-2" aria-hidden="true"></i>
+                <i className="glass-i fas fa-flag mr-2" aria-hidden="true"></i>
                 Priority
               </label>
               <select
@@ -183,7 +183,7 @@ export function EditTaskPage() {
                 htmlFor="due_date"
                 className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
               >
-                <i className="fas fa-calendar mr-2" aria-hidden="true"></i>
+                <i className="glass-i fas fa-calendar mr-2" aria-hidden="true"></i>
                 Due Date
               </label>
               <input
@@ -211,12 +211,12 @@ export function EditTaskPage() {
             >
               {isLoading ? (
                 <>
-                  <i className="fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
                   Saving...
                 </>
               ) : (
                 <>
-                  <i className="fas fa-save mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-save mr-2" aria-hidden="true"></i>
                   {isEdit ? 'Update' : 'Create'} Task
                 </>
               )}

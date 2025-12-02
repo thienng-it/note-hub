@@ -38,7 +38,7 @@ export function Disable2FAPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full mb-4">
-              <i className="fas fa-shield-alt text-3xl text-yellow-600 dark:text-yellow-400" aria-hidden="true"></i>
+              <i className="glass-i fas fa-shield-alt text-3xl text-yellow-600 dark:text-yellow-400" aria-hidden="true"></i>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-2">
               Disable Two-Factor Authentication
@@ -54,7 +54,7 @@ export function Disable2FAPage() {
               className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
               role="alert"
             >
-              <i className="fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
+              <i className="glass-i fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
               <span>{error}</span>
             </div>
           )}
@@ -62,7 +62,7 @@ export function Disable2FAPage() {
           {/* Warning Message */}
           <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded-r-lg">
             <div className="flex items-start">
-              <i className="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 mr-3 mt-1" aria-hidden="true"></i>
+              <i className="glass-i fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 mr-3 mt-1" aria-hidden="true"></i>
               <div className="text-sm text-yellow-700 dark:text-yellow-300">
                 <p className="font-semibold mb-1">Security Warning</p>
                 <p>
@@ -96,7 +96,7 @@ export function Disable2FAPage() {
                 autoFocus
               />
               <p className="mt-2 text-xs text-[var(--text-muted)]">
-                <i className="fas fa-info-circle mr-1" aria-hidden="true"></i>
+                <i className="glass-i fas fa-info-circle mr-1" aria-hidden="true"></i>
                 Enter the 6-digit code from your authenticator app
               </p>
             </div>
@@ -110,12 +110,12 @@ export function Disable2FAPage() {
               >
                 {isSubmitting ? (
                   <>
-                    <i className="fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
                     Disabling...
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-shield-alt mr-2" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-shield-alt mr-2" aria-hidden="true"></i>
                     Disable 2FA
                   </>
                 )}
@@ -124,7 +124,7 @@ export function Disable2FAPage() {
                 to="/profile"
                 className="flex-1 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] py-3 px-4 rounded-lg font-medium hover:opacity-80 transition-colors text-center flex items-center justify-center"
               >
-                <i className="fas fa-times mr-2" aria-hidden="true"></i>
+                <i className="glass-i fas fa-times mr-2" aria-hidden="true"></i>
                 Cancel
               </Link>
             </div>

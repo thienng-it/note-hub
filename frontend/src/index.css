@@ -11,7 +11,7 @@
   --apple-orange: #FF9500;
   --apple-green: #34C759;
   --apple-red: #FF3B30;
-  
+
   /* Primary color for buttons */
   --primary-color: #3b82f6;
   --primary-dark: #2563eb;
@@ -19,26 +19,26 @@
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
-  
+
   /* Background colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #e2e8f0;
-  
+
   /* Text colors */
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
-  
+
   /* Border colors */
   --border-color: #e2e8f0;
-  
+
   /* Typography */
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  
+
   /* Glass Effects */
   --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-border: rgba(210, 203, 203, 0.3);
   --glass-shadow: rgba(31, 38, 135, 0.2);
   --glass-blur: blur(20px) saturate(180%);
   --glass-blur-light: blur(12px);
@@ -61,8 +61,8 @@
 /* Base resets */
 *, *::before, *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  margin: 1px;
+  padding: 1px;
 }
 
 html {
@@ -104,6 +104,7 @@ body.dark {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 1.5rem;
   padding: 2rem;
+  margin: 1rem;
 }
 
 .card:hover {
@@ -115,12 +116,12 @@ body.dark {
 /* Glass Input */
 .glass-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-border);
   border-radius: 0.75rem;
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 1rem 0.875rem 48px;
   font-size: 1rem;
   color: var(--text-primary);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -143,6 +144,10 @@ body.dark {
   font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
+}
+
+.form {
+  align-items: stretch;
 }
 
 /* Apple-style Primary Button */
@@ -886,6 +891,13 @@ body.dark {
   border: 1px solid var(--glass-border);
   border-radius: 0.75rem;
   padding: 1rem;
+}
+
+.glass-div-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 80px;
 }
 
 /* Glass Span - for inline text elements */

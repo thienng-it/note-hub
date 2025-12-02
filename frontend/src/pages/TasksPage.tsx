@@ -123,7 +123,7 @@ export function TasksPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="fas fa-tasks mr-3 text-blue-600"></i>
+          <i className="glass-i fas fa-tasks mr-3 text-blue-600"></i>
           Tasks
         </h1>
         <button
@@ -159,7 +159,7 @@ export function TasksPage() {
       {showForm && (
         <div className="glass-card p-6 rounded-xl">
           <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-            <i className="fas fa-plus-circle mr-2 text-blue-600"></i>
+            <i className="glass-i fas fa-plus-circle mr-2 text-blue-600"></i>
             Create New Task
           </h2>
           <form onSubmit={handleCreateTask} className="space-y-4">
@@ -234,11 +234,11 @@ export function TasksPage() {
               >
                 {isCreating ? (
                   <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>Creating...
+                    <i className="glass-i fas fa-spinner fa-spin mr-2"></i>Creating...
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-plus mr-2"></i>Create Task
+                    <i className="glass-i fas fa-plus mr-2"></i>Create Task
                   </>
                 )}
               </button>
@@ -267,7 +267,7 @@ export function TasksPage() {
       {/* Error */}
       {error && (
         <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
-          <i className="fas fa-exclamation-triangle mr-2"></i>
+          <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
           {error}
         </div>
       )}
@@ -275,7 +275,7 @@ export function TasksPage() {
       {/* Tasks List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
         </div>
       ) : tasks.length > 0 ? (
         <div className="space-y-3">
@@ -329,7 +329,7 @@ export function TasksPage() {
                     </button>
                     <button
                       type="submit"
-                      className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                      className="btn-apple px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
                     >
                       Save
                     </button>
@@ -346,7 +346,7 @@ export function TasksPage() {
                         : 'border-[var(--border-color)] hover:border-green-600'
                     }`}
                   >
-                    {task.completed && <i className="fas fa-check text-xs"></i>}
+                    {task.completed && <i className="glass-i fas fa-check text-xs"></i>}
                   </button>
 
                   <div className="flex-1">
@@ -365,7 +365,7 @@ export function TasksPage() {
                       </span>
                       {task.is_overdue && !task.completed && (
                         <span className="text-xs text-red-500">
-                          <i className="fas fa-exclamation-triangle mr-1"></i>Overdue
+                          <i className="glass-i fas fa-exclamation-triangle mr-1"></i>Overdue
                         </span>
                       )}
                     </div>
@@ -375,13 +375,13 @@ export function TasksPage() {
                     <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
                       {task.due_date && (
                         <span>
-                          <i className="fas fa-calendar mr-1"></i>
+                          <i className="glass-i fas fa-calendar mr-1"></i>
                           {new Date(task.due_date).toLocaleDateString()}
                         </span>
                       )}
                       {task.created_at && (
                         <span>
-                          <i className="fas fa-clock mr-1"></i>
+                          <i className="glass-i fas fa-clock mr-1"></i>
                           Created {new Date(task.created_at).toLocaleDateString()}
                         </span>
                       )}
@@ -394,14 +394,14 @@ export function TasksPage() {
                       className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-blue-600 transition-colors"
                       title="Edit"
                     >
-                      <i className="fas fa-edit"></i>
+                      <i className="glass-i fas fa-edit"></i>
                     </button>
                     <button
                       onClick={() => handleDeleteTask(task)}
                       className="p-2 rounded-lg hover:bg-red-500/10 text-red-600 transition-colors"
                       title="Delete"
                     >
-                      <i className="fas fa-trash"></i>
+                      <i className="glass-i fas fa-trash"></i>
                     </button>
                   </div>
                 </div>
@@ -410,8 +410,8 @@ export function TasksPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <i className="fas fa-tasks text-6xl mb-4 text-[var(--text-muted)]"></i>
+        <div className="glass-div glass-div-center">
+          <i className="glass-i fas fa-tasks text-6xl mb-4 text-[var(--text-muted)]"></i>
           <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">No tasks found</h3>
           <p className="text-[var(--text-secondary)] mb-6">
             {filter === 'all' ? 'Create your first task to get started' : `No ${filter} tasks`}
@@ -420,7 +420,7 @@ export function TasksPage() {
             onClick={() => setShowForm(true)}
             className="btn-primary inline-flex items-center px-6 py-3 rounded-lg"
           >
-            <i className="fas fa-plus mr-2"></i>Create Task
+            <i className="glass-i fas fa-plus mr-2"></i>Create Task
           </button>
         </div>
       )}

@@ -81,7 +81,7 @@ export function ForgotPasswordPage() {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-6 shadow-lg shadow-blue-500/30">
-            <i className="fas fa-key text-3xl text-white" aria-hidden="true"></i>
+            <i className="glass-i fas fa-key text-3xl text-white" aria-hidden="true"></i>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Forgot Password
@@ -97,12 +97,12 @@ export function ForgotPasswordPage() {
         <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl" role="main">
           {/* Error Alert */}
           {error && (
-            <div 
+            <div
               className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm flex items-start gap-3"
               role="alert"
               aria-live="polite"
             >
-              <i className="fas fa-exclamation-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
+              <i className="glass-i fas fa-exclamation-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
               <span>{error}</span>
             </div>
           )}
@@ -111,15 +111,15 @@ export function ForgotPasswordPage() {
             <form onSubmit={handleSubmitUsername} className="space-y-6" aria-label="Forgot password form">
               {/* Username Field */}
               <div className="space-y-2">
-                <label 
-                  htmlFor="username" 
+                <label
+                  htmlFor="username"
                   className="block text-sm font-medium text-[var(--text-primary)]"
                 >
                   Username or Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="fas fa-user text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-user text-[var(--text-muted)]" aria-hidden="true"></i>
                   </div>
                   <input
                     id="username"
@@ -135,14 +135,14 @@ export function ForgotPasswordPage() {
                   />
                 </div>
                 <p className="text-xs text-[var(--text-muted)] flex items-center gap-1">
-                  <i className="fas fa-info-circle" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-info-circle" aria-hidden="true"></i>
                   Enter the username or email associated with your account
                 </p>
               </div>
 
               {/* Info Box */}
-              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm">
-                <i className="fas fa-info-circle mr-2" aria-hidden="true"></i>
+              <div className="btn-apple p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm">
+                <i className="glass-i fas fa-info-circle mr-2" aria-hidden="true"></i>
                 If 2FA is enabled, you will be asked to verify it in the next step.
               </div>
 
@@ -155,12 +155,12 @@ export function ForgotPasswordPage() {
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-spinner fa-spin" aria-hidden="true"></i>
                     <span>Processing...</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
-                    <i className="fas fa-arrow-right" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-arrow-right" aria-hidden="true"></i>
                     <span>Next</span>
                   </span>
                 )}
@@ -172,15 +172,15 @@ export function ForgotPasswordPage() {
             <form onSubmit={handleSubmit2FA} className="space-y-6" aria-label="2FA verification form">
               {/* 2FA Code Field */}
               <div className="space-y-2">
-                <label 
-                  htmlFor="totp" 
+                <label
+                  htmlFor="totp"
                   className="block text-sm font-medium text-[var(--text-primary)]"
                 >
                   Verification Code
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="fas fa-shield-alt text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-shield-alt text-[var(--text-muted)]" aria-hidden="true"></i>
                   </div>
                   <input
                     id="totp"
@@ -199,7 +199,7 @@ export function ForgotPasswordPage() {
                   />
                 </div>
                 <p className="text-sm text-[var(--text-muted)] flex items-center gap-2">
-                  <i className="fas fa-info-circle" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-info-circle" aria-hidden="true"></i>
                   Enter the 6-digit code from your authenticator app
                 </p>
               </div>
@@ -213,12 +213,12 @@ export function ForgotPasswordPage() {
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-spinner fa-spin" aria-hidden="true"></i>
                     <span>Verifying...</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
-                    <i className="fas fa-shield-alt" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-shield-alt" aria-hidden="true"></i>
                     <span>Verify</span>
                   </span>
                 )}
@@ -234,7 +234,7 @@ export function ForgotPasswordPage() {
                 }}
                 className="w-full flex items-center justify-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
-                <i className="fas fa-arrow-left" aria-hidden="true"></i>
+                <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
                 <span>Back</span>
               </button>
             </form>
@@ -243,7 +243,7 @@ export function ForgotPasswordPage() {
           {step === 'success' && (
             <div className="text-center space-y-6">
               <div className="p-6 rounded-xl bg-green-500/10 border border-green-500/30">
-                <i className="fas fa-check-circle text-4xl text-green-500 mb-4" aria-hidden="true"></i>
+                <i className="glass-i fas fa-check-circle text-4xl text-green-500 mb-4" aria-hidden="true"></i>
                 <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">
                   Reset Token Generated
                 </h3>
@@ -266,7 +266,7 @@ export function ForgotPasswordPage() {
                   className="btn-primary w-full py-4 rounded-xl font-semibold text-base transition-all duration-200"
                 >
                   <span className="flex items-center justify-center gap-2">
-                    <i className="fas fa-lock" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-lock" aria-hidden="true"></i>
                     <span>Reset Password</span>
                   </span>
                 </button>
@@ -276,7 +276,7 @@ export function ForgotPasswordPage() {
                 to="/login"
                 className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-medium text-base border-2 border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
               >
-                <i className="fas fa-arrow-left" aria-hidden="true"></i>
+                <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
                 <span>Back to Login</span>
               </Link>
             </div>
@@ -289,7 +289,7 @@ export function ForgotPasswordPage() {
                 to="/login"
                 className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors underline-offset-4 hover:underline"
               >
-                <i className="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+                <i className="glass-i fas fa-arrow-left mr-1" aria-hidden="true"></i>
                 Back to Login
               </Link>
             </div>

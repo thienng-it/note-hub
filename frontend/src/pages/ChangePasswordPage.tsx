@@ -53,11 +53,11 @@ export function ChangePasswordPage() {
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
           aria-label="Back to Profile"
         >
-          <i className="fas fa-arrow-left mr-2" aria-hidden="true"></i>
+          <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Profile
         </Link>
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="fas fa-key mr-3 text-blue-600" aria-hidden="true"></i>
+          <i className="glass-i fas fa-key mr-3 text-blue-600" aria-hidden="true"></i>
           Change Password
         </h1>
       </div>
@@ -69,7 +69,7 @@ export function ChangePasswordPage() {
             className="mb-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
             role="alert"
           >
-            <i className="fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
+            <i className="glass-i fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
             <span>{error}</span>
           </div>
         )}
@@ -81,7 +81,7 @@ export function ChangePasswordPage() {
               htmlFor="currentPassword"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-lock mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-lock mr-2" aria-hidden="true"></i>
               Current Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -112,7 +112,7 @@ export function ChangePasswordPage() {
               htmlFor="newPassword"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-key mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-key mr-2" aria-hidden="true"></i>
               New Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -148,7 +148,7 @@ export function ChangePasswordPage() {
               htmlFor="confirmPassword"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-check-circle mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-check-circle mr-2" aria-hidden="true"></i>
               Confirm New Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -176,7 +176,7 @@ export function ChangePasswordPage() {
           {/* Security Notice */}
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <div className="flex items-start">
-              <i className="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-500 mt-1 mr-3" aria-hidden="true"></i>
+              <i className="glass-i fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-500 mt-1 mr-3" aria-hidden="true"></i>
               <div>
                 <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-1">
                   Security Notice
@@ -204,12 +204,12 @@ export function ChangePasswordPage() {
             >
               {isLoading ? (
                 <>
-                  <i className="fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
                   Saving...
                 </>
               ) : (
                 <>
-                  <i className="fas fa-save mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-save mr-2" aria-hidden="true"></i>
                   Change Password
                 </>
               )}

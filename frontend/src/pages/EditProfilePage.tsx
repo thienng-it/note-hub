@@ -45,11 +45,11 @@ export function EditProfilePage() {
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
           aria-label="Back to Profile"
         >
-          <i className="fas fa-arrow-left mr-2" aria-hidden="true"></i>
+          <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Profile
         </Link>
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="fas fa-edit mr-3 text-blue-600" aria-hidden="true"></i>
+          <i className="glass-i fas fa-edit mr-3 text-blue-600" aria-hidden="true"></i>
           Edit Profile
         </h1>
       </div>
@@ -61,7 +61,7 @@ export function EditProfilePage() {
             className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
             role="alert"
           >
-            <i className="fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
+            <i className="glass-i fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
             <span>{error}</span>
           </div>
         )}
@@ -73,7 +73,7 @@ export function EditProfilePage() {
               htmlFor="username"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-user mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-user mr-2" aria-hidden="true"></i>
               Username <span className="text-red-500">*</span>
             </label>
             <input
@@ -95,7 +95,7 @@ export function EditProfilePage() {
               htmlFor="email"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-envelope mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-envelope mr-2" aria-hidden="true"></i>
               Email
             </label>
             <input
@@ -117,7 +117,7 @@ export function EditProfilePage() {
               htmlFor="bio"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
-              <i className="fas fa-user-circle mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-user-circle mr-2" aria-hidden="true"></i>
               Bio
             </label>
             <textarea
@@ -149,12 +149,12 @@ export function EditProfilePage() {
             >
               {isLoading ? (
                 <>
-                  <i className="fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
                   Saving...
                 </>
               ) : (
                 <>
-                  <i className="fas fa-save mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-save mr-2" aria-hidden="true"></i>
                   Save Changes
                 </>
               )}

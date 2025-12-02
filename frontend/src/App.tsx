@@ -30,7 +30,7 @@ function AppRoutes() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
           <p className="text-[var(--text-secondary)]">Loading...</p>
         </div>
       </div>

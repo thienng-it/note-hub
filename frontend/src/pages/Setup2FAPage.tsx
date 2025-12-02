@@ -80,7 +80,7 @@ export function Setup2FAPage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
-          <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
           <p className="text-[var(--text-secondary)]">Loading 2FA setup...</p>
         </div>
       </div>
@@ -96,11 +96,11 @@ export function Setup2FAPage() {
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
           aria-label="Back to Profile"
         >
-          <i className="fas fa-arrow-left mr-2" aria-hidden="true"></i>
+          <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Profile
         </Link>
         <h1 className="text-2xl md:text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="fas fa-shield-alt mr-3 text-blue-600" aria-hidden="true"></i>
+          <i className="glass-i fas fa-shield-alt mr-3 text-blue-600" aria-hidden="true"></i>
           Setup Two-Factor Authentication
         </h1>
       </div>
@@ -111,7 +111,7 @@ export function Setup2FAPage() {
             className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
             role="alert"
           >
-            <i className="fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
+            <i className="glass-i fas fa-exclamation-circle mr-2 mt-0.5" aria-hidden="true"></i>
             <span>{error}</span>
           </div>
         )}
@@ -127,7 +127,7 @@ export function Setup2FAPage() {
                 : 'text-[var(--text-secondary)]'
             }`}
           >
-            <i className="fas fa-qrcode mr-2" aria-hidden="true"></i>
+            <i className="glass-i fas fa-qrcode mr-2" aria-hidden="true"></i>
             QR Code
           </button>
           <button
@@ -139,7 +139,7 @@ export function Setup2FAPage() {
                 : 'text-[var(--text-secondary)]'
             }`}
           >
-            <i className="fas fa-key mr-2" aria-hidden="true"></i>
+            <i className="glass-i fas fa-key mr-2" aria-hidden="true"></i>
             Secret Key
           </button>
         </div>
@@ -174,9 +174,9 @@ export function Setup2FAPage() {
             <button
               type="button"
               onClick={copySecret}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
+              className="btn-apple inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
             >
-              <i className="fas fa-copy mr-2" aria-hidden="true"></i>
+              <i className="glass-i fas fa-copy mr-2" aria-hidden="true"></i>
               Copy Secret Key
             </button>
           </div>
@@ -214,12 +214,12 @@ export function Setup2FAPage() {
             >
               {isSubmitting ? (
                 <>
-                  <i className="fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
                   Enabling...
                 </>
               ) : (
                 <>
-                  <i className="fas fa-shield-alt mr-2" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-shield-alt mr-2" aria-hidden="true"></i>
                   Enable 2FA
                 </>
               )}
@@ -230,7 +230,7 @@ export function Setup2FAPage() {
               className="py-3 px-4 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg font-medium transition-colors duration-200"
               title="Generate new QR code"
             >
-              <i className="fas fa-sync-alt" aria-hidden="true"></i>
+              <i className="glass-i fas fa-sync-alt" aria-hidden="true"></i>
             </button>
           </div>
         </form>
@@ -238,7 +238,7 @@ export function Setup2FAPage() {
         {/* Help Text */}
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-300">
-            <i className="fas fa-info-circle mr-2" aria-hidden="true"></i>
+            <i className="glass-i fas fa-info-circle mr-2" aria-hidden="true"></i>
             <strong>Tip:</strong> After enabling 2FA, you'll need to enter a code from your authenticator app each time you log in.
           </p>
         </div>

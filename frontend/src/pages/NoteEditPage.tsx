@@ -77,7 +77,7 @@ export function NoteEditPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <i className="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+        <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
       </div>
     );
   }
@@ -87,7 +87,7 @@ export function NoteEditPage() {
       {/* Header */}
       <div className="mb-6">
         <Link to={id ? `/notes/${id}` : '/'} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-          <i className="fas fa-arrow-left mr-2"></i>
+          <i className="glass-i fas fa-arrow-left mr-2"></i>
           {id ? 'Back to Note' : 'Back to Notes'}
         </Link>
       </div>
@@ -103,7 +103,7 @@ export function NoteEditPage() {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {error && (
             <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
-              <i className="fas fa-exclamation-triangle mr-2"></i>
+              <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
               {error}
             </div>
           )}
@@ -131,7 +131,7 @@ export function NoteEditPage() {
               Tags
             </label>
             <div className="relative">
-              <i className="fas fa-tags absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+              <i className="glass-i fas fa-tags absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
               <input
                 id="tags"
                 type="text"
@@ -189,7 +189,7 @@ export function NoteEditPage() {
                 className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
               <span className="text-[var(--text-primary)]">
-                <i className="fas fa-thumbtack text-yellow-500 mr-1"></i>
+                <i className="glass-i fas fa-thumbtack text-yellow-500 mr-1"></i>
                 Pinned
               </span>
             </label>
@@ -201,7 +201,7 @@ export function NoteEditPage() {
                 className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
               <span className="text-[var(--text-primary)]">
-                <i className="fas fa-heart text-red-500 mr-1"></i>
+                <i className="glass-i fas fa-heart text-red-500 mr-1"></i>
                 Favorite
               </span>
             </label>
@@ -213,7 +213,7 @@ export function NoteEditPage() {
                 className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
               <span className="text-[var(--text-primary)]">
-                <i className="fas fa-archive text-gray-500 mr-1"></i>
+                <i className="glass-i fas fa-archive text-gray-500 mr-1"></i>
                 Archived
               </span>
             </label>
@@ -223,23 +223,23 @@ export function NoteEditPage() {
           <div className="flex justify-end gap-4 pt-4 border-t border-[var(--border-color)]">
             <Link
               to={id ? `/notes/${id}` : '/'}
-              className="px-6 py-3 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors"
+              className="btn-secondary-glass"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={isSaving}
-              className="btn-primary px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-apple"
             >
               {isSaving ? (
                 <>
-                  <i className="fas fa-spinner fa-spin mr-2"></i>
+                  <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
                   Saving...
                 </>
               ) : (
                 <>
-                  <i className="fas fa-save mr-2"></i>
+                  <i className="glass-i fas fa-save mr-2"></i>
                   {isNew ? 'Create Note' : 'Save Changes'}
                 </>
               )}

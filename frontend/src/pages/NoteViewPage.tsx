@@ -74,7 +74,7 @@ export function NoteViewPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <i className="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+        <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
       </div>
     );
   }
@@ -83,11 +83,11 @@ export function NoteViewPage() {
     return (
       <div className="p-6">
         <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
-          <i className="fas fa-exclamation-triangle mr-2"></i>
+          <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
           {error || 'Note not found'}
         </div>
         <Link to="/" className="mt-4 inline-block text-blue-600 hover:underline">
-          <i className="fas fa-arrow-left mr-2"></i>Back to Notes
+          <i className="glass-i fas fa-arrow-left mr-2"></i>Back to Notes
         </Link>
       </div>
     );
@@ -98,7 +98,7 @@ export function NoteViewPage() {
       {/* Header */}
       <div className="mb-6">
         <Link to="/" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-          <i className="fas fa-arrow-left mr-2"></i>Back to Notes
+          <i className="glass-i fas fa-arrow-left mr-2"></i>Back to Notes
         </Link>
       </div>
 
@@ -111,17 +111,17 @@ export function NoteViewPage() {
               <div className="flex items-center gap-2 mb-2">
                 {note.pinned && (
                   <span className="text-yellow-500" title="Pinned">
-                    <i className="fas fa-thumbtack"></i>
+                    <i className="glass-i fas fa-thumbtack"></i>
                   </span>
                 )}
                 {note.favorite && (
                   <span className="text-red-500" title="Favorite">
-                    <i className="fas fa-heart"></i>
+                    <i className="glass-i fas fa-heart"></i>
                   </span>
                 )}
                 {note.archived && (
                   <span className="text-gray-500" title="Archived">
-                    <i className="fas fa-archive"></i>
+                    <i className="glass-i fas fa-archive"></i>
                   </span>
                 )}
               </div>
@@ -141,18 +141,18 @@ export function NoteViewPage() {
               {/* Meta Info */}
               <div className="flex items-center gap-4 mt-4 text-sm text-[var(--text-muted)]">
                 <span>
-                  <i className="fas fa-clock mr-1"></i>
+                  <i className="glass-i fas fa-clock mr-1"></i>
                   {Math.ceil((note.body?.length || 0) / 1000)} min read
                 </span>
                 {note.created_at && (
                   <span>
-                    <i className="fas fa-calendar-plus mr-1"></i>
+                    <i className="glass-i fas fa-calendar-plus mr-1"></i>
                     Created {new Date(note.created_at).toLocaleDateString()}
                   </span>
                 )}
                 {note.updated_at && (
                   <span>
-                    <i className="fas fa-edit mr-1"></i>
+                    <i className="glass-i fas fa-edit mr-1"></i>
                     Updated {new Date(note.updated_at).toLocaleDateString()}
                   </span>
                 )}
@@ -167,7 +167,7 @@ export function NoteViewPage() {
                   className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-blue-600 transition-colors"
                   title="Edit"
                 >
-                  <i className="fas fa-edit"></i>
+                  <i className="glass-i fas fa-edit"></i>
                 </Link>
                 <button
                   onClick={handleTogglePin}
@@ -176,7 +176,7 @@ export function NoteViewPage() {
                   }`}
                   title={note.pinned ? 'Unpin' : 'Pin'}
                 >
-                  <i className="fas fa-thumbtack"></i>
+                  <i className="glass-i fas fa-thumbtack"></i>
                 </button>
                 <button
                   onClick={handleToggleFavorite}
@@ -185,7 +185,7 @@ export function NoteViewPage() {
                   }`}
                   title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
                 >
-                  <i className="fas fa-heart"></i>
+                  <i className="glass-i fas fa-heart"></i>
                 </button>
                 <button
                   onClick={handleToggleArchive}
@@ -194,14 +194,14 @@ export function NoteViewPage() {
                   }`}
                   title={note.archived ? 'Unarchive' : 'Archive'}
                 >
-                  <i className="fas fa-archive"></i>
+                  <i className="glass-i fas fa-archive"></i>
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   className="p-2 rounded-lg hover:bg-red-500/10 text-red-600 transition-colors"
                   title="Delete"
                 >
-                  <i className="fas fa-trash"></i>
+                  <i className="glass-i fas fa-trash"></i>
                 </button>
               </div>
             )}
@@ -221,7 +221,7 @@ export function NoteViewPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="glass-card p-6 rounded-xl max-w-md w-full">
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
-              <i className="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+              <i className="glass-i fas fa-exclamation-triangle text-red-500 mr-2"></i>
               Delete Note?
             </h3>
             <p className="text-[var(--text-secondary)] mb-6">
@@ -238,7 +238,7 @@ export function NoteViewPage() {
                 onClick={handleDelete}
                 className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
               >
-                <i className="fas fa-trash mr-2"></i>Delete
+                <i className="glass-i fas fa-trash mr-2"></i>Delete
               </button>
             </div>
           </div>

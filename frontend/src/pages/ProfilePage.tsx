@@ -13,7 +13,7 @@ export function ProfilePage() {
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
       <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-        <i className="fas fa-user-circle mr-3 text-blue-600"></i>
+        <i className="glass-i fas fa-user-circle mr-3 text-blue-600"></i>
         Profile
       </h1>
 
@@ -27,7 +27,7 @@ export function ProfilePage() {
             <h2 className="text-2xl font-bold text-[var(--text-primary)]">{user.username}</h2>
             {user.email && (
               <p className="text-[var(--text-secondary)]">
-                <i className="fas fa-envelope mr-2"></i>
+                <i className="glass-i fas fa-envelope mr-2"></i>
                 {user.email}
               </p>
             )}
@@ -64,7 +64,7 @@ export function ProfilePage() {
       {/* Settings Card */}
       <div className="glass-card p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-          <i className="fas fa-cog mr-2"></i>
+          <i className="glass-i fas fa-cog mr-2"></i>
           Settings
         </h3>
 
@@ -92,9 +92,9 @@ export function ProfilePage() {
             </div>
             <Link
               to="/profile/change-password"
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center"
+              className="btn-apple px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center"
             >
-              <i className="fas fa-key mr-2"></i>
+              <i className="glass-i fas fa-key mr-2"></i>
               Change Password
             </Link>
           </div>
@@ -112,7 +112,7 @@ export function ProfilePage() {
                 to="/profile/2fa/disable"
                 className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors inline-flex items-center"
               >
-                <i className="fas fa-shield-alt mr-2"></i>
+                <i className="glass-i fas fa-shield-alt mr-2"></i>
                 Disable 2FA
               </Link>
             ) : (
@@ -120,7 +120,7 @@ export function ProfilePage() {
                 to="/profile/2fa/setup"
                 className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center"
               >
-                <i className="fas fa-shield-alt mr-2"></i>
+                <i className="glass-i fas fa-shield-alt mr-2"></i>
                 Setup 2FA
               </Link>
             )}
@@ -131,25 +131,25 @@ export function ProfilePage() {
       {/* Security Info */}
       <div className="glass-card p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-          <i className="fas fa-shield-alt mr-2 text-green-600"></i>
+          <i className="glass-i fas fa-shield-alt mr-2 text-green-600"></i>
           Security Tips
         </h3>
 
         <ul className="space-y-3 text-[var(--text-secondary)]">
           <li className="flex items-start gap-3">
-            <i className="fas fa-check-circle text-green-500 mt-1"></i>
+            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
             <span>Use a strong, unique password for your account</span>
           </li>
           <li className="flex items-start gap-3">
-            <i className="fas fa-check-circle text-green-500 mt-1"></i>
+            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
             <span>Enable two-factor authentication for extra security</span>
           </li>
           <li className="flex items-start gap-3">
-            <i className="fas fa-check-circle text-green-500 mt-1"></i>
+            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
             <span>Never share your login credentials with others</span>
           </li>
           <li className="flex items-start gap-3">
-            <i className="fas fa-check-circle text-green-500 mt-1"></i>
+            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
             <span>Log out when using shared or public computers</span>
           </li>
         </ul>

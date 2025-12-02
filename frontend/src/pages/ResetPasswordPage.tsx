@@ -64,7 +64,7 @@ export function ResetPasswordPage() {
         <div className="w-full max-w-md">
           <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 mb-6">
-              <i className="fas fa-exclamation-triangle text-3xl text-red-500" aria-hidden="true"></i>
+              <i className="glass-i fas fa-exclamation-triangle text-3xl text-red-500" aria-hidden="true"></i>
             </div>
             <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Invalid Reset Link</h1>
             <p className="text-[var(--text-secondary)] mb-6">
@@ -74,7 +74,7 @@ export function ResetPasswordPage() {
               to="/forgot-password"
               className="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium"
             >
-              <i className="fas fa-key" aria-hidden="true"></i>
+              <i className="glass-i fas fa-key" aria-hidden="true"></i>
               <span>Request New Reset Link</span>
             </Link>
           </div>
@@ -89,7 +89,7 @@ export function ResetPasswordPage() {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-6 shadow-lg shadow-blue-500/30">
-            <i className="fas fa-lock text-3xl text-white" aria-hidden="true"></i>
+            <i className="glass-i fas fa-lock text-3xl text-white" aria-hidden="true"></i>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Reset Password
@@ -104,7 +104,7 @@ export function ResetPasswordPage() {
           {success ? (
             <div className="text-center space-y-6">
               <div className="p-6 rounded-xl bg-green-500/10 border border-green-500/30">
-                <i className="fas fa-check-circle text-4xl text-green-500 mb-4" aria-hidden="true"></i>
+                <i className="glass-i fas fa-check-circle text-4xl text-green-500 mb-4" aria-hidden="true"></i>
                 <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">
                   Password Reset Successful!
                 </h3>
@@ -117,7 +117,7 @@ export function ResetPasswordPage() {
                 to="/login"
                 className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-medium text-base border-2 border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
               >
-                <i className="fas fa-sign-in-alt" aria-hidden="true"></i>
+                <i className="glass-i fas fa-sign-in-alt" aria-hidden="true"></i>
                 <span>Go to Login</span>
               </Link>
             </div>
@@ -125,27 +125,27 @@ export function ResetPasswordPage() {
             <form onSubmit={handleSubmit} className="space-y-5" aria-label="Reset password form">
               {/* Error Alert */}
               {error && (
-                <div 
+                <div
                   className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm flex items-start gap-3"
                   role="alert"
                   aria-live="polite"
                 >
-                  <i className="fas fa-exclamation-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
+                  <i className="glass-i fas fa-exclamation-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
                   <span>{error}</span>
                 </div>
               )}
 
               {/* New Password Field */}
               <div className="space-y-2">
-                <label 
-                  htmlFor="password" 
+                <label
+                  htmlFor="password"
                   className="block text-sm font-medium text-[var(--text-primary)]"
                 >
                   New Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
                   </div>
                   <input
                     id="password"
@@ -173,15 +173,15 @@ export function ResetPasswordPage() {
 
               {/* Confirm Password Field */}
               <div className="space-y-2">
-                <label 
-                  htmlFor="passwordConfirm" 
+                <label
+                  htmlFor="passwordConfirm"
                   className="block text-sm font-medium text-[var(--text-primary)]"
                 >
                   Confirm New Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
                   </div>
                   <input
                     id="passwordConfirm"
@@ -214,12 +214,12 @@ export function ResetPasswordPage() {
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-spinner fa-spin" aria-hidden="true"></i>
                     <span>Resetting...</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
-                    <i className="fas fa-check-circle" aria-hidden="true"></i>
+                    <i className="glass-i fas fa-check-circle" aria-hidden="true"></i>
                     <span>Reset Password</span>
                   </span>
                 )}
@@ -234,7 +234,7 @@ export function ResetPasswordPage() {
                 to="/login"
                 className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors underline-offset-4 hover:underline"
               >
-                <i className="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+                <i className="glass-i fas fa-arrow-left mr-1" aria-hidden="true"></i>
                 Back to Login
               </Link>
             </div>
@@ -246,13 +246,13 @@ export function ResetPasswordPage() {
           <p className="text-sm text-white/70 mb-2">Your personal note-taking companion</p>
           <div className="flex justify-center gap-4 text-xs text-white/60">
             <span className="flex items-center gap-1">
-              <i className="fas fa-shield-alt" aria-hidden="true"></i> Secure
+              <i className="glass-i fas fa-shield-alt" aria-hidden="true"></i> Secure
             </span>
             <span className="flex items-center gap-1">
-              <i className="fas fa-mobile-alt" aria-hidden="true"></i> Responsive
+              <i className="glass-i fas fa-mobile-alt" aria-hidden="true"></i> Responsive
             </span>
             <span className="flex items-center gap-1">
-              <i className="fas fa-palette" aria-hidden="true"></i> Beautiful
+              <i className="glass-i fas fa-palette" aria-hidden="true"></i> Beautiful
             </span>
           </div>
         </div>
