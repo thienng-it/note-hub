@@ -3,6 +3,7 @@
  * 
  * Node.js/Express API server for NoteHub application.
  * Supports both SQLite (default) and MySQL databases.
+ * Uses Sequelize ORM for database operations.
  */
 const path = require('path');
 const fs = require('fs');
@@ -15,7 +16,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+// Database: supports both legacy DB layer and Sequelize ORM
 const db = require('./config/database');
+const { initializeSequelize, syncDatabase, closeDatabase } = require('./models');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -123,12 +126,18 @@ app.use((err, req, res, next) => {
 // Initialize database and start server
 async function start() {
   try {
+    // Initialize Sequelize ORM
+    await initializeSequelize();
+    await syncDatabase();
+    
+    // Also initialize legacy DB for backward compatibility
     await db.connect();
     await db.initSchema();
     
     app.listen(PORT, () => {
       console.log(`🚀 NoteHub API server running on port ${PORT}`);
       console.log(`📦 Database: ${db.isSQLite ? 'SQLite' : 'MySQL'}`);
+      console.log(`🔧 ORM: Sequelize`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
@@ -140,12 +149,14 @@ async function start() {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully...');
+  await closeDatabase();
   await db.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down gracefully...');
+  await closeDatabase();
   await db.close();
   process.exit(0);
 });

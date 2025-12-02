@@ -32,6 +32,7 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 | -------------- | -------------------------------- |
 | **Frontend**   | Vite + React 19 + TypeScript     |
 | **Backend**    | Node.js + Express                |
+| **ORM**        | Sequelize                        |
 | **Database**   | SQLite (dev) / MySQL (prod)      |
 | **API**        | RESTful with JWT authentication  |
 | **Deployment** | Docker + nginx + Hetzner VPS     |
