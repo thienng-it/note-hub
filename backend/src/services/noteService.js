@@ -175,7 +175,7 @@ class NoteService {
       params.push(archived ? 1 : 0);
     }
 
-    updates.push('updated_at = datetime("now")');
+    updates.push("updated_at = datetime('now')");
 
     if (updates.length > 0) {
       params.push(noteId);

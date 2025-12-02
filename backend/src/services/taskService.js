@@ -118,7 +118,7 @@ class TaskService {
       params.push(completed ? 1 : 0);
     }
 
-    updates.push('updated_at = datetime("now")');
+    updates.push("updated_at = datetime('now')");
 
     if (updates.length > 0) {
       params.push(taskId);

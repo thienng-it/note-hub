@@ -19,7 +19,7 @@ export function Disable2FAPage() {
 
     setIsSubmitting(true);
     try {
-      await apiClient.post('/api/user/2fa/disable', {
+      await apiClient.post('/api/auth/2fa/disable', {
         totp_code: totpCode,
       });
       navigate('/profile', { state: { message: 'Two-factor authentication disabled' } });
