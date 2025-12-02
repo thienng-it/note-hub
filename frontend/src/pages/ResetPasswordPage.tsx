@@ -62,7 +62,7 @@ export function ResetPasswordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
         <div className="w-full max-w-md">
-          <div className="card p-6 sm:p-8 rounded-2xl shadow-xl text-center">
+          <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 mb-6">
               <i className="fas fa-exclamation-triangle text-3xl text-red-500" aria-hidden="true"></i>
             </div>
@@ -100,7 +100,7 @@ export function ResetPasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="card p-6 sm:p-8 rounded-2xl shadow-xl" role="main">
+        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl" role="main">
           {success ? (
             <div className="text-center space-y-6">
               <div className="p-6 rounded-xl bg-green-500/10 border border-green-500/30">
@@ -153,7 +153,7 @@ export function ResetPasswordPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="search-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="glass-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Use at least 12 characters with mixed types"
                     required
                     minLength={12}
@@ -189,7 +189,7 @@ export function ResetPasswordPage() {
                     type={showPasswordConfirm ? 'text' : 'password'}
                     value={passwordConfirm}
                     onChange={(e) => setPasswordConfirm(e.target.value)}
-                    className="search-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="glass-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Confirm your new password"
                     required
                     autoComplete="new-password"

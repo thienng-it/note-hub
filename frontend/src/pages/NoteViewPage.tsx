@@ -103,7 +103,7 @@ export function NoteViewPage() {
       </div>
 
       {/* Note Card */}
-      <div className="card rounded-2xl overflow-hidden">
+      <div className="glass-card rounded-2xl overflow-hidden">
         {/* Note Header */}
         <div className="p-6 border-b border-[var(--border-color)]">
           <div className="flex items-start justify-between gap-4">
@@ -219,7 +219,7 @@ export function NoteViewPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="card p-6 rounded-xl max-w-md w-full">
+          <div className="glass-card p-6 rounded-xl max-w-md w-full">
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
               <i className="fas fa-exclamation-triangle text-red-500 mr-2"></i>
               Delete Note?

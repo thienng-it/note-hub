@@ -92,7 +92,7 @@ export function NoteEditPage() {
         </Link>
       </div>
 
-      <div className="card rounded-2xl overflow-hidden">
+      <div className="glass-card rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-[var(--border-color)]">
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">
             <i className={`fas ${isNew ? 'fa-plus' : 'fa-edit'} mr-2 text-blue-600`}></i>
@@ -118,7 +118,7 @@ export function NoteEditPage() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="search-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter note title"
               required
               autoFocus
@@ -137,7 +137,7 @@ export function NoteEditPage() {
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                className="search-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="glass-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="work, personal, ideas (comma-separated)"
               />
             </div>
@@ -163,7 +163,7 @@ export function NoteEditPage() {
             </div>
 
             {showPreview ? (
-              <div className="search-input min-h-[300px] p-4 rounded-lg prose prose-lg dark:prose-invert max-w-none overflow-auto note-content">
+              <div className="glass-input min-h-[300px] p-4 rounded-lg prose prose-lg dark:prose-invert max-w-none overflow-auto note-content">
                 <Markdown remarkPlugins={[remarkGfm]}>
                   {body || '*No content to preview*'}
                 </Markdown>
@@ -173,7 +173,7 @@ export function NoteEditPage() {
                 id="body"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                className="search-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] font-mono text-sm resize-y"
+                className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] font-mono text-sm resize-y"
                 placeholder="Write your note here... Markdown is supported!"
               />
             )}

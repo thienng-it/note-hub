@@ -145,7 +145,7 @@ export function ShareNotePage() {
       )}
 
       {/* Share Form */}
-      <div className="card p-6 rounded-xl mb-6">
+      <div className="glass-card p-6 rounded-xl mb-6">
         <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Share with User</h2>
         <form onSubmit={handleShare} className="space-y-4">
           <div>
@@ -200,7 +200,7 @@ export function ShareNotePage() {
       </div>
 
       {/* Shared With List */}
-      <div className="card p-6 rounded-xl">
+      <div className="glass-card p-6 rounded-xl">
         <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Shared With</h2>
         {sharedWith.length > 0 ? (
           <div className="space-y-3">

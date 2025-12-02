@@ -18,7 +18,7 @@ export function ProfilePage() {
       </h1>
 
       {/* User Info Card */}
-      <div className="card p-6 rounded-xl">
+      <div className="glass-card p-6 rounded-xl">
         <div className="flex items-center gap-6 mb-6">
           <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
             {user.username.charAt(0).toUpperCase()}
@@ -62,7 +62,7 @@ export function ProfilePage() {
       </div>
 
       {/* Settings Card */}
-      <div className="card p-6 rounded-xl">
+      <div className="glass-card p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="fas fa-cog mr-2"></i>
           Settings
@@ -129,7 +129,7 @@ export function ProfilePage() {
       </div>
 
       {/* Security Info */}
-      <div className="card p-6 rounded-xl">
+      <div className="glass-card p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="fas fa-shield-alt mr-2 text-green-600"></i>
           Security Tips

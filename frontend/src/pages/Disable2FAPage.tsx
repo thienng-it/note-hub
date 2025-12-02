@@ -34,7 +34,7 @@ export function Disable2FAPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="max-w-md w-full">
-        <div className="card p-8 rounded-2xl shadow-xl">
+        <div className="glass-card p-8 rounded-2xl shadow-xl">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full mb-4">

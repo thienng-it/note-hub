@@ -125,7 +125,7 @@ export function ErrorPage() {
         </div>
 
         {/* Additional Help */}
-        <div className="card p-6 rounded-xl text-left">
+        <div className="glass-card p-6 rounded-xl text-left">
           <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Need Help?</h3>
           <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
             {details.tips.map((tip, index) => (

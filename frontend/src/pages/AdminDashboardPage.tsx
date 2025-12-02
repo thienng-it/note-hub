@@ -83,7 +83,7 @@ export function AdminDashboardPage() {
   if (user?.username !== 'admin') {
     return (
       <div className="p-6 max-w-4xl mx-auto">
-        <div className="card p-8 rounded-2xl text-center">
+        <div className="glass-card p-8 rounded-2xl text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 mb-6">
             <i className="fas fa-ban text-3xl text-red-500" aria-hidden="true"></i>
           </div>
@@ -127,7 +127,7 @@ export function AdminDashboardPage() {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
-        <div className="card p-6 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-100 text-sm font-medium mb-1">Total Users</p>
@@ -139,7 +139,7 @@ export function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="card p-6 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white">
+        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100 text-sm font-medium mb-1">2FA Enabled</p>
@@ -151,7 +151,7 @@ export function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="card p-6 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-100 text-sm font-medium mb-1">With Email</p>
@@ -165,7 +165,7 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="card p-4 sm:p-6 rounded-xl mb-6">
+      <div className="glass-card p-4 sm:p-6 rounded-xl mb-6">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" aria-hidden="true"></i>
@@ -174,7 +174,7 @@ export function AdminDashboardPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by username or email..."
-              className="search-input w-full pl-11 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="glass-input w-full pl-11 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex gap-2">
@@ -210,7 +210,7 @@ export function AdminDashboardPage() {
 
       {/* Error State */}
       {error && (
-        <div className="card p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 mb-6">
+        <div className="glass-card p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 mb-6">
           <i className="fas fa-exclamation-circle mr-2" aria-hidden="true"></i>
           {error}
         </div>
@@ -218,14 +218,14 @@ export function AdminDashboardPage() {
 
       {/* Loading State */}
       {isLoading ? (
-        <div className="card p-12 rounded-xl text-center">
+        <div className="glass-card p-12 rounded-xl text-center">
           <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
           <p className="text-[var(--text-secondary)]">Loading users...</p>
         </div>
       ) : (
         <>
           {/* Users Table */}
-          <div className="card rounded-xl overflow-hidden">
+          <div className="glass-card rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full" role="table">
                 <thead className="bg-[var(--bg-tertiary)]">

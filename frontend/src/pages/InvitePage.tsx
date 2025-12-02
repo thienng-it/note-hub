@@ -109,7 +109,7 @@ export function InvitePage() {
       )}
 
       {/* Invite Form */}
-      <div className="card p-6 rounded-xl mb-6">
+      <div className="glass-card p-6 rounded-xl mb-6">
         <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Create Invitation</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -206,7 +206,7 @@ export function InvitePage() {
       )}
 
       {/* Invitations List */}
-      <div className="card p-6 rounded-xl">
+      <div className="glass-card p-6 rounded-xl">
         <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Your Invitations</h2>
         {invitations.length > 0 ? (
           <div className="space-y-3">

@@ -137,19 +137,19 @@ export function TasksPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="card p-4 rounded-xl text-center">
+        <div className="glass-card p-4 rounded-xl text-center">
           <div className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</div>
           <div className="text-sm text-[var(--text-muted)]">Total</div>
         </div>
-        <div className="card p-4 rounded-xl text-center">
+        <div className="glass-card p-4 rounded-xl text-center">
           <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
           <div className="text-sm text-[var(--text-muted)]">Active</div>
         </div>
-        <div className="card p-4 rounded-xl text-center">
+        <div className="glass-card p-4 rounded-xl text-center">
           <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
           <div className="text-sm text-[var(--text-muted)]">Completed</div>
         </div>
-        <div className="card p-4 rounded-xl text-center">
+        <div className="glass-card p-4 rounded-xl text-center">
           <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
           <div className="text-sm text-[var(--text-muted)]">Overdue</div>
         </div>
@@ -157,7 +157,7 @@ export function TasksPage() {
 
       {/* New Task Form */}
       {showForm && (
-        <div className="card p-6 rounded-xl">
+        <div className="glass-card p-6 rounded-xl">
           <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
             <i className="fas fa-plus-circle mr-2 text-blue-600"></i>
             Create New Task
@@ -172,7 +172,7 @@ export function TasksPage() {
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                className="search-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="glass-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="What needs to be done?"
                 required
               />
@@ -185,7 +185,7 @@ export function TasksPage() {
                 id="description"
                 value={newDescription}
                 onChange={(e) => setNewDescription(e.target.value)}
-                className="search-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                className="glass-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                 placeholder="Add more details (optional)"
                 rows={2}
               />
@@ -200,7 +200,7 @@ export function TasksPage() {
                   type="date"
                   value={newDueDate}
                   onChange={(e) => setNewDueDate(e.target.value)}
-                  className="search-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="glass-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -211,7 +211,7 @@ export function TasksPage() {
                   id="priority"
                   value={newPriority}
                   onChange={(e) => setNewPriority(e.target.value as 'low' | 'medium' | 'high')}
-                  className="search-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="glass-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -293,13 +293,13 @@ export function TasksPage() {
                     type="text"
                     value={editingTask.title}
                     onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
-                    className="search-input w-full px-3 py-2 rounded-lg"
+                    className="glass-input w-full px-3 py-2 rounded-lg"
                     required
                   />
                   <textarea
                     value={editingTask.description || ''}
                     onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
-                    className="search-input w-full px-3 py-2 rounded-lg resize-y"
+                    className="glass-input w-full px-3 py-2 rounded-lg resize-y"
                     rows={2}
                   />
                   <div className="grid grid-cols-2 gap-4">
@@ -307,12 +307,12 @@ export function TasksPage() {
                       type="date"
                       value={editingTask.due_date?.split('T')[0] || ''}
                       onChange={(e) => setEditingTask({ ...editingTask, due_date: e.target.value })}
-                      className="search-input w-full px-3 py-2 rounded-lg"
+                      className="glass-input w-full px-3 py-2 rounded-lg"
                     />
                     <select
                       value={editingTask.priority}
                       onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value as 'low' | 'medium' | 'high' })}
-                      className="search-input w-full px-3 py-2 rounded-lg"
+                      className="glass-input w-full px-3 py-2 rounded-lg"
                     >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>

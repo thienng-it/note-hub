@@ -169,7 +169,7 @@ export function NotesPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search notes..."
-                  className="search-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -181,7 +181,7 @@ export function NotesPage() {
                   value={tagFilter}
                   onChange={(e) => setTagFilter(e.target.value)}
                   placeholder="Filter by tag..."
-                  className="search-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -254,7 +254,7 @@ export function NotesPage() {
         /* Notes Grid */
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {notes.map((note) => (
-            <div key={note.id} className="card p-4 rounded-xl relative group">
+            <div key={note.id} className="glass-card p-4 rounded-xl relative group">
               {/* Pin and Favorite Icons */}
               <div className="absolute top-3 right-3 flex space-x-2">
                 {note.pinned && (

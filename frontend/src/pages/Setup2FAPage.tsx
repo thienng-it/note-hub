@@ -105,7 +105,7 @@ export function Setup2FAPage() {
         </h1>
       </div>
 
-      <div className="card p-6 rounded-xl">
+      <div className="glass-card p-6 rounded-xl">
         {error && (
           <div
             className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"

@@ -94,7 +94,7 @@ export function ForgotPasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="card p-6 sm:p-8 rounded-2xl shadow-xl" role="main">
+        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl" role="main">
           {/* Error Alert */}
           {error && (
             <div 
@@ -127,7 +127,7 @@ export function ForgotPasswordPage() {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="search-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="glass-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter your username or email"
                     required
                     autoFocus
@@ -189,7 +189,7 @@ export function ForgotPasswordPage() {
                     inputMode="numeric"
                     value={totpCode}
                     onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
-                    className="search-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base text-center tracking-[0.5em] font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="glass-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base text-center tracking-[0.5em] font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="000000"
                     maxLength={6}
                     pattern="[0-9]{6}"
