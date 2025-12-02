@@ -3,6 +3,7 @@
  * Supports both SQLite (default) and MySQL.
  */
 const path = require('path');
+const fs = require('fs');
 
 class Database {
   constructor() {
@@ -20,7 +21,11 @@ class Database {
 
     // SQLite takes priority if NOTES_DB_PATH is set
     if (dbPath && !mysqlHost) {
-      return this.connectSQLite(dbPath);
+      // Resolve path relative to project root
+      const resolvedPath = path.isAbsolute(dbPath) 
+        ? dbPath 
+        : path.resolve(process.cwd(), dbPath);
+      return this.connectSQLite(resolvedPath);
     }
 
     // MySQL if MYSQL_HOST is set
@@ -28,8 +33,8 @@ class Database {
       return this.connectMySQL();
     }
 
-    // Default to SQLite
-    const defaultPath = path.join(process.cwd(), 'data', 'notes.db');
+    // Default to SQLite in project root's data folder
+    const defaultPath = path.resolve(process.cwd(), 'data', 'notes.db');
     return this.connectSQLite(defaultPath);
   }
 
@@ -38,7 +43,6 @@ class Database {
    */
   connectSQLite(dbPath) {
     const Database = require('better-sqlite3');
-    const fs = require('fs');
     
     // Ensure directory exists
     const dir = path.dirname(dbPath);

@@ -168,10 +168,10 @@ note-hub/
 │   │   ├── middleware/        # Authentication middleware
 │   │   ├── config/            # Database configuration
 │   │   └── index.js           # Application entry point
-│   ├── scripts/               # Utility scripts
-│   │   └── seed_db.js         # Database seeding script
 │   ├── tests/                 # Backend test suite
 │   └── package.json           # Backend dependencies
+├── scripts/                   # Utility scripts
+│   └── seed_db.js             # Database seeding script
 ├── docker/                    # Docker configuration
 │   └── nginx.conf             # nginx config for frontend
 ├── docker-compose.yml         # Full stack deployment
