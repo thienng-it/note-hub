@@ -55,124 +55,99 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-6 shadow-lg shadow-blue-500/30">
-            <i className="fas fa-user-plus text-3xl text-white" aria-hidden="true"></i>
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-22 h-22 rounded-full mb-6 logo-gradient shadow-apple">
+            <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-2 text-gradient tracking-tight">
             Create Account
           </h1>
-          <p className="mt-2 text-base text-[var(--text-secondary)]">
+          <p className="text-muted-glass text-lg">
             Join NoteHub and start organizing your thoughts
           </p>
         </div>
 
         {/* Register Card */}
-        <div className="card p-6 sm:p-8 rounded-2xl shadow-xl" role="main">
-          <form onSubmit={handleSubmit} className="space-y-5" aria-label="Registration form">
+        <div className="glass-card" role="main">
+          <form onSubmit={handleSubmit} aria-label="Registration form">
             {/* Error Alert */}
             {error && (
-              <div 
-                className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm flex items-start gap-3"
-                role="alert"
-                aria-live="polite"
-              >
-                <i className="fas fa-exclamation-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
+              <div className="alert-glass mb-6" role="alert" aria-live="polite">
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                </svg>
                 <span>{error}</span>
               </div>
             )}
 
             {/* Success Alert */}
             {success && (
-              <div 
-                className="p-4 rounded-xl bg-green-500/10 border border-green-500/30 text-green-600 dark:text-green-400 text-sm flex items-start gap-3"
-                role="alert"
-                aria-live="polite"
-              >
-                <i className="fas fa-check-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
+              <div className="alert-glass-success mb-6" role="alert" aria-live="polite">
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                </svg>
                 <span>{success}</span>
               </div>
             )}
 
             {/* Username Field */}
-            <div className="space-y-2">
-              <label 
-                htmlFor="username" 
-                className="block text-sm font-medium text-[var(--text-primary)]"
-              >
+            <div className="mb-5">
+              <label htmlFor="username" className="form-label-glass">
                 Username
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <i className="fas fa-user text-[var(--text-muted)]" aria-hidden="true"></i>
-                </div>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="search-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Choose a username (min. 3 characters)"
-                  required
-                  minLength={3}
-                  autoFocus
-                  autoComplete="username"
-                />
-              </div>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="glass-input"
+                placeholder="Choose a username (min. 3 characters)"
+                required
+                minLength={3}
+                autoFocus
+                autoComplete="username"
+              />
             </div>
 
             {/* Email Field */}
-            <div className="space-y-2">
-              <label 
-                htmlFor="email" 
-                className="block text-sm font-medium text-[var(--text-primary)]"
-              >
-                Email <span className="text-[var(--text-muted)] font-normal">(optional)</span>
+            <div className="mb-5">
+              <label htmlFor="email" className="form-label-glass">
+                Email <span className="text-muted-glass font-normal">(optional)</span>
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <i className="fas fa-envelope text-[var(--text-muted)]" aria-hidden="true"></i>
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="search-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="your.email@example.com"
-                  autoComplete="email"
-                />
-              </div>
-              <p className="text-xs text-[var(--text-muted)] flex items-center gap-1">
-                <i className="fas fa-info-circle" aria-hidden="true"></i>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="glass-input"
+                placeholder="your.email@example.com"
+                autoComplete="email"
+              />
+              <p className="text-xs text-muted-glass mt-2">
                 Email can be used for login and password recovery
               </p>
             </div>
 
             {/* Password Field */}
-            <div className="space-y-2">
-              <label 
-                htmlFor="password" 
-                className="block text-sm font-medium text-[var(--text-primary)]"
-              >
+            <div className="mb-5">
+              <label htmlFor="password" className="form-label-glass">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <i className="fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
-                </div>
                 <input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="search-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="glass-input pr-12"
                   placeholder="Use at least 12 characters with mixed types"
                   required
                   minLength={12}
@@ -181,33 +156,36 @@ export function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-glass hover:text-gray-600 transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  <i className={`fas fa-eye${showPassword ? '-slash' : ''}`} aria-hidden="true"></i>
+                  {showPassword ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password Field */}
-            <div className="space-y-2">
-              <label 
-                htmlFor="passwordConfirm" 
-                className="block text-sm font-medium text-[var(--text-primary)]"
-              >
+            <div className="mb-6">
+              <label htmlFor="passwordConfirm" className="form-label-glass">
                 Confirm Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <i className="fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
-                </div>
                 <input
                   id="passwordConfirm"
                   name="passwordConfirm"
                   type={showPasswordConfirm ? 'text' : 'password'}
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
-                  className="search-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="glass-input pr-12"
                   placeholder="Confirm your password"
                   required
                   autoComplete="new-password"
@@ -215,10 +193,19 @@ export function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-glass hover:text-gray-600 transition-colors"
                   aria-label={showPasswordConfirm ? 'Hide password' : 'Show password'}
                 >
-                  <i className={`fas fa-eye${showPasswordConfirm ? '-slash' : ''}`} aria-hidden="true"></i>
+                  {showPasswordConfirm ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
@@ -227,61 +214,42 @@ export function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-primary w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="btn-apple w-full py-4 mb-5"
               aria-busy={isLoading}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
-                  <span>Creating account...</span>
+                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                  </svg>
+                  Creating account...
                 </span>
               ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <i className="fas fa-user-plus" aria-hidden="true"></i>
-                  <span>Create Account</span>
-                </span>
+                <span>Create Account</span>
               )}
             </button>
           </form>
 
           {/* Footer Links */}
-          <div className="mt-8 space-y-4">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[var(--border-color)]"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-[var(--glass-bg)] text-[var(--text-muted)]">
-                  Already have an account?
-                </span>
-              </div>
-            </div>
+          <div className="text-center">
+            <div className="border-t border-gray-200/50 my-5" />
+            
+            <p className="text-muted-glass mb-4">Already have an account?</p>
 
             <Link
               to="/login"
-              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-medium text-base border-2 border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
+              className="btn-secondary-glass w-full py-4 block"
             >
-              <i className="fas fa-sign-in-alt" aria-hidden="true"></i>
-              <span>Sign In</span>
+              Sign In
             </Link>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-white/70 mb-2">Your personal note-taking companion</p>
-          <div className="flex justify-center gap-4 text-xs text-white/60">
-            <span className="flex items-center gap-1">
-              <i className="fas fa-shield-alt" aria-hidden="true"></i> Secure
-            </span>
-            <span className="flex items-center gap-1">
-              <i className="fas fa-mobile-alt" aria-hidden="true"></i> Responsive
-            </span>
-            <span className="flex items-center gap-1">
-              <i className="fas fa-palette" aria-hidden="true"></i> Beautiful
-            </span>
-          </div>
-        </div>
+        <p className="mt-8 text-center text-muted-glass text-sm">
+          Your personal note-taking companion
+        </p>
       </div>
     </div>
   );
