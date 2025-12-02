@@ -878,6 +878,74 @@ body.dark {
   margin: 1rem 0;
 }
 
+/* Glass Div - for generic containers */
+.glass-div {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+/* Glass Span - for inline text elements */
+.glass-span {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.5rem;
+}
+
+/* Glass I - for icon elements (i tags) */
+.glass-i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  transition: all 0.2s;
+}
+
+.glass-i:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Glass P - for paragraph elements */
+.glass-p {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+/* Glass A - for anchor/link elements (alternative to glass-link) */
+.glass-a {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  color: var(--apple-blue);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.glass-a:hover {
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--apple-blue-hover);
+}
+
 /* Glass Icon - for icons */
 .glass-icon {
   display: inline-flex;
