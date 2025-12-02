@@ -10,7 +10,7 @@ RUN npm ci --only=production
 # Copy source code
 COPY backend/src ./src
 COPY scripts ./scripts
-COPY .env.example ./.env.example
+COPY .env ./.env
 
 # Create data directory for SQLite
 RUN mkdir -p /app/data
