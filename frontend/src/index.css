@@ -1,7 +1,4 @@
-/* Import Bootstrap CSS */
-@import "bootstrap/dist/css/bootstrap.min.css";
-
-/* Import Tailwind CSS v4 */
+/* Import Tailwind CSS v4 only - no Bootstrap */
 @import "tailwindcss";
 
 /* Apple-inspired Liquid Glass Design System */
@@ -17,25 +14,6 @@
   
   /* Typography */
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-size-xs: 0.75rem;   /* 12px */
-  --font-size-sm: 0.875rem;  /* 14px */
-  --font-size-base: 1rem;    /* 16px */
-  --font-size-lg: 1.125rem;  /* 18px */
-  --font-size-xl: 1.25rem;   /* 20px */
-  --font-size-2xl: 1.5rem;   /* 24px */
-  --font-size-3xl: 1.875rem; /* 30px */
-  --font-size-4xl: 2.25rem;  /* 36px */
-  
-  /* Spacing */
-  --spacing-1: 0.25rem;
-  --spacing-2: 0.5rem;
-  --spacing-3: 0.75rem;
-  --spacing-4: 1rem;
-  --spacing-5: 1.25rem;
-  --spacing-6: 1.5rem;
-  --spacing-8: 2rem;
-  --spacing-10: 2.5rem;
-  --spacing-12: 3rem;
   
   /* Liquid Glass Effects */
   --glass-blur: 20px;
@@ -45,14 +23,6 @@
   --glass-border-dark: rgba(255, 255, 255, 0.08);
   --glass-shadow-light: 0 8px 32px rgba(0, 0, 0, 0.12);
   --glass-shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.4);
-  
-  /* Border Radius */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.5rem;
-  --radius-full: 9999px;
 }
 
 /* Base resets */
@@ -88,10 +58,10 @@ body.dark {
   background: var(--glass-bg-light);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-radius: var(--radius-2xl);
+  border-radius: 1.5rem;
   border: 1px solid var(--glass-border-light);
   box-shadow: var(--glass-shadow-light);
-  padding: var(--spacing-6);
+  padding: 2rem;
 }
 
 .dark .glass-card {
@@ -102,19 +72,25 @@ body.dark {
 
 /* Liquid Glass Input Fields */
 .glass-input {
+  display: block;
+  width: 100%;
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-3) var(--spacing-4);
-  font-size: var(--font-size-base);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
   transition: all 0.2s ease;
-  width: 100%;
+  color: #1c1c1e;
 }
 
 .glass-input:focus {
   outline: none;
   border-color: var(--apple-blue);
   box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
+}
+
+.glass-input::placeholder {
+  color: rgba(60, 60, 67, 0.5);
 }
 
 .dark .glass-input {
@@ -128,17 +104,18 @@ body.dark {
   background: linear-gradient(180deg, #007AFF 0%, #0056CC 100%);
   color: white;
   font-weight: 600;
-  font-size: var(--font-size-base);
-  padding: var(--spacing-3) var(--spacing-6);
+  font-size: 1rem;
+  padding: 0.875rem 1.5rem;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
+  gap: 0.5rem;
   box-shadow: 0 2px 8px rgba(0, 122, 255, 0.4);
+  text-decoration: none;
 }
 
 .btn-apple:hover {
@@ -161,16 +138,17 @@ body.dark {
   background: rgba(255, 255, 255, 0.6);
   color: #1c1c1e;
   font-weight: 500;
-  font-size: var(--font-size-base);
-  padding: var(--spacing-3) var(--spacing-6);
+  font-size: 1rem;
+  padding: 0.875rem 1.5rem;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: var(--radius-lg);
+  border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
+  gap: 0.5rem;
+  text-decoration: none;
 }
 
 .btn-secondary-glass:hover {
@@ -180,10 +158,10 @@ body.dark {
 /* Form Labels */
 .form-label-glass {
   display: block;
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
   font-weight: 500;
   color: #3c3c43;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: 0.5rem;
 }
 
 .dark .form-label-glass {
@@ -194,12 +172,12 @@ body.dark {
 .alert-glass {
   background: rgba(255, 59, 48, 0.12);
   border: 1px solid rgba(255, 59, 48, 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-4);
+  border-radius: 0.75rem;
+  padding: 1rem;
   color: var(--apple-red);
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-3);
+  gap: 0.75rem;
 }
 
 .alert-glass-success {
@@ -221,27 +199,17 @@ body.dark {
   left: 0;
   background: var(--apple-blue);
   color: white;
-  padding: var(--spacing-2) var(--spacing-4);
+  padding: 0.5rem 1rem;
   z-index: 100;
   transition: top 0.3s;
-  border-radius: 0 0 var(--radius-md) 0;
+  border-radius: 0 0 0.5rem 0;
 }
 
 .skip-link:focus {
   top: 0;
 }
 
-/* Typography utilities */
-.text-heading {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.text-subheading {
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
+/* Text utilities */
 .text-muted-glass {
   color: rgba(60, 60, 67, 0.6);
 }
@@ -256,4 +224,28 @@ body.dark {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Logo gradient */
+.logo-gradient {
+  background: linear-gradient(135deg, #007AFF 0%, #AF52DE 100%);
+}
+
+/* Shadow utilities */
+.shadow-apple {
+  box-shadow: 0 12px 40px rgba(0, 122, 255, 0.4);
+}
+
+/* Custom sizing */
+.w-22 {
+  width: 5.5rem;
+}
+
+.h-22 {
+  height: 5.5rem;
+}
+
+/* Link colors */
+.text-apple-blue {
+  color: var(--apple-blue);
 }
