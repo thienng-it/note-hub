@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 export function Setup2FAPage() {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
   const [qrCode, setQrCode] = useState('');
   const [secret, setSecret] = useState('');
   const [totpCode, setTotpCode] = useState('');
@@ -44,6 +46,8 @@ export function Setup2FAPage() {
         secret,
         totp_code: totpCode,
       });
+      // Refresh user data to update has_2fa status
+      await refreshUser();
       navigate('/profile', { state: { message: 'Two-factor authentication enabled successfully' } });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to enable 2FA';

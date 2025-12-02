@@ -54,7 +54,8 @@ router.post('/login', async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        has_2fa: !!user.totp_secret
       }
     });
   } catch (error) {
@@ -265,7 +266,10 @@ router.post('/2fa/enable', jwtRequired, async (req, res) => {
       [secret, req.userId]
     );
 
-    res.json({ message: '2FA enabled successfully' });
+    res.json({ 
+      message: '2FA enabled successfully',
+      has_2fa: true
+    });
   } catch (error) {
     console.error('2FA enable error:', error);
     res.status(500).json({ error: 'Internal server error' });

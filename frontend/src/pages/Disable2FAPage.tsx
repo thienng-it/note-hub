@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 export function Disable2FAPage() {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
   const [totpCode, setTotpCode] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,6 +24,8 @@ export function Disable2FAPage() {
       await apiClient.post('/api/auth/2fa/disable', {
         totp_code: totpCode,
       });
+      // Refresh user data to update has_2fa status
+      await refreshUser();
       navigate('/profile', { state: { message: 'Two-factor authentication disabled' } });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to disable 2FA';
