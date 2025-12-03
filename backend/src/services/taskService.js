@@ -29,7 +29,7 @@ class TaskService {
       order: [
         [sequelize.literal('CASE WHEN completed = 0 THEN 0 ELSE 1 END'), 'ASC'],
         [sequelize.literal(`CASE priority WHEN 'high' THEN 0 WHEN 'medium' THEN 1 WHEN 'low' THEN 2 ELSE 3 END`), 'ASC'],
-        ['due_date', 'ASC NULLS LAST'],
+        [sequelize.literal('due_date ASC NULLS LAST')],
         ['created_at', 'DESC']
       ],
       raw: true

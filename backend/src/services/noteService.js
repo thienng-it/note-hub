@@ -1,22 +1,24 @@
 /**
  * Note Service for note management operations.
  */
-const { getSequelize, QueryTypes } = require('sequelize');
-const { getSequelize: getSeq } = require('../models');
+const { QueryTypes } = require('sequelize');
+const { getSequelize } = require('../models');
 const { marked } = require('marked');
 const sanitizeHtml = require('sanitize-html');
 
-// Get sequelize instance
+// Get sequelize instance and create db wrapper
 const db = {
   query: async (sql, params) => {
-    const sequelize = getSeq();
-    // Convert ? placeholders to named placements
+    const sequelize = getSequelize();
+    // Convert ? placeholders to named parameters using regex to only replace in SQL context
     let namedSql = sql;
     const replacements = {};
-    params.forEach((param, i) => {
-      const placeholder = `param${i}`;
-      namedSql = namedSql.replace('?', `:${placeholder}`);
-      replacements[placeholder] = param;
+    let paramIndex = 0;
+    namedSql = namedSql.replace(/\?/g, () => {
+      const placeholder = `param${paramIndex}`;
+      replacements[placeholder] = params[paramIndex];
+      paramIndex++;
+      return `:${placeholder}`;
     });
     const [results] = await sequelize.query(namedSql, { replacements, type: QueryTypes.SELECT });
     return results;
@@ -26,16 +28,22 @@ const db = {
     return results[0] || null;
   },
   run: async (sql, params) => {
-    const sequelize = getSeq();
+    const sequelize = getSequelize();
     let namedSql = sql;
     const replacements = {};
-    params.forEach((param, i) => {
-      const placeholder = `param${i}`;
-      namedSql = namedSql.replace('?', `:${placeholder}`);
-      replacements[placeholder] = param;
+    let paramIndex = 0;
+    namedSql = namedSql.replace(/\?/g, () => {
+      const placeholder = `param${paramIndex}`;
+      replacements[placeholder] = params[paramIndex];
+      paramIndex++;
+      return `:${placeholder}`;
     });
     const [results, metadata] = await sequelize.query(namedSql, { replacements });
-    return { insertId: metadata, affectedRows: metadata };
+    // For INSERT operations, return the insert ID and affected rows
+    return { 
+      insertId: metadata?.insertId || metadata?.lastID || results?.insertId,
+      affectedRows: metadata?.affectedRows || metadata?.changes || 1
+    };
   }
 };
 

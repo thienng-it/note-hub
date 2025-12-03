@@ -4,7 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const { jwtRequired } = require('../middleware/auth');
-const { User, Note, Tag, ShareNote, Invitation, NoteTag } = require('../models');
+const { User, Note, Tag, ShareNote, Invitation, NoteTag, Op } = require('../models');
 const { getSequelize } = require('../models');
 const crypto = require('crypto');
 
@@ -88,7 +88,6 @@ router.get('/', jwtRequired, async (req, res) => {
 router.put('/', jwtRequired, async (req, res) => {
   try {
     const { username, email, bio, theme } = req.body;
-    const { Op } = require('../models');
 
     // Check if new username already exists
     if (username && username !== req.user.username) {
