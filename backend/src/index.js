@@ -9,7 +9,12 @@ const path = require('path');
 const fs = require('fs');
 
 // Load .env from project root
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+// In Docker: /app/src -> ../.env = /app/.env
+// In development: backend/src -> ../../.env = ./.env (repo root)
+const envPath = path.resolve(__dirname, '../../.env');
+const envPathDocker = path.resolve(__dirname, '../.env');
+const dotenvPath = fs.existsSync(envPath) ? envPath : envPathDocker;
+require('dotenv').config({ path: dotenvPath });
 
 const express = require('express');
 const cors = require('cors');
