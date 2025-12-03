@@ -1,9 +1,43 @@
 /**
  * Note Service for note management operations.
  */
-const db = require('../config/database');
+const { getSequelize, QueryTypes } = require('sequelize');
+const { getSequelize: getSeq } = require('../models');
 const { marked } = require('marked');
 const sanitizeHtml = require('sanitize-html');
+
+// Get sequelize instance
+const db = {
+  query: async (sql, params) => {
+    const sequelize = getSeq();
+    // Convert ? placeholders to named placements
+    let namedSql = sql;
+    const replacements = {};
+    params.forEach((param, i) => {
+      const placeholder = `param${i}`;
+      namedSql = namedSql.replace('?', `:${placeholder}`);
+      replacements[placeholder] = param;
+    });
+    const [results] = await sequelize.query(namedSql, { replacements, type: QueryTypes.SELECT });
+    return results;
+  },
+  queryOne: async (sql, params) => {
+    const results = await db.query(sql, params);
+    return results[0] || null;
+  },
+  run: async (sql, params) => {
+    const sequelize = getSeq();
+    let namedSql = sql;
+    const replacements = {};
+    params.forEach((param, i) => {
+      const placeholder = `param${i}`;
+      namedSql = namedSql.replace('?', `:${placeholder}`);
+      replacements[placeholder] = param;
+    });
+    const [results, metadata] = await sequelize.query(namedSql, { replacements });
+    return { insertId: metadata, affectedRows: metadata };
+  }
+};
 
 class NoteService {
   /**
