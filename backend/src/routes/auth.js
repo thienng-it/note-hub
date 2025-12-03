@@ -6,7 +6,7 @@ const router = express.Router();
 const AuthService = require('../services/authService');
 const jwtService = require('../services/jwtService');
 const { jwtRequired } = require('../middleware/auth');
-const { User } = require('../models');
+const db = require('../config/database');
 const { authenticator } = require('otplib');
 const QRCode = require('qrcode');
 
@@ -147,7 +147,10 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(400).json({ error: 'Username required' });
     }
 
-    const user = await User.findOne({ where: { username } });
+    const user = await db.queryOne(
+      `SELECT * FROM users WHERE username = ?`,
+      [username]
+    );
 
     if (!user) {
       // Don't reveal if user exists
@@ -258,9 +261,9 @@ router.post('/2fa/enable', jwtRequired, async (req, res) => {
       return res.status(400).json({ error: 'Invalid verification code' });
     }
 
-    await User.update(
-      { totp_secret: secret },
-      { where: { id: req.userId } }
+    await db.run(
+      `UPDATE users SET totp_secret = ? WHERE id = ?`,
+      [secret, req.userId]
     );
 
     res.json({ 
@@ -293,9 +296,9 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
       return res.status(400).json({ error: 'Invalid 2FA code' });
     }
 
-    await User.update(
-      { totp_secret: null },
-      { where: { id: req.userId } }
+    await db.run(
+      `UPDATE users SET totp_secret = NULL WHERE id = ?`,
+      [req.userId]
     );
 
     res.json({ message: '2FA disabled successfully' });

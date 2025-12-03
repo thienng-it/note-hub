@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const NoteService = require('../services/noteService');
 const { jwtRequired } = require('../middleware/auth');
-const { getSequelize } = require('../models');
+const db = require('../config/database');
 
 /**
  * GET /api/notes - List all notes for user
@@ -294,13 +294,12 @@ router.get('/:id/shares', jwtRequired, async (req, res) => {
       return res.status(403).json({ error: 'Only the note owner can view shares' });
     }
 
-    const sequelize = getSequelize();
-    const [shares] = await sequelize.query(`
+    const shares = await db.query(`
       SELECT sn.*, u.username, u.email
       FROM share_notes sn
       JOIN users u ON sn.shared_with_id = u.id
-      WHERE sn.note_id = :noteId
-    `, { replacements: { noteId } });
+      WHERE sn.note_id = ?
+    `, [noteId]);
 
     res.json({ shares });
   } catch (error) {
