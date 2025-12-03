@@ -2,7 +2,7 @@
  * JWT Authentication Middleware.
  */
 const jwtService = require('../services/jwtService');
-const db = require('../config/database');
+const { User } = require('../models');
 
 /**
  * Middleware that requires a valid JWT token.
@@ -32,10 +32,10 @@ const jwtRequired = async (req, res, next) => {
   }
 
   // Get user from database
-  const user = await db.queryOne(
-    `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users WHERE id = ?`,
-    [result.userId]
-  );
+  const user = await User.findOne({
+    where: { id: result.userId },
+    attributes: ['id', 'username', 'email', 'bio', 'theme', 'totp_secret', 'created_at', 'last_login']
+  });
 
   if (!user) {
     return res.status(401).json({ error: 'User not found' });
@@ -67,10 +67,10 @@ const jwtOptional = async (req, res, next) => {
   const result = jwtService.validateToken(token);
 
   if (result.valid) {
-    const user = await db.queryOne(
-      `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users WHERE id = ?`,
-      [result.userId]
-    );
+    const user = await User.findOne({
+      where: { id: result.userId },
+      attributes: ['id', 'username', 'email', 'bio', 'theme', 'totp_secret', 'created_at', 'last_login']
+    });
     if (user) {
       req.user = user;
       req.userId = user.id;

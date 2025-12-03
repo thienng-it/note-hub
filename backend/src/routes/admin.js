@@ -4,7 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const { jwtRequired, adminRequired } = require('../middleware/auth');
-const db = require('../config/database');
+const { User, Op } = require('../models');
 
 /**
  * GET /api/admin/users - List all users (admin only)
@@ -13,30 +13,29 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
   try {
     const { search = '', page = 1, per_page = 20 } = req.query;
     const offset = (parseInt(page, 10) - 1) * parseInt(per_page, 10);
+    const limit = parseInt(per_page, 10);
 
-    let sql = `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users`;
-    let countSql = `SELECT COUNT(*) as count FROM users`;
-    const params = [];
-    const countParams = [];
+    const where = search ? {
+      [Op.or]: [
+        { username: { [Op.like]: `%${search}%` } },
+        { email: { [Op.like]: `%${search}%` } }
+      ]
+    } : {};
 
-    if (search) {
-      const searchPattern = `%${search}%`;
-      sql += ` WHERE username LIKE ? OR email LIKE ?`;
-      countSql += ` WHERE username LIKE ? OR email LIKE ?`;
-      params.push(searchPattern, searchPattern);
-      countParams.push(searchPattern, searchPattern);
-    }
+    const users = await User.findAll({
+      where,
+      attributes: ['id', 'username', 'email', 'bio', 'theme', 'totp_secret', 'created_at', 'last_login'],
+      order: [['created_at', 'DESC']],
+      limit,
+      offset
+    });
 
-    sql += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
-    params.push(parseInt(per_page, 10), offset);
-
-    const users = await db.query(sql, params);
-    const totalCount = await db.queryOne(countSql, countParams);
+    const totalCount = await User.count({ where });
 
     // Get stats
-    const totalUsers = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
-    const usersWith2FA = await db.queryOne(`SELECT COUNT(*) as count FROM users WHERE totp_secret IS NOT NULL`);
-    const usersWithEmail = await db.queryOne(`SELECT COUNT(*) as count FROM users WHERE email IS NOT NULL`);
+    const totalUsers = await User.count();
+    const usersWith2FA = await User.count({ where: { totp_secret: { [Op.ne]: null } } });
+    const usersWithEmail = await User.count({ where: { email: { [Op.ne]: null } } });
 
     res.json({
       users: users.map(u => ({
@@ -51,14 +50,14 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
       })),
       pagination: {
         page: parseInt(page, 10),
-        per_page: parseInt(per_page, 10),
-        total_count: totalCount?.count || 0,
-        total_pages: Math.ceil((totalCount?.count || 0) / parseInt(per_page, 10))
+        per_page: limit,
+        total_count: totalCount,
+        total_pages: Math.ceil(totalCount / limit)
       },
       stats: {
-        total_users: totalUsers?.count || 0,
-        users_with_2fa: usersWith2FA?.count || 0,
-        users_with_email: usersWithEmail?.count || 0
+        total_users: totalUsers,
+        users_with_2fa: usersWith2FA,
+        users_with_email: usersWithEmail
       }
     });
   } catch (error) {

@@ -18,7 +18,7 @@ const rateLimit = require('express-rate-limit');
 
 // Database: supports both legacy DB layer and Sequelize ORM
 const db = require('./config/database');
-const { initializeSequelize, syncDatabase, closeDatabase } = require('./models');
+const { initializeSequelize, syncDatabase, closeDatabase, User } = require('./models');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -83,11 +83,11 @@ app.use('/api/admin', adminRoutes);
 // Health check
 app.get('/api/health', async (req, res) => {
   try {
-    const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
+    const userCount = await User.count();
     res.json({
       status: 'healthy',
       database: 'connected',
-      user_count: userCount?.count || 0,
+      user_count: userCount || 0,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
