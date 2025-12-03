@@ -64,9 +64,8 @@ export function AdminDashboardPage() {
     }
   }, [API_BASE_URL, page, searchQuery]);
 
-  // @ts-ignore
-    useEffect(async () => {
-    await loadUsers();
+  useEffect(() => {
+    loadUsers();
   }, [loadUsers]);
 
   const handleSearch = async (e: React.FormEvent) => {
