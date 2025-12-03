@@ -1,8 +1,8 @@
 # =============================================================================
-# NoteHub - Multi-stage Dockerfile for Fly.io Deployment (Primary Platform)
+# NoteHub - Multi-stage Dockerfile for Full Stack Deployment
 # Frontend: Vite + React + TypeScript
-# Backend: Python Flask
-# Optimized for Fly.io free tier (256MB RAM, shared CPU)
+# Backend: Node.js + Express
+# Optimized for VPS deployment (256MB+ RAM)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -26,44 +26,43 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # -----------------------------------------------------------------------------
-# Stage 2: Python Backend + Serve Static Files
+# Stage 2: Build Backend (Node.js/Express)
 # -----------------------------------------------------------------------------
-FROM python:3.11-slim AS production
+FROM node:20-alpine AS backend-builder
 
-# Set environment variables optimized for low memory
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONOPTIMIZE=1 \
-    PORT=8080 \
-    APP_ENV=production \
-    # Gunicorn settings for Fly.io free tier
-    GUNICORN_WORKERS=1 \
-    GUNICORN_THREADS=2 \
-    GUNICORN_TIMEOUT=180
+WORKDIR /backend
 
-# Set working directory
+# Copy package files
+COPY backend/package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
+
+# Copy backend source
+COPY backend/src ./src
+COPY backend/scripts ./scripts
+
+# -----------------------------------------------------------------------------
+# Stage 3: Production Image
+# -----------------------------------------------------------------------------
+FROM node:20-alpine AS production
+
+# Set environment variables
+ENV NODE_ENV=production \
+    PORT=8080
+
 WORKDIR /app
 
-# Install minimal system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+# Copy backend from builder stage
+COPY --from=backend-builder /backend/node_modules ./node_modules
+COPY --from=backend-builder /backend/src ./src
+COPY --from=backend-builder /backend/scripts ./scripts
 
-# Copy Python requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    # Clean up pip cache
-    rm -rf /root/.cache/pip
+# Copy built frontend from stage 1
+COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
-# Copy backend source code
-COPY src/ ./src/
-COPY wsgi.py .
-
-# Copy built frontend from stage 1 to static directory
-COPY --from=frontend-builder /frontend/dist ./static/frontend
+# Create data directory for SQLite
+RUN mkdir -p /app/data
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser && \
@@ -73,27 +72,9 @@ USER appuser
 # Expose the port
 EXPOSE 8080
 
-# Health check optimized for Fly.io suspend/resume
-# - Longer interval (60s) to reduce overhead
-# - Longer start period (45s) for cold starts from suspend
-# - Increased retries for resilience
-HEALTHCHECK --interval=60s --timeout=15s --start-period=45s --retries=5 \
-    CMD curl -sf http://localhost:8080/health || exit 1
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
 
-# Start gunicorn with optimized settings for Fly.io free tier
-# - 1 worker: Fits in 256MB RAM
-# - 2 threads: Handle concurrent requests efficiently
-# - 180s timeout: Allow for slow cold starts
-# - keep-alive 5: Reduce connection overhead
-# - preload: Faster worker spawning
-CMD ["gunicorn", \
-    "--bind", "0.0.0.0:8080", \
-    "--workers", "1", \
-    "--threads", "2", \
-    "--timeout", "180", \
-    "--keep-alive", "5", \
-    "--preload", \
-    "--access-logfile", "-", \
-    "--error-logfile", "-", \
-    "--log-level", "info", \
-    "wsgi:app"]
+# Start the Node.js server
+CMD ["node", "src/index.js"]

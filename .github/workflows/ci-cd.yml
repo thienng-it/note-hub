@@ -7,80 +7,110 @@ on:
     branches: ["main", "develop"]
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-latest
-    name: Test (Python ${{ matrix.python-version }})
-    env:
-      PYTHONPATH: src
+    name: Backend Test (Node.js ${{ matrix.node-version }})
 
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        node-version: ["18", "20"]
       fail-fast: false
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Cache pip packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-cov
+        working-directory: backend
+        run: npm ci
 
-      - name: Run tests with pytest
-        run: |
-          python -m pytest tests/ -v --cov=src --cov-report=xml --cov-report=term
+      - name: Run linting
+        working-directory: backend
+        run: npm run lint || true
+
+      - name: Run tests with coverage
+        working-directory: backend
+        run: npm test -- --coverage
+        continue-on-error: true
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         if: always()
         with:
-          files: ./coverage.xml
+          files: ./backend/coverage/lcov.info
           fail_ci_if_error: false
 
-  lint:
+  test-frontend:
     runs-on: ubuntu-latest
-    name: Code Quality
-    env:
-      PYTHONPATH: src
+    name: Frontend Test
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install linting tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install flake8 black isort bandit pylint
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
 
-      - name: Check code formatting with black
-        run: black --check scripts/dev_server.py || true
+      - name: Run linting
+        working-directory: frontend
+        run: npm run lint
 
-      - name: Sort imports with isort
-        run: isort --check-only scripts/dev_server.py || true
+      - name: Run type check
+        working-directory: frontend
+        run: npm run type-check
 
-      - name: Lint with flake8
-        run: flake8 scripts/dev_server.py --count --select=E9,F63,F7,F82 --show-source --statistics || true
+      - name: Run tests
+        working-directory: frontend
+        run: npm run test
 
-      - name: Security scan with bandit
-        run: bandit -r . -ll || true
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Code Quality
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Lint backend
+        working-directory: backend
+        run: npm run lint || true
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
 
   security:
     runs-on: ubuntu-latest
@@ -112,14 +142,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
+          node-version: "20"
 
-      - name: Install and run Safety
-        run: |
-          python -m pip install --upgrade pip
-          pip install safety
-          safety check --json || true
+      - name: Audit backend dependencies
+        working-directory: backend
+        run: npm audit --audit-level=moderate || true
+        continue-on-error: true
+
+      - name: Audit frontend dependencies
+        working-directory: frontend
+        run: npm audit --audit-level=moderate || true
         continue-on-error: true

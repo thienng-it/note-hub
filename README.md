@@ -1,18 +1,42 @@
 # NoteHub 📝
 
-A secure, feature-rich personal notes application with modern architecture.
+A modern, secure, and feature-rich personal notes application with a React SPA frontend and Node.js/Express API backend.
 
 ![CI/CD Pipeline](https://github.com/thienng-it/note-hub/actions/workflows/ci-cd.yml/badge.svg?branch=main)
 
+## 🖼️ Screenshots
+
+<details>
+<summary>Click to view screenshots</summary>
+
+### Login Page
+![Login Page](docs/screenshots/login.png)
+
+### Notes Dashboard
+![Notes Dashboard](docs/screenshots/notes.png)
+
+### Note Editor
+![Note Editor](docs/screenshots/editor.png)
+
+### Tasks Page
+![Tasks Page](docs/screenshots/tasks.png)
+
+### Dark Mode
+![Dark Mode](docs/screenshots/dark-mode.png)
+
+</details>
+
 ## 🏗️ Tech Stack
 
-| Layer          | Technology                      |
-| -------------- | ------------------------------- |
-| **Frontend**   | Vite + React + TypeScript       |
-| **Backend**    | Python Flask 3.x                |
-| **Database**   | MySQL 8.0+ with SQLAlchemy ORM  |
-| **Deployment** | Hetzner VPS + Cloudflare Tunnel |
-| **CI/CD**      | GitHub Actions                  |
+| Layer          | Technology                       |
+| -------------- | -------------------------------- |
+| **Frontend**   | Vite + React 19 + TypeScript     |
+| **Backend**    | Node.js + Express                |
+| **ORM**        | Sequelize                        |
+| **Database**   | SQLite (dev) / MySQL (prod)      |
+| **API**        | RESTful with JWT authentication  |
+| **Deployment** | Docker + nginx + Hetzner VPS     |
+| **CI/CD**      | GitHub Actions + GitHub Pages    |
 
 ## ✨ Features
 
@@ -20,10 +44,9 @@ A secure, feature-rich personal notes application with modern architecture.
 - 🏷️ **Smart Organization** - Tags, favorites, pinning, and powerful search
 - ✅ **Task Management** - Create and track tasks with priorities and due dates
 - 🔐 **Two-Factor Authentication** - TOTP-based 2FA with QR code setup
-- 🔒 **Security First** - CSRF protection, password policy, HTML sanitization
-- 🤖 **CAPTCHA Protection** - Built-in math CAPTCHA or Google reCAPTCHA options
+- 🔒 **Security First** - JWT auth, password policy, HTML sanitization
 - 👥 **Collaboration** - Share notes with other users with view/edit permissions
-- 🎨 **Customizable UI** - Light/dark mode, responsive design
+- 🎨 **Customizable UI** - Light/dark mode, responsive glassmorphism design
 - 📱 **Mobile-Friendly** - Works seamlessly on all devices
 - 🔍 **Advanced Search** - Search by title, content, or tags
 - 👤 **User Profiles** - Customizable profiles with themes and bio
@@ -34,8 +57,6 @@ A secure, feature-rich personal notes application with modern architecture.
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Python 3.11+
-- MySQL 8.0+
 - Git
 
 ### Local Development
@@ -47,29 +68,21 @@ git clone https://github.com/thienng-it/note-hub.git
 cd note-hub
 ```
 
-#### 2. Backend Setup (Python Flask)
+#### 2. Backend Setup (Node.js/Express API)
 
 ```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-# venv\Scripts\activate   # Windows
+cd backend
 
 # Install dependencies
-pip install -r requirements.txt
+npm install
 
-# Configure environment
-export MYSQL_HOST="localhost"
-export MYSQL_PORT="3306"
-export MYSQL_USER="root"
-export MYSQL_PASSWORD="your_password"
-export MYSQL_DATABASE="notehub"
-export FLASK_SECRET="your-secret-key-here"
+# Configure environment (optional - uses SQLite by default)
+export JWT_SECRET="your-secret-key-here"
 export NOTES_ADMIN_PASSWORD="your-secure-password"
 
-# Run the backend
-python wsgi.py
-# Backend runs at http://localhost:5000
+# Run the backend API
+npm run dev
+# Backend API runs at http://localhost:5000
 ```
 
 #### 3. Frontend Setup (Vite + React)
@@ -80,69 +93,165 @@ cd frontend
 # Install dependencies
 npm install
 
-# Run development server (proxies API to Flask)
+# Run development server (proxies API to backend)
 npm run dev
 # Frontend runs at http://localhost:3000
 ```
 
-### 🐳 Docker Development
+### 🐳 Docker Deployment
+
+NoteHub supports multiple deployment modes:
+
+#### Development Mode (SQLite, local testing)
 
 ```bash
-# Build and run with Docker Compose (optional)
-docker build -t notehub .
-docker run -p 8080:8080 \
-  -e MYSQL_HOST="your-db-host" \
-  -e MYSQL_PASSWORD="your-password" \
-  notehub
+# Copy and configure environment (REQUIRED)
+cp .env.example .env
+nano .env  # Set NOTES_ADMIN_PASSWORD and other values
+
+# Build and run (uses SQLite by default)
+docker compose up -d
+
+# Seed the database with sample data
+docker compose exec backend node scripts/seed_db.js
+
+# Access at http://localhost
 ```
+
+#### Development with MySQL
+
+```bash
+# Set required MySQL credentials in .env first
+# MYSQL_ROOT_PASSWORD, MYSQL_USER, MYSQL_PASSWORD
+
+# Run with MySQL profile
+docker compose --profile mysql up -d
+
+# Seed the MySQL database
+docker compose exec backend-mysql node scripts/seed_db.js
+
+# Access at http://localhost
+```
+
+#### Production Mode (Cloud Database)
+
+For production deployments connecting to external databases (PlanetScale, AWS RDS, etc.):
+
+```bash
+# Configure production environment
+cp .env.example .env
+nano .env
+
+# Set these variables for production:
+# SECRET_KEY=<strong-random-key>
+# DATABASE_URL=mysql://user:password@your-cloud-db:3306/notehub
+# NOTES_ADMIN_PASSWORD=<secure-admin-password>
+
+# Run with production profile
+docker compose --profile production up -d
+
+# NOTE: Do NOT run seed script in production!
+# Database should be pre-configured via cloud provider's management console.
+
+# Access at http://localhost (or configure reverse proxy)
+```
+
+**Important**: The seed script is blocked in production mode to prevent accidental data modification. Use your cloud database provider's tools to manage production data.
+
+Or build individual images:
+
+```bash
+# Build backend
+docker build -f Dockerfile.backend.node -t notehub-backend .
+
+# Build frontend
+docker build -f Dockerfile.frontend -t notehub-frontend .
+```
+
+### Default Credentials
+
+After running the seed script, use these credentials to login:
+- **Admin**: `admin` / (password set in `NOTES_ADMIN_PASSWORD` env var)
+- **Demo**: `demo` / `Demo12345678!`
 
 ## 📦 Project Structure
 
 ```
 note-hub/
-├── frontend/                  # Vite + React frontend
-│   ├── src/                   # React components and logic
+├── frontend/                  # Vite + React frontend (SPA)
+│   ├── src/
+│   │   ├── api/               # API client with JWT handling
+│   │   ├── components/        # React components
+│   │   ├── context/           # Auth and Theme contexts
+│   │   ├── pages/             # Page components
+│   │   ├── types/             # TypeScript types
+│   │   └── test/              # Test setup
 │   ├── public/                # Static assets
-│   ├── vite.config.ts         # Vite configuration
+│   ├── vite.config.ts         # Vite + Vitest configuration
 │   └── package.json           # Frontend dependencies
-├── src/
-│   ├── notehub/               # Flask application
-│   │   ├── routes_modules/    # Route handlers
+├── backend/                   # Node.js/Express API
+│   ├── src/
+│   │   ├── routes/            # API route handlers
 │   │   ├── services/          # Business logic
-│   │   ├── models.py          # Database models
-│   │   └── config.py          # Configuration
-│   ├── templates/             # Jinja2 HTML templates
-│   └── static/                # Backend static files
-├── tests/                     # Test suite
-├── docs/                      # Documentation
-│   └── guides/
-│       └── HETZNER_DEPLOYMENT.md  # Hetzner VPS deployment guide
-├── docker-compose.yml         # Docker Compose for production
-├── Dockerfile                 # Multi-stage Docker build
-├── requirements.txt           # Python dependencies
-└── wsgi.py                    # Application entry point
+│   │   ├── middleware/        # Authentication middleware
+│   │   ├── config/            # Database configuration
+│   │   └── index.js           # Application entry point
+│   ├── tests/                 # Backend test suite
+│   └── package.json           # Backend dependencies
+├── scripts/                   # Utility scripts
+│   └── seed_db.js             # Database seeding script
+├── docker/                    # Docker configuration
+│   └── nginx.conf             # nginx config for frontend
+├── docker-compose.yml         # Full stack deployment
+├── Dockerfile.backend.node    # Backend Docker image
+└── Dockerfile.frontend        # Frontend Docker image
 ```
 
-## 🌐 Deployment
+## 🧪 Testing
 
-### Hetzner VPS + Cloudflare Tunnel (Recommended)
+```bash
+# Backend tests
+cd backend
+npm test
 
-The best deployment option - **~€3.50/month with unlimited bandwidth!**
+# Backend with coverage
+npm test -- --coverage
+
+# Frontend tests
+cd frontend
+npm run test
+
+# Frontend with coverage
+npm run test:coverage
+
+# Lint
+npm run lint
+```
+
+## 🌐 Deployment Options
+
+### Option 1: GitHub Pages (Frontend Only)
+
+The frontend is automatically deployed to GitHub Pages on push to main.
+Configure the API URL via `VITE_API_URL` environment variable.
+
+### Option 2: Hetzner VPS + Docker (Full Stack)
+
+**~€3.50/month with unlimited bandwidth!**
 
 | Component             | Cost     | Benefits                                  |
 | --------------------- | -------- | ----------------------------------------- |
 | **Hetzner VPS**       | €3.29/mo | 2 vCPU, 2GB RAM, 40GB SSD                 |
 | **Cloudflare Tunnel** | Free     | Unlimited bandwidth, DDoS protection, CDN |
-| **MySQL**             | Included | Runs on VPS                               |
 
 ```bash
-# On your Hetzner VPS
+# On your VPS
 git clone https://github.com/thienng-it/note-hub.git
 cd note-hub
 
-# Configure environment
+# Configure
 cp .env.example .env
-nano .env  # Edit with your values
+nano .env
 
 # Deploy
 docker compose up -d
@@ -150,20 +259,25 @@ docker compose up -d
 
 See [Hetzner Deployment Guide](docs/guides/HETZNER_DEPLOYMENT.md) for complete setup.
 
-## 🧪 Testing
+## 📚 API Documentation
 
-```bash
-# Run all tests
-pytest tests/ -v
+The API uses JWT authentication. Key endpoints:
 
-# Run with coverage
-pytest tests/ --cov=src/notehub --cov-report=html
+| Method | Endpoint            | Description          |
+| ------ | ------------------- | -------------------- |
+| POST   | `/api/auth/login`   | Login, get JWT token |
+| POST   | `/api/auth/refresh` | Refresh access token |
+| GET    | `/api/notes`        | List user's notes    |
+| POST   | `/api/notes`        | Create new note      |
+| GET    | `/api/notes/:id`    | Get note by ID       |
+| PATCH  | `/api/notes/:id`    | Update note          |
+| DELETE | `/api/notes/:id`    | Delete note          |
+| GET    | `/api/tasks`        | List user's tasks    |
+| POST   | `/api/tasks`        | Create new task      |
 
-# Run frontend tests
-cd frontend && npm run lint
-```
+See [API Documentation](docs/api/JWT_API.md) for full reference.
 
-## 📚 Documentation
+## 📖 Documentation
 
 | Document                                                | Description             |
 | ------------------------------------------------------- | ----------------------- |
