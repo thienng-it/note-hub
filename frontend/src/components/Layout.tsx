@@ -120,10 +120,9 @@ export function Layout() {
               <div className="pt-2">
                 <Link
                   to="/notes/new"
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg shadow-blue-500/25"
                 >
                   <i className="glass-i fas fa-plus w-5 text-center" aria-hidden="true"></i>
-                  {!sidebarCollapsed && <span className="font-medium">New Note</span>}
+                  {!sidebarCollapsed && <span className="glass-span">New Note</span>}
                 </Link>
               </div>
 

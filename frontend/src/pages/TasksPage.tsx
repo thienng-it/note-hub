@@ -119,7 +119,7 @@ export function TasksPage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
+    <div>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
@@ -128,9 +128,9 @@ export function TasksPage() {
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="btn-primary px-4 py-2 rounded-lg font-medium"
+          className="btn-apple px-4 py-2 rounded-lg font-medium"
         >
-          <i className={`fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
+          <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
           {showForm ? 'Cancel' : 'New Task'}
         </button>
       </div>

@@ -52,9 +52,9 @@ export function AdminDashboardPage() {
       const data = await response.json();
       setUsers(data.users);
       setStats({
-        total_users: data.total_count,
-        users_with_2fa: data.users_with_2fa,
-        users_with_email: data.users_with_email,
+        total_users: data.stats.total_users,
+        users_with_2fa: data.stats.users_with_2fa,
+        users_with_email: data.stats.users_with_email,
       });
       setTotalPages(data.total_pages);
     } catch (err) {
@@ -64,14 +64,15 @@ export function AdminDashboardPage() {
     }
   }, [API_BASE_URL, page, searchQuery]);
 
-  useEffect(() => {
-    loadUsers();
+  // @ts-ignore
+    useEffect(async () => {
+    await loadUsers();
   }, [loadUsers]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
-    loadUsers();
+    await loadUsers();
   };
 
   const clearSearch = () => {
@@ -82,7 +83,7 @@ export function AdminDashboardPage() {
   // Check if user is admin
   if (user?.username !== 'admin') {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
+      <div>
         <div className="glass-card p-8 rounded-2xl text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 mb-6">
             <i className="glass-i fas fa-ban text-3xl text-red-500" aria-hidden="true"></i>
@@ -93,7 +94,7 @@ export function AdminDashboardPage() {
           </p>
           <Link
             to="/"
-            className="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium"
+            className="btn-apple"
           >
             <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
             <span>Back to Notes</span>
@@ -130,11 +131,11 @@ export function AdminDashboardPage() {
         <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-sm font-medium mb-1">Total Users</p>
-              <p className="text-3xl sm:text-4xl font-bold">{stats.total_users}</p>
+              <p className="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">Total Users</p>
+              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">{stats.total_users}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="glass-i fas fa-users text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i className="glass-avatar fas fa-users text-xl sm:text-2xl" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -142,11 +143,11 @@ export function AdminDashboardPage() {
         <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm font-medium mb-1">2FA Enabled</p>
-              <p className="text-3xl sm:text-4xl font-bold">{stats.users_with_2fa}</p>
+              <p className="text-green-100 text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">2FA Enabled</p>
+              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">{stats.users_with_2fa}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="glass-i fas fa-shield-alt text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i className="glass-avatar fas fa-shield-alt text-xl sm:text-2xl" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -154,11 +155,11 @@ export function AdminDashboardPage() {
         <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100 text-sm font-medium mb-1">With Email</p>
-              <p className="text-3xl sm:text-4xl font-bold">{stats.users_with_email}</p>
+              <p className="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">With Email</p>
+              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">{stats.users_with_email}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="glass-i fas fa-envelope text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i className="glass-avatar fas fa-envelope text-xl sm:text-2xl" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -343,7 +344,7 @@ export function AdminDashboardPage() {
                       onClick={() => setPage(pageNum)}
                       className={`px-4 py-2 rounded-lg transition-colors ${
                         pageNum === page
-                          ? 'btn-primary'
+                          ? 'btn-apple'
                           : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-color)]'
                       }`}
                     >

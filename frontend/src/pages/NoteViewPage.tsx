@@ -95,7 +95,7 @@ export function NoteViewPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div>
       {/* Header */}
       <div className="mb-6">
         <Link to="/" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">

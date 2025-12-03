@@ -158,13 +158,17 @@ body.dark {
   background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
   color: white;
   font-weight: 600;
-  font-size: 1rem;
   border: none;
   border-radius: 0.75rem;
-  padding: 1rem 1.5rem;
+  padding: 5px 5px 5px 5px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 14px rgba(0, 122, 255, 0.4);
+  font-size: 14px
+}
+
+.btn-apple span .child {
+  font-size: 14px;
 }
 
 .btn-apple:hover {
@@ -916,7 +920,7 @@ body.dark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--glass-bg);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-radius: 0.25rem;
@@ -925,7 +929,7 @@ body.dark {
 }
 
 .glass-i:hover {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--glass-bg);
 }
 
 /* Glass P - for paragraph elements */

@@ -74,7 +74,7 @@ export function NotesPage() {
     try {
       const updated = await notesApi.toggleFavorite(note);
       // Update the note in the list while preserving all fields
-      setNotes(prevNotes => 
+      setNotes(prevNotes =>
         prevNotes.map(n => n.id === note.id ? { ...n, ...updated } : n)
       );
     } catch (err) {
@@ -189,7 +189,8 @@ export function NotesPage() {
               </div>
             </div>
             <button type="submit" className="btn-apple">
-              <i className="glass-i fas fa-search mr-2"></i>Search
+              <i className="glass-i fas fa-search mr-2"></i>
+                <span>Search</span>
             </button>
             {(query || tagFilter) && (
               <button
@@ -197,7 +198,8 @@ export function NotesPage() {
                 onClick={clearSearch}
                 className="btn-secondary-glass"
               >
-                <i className="glass-i fas fa-times mr-2"></i>Clear
+                <i className="glass-i fas fa-times mr-2"></i>
+                  <span>Clear</span>
               </button>
             )}
           </form>
@@ -355,7 +357,7 @@ export function NotesPage() {
                   {emptyState.action.to ? (
                     <Link
                       to={emptyState.action.to}
-                      className="btn-primary inline-flex items-center px-6 py-3 rounded-lg"
+                      className="btn-apple inline-flex items-center px-6 py-3 rounded-lg"
                     >
                       <i className="glass-i fas fa-plus mr-2"></i>
                       {emptyState.action.label}
@@ -363,7 +365,7 @@ export function NotesPage() {
                   ) : emptyState.action.onClick ? (
                     <button
                       onClick={emptyState.action.onClick}
-                      className="btn-primary inline-flex items-center px-6 py-3 rounded-lg"
+                      className="btn-apple inline-flex items-center px-6 py-3 rounded-lg"
                     >
                       <i className="glass-i fas fa-times mr-2"></i>
                       {emptyState.action.label}

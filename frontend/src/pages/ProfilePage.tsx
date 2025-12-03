@@ -11,7 +11,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-6">
+    <div>
       <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
         <i className="glass-i fas fa-user-circle mr-3 text-blue-600"></i>
         Profile
