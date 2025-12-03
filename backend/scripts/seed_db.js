@@ -6,15 +6,15 @@
  */
 require('dotenv').config();
 
-const db = require('../src/config/database');
+const { initializeSequelize, syncDatabase, closeDatabase, User, Tag, Note, Task, NoteTag } = require('../src/models');
 const bcrypt = require('bcryptjs');
 
 async function seed() {
   try {
     console.log('🌱 Starting database seed...');
     
-    await db.connect();
-    await db.initSchema();
+    await initializeSequelize();
+    await syncDatabase();
 
     // Get admin password from environment
     const adminPassword = process.env.NOTES_ADMIN_PASSWORD;
@@ -28,39 +28,40 @@ async function seed() {
     const demoHash = await bcrypt.hash('Demo12345678!', 12);
 
     // Create admin user
-    const existingAdmin = await db.queryOne(`SELECT id FROM users WHERE username = ?`, ['admin']);
+    const existingAdmin = await User.findOne({ where: { username: 'admin' } });
     if (!existingAdmin) {
-      await db.run(
-        `INSERT INTO users (username, password_hash, email, bio) VALUES (?, ?, ?, ?)`,
-        ['admin', adminHash, 'admin@notehub.local', 'NoteHub Administrator']
-      );
+      await User.create({
+        username: 'admin',
+        password_hash: adminHash,
+        email: 'admin@notehub.local',
+        bio: 'NoteHub Administrator'
+      });
       console.log('✅ Created admin user');
     } else {
       console.log('ℹ️  Admin user already exists');
     }
 
     // Create demo user
-    const existingDemo = await db.queryOne(`SELECT id FROM users WHERE username = ?`, ['demo']);
-    let demoUserId;
-    if (!existingDemo) {
-      const result = await db.run(
-        `INSERT INTO users (username, password_hash, email, bio) VALUES (?, ?, ?, ?)`,
-        ['demo', demoHash, 'demo@notehub.local', 'Demo user account for testing']
-      );
-      demoUserId = result.insertId;
+    let demoUser = await User.findOne({ where: { username: 'demo' } });
+    if (!demoUser) {
+      demoUser = await User.create({
+        username: 'demo',
+        password_hash: demoHash,
+        email: 'demo@notehub.local',
+        bio: 'Demo user account for testing'
+      });
       console.log('✅ Created demo user');
     } else {
-      demoUserId = existingDemo.id;
       console.log('ℹ️  Demo user already exists');
     }
+    const demoUserId = demoUser.id;
 
     // Create sample tags
-    const tags = ['work', 'personal', 'ideas', 'important', 'todo'];
-    for (const tagName of tags) {
-      const existing = await db.queryOne(`SELECT id FROM tags WHERE name = ?`, [tagName]);
-      if (!existing) {
-        await db.run(`INSERT INTO tags (name) VALUES (?)`, [tagName]);
-      }
+    const tagNames = ['work', 'personal', 'ideas', 'important', 'todo'];
+    const tags = {};
+    for (const tagName of tagNames) {
+      const [tag] = await Tag.findOrCreate({ where: { name: tagName } });
+      tags[tagName] = tag;
     }
     console.log('✅ Created sample tags');
 
@@ -133,26 +134,27 @@ Get started by creating your first note! 🚀`,
     ];
 
     for (const noteData of sampleNotes) {
-      const existing = await db.queryOne(
-        `SELECT id FROM notes WHERE title = ? AND owner_id = ?`,
-        [noteData.title, demoUserId]
-      );
+      const existing = await Note.findOne({
+        where: { title: noteData.title, owner_id: demoUserId }
+      });
       
       if (!existing) {
-        const result = await db.run(
-          `INSERT INTO notes (title, body, pinned, favorite, owner_id) VALUES (?, ?, ?, ?, ?)`,
-          [noteData.title, noteData.body, noteData.pinned ? 1 : 0, noteData.favorite ? 1 : 0, demoUserId]
-        );
+        const note = await Note.create({
+          title: noteData.title,
+          body: noteData.body,
+          pinned: noteData.pinned || false,
+          favorite: noteData.favorite || false,
+          owner_id: demoUserId
+        });
         
         // Add tags
         if (noteData.tags) {
           for (const tagName of noteData.tags) {
-            const tag = await db.queryOne(`SELECT id FROM tags WHERE name = ?`, [tagName]);
+            const tag = tags[tagName];
             if (tag) {
-              await db.run(
-                `INSERT OR IGNORE INTO note_tag (note_id, tag_id) VALUES (?, ?)`,
-                [result.insertId, tag.id]
-              );
+              await NoteTag.findOrCreate({
+                where: { note_id: note.id, tag_id: tag.id }
+              });
             }
           }
         }
@@ -183,23 +185,19 @@ Get started by creating your first note! 🚀`,
     ];
 
     for (const taskData of sampleTasks) {
-      const existing = await db.queryOne(
-        `SELECT id FROM tasks WHERE title = ? AND owner_id = ?`,
-        [taskData.title, demoUserId]
-      );
+      const existing = await Task.findOne({
+        where: { title: taskData.title, owner_id: demoUserId }
+      });
       
       if (!existing) {
-        await db.run(
-          `INSERT INTO tasks (title, description, priority, completed, due_date, owner_id) VALUES (?, ?, ?, ?, ?, ?)`,
-          [
-            taskData.title,
-            taskData.description,
-            taskData.priority,
-            taskData.completed ? 1 : 0,
-            taskData.due_date || null,
-            demoUserId
-          ]
-        );
+        await Task.create({
+          title: taskData.title,
+          description: taskData.description,
+          priority: taskData.priority,
+          completed: taskData.completed || false,
+          due_date: taskData.due_date || null,
+          owner_id: demoUserId
+        });
       }
     }
     console.log('✅ Created sample tasks');
@@ -209,7 +207,7 @@ Get started by creating your first note! 🚀`,
     console.log('  Admin: admin / [NOTES_ADMIN_PASSWORD from .env]');
     console.log('  Demo:  demo / Demo12345678!\n');
 
-    await db.close();
+    await closeDatabase();
     process.exit(0);
   } catch (error) {
     console.error('❌ Seed error:', error);
