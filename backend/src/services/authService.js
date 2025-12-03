@@ -3,7 +3,7 @@
  */
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const { User, Invitation, PasswordResetToken } = require('../models');
+const { User, Invitation, PasswordResetToken, Op } = require('../models');
 
 class AuthService {
   /**
@@ -45,7 +45,6 @@ class AuthService {
    * Authenticate a user by username/email and password.
    */
   static async authenticateUser(usernameOrEmail, password) {
-    const { Op } = require('../models');
     const user = await User.findOne({
       where: {
         [Op.or]: [
