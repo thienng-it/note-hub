@@ -73,7 +73,10 @@ export function NotesPage() {
   const handleToggleFavorite = async (note: Note) => {
     try {
       const updated = await notesApi.toggleFavorite(note);
-      setNotes(notes.map(n => (n.id === note.id ? updated : n)));
+      // Update the note in the list while preserving all fields
+      setNotes(prevNotes => 
+        prevNotes.map(n => n.id === note.id ? { ...n, ...updated } : n)
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update note');
     }

@@ -154,9 +154,11 @@ async function updateNote(req, res) {
         id: updatedNote.id,
         title: updatedNote.title,
         body: updatedNote.body,
+        excerpt: NoteService.getExcerpt(updatedNote.body),
         pinned: !!updatedNote.pinned,
         favorite: !!updatedNote.favorite,
         archived: !!updatedNote.archived,
+        created_at: updatedNote.created_at,
         updated_at: updatedNote.updated_at,
         tags: updatedNote.tags
       }

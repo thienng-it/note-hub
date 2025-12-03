@@ -45,7 +45,8 @@ export function NoteViewPage() {
     if (!note) return;
     try {
       const updated = await notesApi.toggleFavorite(note);
-      setNote(updated);
+      // Merge updated data with existing note to preserve all fields
+      setNote(prev => prev ? { ...prev, ...updated } : updated);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update note');
     }
