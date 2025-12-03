@@ -16,7 +16,7 @@ WORKDIR /frontend
 COPY frontend/package*.json ./
 
 # Install dependencies with reduced memory usage
-RUN npm ci --prefer-offline --no-audit
+RUN npm install --prefer-offline --no-audit || npm ci --prefer-offline --no-audit
 
 # Copy frontend source code
 COPY frontend/ ./
@@ -36,7 +36,10 @@ WORKDIR /backend
 COPY backend/package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+# Add build dependencies for native modules
+RUN apk add --no-cache --virtual .gyp python3 make g++ && \
+    npm ci --omit=dev && \
+    apk del .gyp
 
 # Copy backend source
 COPY backend/src ./src

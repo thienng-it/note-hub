@@ -1,11 +1,14 @@
-# NoteHub Backend - Node.js
+# NoteHub Backend - Node.js  
 FROM node:20-alpine
 
 WORKDIR /app
 
 # Install dependencies
+# Add build dependencies for native modules (better-sqlite3, sqlite3)
+RUN apk add --no-cache --virtual .gyp python3 make g++
+
 COPY backend/package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev && apk del .gyp
 
 # Copy source code
 COPY backend/src ./src
