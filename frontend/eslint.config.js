@@ -19,12 +19,5 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
-    rules: {
-      // Allow exporting hooks from context files
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowExportNames: ['useAuth', 'useTheme'] },
-      ],
-    },
   },
 ])

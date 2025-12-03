@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Disable 2FA - Beautiful Notes{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <div class="card p-8 rounded-2xl shadow-xl">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full mb-4">
+                    <i class="fas fa-shield-alt text-3xl text-yellow-600 dark:text-yellow-400"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Disable Two-Factor Authentication</h1>
+                <p class="text-gray-600 dark:text-gray-400">Enter your current 2FA code to disable two-factor authentication</p>
+            </div>
+
+            <!-- Form -->
+            <form method="post" class="space-y-6">
+                {{ form.hidden_tag() }}
+                
+                <!-- Warning Message -->
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 mr-3 mt-1"></i>
+                        <div class="text-sm text-yellow-700 dark:text-yellow-300">
+                            <p class="font-semibold mb-1">Security Warning</p>
+                            <p>Disabling 2FA will make your account less secure. You will only need your password to log in.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2FA Code Input -->
+                <div>
+                    {{ form.totp_code.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2") }}
+                    {{ form.totp_code(
+                        class="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100",
+                        placeholder="000000",
+                        maxlength="6",
+                        autocomplete="off",
+                        autofocus=true
+                    ) }}
+                    {% if form.totp_code.errors %}
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ form.totp_code.errors[0] }}
+                        </p>
+                    {% endif %}
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-info-circle mr-1"></i>Enter the 6-digit code from your authenticator app
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-4">
+                    <button type="submit" 
+                            class="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                        <i class="fas fa-shield-alt mr-2"></i>Disable 2FA
+                    </button>
+                    <a href="{{ url_for('profile') }}" 
+                       class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-center">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
