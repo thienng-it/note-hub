@@ -16,7 +16,7 @@ WORKDIR /frontend
 COPY frontend/package*.json ./
 
 # Install dependencies with reduced memory usage
-RUN npm install --prefer-offline --no-audit || npm ci --prefer-offline --no-audit
+RUN npm ci --prefer-offline --no-audit
 
 # Copy frontend source code
 COPY frontend/ ./

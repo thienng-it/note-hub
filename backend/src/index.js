@@ -9,12 +9,13 @@ const path = require('path');
 const fs = require('fs');
 
 // Load .env from project root
-// In Docker: /app/src -> ../.env = /app/.env
-// In development: backend/src -> ../../.env = ./.env (repo root)
-const envPath = path.resolve(__dirname, '../../.env');
-const envPathDocker = path.resolve(__dirname, '../.env');
-const dotenvPath = fs.existsSync(envPath) ? envPath : envPathDocker;
-require('dotenv').config({ path: dotenvPath });
+// In Docker: /app/src -> ../.env = /app/.env (one level up)
+// In development: backend/src -> ../../.env = ./.env (two levels up to repo root)
+const isDocker = fs.existsSync('/app/package.json');
+const envPath = isDocker 
+  ? path.resolve(__dirname, '../.env')
+  : path.resolve(__dirname, '../../.env');
+require('dotenv').config({ path: envPath });
 
 const express = require('express');
 const cors = require('cors');
