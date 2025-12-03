@@ -13,7 +13,31 @@ jest.mock('../src/config/database', () => ({
   isSQLite: true
 }));
 
-const db = require('../src/config/database');
+// Mock Sequelize models
+jest.mock('../src/models', () => ({
+  initializeSequelize: jest.fn(),
+  syncDatabase: jest.fn(),
+  closeDatabase: jest.fn(),
+  User: {
+    findOne: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn()
+  },
+  Invitation: {
+    findOne: jest.fn(),
+    update: jest.fn()
+  },
+  PasswordResetToken: {
+    findOne: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn()
+  },
+  Op: {
+    or: Symbol('or')
+  }
+}));
+
+const { User } = require('../src/models');
 
 // Set up environment
 process.env.JWT_SECRET = 'test-secret-key';
@@ -41,7 +65,7 @@ describe('Auth Routes', () => {
     });
 
     it('should return 401 for invalid credentials', async () => {
-      db.queryOne.mockResolvedValue(null);
+      User.findOne.mockResolvedValue(null);
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -55,14 +79,14 @@ describe('Auth Routes', () => {
       const bcrypt = require('bcryptjs');
       const hash = await bcrypt.hash('TestPassword123', 12);
       
-      db.queryOne.mockResolvedValue({
+      User.findOne.mockResolvedValue({
         id: 1,
         username: 'test',
         email: 'test@example.com',
         password_hash: hash,
         totp_secret: null
       });
-      db.run.mockResolvedValue({ affectedRows: 1 });
+      User.update.mockResolvedValue([1]);
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -95,7 +119,7 @@ describe('Auth Routes', () => {
     });
 
     it('should return 400 for weak password', async () => {
-      db.queryOne.mockResolvedValue(null);
+      User.findOne.mockResolvedValue(null);
 
       const response = await request(app)
         .post('/api/auth/register')

@@ -3,7 +3,7 @@
  */
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const db = require('../config/database');
+const { User, Invitation, PasswordResetToken } = require('../models');
 
 class AuthService {
   /**
@@ -45,10 +45,15 @@ class AuthService {
    * Authenticate a user by username/email and password.
    */
   static async authenticateUser(usernameOrEmail, password) {
-    const user = await db.queryOne(
-      `SELECT * FROM users WHERE username = ? OR email = ?`,
-      [usernameOrEmail, usernameOrEmail]
-    );
+    const { Op } = require('../models');
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [
+          { username: usernameOrEmail },
+          { email: usernameOrEmail }
+        ]
+      }
+    });
 
     if (!user) {
       return null;
@@ -73,55 +78,59 @@ class AuthService {
     }
 
     // Check if username exists
-    const existingUser = await db.queryOne(
-      `SELECT id FROM users WHERE username = ?`,
-      [username]
-    );
+    const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
       return { success: false, error: 'Username already exists' };
     }
 
     // Check invitation token if provided
     if (inviteToken) {
-      const invitation = await db.queryOne(
-        `SELECT * FROM invitations WHERE token = ? AND used = 0 AND expires_at > datetime('now')`,
-        [inviteToken]
-      );
-      if (!invitation) {
+      const invitation = await Invitation.findOne({
+        where: {
+          token: inviteToken,
+          used: false
+        }
+      });
+      
+      if (!invitation || new Date(invitation.expires_at) < new Date()) {
         return { success: false, error: 'Invalid or expired invitation' };
       }
     }
 
     // Hash password and create user
     const passwordHash = await this.hashPassword(password);
-    const result = await db.run(
-      `INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)`,
-      [username, passwordHash, email]
-    );
+    const newUser = await User.create({
+      username,
+      password_hash: passwordHash,
+      email
+    });
 
     // Mark invitation as used
     if (inviteToken) {
-      await db.run(
-        `UPDATE invitations SET used = 1, used_by_id = ? WHERE token = ?`,
-        [result.insertId, inviteToken]
+      await Invitation.update(
+        { used: true, used_by_id: newUser.id },
+        { where: { token: inviteToken } }
       );
     }
 
-    const newUser = await db.queryOne(
-      `SELECT id, username, email, created_at FROM users WHERE id = ?`,
-      [result.insertId]
-    );
-
-    return { success: true, user: newUser };
+    return {
+      success: true,
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        created_at: newUser.created_at
+      }
+    };
   }
 
   /**
    * Update user's last login timestamp.
    */
   static async updateLastLogin(userId) {
-    await db.run(
-      `UPDATE users SET last_login = datetime('now') WHERE id = ?`,
-      [userId]
+    await User.update(
+      { last_login: new Date() },
+      { where: { id: userId } }
     );
   }
 
@@ -133,15 +142,16 @@ class AuthService {
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     // Invalidate any existing tokens
-    await db.run(
-      `UPDATE password_reset_tokens SET used = 1 WHERE user_id = ? AND used = 0`,
-      [userId]
+    await PasswordResetToken.update(
+      { used: true },
+      { where: { user_id: userId, used: false } }
     );
 
-    await db.run(
-      `INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)`,
-      [userId, token, expiresAt.toISOString()]
-    );
+    await PasswordResetToken.create({
+      user_id: userId,
+      token,
+      expires_at: expiresAt
+    });
 
     return token;
   }
@@ -156,25 +166,27 @@ class AuthService {
       return { success: false, error: validation.error };
     }
 
-    const resetToken = await db.queryOne(
-      `SELECT * FROM password_reset_tokens WHERE token = ? AND used = 0 AND expires_at > datetime('now')`,
-      [token]
-    );
+    const resetToken = await PasswordResetToken.findOne({
+      where: {
+        token,
+        used: false
+      }
+    });
 
-    if (!resetToken) {
+    if (!resetToken || new Date(resetToken.expires_at) < new Date()) {
       return { success: false, error: 'Invalid or expired reset token' };
     }
 
     const passwordHash = await this.hashPassword(newPassword);
 
-    await db.run(
-      `UPDATE users SET password_hash = ? WHERE id = ?`,
-      [passwordHash, resetToken.user_id]
+    await User.update(
+      { password_hash: passwordHash },
+      { where: { id: resetToken.user_id } }
     );
 
-    await db.run(
-      `UPDATE password_reset_tokens SET used = 1 WHERE id = ?`,
-      [resetToken.id]
+    await PasswordResetToken.update(
+      { used: true },
+      { where: { id: resetToken.id } }
     );
 
     return { success: true };
@@ -184,10 +196,7 @@ class AuthService {
    * Change user password (requires current password).
    */
   static async changePassword(userId, currentPassword, newPassword) {
-    const user = await db.queryOne(
-      `SELECT * FROM users WHERE id = ?`,
-      [userId]
-    );
+    const user = await User.findOne({ where: { id: userId } });
 
     if (!user) {
       return { success: false, error: 'User not found' };
@@ -204,9 +213,9 @@ class AuthService {
     }
 
     const passwordHash = await this.hashPassword(newPassword);
-    await db.run(
-      `UPDATE users SET password_hash = ? WHERE id = ?`,
-      [passwordHash, userId]
+    await User.update(
+      { password_hash: passwordHash },
+      { where: { id: userId } }
     );
 
     return { success: true };
