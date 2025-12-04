@@ -126,15 +126,31 @@ class RedisCache {
 
   /**
    * Delete multiple keys matching pattern.
+   * Uses SCAN instead of KEYS to avoid blocking Redis.
    */
   async delPattern(pattern) {
     if (!this.enabled || !this.client) return false;
     
     try {
-      const keys = await this.client.keys(pattern);
-      if (keys.length > 0) {
-        await this.client.del(...keys);
-      }
+      let cursor = '0';
+      let deletedCount = 0;
+      
+      do {
+        // Use SCAN instead of KEYS to avoid blocking
+        const [nextCursor, keys] = await this.client.scan(
+          cursor,
+          'MATCH', pattern,
+          'COUNT', 100
+        );
+        
+        cursor = nextCursor;
+        
+        if (keys.length > 0) {
+          await this.client.del(...keys);
+          deletedCount += keys.length;
+        }
+      } while (cursor !== '0');
+      
       return true;
     } catch (error) {
       console.error(`Cache delPattern error for pattern ${pattern}:`, error.message);

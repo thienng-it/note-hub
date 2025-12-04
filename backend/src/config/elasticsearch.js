@@ -86,7 +86,8 @@ class ElasticsearchService {
           body: {
             settings: {
               number_of_shards: 1,
-              number_of_replicas: 1,
+              // Set replicas to 0 for single-node development, 1+ for production
+              number_of_replicas: process.env.NODE_ENV === 'production' ? 1 : 0,
               analysis: {
                 analyzer: {
                   note_analyzer: {

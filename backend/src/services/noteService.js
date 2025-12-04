@@ -40,6 +40,8 @@ class NoteService {
           return [];
         }
 
+        // Use parameterized query to prevent SQL injection
+        const placeholders = noteIds.map(() => '?').join(',');
         const sql = `
           SELECT DISTINCT n.*, 
             GROUP_CONCAT(t.name) as tag_names,
@@ -47,13 +49,17 @@ class NoteService {
           FROM notes n
           LEFT JOIN note_tag nt ON n.id = nt.note_id
           LEFT JOIN tags t ON nt.tag_id = t.id
-          WHERE n.id IN (${noteIds.join(',')})
+          WHERE n.id IN (${placeholders})
           GROUP BY n.id
-          ORDER BY FIELD(n.id, ${noteIds.join(',')})
         `;
 
-        const notes = await db.query(sql);
-        const parsedNotes = notes.map(note => ({
+        const notes = await db.query(sql, noteIds);
+        
+        // Sort in application layer to match ES order
+        const noteMap = {};
+        notes.forEach(note => { noteMap[note.id] = note; });
+        const sortedNotes = noteIds.map(id => noteMap[id]).filter(Boolean);
+        const parsedNotes = sortedNotes.map(note => ({
           ...note,
           tags: note.tag_names
             ? note.tag_names.split(',').map((name, i) => ({
@@ -361,8 +367,16 @@ class NoteService {
   /**
    * Delete a note.
    * Invalidates cache and removes from Elasticsearch index.
+   * @param {number} noteId - Note ID to delete
+   * @param {number} userId - Optional user ID for cache invalidation
    */
-  static async deleteNote(noteId, userId) {
+  static async deleteNote(noteId, userId = null) {
+    // Get note owner if userId not provided
+    if (!userId) {
+      const note = await db.queryOne(`SELECT owner_id FROM notes WHERE id = ?`, [noteId]);
+      userId = note?.owner_id;
+    }
+
     // Delete from Elasticsearch first
     await elasticsearch.deleteNote(noteId);
 
