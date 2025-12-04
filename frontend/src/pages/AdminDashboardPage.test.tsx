@@ -90,8 +90,14 @@ describe('AdminDashboardPage', () => {
       </TestWrapper>
     );
 
+    // Wait for loading to complete and data to render
     await waitFor(() => {
-      expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
+      expect(screen.queryByText('Loading users...')).not.toBeInTheDocument();
+    });
+
+    // Additional wait to ensure user data is rendered
+    await waitFor(() => {
+      expect(screen.getByText('user1')).toBeInTheDocument();
     });
 
     expect(container).toMatchSnapshot();
