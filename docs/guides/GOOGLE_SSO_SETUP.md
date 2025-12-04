@@ -81,12 +81,16 @@ NoteHub supports Google OAuth 2.0 for Single Sign-On (SSO), allowing users to si
 **Configure:**
 - **Name:** NoteHub Web Client
 - **Authorized JavaScript origins:**
+  - Docker: `http://localhost`
   - Development: `http://localhost:3000`
   - Production: `https://your-domain.com`
   
-- **Authorized redirect URIs:**
-  - Development: `http://localhost:3000/auth/google/callback`
+- **Authorized redirect URIs (ADD ALL THAT APPLY):**
+  - Docker deployment: `http://localhost/auth/google/callback`
+  - Development (npm): `http://localhost:3000/auth/google/callback`
   - Production: `https://your-domain.com/auth/google/callback`
+
+**Important:** Add ALL redirect URIs for your deployment environments. The OAuth flow will fail if the redirect URI doesn't match exactly.
 
 4. Click "Create"
 5. **Save your credentials:**
@@ -103,6 +107,16 @@ NoteHub supports Google OAuth 2.0 for Single Sign-On (SSO), allowing users to si
    ```
 
 2. Add Google OAuth credentials to `.env`:
+
+   **For Docker deployment (port 80):**
+   ```bash
+   # Google OAuth Configuration
+   GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-client-secret
+   GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+   ```
+
+   **For development (npm run dev, port 3000):**
    ```bash
    # Google OAuth Configuration
    GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
@@ -110,38 +124,54 @@ NoteHub supports Google OAuth 2.0 for Single Sign-On (SSO), allowing users to si
    GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
    ```
 
-3. For production, update `GOOGLE_REDIRECT_URI`:
+   **For production:**
    ```bash
+   # Google OAuth Configuration
+   GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-client-secret
    GOOGLE_REDIRECT_URI=https://your-domain.com/auth/google/callback
    ```
 
+**Important:** The `GOOGLE_REDIRECT_URI` must match:
+- Your deployment environment's port
+- The redirect URI added to Google Cloud Console
+- The URL structure (HTTP for local, HTTPS for production)
+
 ### Step 6: Update Frontend Routes
 
-Add the Google callback route to your React Router configuration:
+The Google callback route is already configured in the application:
 
 ```typescript
-// In App.tsx or main routing file
-import { GoogleCallbackPage } from './pages/GoogleCallbackPage';
-
-// Add route
+// Already implemented in App.tsx
 <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
 ```
 
+No changes needed unless you're modifying the routing structure.
+
 ### Step 7: Test the Integration
 
-**Development:**
+**Docker Deployment:**
+1. Start Docker: `docker compose up -d`
+2. Navigate to: `http://localhost/login`
+3. Click "Sign in with Google"
+4. Select your Google account
+5. Grant permissions
+6. You should be redirected to `http://localhost/` and logged in
+
+**Development (npm):**
 1. Start backend: `cd backend && npm start`
 2. Start frontend: `cd frontend && npm run dev`
 3. Navigate to: `http://localhost:3000/login`
 4. Click "Sign in with Google"
 5. Select your Google account
 6. Grant permissions
-7. You should be redirected and logged in
+7. You should be redirected to `http://localhost:3000/` and logged in
 
 **Verify:**
 - Check console logs for: `🔐 Google OAuth configured - SSO enabled`
 - User created in database with Google email
 - JWT tokens stored in localStorage
+- You're redirected to home page after successful login
 
 ---
 
@@ -479,14 +509,80 @@ GOOGLE_REDIRECT_URI=https://notehub.example.com/auth/google/callback
 
 ---
 
+## Troubleshooting
+
+### Common Issues
+
+#### "Google Sign-In is temporarily unavailable"
+
+**Cause:** Google OAuth not configured or incorrect configuration.
+
+**Solution:**
+1. Check environment variables are set in `.env`
+2. Verify backend logs: `docker logs notehub-backend | grep OAuth`
+3. Should see: `🔐 Google OAuth configured - SSO enabled`
+4. If you see `⚠️  Google OAuth not configured`, check your `.env` file
+
+#### "redirect_uri_mismatch" Error
+
+**Cause:** Redirect URI mismatch between `.env` and Google Cloud Console.
+
+**Solution:**
+1. Check your redirect URI: `docker exec notehub-backend printenv GOOGLE_REDIRECT_URI`
+2. Add this EXACT URI to Google Cloud Console → Credentials → OAuth 2.0 Client IDs
+3. Common URIs to add:
+   - Docker: `http://localhost/auth/google/callback`
+   - Dev: `http://localhost:3000/auth/google/callback`
+   - Prod: `https://yourdomain.com/auth/google/callback`
+
+#### OAuth works in development but not in Docker
+
+**Cause:** Different ports (dev uses 3000, Docker uses 80).
+
+**Solution:**
+Update `.env` for Docker:
+```bash
+# Docker uses port 80, not 3000
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+```
+
+Then restart:
+```bash
+docker compose restart backend
+```
+
+#### "Cannot access http://localhost:3000/auth/google/callback"
+
+**Cause:** Using development redirect URI in Docker.
+
+**Solution:**
+Change redirect URI from port 3000 to port 80 in `.env`:
+```bash
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+```
+
+### Complete Troubleshooting Guide
+
+For detailed troubleshooting including:
+- Port mismatch issues
+- Docker vs development configuration
+- Production deployment
+- Testing and verification steps
+
+See: **[GOOGLE_OAUTH_TROUBLESHOOTING.md](GOOGLE_OAUTH_TROUBLESHOOTING.md)**
+
+---
+
 ## References
 
 - [Google OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)
 - [OAuth 2.0 RFC 6749](https://tools.ietf.org/html/rfc6749)
 - [OWASP OAuth Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/OAuth_Cheat_Sheet.html)
+- [NoteHub OAuth Troubleshooting](GOOGLE_OAUTH_TROUBLESHOOTING.md)
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 1.1  
 **Date:** 2025-12-04  
-**Status:** Implemented
+**Status:** Implemented  
+**Last Updated:** Added Docker configuration and troubleshooting
