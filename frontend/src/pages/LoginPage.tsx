@@ -56,7 +56,7 @@ export function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const response = await apiClient.get<{ data: { auth_url: string } }>('/api/auth/google');
+      const response = await apiClient.get<{ auth_url: string }>('/api/auth/google');
       const { auth_url } = response;
 
       // Redirect to Google OAuth
