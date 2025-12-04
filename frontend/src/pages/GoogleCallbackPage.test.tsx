@@ -92,7 +92,7 @@ describe('GoogleCallbackPage', () => {
     await waitFor(() => {
       expect(localStorage.getItem('notehub_access_token')).toBe('test-access-token');
       expect(localStorage.getItem('notehub_refresh_token')).toBe('test-refresh-token');
-      expect(localStorage.getItem('notehub_user')).toBe(JSON.stringify(mockResponse.data.user));
+      expect(localStorage.getItem('notehub_user')).toBe(JSON.stringify(mockResponse.user));
       expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
     });
   });
