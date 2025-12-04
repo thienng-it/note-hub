@@ -63,11 +63,13 @@ class NoteService {
 
         const notes = await db.query(sql, validNoteIds);
         
-        // Sort in application layer to match ES order
-        const noteMap = {};
-        notes.forEach(note => { noteMap[note.id] = note; });
-        const sortedNotes = validNoteIds.map(id => noteMap[id]).filter(Boolean);
-        const parsedNotes = sortedNotes.map(note => ({
+        // Sort notes to match ES order (preserving relevance ranking)
+        notes.sort((a, b) => {
+          const indexA = validNoteIds.indexOf(a.id);
+          const indexB = validNoteIds.indexOf(b.id);
+          return indexA - indexB;
+        });
+        const parsedNotes = notes.map(note => ({
           ...note,
           tags: note.tag_names
             ? note.tag_names.split(',').map((name, i) => ({
@@ -241,9 +243,9 @@ class NoteService {
     // Get the complete note
     const note = await this.getNoteById(noteId);
 
-    // Invalidate user's notes cache
+    // Invalidate user's notes and tags cache
     await cache.delPattern(`notes:user:${userId}:*`);
-    await cache.delPattern(`tags:user:${userId}`);
+    await cache.del(`tags:user:${userId}`);
 
     // Index in Elasticsearch
     if (note) {
@@ -299,9 +301,9 @@ class NoteService {
     const note = await this.getNoteById(noteId);
 
     if (note) {
-      // Invalidate user's notes cache
+      // Invalidate user's notes and tags cache
       await cache.delPattern(`notes:user:${note.owner_id}:*`);
-      await cache.delPattern(`tags:user:${note.owner_id}`);
+      await cache.del(`tags:user:${note.owner_id}`);
 
       // Update in Elasticsearch
       await elasticsearch.indexNote({
@@ -402,7 +404,7 @@ class NoteService {
     // Invalidate cache
     if (userId) {
       await cache.delPattern(`notes:user:${userId}:*`);
-      await cache.delPattern(`tags:user:${userId}`);
+      await cache.del(`tags:user:${userId}`);
     }
   }
 
