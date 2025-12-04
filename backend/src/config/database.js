@@ -232,62 +232,39 @@ class Database {
       }
     }
 
-    // Create triggers for automatic updated_at handling in SQLite
-    // These must be executed separately due to semicolons in trigger bodies
-    const triggers = [
-      `CREATE TRIGGER IF NOT EXISTS update_users_timestamp 
-        AFTER UPDATE ON users
-        FOR EACH ROW
-        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
-        BEGIN
-          UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-        END`,
-      `CREATE TRIGGER IF NOT EXISTS update_tags_timestamp 
-        AFTER UPDATE ON tags
-        FOR EACH ROW
-        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
-        BEGIN
-          UPDATE tags SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-        END`,
-      `CREATE TRIGGER IF NOT EXISTS update_notes_timestamp 
-        AFTER UPDATE ON notes
-        FOR EACH ROW
-        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
-        BEGIN
-          UPDATE notes SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-        END`,
-      `CREATE TRIGGER IF NOT EXISTS update_tasks_timestamp 
-        AFTER UPDATE ON tasks
-        FOR EACH ROW
-        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
-        BEGIN
-          UPDATE tasks SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-        END`,
-      `CREATE TRIGGER IF NOT EXISTS update_share_notes_timestamp 
-        AFTER UPDATE ON share_notes
-        FOR EACH ROW
-        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
-        BEGIN
-          UPDATE share_notes SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-        END`,
-      `CREATE TRIGGER IF NOT EXISTS update_password_reset_tokens_timestamp 
-        AFTER UPDATE ON password_reset_tokens
-        FOR EACH ROW
-        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
-        BEGIN
-          UPDATE password_reset_tokens SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-        END`,
-      `CREATE TRIGGER IF NOT EXISTS update_invitations_timestamp 
-        AFTER UPDATE ON invitations
-        FOR EACH ROW
-        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
-        BEGIN
-          UPDATE invitations SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-        END`
-    ];
-
-    for (const trigger of triggers) {
-      this.db.exec(trigger);
+    // Create UPDATE triggers for automatic updated_at handling in SQLite
+    // Only create triggers for tables that have the updated_at column
+    // (migration will add it if missing and create triggers then)
+    const tablesToTrigger = ['notes', 'tasks']; // These always have updated_at in the schema
+    const otherTables = ['users', 'tags', 'share_notes', 'password_reset_tokens', 'invitations'];
+    
+    // Check which tables already have updated_at column
+    for (const table of otherTables) {
+      try {
+        const columns = this.db.prepare(`PRAGMA table_info(${table})`).all();
+        if (columns.some(col => col.name === 'updated_at')) {
+          tablesToTrigger.push(table);
+        }
+      } catch (error) {
+        // Table doesn't exist yet, skip
+      }
+    }
+    
+    // Create UPDATE triggers only for tables that have updated_at
+    for (const table of tablesToTrigger) {
+      try {
+        this.db.exec(`
+          CREATE TRIGGER IF NOT EXISTS update_${table}_timestamp 
+            AFTER UPDATE ON ${table}
+            FOR EACH ROW
+            WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+            BEGIN
+              UPDATE ${table} SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+            END
+        `);
+      } catch (error) {
+        // Trigger creation failed, migration will handle it
+      }
     }
     
     console.log('✅ SQLite schema initialized');
@@ -424,14 +401,30 @@ class Database {
    * Migrate SQLite schema - add missing columns to existing tables.
    * Note: SQLite doesn't support DEFAULT CURRENT_TIMESTAMP in ALTER TABLE,
    * so we add the column without default and use triggers to set values.
+   * Also fixes tables where created_at is NOT NULL without DEFAULT.
    */
   migrateSQLiteSchema() {
     try {
-      // Helper function to add updated_at column and triggers
-      const addUpdatedAtColumn = (tableName, displayName) => {
+      // Helper function to fix timestamp columns and add triggers
+      const fixTimestampColumns = (tableName, displayName) => {
         const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all();
         const hasUpdatedAt = columns.some(col => col.name === 'updated_at');
+        const createdAtCol = columns.find(col => col.name === 'created_at');
         
+        // Check if created_at has problematic NOT NULL constraint without default
+        // If notnull=1 and dflt_value is NULL, it means NOT NULL without DEFAULT
+        const hasProblematicCreatedAt = createdAtCol && createdAtCol.notnull === 1 && 
+                                       (createdAtCol.dflt_value === null || createdAtCol.dflt_value === undefined);
+        
+        if (hasProblematicCreatedAt) {
+          console.log(`🔄 Migrating ${displayName} table: fixing created_at constraint`);
+          // Need to rebuild the table to remove NOT NULL constraint or add DEFAULT
+          // This is the SQLite way to modify column constraints
+          this.rebuildTableWithFixedTimestamps(tableName, columns);
+          return; // Table rebuilt, no need for further column additions
+        }
+        
+        // Add updated_at column if missing
         if (!hasUpdatedAt) {
           console.log(`🔄 Migrating ${displayName} table: adding updated_at column`);
           // Add column without DEFAULT (SQLite limitation)
@@ -441,7 +434,7 @@ class Database {
           
           // Create INSERT trigger to set updated_at on new rows
           this.db.exec(`
-            CREATE TRIGGER IF NOT EXISTS insert_${tableName}_timestamp 
+            CREATE TRIGGER IF NOT EXISTS insert_${tableName}_updated_at 
               AFTER INSERT ON ${tableName}
               FOR EACH ROW
               WHEN NEW.updated_at IS NULL
@@ -453,16 +446,124 @@ class Database {
       };
 
       // Migrate all tables
-      addUpdatedAtColumn('users', 'users');
-      addUpdatedAtColumn('tags', 'tags');
-      addUpdatedAtColumn('share_notes', 'share_notes');
-      addUpdatedAtColumn('password_reset_tokens', 'password_reset_tokens');
-      addUpdatedAtColumn('invitations', 'invitations');
+      fixTimestampColumns('users', 'users');
+      fixTimestampColumns('tags', 'tags');
+      fixTimestampColumns('share_notes', 'share_notes');
+      fixTimestampColumns('password_reset_tokens', 'password_reset_tokens');
+      fixTimestampColumns('invitations', 'invitations');
 
       console.log('✅ SQLite schema migration completed');
     } catch (error) {
       console.error('⚠️ SQLite migration error (non-fatal):', error.message);
     }
+  }
+
+  /**
+   * Rebuild a table with fixed timestamp constraints.
+   * This is necessary because SQLite doesn't allow modifying column constraints.
+   */
+  rebuildTableWithFixedTimestamps(tableName, columns) {
+    // Get table's creation SQL to understand its structure
+    const tableInfo = this.db.prepare(
+      `SELECT sql FROM sqlite_master WHERE type='table' AND name=?`
+    ).get(tableName);
+    
+    if (!tableInfo) return;
+
+    // Create a temporary table with fixed constraints
+    const tempTableName = `${tableName}_migration_temp`;
+    
+    // Build new table definition with fixed timestamps
+    const columnDefs = columns.map(col => {
+      let def = `${col.name} ${col.type}`;
+      
+      // Fix created_at: add DEFAULT CURRENT_TIMESTAMP
+      if (col.name === 'created_at') {
+        def += ' DEFAULT CURRENT_TIMESTAMP';
+      } else if (col.name === 'updated_at') {
+        def += ' DEFAULT CURRENT_TIMESTAMP';
+      } else {
+        // Regular columns
+        if (col.notnull === 1) def += ' NOT NULL';
+        if (col.dflt_value !== null) def += ` DEFAULT ${col.dflt_value}`;
+        if (col.pk === 1) def += ' PRIMARY KEY';
+        if (col.pk === 1 && tableName !== 'note_tag') def += ' AUTOINCREMENT';
+      }
+      
+      return def;
+    }).join(', ');
+    
+    // Add updated_at if it doesn't exist
+    const hasUpdatedAt = columns.some(col => col.name === 'updated_at');
+    const finalColumnDefs = hasUpdatedAt ? columnDefs : `${columnDefs}, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP`;
+    
+    // Get list of existing triggers to drop
+    const existingTriggers = this.db.prepare(
+      `SELECT name FROM sqlite_master WHERE type='trigger' AND tbl_name=?`
+    ).all(tableName);
+    
+    // Execute the migration in a transaction
+    this.db.exec('BEGIN TRANSACTION');
+    
+    try {
+      // Drop existing triggers first
+      for (const trigger of existingTriggers) {
+        this.db.exec(`DROP TRIGGER IF EXISTS ${trigger.name}`);
+      }
+      
+      // Create new table with fixed schema
+      this.db.exec(`CREATE TABLE ${tempTableName} (${finalColumnDefs})`);
+      
+      // Copy data from old table
+      const selectColumns = columns.map(c => c.name).join(', ');
+      const insertColumns = hasUpdatedAt ? selectColumns : `${selectColumns}, CURRENT_TIMESTAMP`;
+      this.db.exec(`INSERT INTO ${tempTableName} SELECT ${insertColumns} FROM ${tableName}`);
+      
+      // Drop old table
+      this.db.exec(`DROP TABLE ${tableName}`);
+      
+      // Rename temp table to original name
+      this.db.exec(`ALTER TABLE ${tempTableName} RENAME TO ${tableName}`);
+      
+      this.db.exec('COMMIT');
+    } catch (error) {
+      this.db.exec('ROLLBACK');
+      throw error;
+    }
+    
+    // Recreate INSERT triggers for both created_at and updated_at
+    this.db.exec(`
+      CREATE TRIGGER IF NOT EXISTS insert_${tableName}_created_at 
+        AFTER INSERT ON ${tableName}
+        FOR EACH ROW
+        WHEN NEW.created_at IS NULL
+        BEGIN
+          UPDATE ${tableName} SET created_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END
+    `);
+    
+    this.db.exec(`
+      CREATE TRIGGER IF NOT EXISTS insert_${tableName}_updated_at 
+        AFTER INSERT ON ${tableName}
+        FOR EACH ROW
+        WHEN NEW.updated_at IS NULL
+        BEGIN
+          UPDATE ${tableName} SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END
+    `);
+    
+    // Recreate UPDATE trigger
+    this.db.exec(`
+      CREATE TRIGGER IF NOT EXISTS update_${tableName}_timestamp 
+        AFTER UPDATE ON ${tableName}
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE ${tableName} SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END
+    `);
+    
+    console.log(`  ✓ Rebuilt ${tableName} table with fixed timestamp constraints`);
   }
 
   /**
