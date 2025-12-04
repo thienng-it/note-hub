@@ -101,9 +101,11 @@ class Database {
    */
   async initSchema() {
     if (this.isSQLite) {
-      return this.initSQLiteSchema();
+      this.initSQLiteSchema();
+      return this.migrateSQLiteSchema();
     }
-    return this.initMySQLSchema();
+    this.initMySQLSchema();
+    return this.migrateMySQLSchema();
   }
 
   /**
@@ -416,6 +418,128 @@ class Database {
     }
     
     console.log('✅ MySQL schema initialized');
+  }
+
+  /**
+   * Migrate SQLite schema - add missing columns to existing tables.
+   */
+  migrateSQLiteSchema() {
+    try {
+      // Check and add missing columns for users table
+      const userColumns = this.db.prepare("PRAGMA table_info(users)").all();
+      const hasUpdatedAt = userColumns.some(col => col.name === 'updated_at');
+      
+      if (!hasUpdatedAt) {
+        console.log('🔄 Migrating users table: adding updated_at column');
+        this.db.exec('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for tags table
+      const tagColumns = this.db.prepare("PRAGMA table_info(tags)").all();
+      const tagHasUpdatedAt = tagColumns.some(col => col.name === 'updated_at');
+      
+      if (!tagHasUpdatedAt) {
+        console.log('🔄 Migrating tags table: adding updated_at column');
+        this.db.exec('ALTER TABLE tags ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for share_notes table
+      const shareColumns = this.db.prepare("PRAGMA table_info(share_notes)").all();
+      const shareHasUpdatedAt = shareColumns.some(col => col.name === 'updated_at');
+      
+      if (!shareHasUpdatedAt) {
+        console.log('🔄 Migrating share_notes table: adding updated_at column');
+        this.db.exec('ALTER TABLE share_notes ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for password_reset_tokens table
+      const tokenColumns = this.db.prepare("PRAGMA table_info(password_reset_tokens)").all();
+      const tokenHasUpdatedAt = tokenColumns.some(col => col.name === 'updated_at');
+      
+      if (!tokenHasUpdatedAt) {
+        console.log('🔄 Migrating password_reset_tokens table: adding updated_at column');
+        this.db.exec('ALTER TABLE password_reset_tokens ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for invitations table
+      const inviteColumns = this.db.prepare("PRAGMA table_info(invitations)").all();
+      const inviteHasUpdatedAt = inviteColumns.some(col => col.name === 'updated_at');
+      
+      if (!inviteHasUpdatedAt) {
+        console.log('🔄 Migrating invitations table: adding updated_at column');
+        this.db.exec('ALTER TABLE invitations ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
+      }
+
+      console.log('✅ SQLite schema migration completed');
+    } catch (error) {
+      console.error('⚠️ SQLite migration error (non-fatal):', error.message);
+    }
+  }
+
+  /**
+   * Migrate MySQL schema - add missing columns to existing tables.
+   */
+  async migrateMySQLSchema() {
+    try {
+      // Check and add missing columns for users table
+      const [userColumns] = await this.db.execute(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'"
+      );
+      const hasUpdatedAt = userColumns.some(col => col.COLUMN_NAME === 'updated_at');
+      
+      if (!hasUpdatedAt) {
+        console.log('🔄 Migrating users table: adding updated_at column');
+        await this.db.execute('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for tags table
+      const [tagColumns] = await this.db.execute(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tags'"
+      );
+      const tagHasUpdatedAt = tagColumns.some(col => col.COLUMN_NAME === 'updated_at');
+      
+      if (!tagHasUpdatedAt) {
+        console.log('🔄 Migrating tags table: adding updated_at column');
+        await this.db.execute('ALTER TABLE tags ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for share_notes table
+      const [shareColumns] = await this.db.execute(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'share_notes'"
+      );
+      const shareHasUpdatedAt = shareColumns.some(col => col.COLUMN_NAME === 'updated_at');
+      
+      if (!shareHasUpdatedAt) {
+        console.log('🔄 Migrating share_notes table: adding updated_at column');
+        await this.db.execute('ALTER TABLE share_notes ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for password_reset_tokens table
+      const [tokenColumns] = await this.db.execute(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'password_reset_tokens'"
+      );
+      const tokenHasUpdatedAt = tokenColumns.some(col => col.COLUMN_NAME === 'updated_at');
+      
+      if (!tokenHasUpdatedAt) {
+        console.log('🔄 Migrating password_reset_tokens table: adding updated_at column');
+        await this.db.execute('ALTER TABLE password_reset_tokens ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing columns for invitations table
+      const [inviteColumns] = await this.db.execute(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'invitations'"
+      );
+      const inviteHasUpdatedAt = inviteColumns.some(col => col.COLUMN_NAME === 'updated_at');
+      
+      if (!inviteHasUpdatedAt) {
+        console.log('🔄 Migrating invitations table: adding updated_at column');
+        await this.db.execute('ALTER TABLE invitations ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+      }
+
+      console.log('✅ MySQL schema migration completed');
+    } catch (error) {
+      console.error('⚠️ MySQL migration error (non-fatal):', error.message);
+    }
   }
 
   /**
