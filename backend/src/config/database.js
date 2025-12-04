@@ -154,6 +154,11 @@ class Database {
       );
       CREATE INDEX IF NOT EXISTS ix_notes_owner ON notes(owner_id);
       CREATE INDEX IF NOT EXISTS ix_notes_archived ON notes(archived);
+      -- Composite indexes for optimized queries
+      CREATE INDEX IF NOT EXISTS ix_notes_owner_archived ON notes(owner_id, archived);
+      CREATE INDEX IF NOT EXISTS ix_notes_owner_favorite ON notes(owner_id, favorite);
+      CREATE INDEX IF NOT EXISTS ix_notes_owner_pinned_updated ON notes(owner_id, pinned, updated_at);
+      CREATE INDEX IF NOT EXISTS ix_notes_updated_at ON notes(updated_at);
 
       -- Note-Tag junction table
       CREATE TABLE IF NOT EXISTS note_tag (
@@ -314,6 +319,10 @@ class Database {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_notes_owner (owner_id),
         INDEX ix_notes_archived (archived),
+        INDEX ix_notes_owner_archived (owner_id, archived),
+        INDEX ix_notes_owner_favorite (owner_id, favorite),
+        INDEX ix_notes_owner_pinned_updated (owner_id, pinned, updated_at),
+        INDEX ix_notes_updated_at (updated_at),
         FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
       );
 

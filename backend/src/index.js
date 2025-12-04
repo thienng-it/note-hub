@@ -20,6 +20,10 @@ const rateLimit = require('express-rate-limit');
 const db = require('./config/database');
 const { initializeSequelize, syncDatabase, closeDatabase } = require('./models');
 
+// Cache and search services
+const cache = require('./config/redis');
+const elasticsearch = require('./config/elasticsearch');
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const notesRoutes = require('./routes/notes');
@@ -133,11 +137,19 @@ async function start() {
     // Also initialize legacy DB for backward compatibility
     await db.connect();
     await db.initSchema();
+
+    // Initialize Redis cache (optional)
+    await cache.connect();
+
+    // Initialize Elasticsearch (optional)
+    await elasticsearch.connect();
     
     app.listen(PORT, () => {
       console.log(`🚀 NoteHub API server running on port ${PORT}`);
       console.log(`📦 Database: ${db.isSQLite ? 'SQLite' : 'MySQL'}`);
       console.log(`🔧 ORM: Sequelize`);
+      console.log(`🔴 Cache: ${cache.isEnabled() ? 'Redis (enabled)' : 'Disabled'}`);
+      console.log(`🔍 Search: ${elasticsearch.isEnabled() ? 'Elasticsearch (enabled)' : 'SQL LIKE (fallback)'}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
@@ -151,6 +163,8 @@ process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully...');
   await closeDatabase();
   await db.close();
+  await cache.close();
+  await elasticsearch.close();
   process.exit(0);
 });
 
@@ -158,6 +172,8 @@ process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down gracefully...');
   await closeDatabase();
   await db.close();
+  await cache.close();
+  await elasticsearch.close();
   process.exit(0);
 });
 
