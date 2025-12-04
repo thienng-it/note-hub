@@ -422,53 +422,42 @@ class Database {
 
   /**
    * Migrate SQLite schema - add missing columns to existing tables.
+   * Note: SQLite doesn't support DEFAULT CURRENT_TIMESTAMP in ALTER TABLE,
+   * so we add the column without default and use triggers to set values.
    */
   migrateSQLiteSchema() {
     try {
-      // Check and add missing columns for users table
-      const userColumns = this.db.prepare("PRAGMA table_info(users)").all();
-      const hasUpdatedAt = userColumns.some(col => col.name === 'updated_at');
-      
-      if (!hasUpdatedAt) {
-        console.log('🔄 Migrating users table: adding updated_at column');
-        this.db.exec('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
-      }
+      // Helper function to add updated_at column and triggers
+      const addUpdatedAtColumn = (tableName, displayName) => {
+        const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all();
+        const hasUpdatedAt = columns.some(col => col.name === 'updated_at');
+        
+        if (!hasUpdatedAt) {
+          console.log(`🔄 Migrating ${displayName} table: adding updated_at column`);
+          // Add column without DEFAULT (SQLite limitation)
+          this.db.exec(`ALTER TABLE ${tableName} ADD COLUMN updated_at DATETIME`);
+          // Set initial value for existing rows
+          this.db.exec(`UPDATE ${tableName} SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL`);
+          
+          // Create INSERT trigger to set updated_at on new rows
+          this.db.exec(`
+            CREATE TRIGGER IF NOT EXISTS insert_${tableName}_timestamp 
+              AFTER INSERT ON ${tableName}
+              FOR EACH ROW
+              WHEN NEW.updated_at IS NULL
+              BEGIN
+                UPDATE ${tableName} SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+              END
+          `);
+        }
+      };
 
-      // Check and add missing columns for tags table
-      const tagColumns = this.db.prepare("PRAGMA table_info(tags)").all();
-      const tagHasUpdatedAt = tagColumns.some(col => col.name === 'updated_at');
-      
-      if (!tagHasUpdatedAt) {
-        console.log('🔄 Migrating tags table: adding updated_at column');
-        this.db.exec('ALTER TABLE tags ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing columns for share_notes table
-      const shareColumns = this.db.prepare("PRAGMA table_info(share_notes)").all();
-      const shareHasUpdatedAt = shareColumns.some(col => col.name === 'updated_at');
-      
-      if (!shareHasUpdatedAt) {
-        console.log('🔄 Migrating share_notes table: adding updated_at column');
-        this.db.exec('ALTER TABLE share_notes ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing columns for password_reset_tokens table
-      const tokenColumns = this.db.prepare("PRAGMA table_info(password_reset_tokens)").all();
-      const tokenHasUpdatedAt = tokenColumns.some(col => col.name === 'updated_at');
-      
-      if (!tokenHasUpdatedAt) {
-        console.log('🔄 Migrating password_reset_tokens table: adding updated_at column');
-        this.db.exec('ALTER TABLE password_reset_tokens ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing columns for invitations table
-      const inviteColumns = this.db.prepare("PRAGMA table_info(invitations)").all();
-      const inviteHasUpdatedAt = inviteColumns.some(col => col.name === 'updated_at');
-      
-      if (!inviteHasUpdatedAt) {
-        console.log('🔄 Migrating invitations table: adding updated_at column');
-        this.db.exec('ALTER TABLE invitations ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
-      }
+      // Migrate all tables
+      addUpdatedAtColumn('users', 'users');
+      addUpdatedAtColumn('tags', 'tags');
+      addUpdatedAtColumn('share_notes', 'share_notes');
+      addUpdatedAtColumn('password_reset_tokens', 'password_reset_tokens');
+      addUpdatedAtColumn('invitations', 'invitations');
 
       console.log('✅ SQLite schema migration completed');
     } catch (error) {
