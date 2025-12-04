@@ -5,10 +5,12 @@ const express = require('express');
 const router = express.Router();
 const AuthService = require('../services/authService');
 const jwtService = require('../services/jwtService');
+const googleOAuthService = require('../services/googleOAuthService');
 const { jwtRequired } = require('../middleware/auth');
 const db = require('../config/database');
 const { authenticator } = require('otplib');
 const QRCode = require('qrcode');
+const crypto = require('crypto');
 
 /**
  * POST /api/auth/login - User login
@@ -305,6 +307,134 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
     console.error('2FA disable error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+/**
+ * GET /api/auth/google - Get Google OAuth URL
+ */
+router.get('/google', (req, res) => {
+  try {
+    if (!googleOAuthService.isEnabled()) {
+      return res.status(503).json({ error: 'Google OAuth not configured' });
+    }
+
+    const authUrl = googleOAuthService.getAuthUrl();
+    res.json({ auth_url: authUrl });
+  } catch (error) {
+    console.error('Google OAuth URL error:', error);
+    res.status(500).json({ error: 'Failed to generate OAuth URL' });
+  }
+});
+
+/**
+ * POST /api/auth/google/callback - Handle Google OAuth callback
+ */
+router.post('/google/callback', async (req, res) => {
+  try {
+    const { code, id_token } = req.body;
+
+    if (!code && !id_token) {
+      return res.status(400).json({ error: 'Authorization code or ID token required' });
+    }
+
+    if (!googleOAuthService.isEnabled()) {
+      return res.status(503).json({ error: 'Google OAuth not configured' });
+    }
+
+    let googleUser;
+
+    // Method 1: Using authorization code
+    if (code) {
+      const tokens = await googleOAuthService.getTokens(code);
+      googleUser = await googleOAuthService.getUserInfo(tokens.access_token);
+    } 
+    // Method 2: Using ID token (for frontend flow)
+    else if (id_token) {
+      googleUser = await googleOAuthService.verifyIdToken(id_token);
+    }
+
+    if (!googleUser || !googleUser.email) {
+      return res.status(400).json({ error: 'Failed to get user information from Google' });
+    }
+
+    if (!googleUser.verified_email) {
+      return res.status(400).json({ error: 'Google email not verified' });
+    }
+
+    // Check if user exists by email
+    let user = await db.queryOne(
+      `SELECT * FROM users WHERE email = ?`,
+      [googleUser.email]
+    );
+
+    if (!user) {
+      // Create new user with Google account
+      // Generate username from email
+      let username = googleUser.email.split('@')[0];
+      
+      // Check if username exists, add random suffix if needed
+      const existingUser = await db.queryOne(
+        `SELECT id FROM users WHERE username = ?`,
+        [username]
+      );
+
+      if (existingUser) {
+        username = `${username}_${crypto.randomBytes(4).toString('hex')}`;
+      }
+
+      // Create user without password (Google OAuth users)
+      // Password hash set to a random unguessable value
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const passwordHash = await AuthService.hashPassword(randomPassword);
+
+      const result = await db.run(
+        `INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)`,
+        [username, passwordHash, googleUser.email]
+      );
+
+      user = await db.queryOne(
+        `SELECT * FROM users WHERE id = ?`,
+        [result.insertId]
+      );
+
+      console.log(`[AUTH] New user created via Google OAuth: ${username} (${googleUser.email})`);
+    } else {
+      console.log(`[AUTH] User logged in via Google OAuth: ${user.username} (${googleUser.email})`);
+    }
+
+    // Generate tokens (no 2FA for Google OAuth users)
+    const accessToken = jwtService.generateToken(user.id);
+    const refreshToken = jwtService.generateRefreshToken(user.id);
+
+    // Update last login
+    await AuthService.updateLastLogin(user.id);
+
+    res.json({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      token_type: 'Bearer',
+      expires_in: 86400, // 24 hours
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        has_2fa: !!user.totp_secret,
+        auth_method: 'google'
+      }
+    });
+  } catch (error) {
+    console.error('Google OAuth callback error:', error);
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+});
+
+/**
+ * GET /api/auth/google/status - Check if Google OAuth is configured
+ */
+router.get('/google/status', (req, res) => {
+  res.json({
+    enabled: googleOAuthService.isEnabled()
+  });
 });
 
 module.exports = router;
