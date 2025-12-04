@@ -3,6 +3,7 @@
  * Provides caching for frequently accessed data.
  */
 const Redis = require('ioredis');
+const { REDIS } = require('./constants');
 
 class RedisCache {
   constructor() {
@@ -27,13 +28,15 @@ class RedisCache {
 
     try {
       // Connect using URL or host/port
+      const retryStrategy = (times) => {
+        if (times > REDIS.MAX_RETRIES) return null;
+        return Math.min(times * REDIS.RETRY_BASE_DELAY, REDIS.RETRY_MAX_DELAY);
+      };
+
       if (redisUrl) {
         this.client = new Redis(redisUrl, {
-          maxRetriesPerRequest: 3,
-          retryStrategy: (times) => {
-            if (times > 3) return null; // Stop retrying after 3 attempts
-            return Math.min(times * 100, 3000); // Exponential backoff
-          }
+          maxRetriesPerRequest: REDIS.MAX_RETRIES,
+          retryStrategy
         });
       } else {
         this.client = new Redis({
@@ -41,11 +44,8 @@ class RedisCache {
           port: parseInt(process.env.REDIS_PORT || '6379', 10),
           password: process.env.REDIS_PASSWORD || undefined,
           db: parseInt(process.env.REDIS_DB || '0', 10),
-          maxRetriesPerRequest: 3,
-          retryStrategy: (times) => {
-            if (times > 3) return null;
-            return Math.min(times * 100, 3000);
-          }
+          maxRetriesPerRequest: REDIS.MAX_RETRIES,
+          retryStrategy
         });
       }
 
@@ -140,7 +140,7 @@ class RedisCache {
         const [nextCursor, keys] = await this.client.scan(
           cursor,
           'MATCH', pattern,
-          'COUNT', 100
+          'COUNT', REDIS.SCAN_COUNT
         );
         
         cursor = nextCursor;

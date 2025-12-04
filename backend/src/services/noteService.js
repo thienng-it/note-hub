@@ -5,6 +5,7 @@
 const db = require('../config/database');
 const cache = require('../config/redis');
 const elasticsearch = require('../config/elasticsearch');
+const { SEARCH_MIN_LENGTH, CACHE_TTL } = require('../config/constants');
 const { marked } = require('marked');
 const sanitizeHtml = require('sanitize-html');
 
@@ -25,7 +26,7 @@ class NoteService {
     }
 
     // Use Elasticsearch for full-text search if available and query is provided
-    if (searchQuery && searchQuery.length >= 3 && elasticsearch.isEnabled()) {
+    if (searchQuery && searchQuery.length >= SEARCH_MIN_LENGTH && elasticsearch.isEnabled()) {
       const esResults = await elasticsearch.searchNotes(userId, searchQuery, {
         archived: viewType === 'archived',
         favorite: viewType === 'favorites' ? true : null,
@@ -36,12 +37,19 @@ class NoteService {
         // Fetch full note details from database (ES only stores indexed fields)
         const noteIds = esResults.notes.map(n => n.id);
         if (noteIds.length === 0) {
-          await cache.set(cacheKey, [], 300); // Cache empty results for 5 minutes
+          await cache.set(cacheKey, [], CACHE_TTL.NOTES_SEARCH);
+          return [];
+        }
+
+        // Validate noteIds are integers to prevent SQL injection
+        const validNoteIds = noteIds.filter(id => Number.isInteger(id) && id > 0);
+        if (validNoteIds.length === 0) {
+          await cache.set(cacheKey, [], CACHE_TTL.NOTES_SEARCH);
           return [];
         }
 
         // Use parameterized query to prevent SQL injection
-        const placeholders = noteIds.map(() => '?').join(',');
+        const placeholders = validNoteIds.map(() => '?').join(',');
         const sql = `
           SELECT DISTINCT n.*, 
             GROUP_CONCAT(t.name) as tag_names,
@@ -53,12 +61,12 @@ class NoteService {
           GROUP BY n.id
         `;
 
-        const notes = await db.query(sql, noteIds);
+        const notes = await db.query(sql, validNoteIds);
         
         // Sort in application layer to match ES order
         const noteMap = {};
         notes.forEach(note => { noteMap[note.id] = note; });
-        const sortedNotes = noteIds.map(id => noteMap[id]).filter(Boolean);
+        const sortedNotes = validNoteIds.map(id => noteMap[id]).filter(Boolean);
         const parsedNotes = sortedNotes.map(note => ({
           ...note,
           tags: note.tag_names
@@ -69,7 +77,7 @@ class NoteService {
             : []
         }));
 
-        await cache.set(cacheKey, parsedNotes, 600); // Cache for 10 minutes
+        await cache.set(cacheKey, parsedNotes, CACHE_TTL.NOTES_SEARCH);
         return parsedNotes;
       }
     }
@@ -106,7 +114,7 @@ class NoteService {
     }
 
     // Apply search filter (SQL LIKE as fallback)
-    if (searchQuery && searchQuery.length >= 3) {
+    if (searchQuery && searchQuery.length >= SEARCH_MIN_LENGTH) {
       sql += ` AND (n.title LIKE ? OR n.body LIKE ?)`;
       const searchPattern = `%${searchQuery}%`;
       params.push(searchPattern, searchPattern);
@@ -134,7 +142,7 @@ class NoteService {
     }));
 
     // Cache results
-    await cache.set(cacheKey, parsedNotes, 600); // Cache for 10 minutes
+    await cache.set(cacheKey, parsedNotes, CACHE_TTL.NOTES_LIST);
 
     return parsedNotes;
   }
@@ -163,8 +171,8 @@ class NoteService {
       ORDER BY t.name
     `, [userId]);
 
-    // Cache results for 30 minutes
-    await cache.set(cacheKey, tags, 1800);
+    // Cache results
+    await cache.set(cacheKey, tags, CACHE_TTL.TAGS);
 
     return tags;
   }

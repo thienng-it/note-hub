@@ -3,6 +3,7 @@
  * Provides full-text search capabilities.
  */
 const { Client } = require('@elastic/elasticsearch');
+const { ELASTICSEARCH, SEARCH_MIN_LENGTH } = require('./constants');
 
 class ElasticsearchService {
   constructor() {
@@ -87,7 +88,9 @@ class ElasticsearchService {
             settings: {
               number_of_shards: 1,
               // Set replicas to 0 for single-node development, 1+ for production
-              number_of_replicas: process.env.NODE_ENV === 'production' ? 1 : 0,
+              number_of_replicas: process.env.NODE_ENV === 'production' 
+                ? ELASTICSEARCH.REPLICAS_PROD 
+                : ELASTICSEARCH.REPLICAS_DEV,
               analysis: {
                 analyzer: {
                   note_analyzer: {
@@ -152,7 +155,7 @@ class ElasticsearchService {
           created_at: note.created_at,
           updated_at: note.updated_at
         },
-        refresh: 'wait_for' // Make immediately searchable
+        refresh: ELASTICSEARCH.REFRESH_STRATEGY
       });
       
       return true;
@@ -205,7 +208,7 @@ class ElasticsearchService {
         { term: { archived } }
       ];
 
-      if (query && query.length >= 3) {
+      if (query && query.length >= SEARCH_MIN_LENGTH) {
         must.push({
           multi_match: {
             query,
@@ -281,7 +284,7 @@ class ElasticsearchService {
 
       await this.client.bulk({
         body,
-        refresh: 'wait_for'
+        refresh: ELASTICSEARCH.BULK_REFRESH_STRATEGY
       });
 
       return true;
