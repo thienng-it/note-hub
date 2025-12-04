@@ -445,9 +445,11 @@ class Database {
         }
       };
 
-      // Migrate all tables
+      // Migrate all tables that have timestamp columns
       fixTimestampColumns('users', 'users');
       fixTimestampColumns('tags', 'tags');
+      fixTimestampColumns('notes', 'notes');
+      fixTimestampColumns('tasks', 'tasks');
       fixTimestampColumns('share_notes', 'share_notes');
       fixTimestampColumns('password_reset_tokens', 'password_reset_tokens');
       fixTimestampColumns('invitations', 'invitations');
