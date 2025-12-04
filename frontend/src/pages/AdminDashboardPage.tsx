@@ -102,7 +102,7 @@ export function AdminDashboardPage() {
 
       // Refresh user list
       await loadUsers();
-      
+
       // Show success message (inline instead of alert)
       setError('');
       // You could set a success state here for a toast notification
@@ -332,7 +332,7 @@ export function AdminDashboardPage() {
                           )}
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          {u.totp_secret ? (
+                          {u.has_2fa ? (
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-600 dark:text-green-400">
                               <i className="glass-i fas fa-shield-alt mr-1" aria-hidden="true"></i>
                               Enabled
@@ -345,7 +345,7 @@ export function AdminDashboardPage() {
                           )}
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                          {u.totp_secret && (
+                          {u.has_2fa && (
                             <button
                               onClick={() => handleDisable2FA(u.id, u.username)}
                               className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
