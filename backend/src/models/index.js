@@ -142,7 +142,7 @@ function defineModels() {
     tableName: 'users',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false,
+    updatedAt: 'updated_at',
     indexes: [
       { fields: ['username'] },
       { fields: ['email'] }
@@ -169,7 +169,7 @@ function defineModels() {
     tableName: 'tags',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false,
+    updatedAt: 'updated_at',
     indexes: [
       { fields: ['name'] }
     ]
@@ -309,7 +309,7 @@ function defineModels() {
     tableName: 'share_notes',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false
+    updatedAt: 'updated_at'
   });
 
   // PasswordResetToken Model
@@ -344,7 +344,7 @@ function defineModels() {
     tableName: 'password_reset_tokens',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false,
+    updatedAt: 'updated_at',
     indexes: [
       { fields: ['token'] }
     ]
@@ -398,7 +398,7 @@ function defineModels() {
     tableName: 'invitations',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false,
+    updatedAt: 'updated_at',
     indexes: [
       { fields: ['token'] }
     ]

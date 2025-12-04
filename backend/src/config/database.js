@@ -121,6 +121,7 @@ class Database {
         theme TEXT DEFAULT 'light',
         totp_secret TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         last_login DATETIME
       );
       CREATE INDEX IF NOT EXISTS ix_users_username ON users(username);
@@ -131,7 +132,8 @@ class Database {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
         color TEXT DEFAULT '#3B82F6',
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
       CREATE INDEX IF NOT EXISTS ix_tags_name ON tags(name);
 
@@ -168,6 +170,7 @@ class Database {
         shared_with_id INTEGER NOT NULL,
         can_edit INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE,
         FOREIGN KEY (shared_by_id) REFERENCES users(id),
         FOREIGN KEY (shared_with_id) REFERENCES users(id)
@@ -196,6 +199,7 @@ class Database {
         expires_at DATETIME NOT NULL,
         used INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id)
       );
       CREATE INDEX IF NOT EXISTS ix_reset_tokens ON password_reset_tokens(token);
@@ -211,6 +215,7 @@ class Database {
         used_by_id INTEGER,
         expires_at DATETIME NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (inviter_id) REFERENCES users(id),
         FOREIGN KEY (used_by_id) REFERENCES users(id)
       );
@@ -223,6 +228,64 @@ class Database {
       if (statement.trim()) {
         this.db.exec(statement);
       }
+    }
+
+    // Create triggers for automatic updated_at handling in SQLite
+    // These must be executed separately due to semicolons in trigger bodies
+    const triggers = [
+      `CREATE TRIGGER IF NOT EXISTS update_users_timestamp 
+        AFTER UPDATE ON users
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END`,
+      `CREATE TRIGGER IF NOT EXISTS update_tags_timestamp 
+        AFTER UPDATE ON tags
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE tags SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END`,
+      `CREATE TRIGGER IF NOT EXISTS update_notes_timestamp 
+        AFTER UPDATE ON notes
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE notes SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END`,
+      `CREATE TRIGGER IF NOT EXISTS update_tasks_timestamp 
+        AFTER UPDATE ON tasks
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE tasks SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END`,
+      `CREATE TRIGGER IF NOT EXISTS update_share_notes_timestamp 
+        AFTER UPDATE ON share_notes
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE share_notes SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END`,
+      `CREATE TRIGGER IF NOT EXISTS update_password_reset_tokens_timestamp 
+        AFTER UPDATE ON password_reset_tokens
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE password_reset_tokens SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END`,
+      `CREATE TRIGGER IF NOT EXISTS update_invitations_timestamp 
+        AFTER UPDATE ON invitations
+        FOR EACH ROW
+        WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
+        BEGIN
+          UPDATE invitations SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+        END`
+    ];
+
+    for (const trigger of triggers) {
+      this.db.exec(trigger);
     }
     
     console.log('✅ SQLite schema initialized');
@@ -243,6 +306,7 @@ class Database {
         theme VARCHAR(20) DEFAULT 'light',
         totp_secret VARCHAR(32),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         last_login DATETIME,
         INDEX ix_users_username (username),
         INDEX ix_users_email (email)
@@ -254,6 +318,7 @@ class Database {
         name VARCHAR(64) UNIQUE NOT NULL,
         color VARCHAR(7) DEFAULT '#3B82F6',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_tags_name (name)
       );
 
@@ -290,6 +355,7 @@ class Database {
         shared_with_id INT NOT NULL,
         can_edit BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE,
         FOREIGN KEY (shared_by_id) REFERENCES users(id),
         FOREIGN KEY (shared_with_id) REFERENCES users(id)
@@ -318,6 +384,7 @@ class Database {
         expires_at DATETIME NOT NULL,
         used BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_reset_tokens (token),
         FOREIGN KEY (user_id) REFERENCES users(id)
       );
@@ -333,6 +400,7 @@ class Database {
         used_by_id INT,
         expires_at DATETIME NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_invitations_token (token),
         FOREIGN KEY (inviter_id) REFERENCES users(id),
         FOREIGN KEY (used_by_id) REFERENCES users(id)

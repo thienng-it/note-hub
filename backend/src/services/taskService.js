@@ -118,8 +118,6 @@ class TaskService {
       params.push(completed ? 1 : 0);
     }
 
-    updates.push("updated_at = datetime('now')");
-
     if (updates.length > 0) {
       params.push(taskId);
       await db.run(`UPDATE tasks SET ${updates.join(', ')} WHERE id = ?`, params);
@@ -133,7 +131,7 @@ class TaskService {
    */
   static async toggleTask(taskId) {
     await db.run(`
-      UPDATE tasks SET completed = NOT completed, updated_at = datetime('now') WHERE id = ?
+      UPDATE tasks SET completed = NOT completed WHERE id = ?
     `, [taskId]);
     return this.getTaskById(taskId);
   }
