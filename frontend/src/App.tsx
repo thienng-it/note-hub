@@ -21,6 +21,7 @@ import { Disable2FAPage } from './pages/Disable2FAPage';
 import { InvitePage } from './pages/InvitePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ErrorPage } from './pages/ErrorPage';
+import { GoogleCallbackPage } from './pages/GoogleCallbackPage';
 import './App.css';
 
 function AppRoutes() {
@@ -43,6 +44,7 @@ function AppRoutes() {
       <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />} />
       <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/" replace /> : <ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
       <Route
         element={
           <ProtectedRoute>

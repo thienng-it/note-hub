@@ -16,7 +16,7 @@ WORKDIR /frontend
 COPY frontend/package*.json ./
 
 # Install dependencies with reduced memory usage
-RUN npm ci --prefer-offline --no-audit
+RUN npm i --prefer-offline --no-audit
 
 # Copy frontend source code
 COPY frontend/ ./
@@ -36,7 +36,7 @@ WORKDIR /backend
 COPY backend/package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm i --only=production
 
 # Copy backend source
 COPY backend/src ./src

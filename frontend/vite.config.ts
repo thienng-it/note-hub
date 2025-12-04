@@ -5,7 +5,7 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  
+
   // Test configuration
   test: {
     globals: true,
@@ -17,7 +17,7 @@ export default defineConfig({
       exclude: ['node_modules/', 'src/test/'],
     },
   },
-  
+
   // Build configuration for production
   build: {
     outDir: 'dist',
@@ -37,7 +37,7 @@ export default defineConfig({
       },
     },
   },
-  
+
   // Development server configuration
   server: {
     port: 3000,
@@ -66,13 +66,13 @@ export default defineConfig({
       },
     },
   },
-  
+
   // Preview server configuration
   preview: {
     port: 4173,
     host: true,
   },
-  
+
   // Path aliases for cleaner imports
   resolve: {
     alias: {

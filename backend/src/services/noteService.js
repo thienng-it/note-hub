@@ -1,15 +1,93 @@
 /**
  * Note Service for note management operations.
+ * Integrated with Redis caching and Elasticsearch for enhanced performance.
  */
 const db = require('../config/database');
+const cache = require('../config/redis');
+const elasticsearch = require('../config/elasticsearch');
+const { SEARCH_MIN_LENGTH, CACHE_TTL } = require('../config/constants');
 const { marked } = require('marked');
 const sanitizeHtml = require('sanitize-html');
 
 class NoteService {
   /**
    * Get all notes for a user with optional filters.
+   * Uses Elasticsearch for full-text search if available, otherwise falls back to SQL.
+   * Results are cached in Redis for improved performance.
    */
   static async getNotesForUser(userId, viewType = 'all', searchQuery = '', tagFilter = '') {
+    // Generate cache key
+    const cacheKey = `notes:user:${userId}:${viewType}:${searchQuery}:${tagFilter}`;
+    
+    // Try cache first
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Use Elasticsearch for full-text search if available and query is provided
+    if (searchQuery && searchQuery.length >= SEARCH_MIN_LENGTH && elasticsearch.isEnabled()) {
+      const esResults = await elasticsearch.searchNotes(userId, searchQuery, {
+        archived: viewType === 'archived',
+        favorite: viewType === 'favorites' ? true : null,
+        tags: tagFilter ? [tagFilter] : null
+      });
+
+      if (esResults && esResults.notes) {
+        // Fetch full note details from database (ES only stores indexed fields)
+        const noteIds = esResults.notes.map(n => n.id);
+        if (noteIds.length === 0) {
+          await cache.set(cacheKey, [], CACHE_TTL.NOTES_SEARCH);
+          return [];
+        }
+
+        // Validate noteIds are integers to prevent SQL injection
+        // Convert to integers and validate (ES might return strings)
+        const validNoteIds = noteIds
+          .map(id => typeof id === 'string' ? parseInt(id, 10) : id)
+          .filter(id => Number.isInteger(id) && id > 0 && !isNaN(id));
+        if (validNoteIds.length === 0) {
+          await cache.set(cacheKey, [], CACHE_TTL.NOTES_SEARCH);
+          return [];
+        }
+
+        // Use parameterized query to prevent SQL injection
+        const placeholders = validNoteIds.map(() => '?').join(',');
+        const sql = `
+          SELECT DISTINCT n.*, 
+            GROUP_CONCAT(t.name) as tag_names,
+            GROUP_CONCAT(t.id) as tag_ids
+          FROM notes n
+          LEFT JOIN note_tag nt ON n.id = nt.note_id
+          LEFT JOIN tags t ON nt.tag_id = t.id
+          WHERE n.id IN (${placeholders})
+          GROUP BY n.id
+        `;
+
+        const notes = await db.query(sql, validNoteIds);
+        
+        // Sort notes to match ES order (preserving relevance ranking)
+        notes.sort((a, b) => {
+          const indexA = validNoteIds.indexOf(a.id);
+          const indexB = validNoteIds.indexOf(b.id);
+          return indexA - indexB;
+        });
+        const parsedNotes = notes.map(note => ({
+          ...note,
+          tags: note.tag_names
+            ? note.tag_names.split(',').map((name, i) => ({
+                id: note.tag_ids.split(',')[i],
+                name
+              }))
+            : []
+        }));
+
+        await cache.set(cacheKey, parsedNotes, CACHE_TTL.NOTES_SEARCH);
+        return parsedNotes;
+      }
+    }
+
+    // Fall back to SQL query
     let sql = `
       SELECT DISTINCT n.*, 
         GROUP_CONCAT(t.name) as tag_names,
@@ -40,8 +118,8 @@ class NoteService {
         break;
     }
 
-    // Apply search filter
-    if (searchQuery && searchQuery.length >= 3) {
+    // Apply search filter (SQL LIKE as fallback)
+    if (searchQuery && searchQuery.length >= SEARCH_MIN_LENGTH) {
       sql += ` AND (n.title LIKE ? OR n.body LIKE ?)`;
       const searchPattern = `%${searchQuery}%`;
       params.push(searchPattern, searchPattern);
@@ -58,7 +136,7 @@ class NoteService {
     const notes = await db.query(sql, params);
 
     // Parse tags from concatenated strings
-    return notes.map(note => ({
+    const parsedNotes = notes.map(note => ({
       ...note,
       tags: note.tag_names
         ? note.tag_names.split(',').map((name, i) => ({
@@ -67,13 +145,28 @@ class NoteService {
           }))
         : []
     }));
+
+    // Cache results
+    await cache.set(cacheKey, parsedNotes, CACHE_TTL.NOTES_LIST);
+
+    return parsedNotes;
   }
 
   /**
    * Get all tags for a user's notes.
+   * Cached for improved performance.
    */
   static async getTagsForUser(userId) {
-    return db.query(`
+    const cacheKey = `tags:user:${userId}`;
+    
+    // Try cache first
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Query database
+    const tags = await db.query(`
       SELECT DISTINCT t.*, COUNT(nt.note_id) as note_count
       FROM tags t
       INNER JOIN note_tag nt ON t.id = nt.tag_id
@@ -82,6 +175,11 @@ class NoteService {
       GROUP BY t.id
       ORDER BY t.name
     `, [userId]);
+
+    // Cache results
+    await cache.set(cacheKey, tags, CACHE_TTL.TAGS);
+
+    return tags;
   }
 
   /**
@@ -130,6 +228,7 @@ class NoteService {
 
   /**
    * Create a new note.
+   * Invalidates cache and indexes in Elasticsearch.
    */
   static async createNote(userId, title, body = '', tags = '', pinned = false, favorite = false, archived = false) {
     const result = await db.run(`
@@ -144,11 +243,27 @@ class NoteService {
       await this.updateNoteTags(noteId, tags);
     }
 
-    return this.getNoteById(noteId);
+    // Get the complete note
+    const note = await this.getNoteById(noteId);
+
+    // Invalidate user's notes and tags cache
+    await cache.delPattern(`notes:user:${userId}:*`);
+    await cache.del(`tags:user:${userId}`);
+
+    // Index in Elasticsearch
+    if (note) {
+      await elasticsearch.indexNote({
+        ...note,
+        tags: note.tags ? note.tags.map(t => t.name) : []
+      });
+    }
+
+    return note;
   }
 
   /**
    * Update an existing note.
+   * Invalidates cache and updates Elasticsearch index.
    */
   static async updateNote(noteId, title, body, tags, pinned, favorite, archived) {
     const updates = [];
@@ -185,7 +300,22 @@ class NoteService {
       await this.updateNoteTags(noteId, tags);
     }
 
-    return this.getNoteById(noteId);
+    // Get the updated note
+    const note = await this.getNoteById(noteId);
+
+    if (note) {
+      // Invalidate user's notes and tags cache
+      await cache.delPattern(`notes:user:${note.owner_id}:*`);
+      await cache.del(`tags:user:${note.owner_id}`);
+
+      // Update in Elasticsearch
+      await elasticsearch.indexNote({
+        ...note,
+        tags: note.tags ? note.tags.map(t => t.name) : []
+      });
+    }
+
+    return note;
   }
 
   /**
@@ -249,8 +379,20 @@ class NoteService {
 
   /**
    * Delete a note.
+   * Invalidates cache and removes from Elasticsearch index.
+   * @param {number} noteId - Note ID to delete
+   * @param {number} userId - Optional user ID for cache invalidation
    */
-  static async deleteNote(noteId) {
+  static async deleteNote(noteId, userId = null) {
+    // Get note owner if userId not provided
+    if (!userId) {
+      const note = await db.queryOne(`SELECT owner_id FROM notes WHERE id = ?`, [noteId]);
+      userId = note?.owner_id;
+    }
+
+    // Delete from Elasticsearch first
+    await elasticsearch.deleteNote(noteId);
+
     // Delete shares first
     await db.run(`DELETE FROM share_notes WHERE note_id = ?`, [noteId]);
     
@@ -261,6 +403,12 @@ class NoteService {
     await db.run(`
       DELETE FROM tags WHERE id NOT IN (SELECT DISTINCT tag_id FROM note_tag)
     `);
+
+    // Invalidate cache
+    if (userId) {
+      await cache.delPattern(`notes:user:${userId}:*`);
+      await cache.del(`tags:user:${userId}`);
+    }
   }
 
   /**

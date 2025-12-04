@@ -12,13 +12,17 @@
     "seed": "node scripts/seed_db.js"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.15.0",
+    "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-rate-limit": "^7.4.1",
+    "googleapis": "^144.0.0",
     "helmet": "^8.0.0",
+    "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "marked": "^15.0.4",
     "mysql2": "^3.11.4",

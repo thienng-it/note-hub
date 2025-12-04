@@ -185,7 +185,7 @@ router.delete('/:id', jwtRequired, async (req, res) => {
       return res.status(403).json({ error: 'Only the note owner can delete it' });
     }
 
-    await NoteService.deleteNote(noteId);
+    await NoteService.deleteNote(noteId, req.userId);
 
     res.json({ message: 'Note deleted successfully' });
   } catch (error) {

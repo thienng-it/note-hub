@@ -1,6 +1,6 @@
 # NoteHub
 
-A secure, feature-rich personal notes application built with Flask. Supports markdown editing, tags, tasks, two-factor authentication, and more.
+A modern, secure, and feature-rich personal notes application with a React SPA frontend and Node.js/Express API backend. Supports markdown editing, tags, tasks, two-factor authentication, and more.
 
 ---
 
@@ -39,23 +39,23 @@ note-hub/
 ├── frontend/                  # Vite + React frontend
 │   ├── src/                   # React components
 │   └── vite.config.ts         # Vite configuration
-├── src/
-│   ├── notehub/               # Flask application package
-│   │   ├── __init__.py        # Application factory
-│   │   ├── config.py          # Configuration
-│   │   ├── database.py        # Database helpers
-│   │   ├── extensions.py      # Flask extensions
-│   │   ├── forms.py           # WTForms definitions
-│   │   ├── models.py          # SQLAlchemy models
-│   │   ├── routes/            # Route handlers
+├── backend/                   # Node.js/Express API
+│   ├── src/                   # API source code
+│   │   ├── config/            # Database configuration
+│   │   ├── middleware/        # Authentication middleware
+│   │   ├── models/            # Sequelize models
+│   │   ├── routes/            # API routes
 │   │   └── services/          # Business logic
-│   └── templates/             # HTML templates
-├── tests/                     # Test suite
+│   └── tests/                 # Backend tests
 ├── docs/                      # Documentation
-├── fly.toml                   # Fly.io configuration
-├── Dockerfile                 # Docker build file
-├── requirements.txt           # Python dependencies
-└── wsgi.py                    # WSGI entry point
+│   ├── api/                   # API documentation
+│   ├── architecture/          # Architecture docs
+│   ├── guides/                # User guides
+│   ├── investigation/         # Technical investigations
+│   └── security/              # Security documentation
+├── scripts/                   # Utility scripts
+├── docker-compose.yml         # Docker setup
+└── package.json               # Project dependencies
 ```
 
 ---
@@ -203,12 +203,12 @@ Optional 2FA support for enhanced security:
 
 ## 🛠️ Technology Stack
 
-- **Backend:** Flask, SQLAlchemy, WTForms, Werkzeug
-- **Database:** MySQL with PyMySQL driver
-- **Security:** PyOTP (2FA), Bleach (HTML sanitization)
-- **Frontend:** Tailwind CSS
-- **Content:** Markdown, Pillow, qrcode
-- **Deployment:** Gunicorn (WSGI server)
+- **Frontend:** Vite + React 19 + TypeScript
+- **Backend:** Node.js + Express
+- **Database:** SQLite (dev) / MySQL (prod)
+- **ORM:** Sequelize
+- **Security:** JWT authentication, bcrypt, HTML sanitization
+- **Deployment:** Docker + nginx
 
 ---
 

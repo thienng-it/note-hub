@@ -68,6 +68,55 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
 });
 
 /**
+ * POST /api/admin/users/:userId/disable-2fa - Disable 2FA for a user (admin only)
+ */
+router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    if (!userId || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Check if user exists
+    const user = await db.queryOne(
+      `SELECT id, username, totp_secret FROM users WHERE id = ?`,
+      [userId]
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.totp_secret) {
+      return res.status(400).json({ error: '2FA is not enabled for this user' });
+    }
+
+    // Disable 2FA
+    await db.run(
+      `UPDATE users SET totp_secret = NULL WHERE id = ?`,
+      [userId]
+    );
+
+    // Log admin action for audit trail
+    // TODO: Consider using a proper logging framework (winston, pino) in production
+    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
+
+    res.json({ 
+      message: `2FA disabled successfully for user ${user.username}`,
+      user: {
+        id: user.id,
+        username: user.username,
+        has_2fa: false
+      }
+    });
+  } catch (error) {
+    console.error('Admin disable 2FA error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/admin/health - Health check endpoint
  */
 router.get('/health', async (req, res) => {

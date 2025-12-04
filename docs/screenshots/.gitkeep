@@ -1,0 +1,16 @@
+# Screenshots Directory
+
+Place screenshot PNG files here according to the README.md guide.
+
+Required screenshots:
+- login.png
+- notes.png
+- editor.png
+- tasks.png
+- dark-mode.png
+- google-oauth.png
+- 2fa-disable.png
+- admin-dashboard.png
+- admin-2fa-disable.png
+
+See README.md in this directory for detailed capture instructions.

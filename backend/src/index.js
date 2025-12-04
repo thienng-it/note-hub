@@ -1,6 +1,6 @@
 /**
  * NoteHub Backend - Main Entry Point
- * 
+ *
  * Node.js/Express API server for NoteHub application.
  * Supports both SQLite (default) and MySQL databases.
  * Uses Sequelize ORM for database operations.
@@ -19,6 +19,10 @@ const rateLimit = require('express-rate-limit');
 // Database: supports both legacy DB layer and Sequelize ORM
 const db = require('./config/database');
 const { initializeSequelize, syncDatabase, closeDatabase } = require('./models');
+
+// Cache and search services
+const cache = require('./config/redis');
+const elasticsearch = require('./config/elasticsearch');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -102,7 +106,7 @@ app.get('/api/health', async (req, res) => {
 const frontendPath = path.join(__dirname, '../../frontend/dist');
 if (fs.existsSync(frontendPath)) {
   app.use(staticLimiter, express.static(frontendPath));
-  
+
   // SPA fallback - serve index.html for non-API routes
   app.get('*', staticLimiter, (req, res, next) => {
     if (req.path.startsWith('/api/')) {
@@ -129,15 +133,23 @@ async function start() {
     // Initialize Sequelize ORM
     await initializeSequelize();
     await syncDatabase();
-    
+
     // Also initialize legacy DB for backward compatibility
     await db.connect();
     await db.initSchema();
-    
+
+    // Initialize Redis cache (optional)
+    await cache.connect();
+
+    // Initialize Elasticsearch (optional)
+    await elasticsearch.connect();
+
     app.listen(PORT, () => {
       console.log(`🚀 NoteHub API server running on port ${PORT}`);
       console.log(`📦 Database: ${db.isSQLite ? 'SQLite' : 'MySQL'}`);
       console.log(`🔧 ORM: Sequelize`);
+      console.log(`🔴 Cache: ${cache.isEnabled() ? 'Redis (enabled)' : 'Disabled'}`);
+      console.log(`🔍 Search: ${elasticsearch.isEnabled() ? 'Elasticsearch (enabled)' : 'SQL LIKE (fallback)'}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
@@ -151,6 +163,8 @@ process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully...');
   await closeDatabase();
   await db.close();
+  await cache.close();
+  await elasticsearch.close();
   process.exit(0);
 });
 
@@ -158,6 +172,8 @@ process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down gracefully...');
   await closeDatabase();
   await db.close();
+  await cache.close();
+  await elasticsearch.close();
   process.exit(0);
 });
 

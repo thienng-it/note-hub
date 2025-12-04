@@ -9,6 +9,7 @@ interface AdminUser {
   created_at: string;
   last_login: string | null;
   totp_secret: boolean;
+  has_2fa?: boolean;
 }
 
 interface AdminStats {
@@ -77,6 +78,39 @@ export function AdminDashboardPage() {
   const clearSearch = () => {
     setSearchQuery('');
     setPage(1);
+  };
+
+  const handleDisable2FA = async (userId: number, username: string) => {
+    if (!confirm(`Are you sure you want to disable 2FA for user "${username}"?\n\nThis action is for account recovery purposes only.`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('notehub_access_token');
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/disable-2fa`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to disable 2FA');
+      }
+
+      // Refresh user list
+      await loadUsers();
+      
+      // Show success message (inline instead of alert)
+      setError('');
+      // You could set a success state here for a toast notification
+      console.log(`2FA disabled successfully for user "${username}"`);
+    } catch (err) {
+      // Set error state instead of alert
+      setError(err instanceof Error ? err.message : 'Failed to disable 2FA');
+    }
   };
 
   // Check if user is admin
@@ -236,12 +270,13 @@ export function AdminDashboardPage() {
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell">Created At</th>
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell">Last Login</th>
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">2FA</th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-color)]">
                   {users.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-[var(--text-secondary)]">
+                      <td colSpan={7} className="px-6 py-12 text-center text-[var(--text-secondary)]">
                         <i className="glass-i fas fa-users text-4xl mb-4 text-[var(--text-muted)]" aria-hidden="true"></i>
                         <p className="text-lg">No users found</p>
                         {searchQuery && <p className="text-sm mt-2">Try adjusting your search criteria</p>}
@@ -307,6 +342,18 @@ export function AdminDashboardPage() {
                               <i className="glass-i fas fa-shield-alt mr-1" aria-hidden="true"></i>
                               Disabled
                             </span>
+                          )}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                          {u.totp_secret && (
+                            <button
+                              onClick={() => handleDisable2FA(u.id, u.username)}
+                              className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                              title="Disable 2FA for this user"
+                            >
+                              <i className="glass-i fas fa-shield-alt mr-1.5" aria-hidden="true"></i>
+                              Disable 2FA
+                            </button>
                           )}
                         </td>
                       </tr>

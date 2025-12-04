@@ -27,11 +27,26 @@ class AuthService {
   }
 
   /**
-   * Hash a password using bcrypt.
+   * Hash a password using bcrypt with strengthened work factor.
+   * Uses 14 rounds (increased from 12) for better security against brute-force attacks.
+   * Estimated time: ~200ms per hash (acceptable for authentication).
    */
   static async hashPassword(password) {
-    const saltRounds = 12;
+    const saltRounds = 14; // Increased from 12 for better security
     return bcrypt.hash(password, saltRounds);
+  }
+
+  /**
+   * Check if password hash needs rehashing (older hash with lower work factor).
+   */
+  static needsRehash(hash) {
+    try {
+      // Extract rounds from bcrypt hash (format: $2b$rounds$salt+hash)
+      const rounds = parseInt(hash.split('$')[2], 10);
+      return rounds < 14;
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
@@ -43,6 +58,7 @@ class AuthService {
 
   /**
    * Authenticate a user by username/email and password.
+   * Automatically rehashes password if using old work factor.
    */
   static async authenticateUser(usernameOrEmail, password) {
     const user = await db.queryOne(
@@ -57,6 +73,19 @@ class AuthService {
     const isValid = await this.verifyPassword(password, user.password_hash);
     if (!isValid) {
       return null;
+    }
+
+    // Opportunistic rehashing: upgrade hash if using old work factor
+    // Note: Runs asynchronously during login. Adds ~200ms but acceptable tradeoff.
+    // TODO: Consider using a proper logging framework (winston, pino) in production
+    if (this.needsRehash(user.password_hash)) {
+      console.log(`[SECURITY] Upgrading password hash for user ID: ${user.id}`);
+      const newHash = await this.hashPassword(password);
+      await db.run(
+        `UPDATE users SET password_hash = ? WHERE id = ?`,
+        [newHash, user.id]
+      );
+      user.password_hash = newHash;
     }
 
     return user;

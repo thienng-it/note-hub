@@ -13,6 +13,11 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [DATABASE_FLOW](architecture/DATABASE_FLOW.md) - Database schema and data flow
 - [DATABASE_PERSISTENCE_FIX](architecture/DATABASE_PERSISTENCE_FIX.md) - Database persistence fixes and solutions
 
+## 🔬 Technical Investigations
+
+- [NOSQL_INVESTIGATION](investigation/NOSQL_INVESTIGATION.md) - Comprehensive analysis of NoSQL suitability for NoteHub
+- [SQL_VS_NOSQL_COMPARISON](investigation/SQL_VS_NOSQL_COMPARISON.md) - Visual comparison and performance analysis
+
 ## 🔌 API Documentation
 
 - [API_CHANGELOG](api/API_CHANGELOG.md) - API version history and changes
