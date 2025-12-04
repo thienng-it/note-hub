@@ -99,7 +99,7 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     );
 
     // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ${req.user.username} (ID: ${req.userId}) disabled 2FA for user ${user.username} (ID: ${userId})`);
+    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
 
     res.json({ 
       message: `2FA disabled successfully for user ${user.username}`,

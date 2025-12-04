@@ -294,7 +294,7 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
     );
 
     // Log security event
-    console.log(`[SECURITY] 2FA disabled by user: ${req.user.username} (ID: ${req.userId})`);
+    console.log(`[SECURITY] 2FA disabled by user ID: ${req.userId}`);
 
     res.json({ 
       message: '2FA disabled successfully',

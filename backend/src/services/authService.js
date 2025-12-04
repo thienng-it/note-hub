@@ -77,7 +77,7 @@ class AuthService {
 
     // Opportunistic rehashing: upgrade hash if using old work factor
     if (this.needsRehash(user.password_hash)) {
-      console.log(`[SECURITY] Upgrading password hash for user: ${user.username}`);
+      console.log(`[SECURITY] Upgrading password hash for user ID: ${user.id}`);
       const newHash = await this.hashPassword(password);
       await db.run(
         `UPDATE users SET password_hash = ? WHERE id = ?`,

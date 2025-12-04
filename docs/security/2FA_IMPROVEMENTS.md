@@ -117,26 +117,29 @@ Authorization: Bearer <admin_jwt_token>
 ### User 2FA Disable
 
 ```
-[SECURITY] 2FA disabled by user: john_doe (ID: 123)
+[SECURITY] 2FA disabled by user ID: 123
 ```
 
 **Logged Information:**
 - Timestamp (automatic)
-- Username
 - User ID
 - Action type
+
+**Privacy Note:** Only user IDs are logged (not usernames) to protect user privacy and comply with data protection regulations (GDPR, CCPA).
 
 ### Admin 2FA Disable
 
 ```
-[SECURITY AUDIT] Admin alice (ID: 1) disabled 2FA for user john_doe (ID: 123)
+[SECURITY AUDIT] Admin ID: 1 disabled 2FA for user ID: 123
 ```
 
 **Logged Information:**
 - Timestamp (automatic)
-- Admin username and ID
-- Target user username and ID
+- Admin user ID
+- Target user ID
 - Action type
+
+**Privacy Note:** User IDs can be cross-referenced with the database when needed for audits, but logs themselves don't contain PII (Personally Identifiable Information).
 
 **Audit Trail Purpose:**
 - Compliance requirements

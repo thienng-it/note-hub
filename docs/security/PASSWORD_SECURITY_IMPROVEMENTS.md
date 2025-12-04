@@ -180,8 +180,10 @@ Current password policy requirements:
 
 **Hash Upgrade Events:**
 ```
-[SECURITY] Upgrading password hash for user: john_doe
+[SECURITY] Upgrading password hash for user ID: 123
 ```
+
+**Privacy Note:** Logs use user IDs instead of usernames to protect user privacy and comply with data protection regulations.
 
 **Monitoring Queries:**
 ```sql
