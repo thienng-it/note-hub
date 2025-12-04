@@ -9,6 +9,24 @@ const fs = require('fs');
 describe('CRUD Timestamp Tests', () => {
   const testDbPath = path.join(__dirname, 'test-timestamps.db');
 
+  // Helper function to create a test user
+  async function createTestUser(username, password = 'hashedpassword') {
+    const result = await db.run(
+      `INSERT INTO users (username, password_hash) VALUES (?, ?)`,
+      [username, password]
+    );
+    return result.insertId;
+  }
+
+  // Helper function to verify timestamp update
+  function verifyTimestampUpdate(beforeRecord, afterRecord, fieldName = 'updated_at') {
+    expect(afterRecord[fieldName]).toBeDefined();
+    expect(afterRecord.created_at).toBe(beforeRecord.created_at);
+    expect(new Date(afterRecord[fieldName]).getTime()).toBeGreaterThanOrEqual(
+      new Date(beforeRecord[fieldName]).getTime()
+    );
+  }
+
   beforeAll(async () => {
     // Set up test database path
     process.env.NOTES_DB_PATH = testDbPath;
@@ -72,12 +90,7 @@ describe('CRUD Timestamp Tests', () => {
         [userId]
       );
 
-      expect(userAfter.updated_at).toBeDefined();
-      expect(userAfter.created_at).toBe(userBefore.created_at);
-      // updated_at should be different after update
-      expect(new Date(userAfter.updated_at).getTime()).toBeGreaterThanOrEqual(
-        new Date(userBefore.updated_at).getTime()
-      );
+      verifyTimestampUpdate(userBefore, userAfter);
     });
   });
 
@@ -87,11 +100,7 @@ describe('CRUD Timestamp Tests', () => {
 
     beforeAll(async () => {
       // Create a user for note ownership
-      const result = await db.run(
-        `INSERT INTO users (username, password_hash) VALUES (?, ?)`,
-        ['noteuser', 'hashedpassword']
-      );
-      userId = result.insertId;
+      userId = await createTestUser('noteuser');
     });
 
     it('should set created_at and updated_at when creating a note', async () => {
@@ -132,12 +141,7 @@ describe('CRUD Timestamp Tests', () => {
         [noteId]
       );
 
-      expect(noteAfter.updated_at).toBeDefined();
-      expect(noteAfter.created_at).toBe(noteBefore.created_at);
-      // updated_at should be different after update
-      expect(new Date(noteAfter.updated_at).getTime()).toBeGreaterThanOrEqual(
-        new Date(noteBefore.updated_at).getTime()
-      );
+      verifyTimestampUpdate(noteBefore, noteAfter);
     });
   });
 
@@ -147,11 +151,7 @@ describe('CRUD Timestamp Tests', () => {
 
     beforeAll(async () => {
       // Create a user for task ownership
-      const result = await db.run(
-        `INSERT INTO users (username, password_hash) VALUES (?, ?)`,
-        ['taskuser', 'hashedpassword']
-      );
-      userId = result.insertId;
+      userId = await createTestUser('taskuser');
     });
 
     it('should set created_at and updated_at when creating a task', async () => {
@@ -192,12 +192,7 @@ describe('CRUD Timestamp Tests', () => {
         [taskId]
       );
 
-      expect(taskAfter.updated_at).toBeDefined();
-      expect(taskAfter.created_at).toBe(taskBefore.created_at);
-      // updated_at should be different after update
-      expect(new Date(taskAfter.updated_at).getTime()).toBeGreaterThanOrEqual(
-        new Date(taskBefore.updated_at).getTime()
-      );
+      verifyTimestampUpdate(taskBefore, taskAfter);
     });
   });
 
@@ -242,12 +237,7 @@ describe('CRUD Timestamp Tests', () => {
         [tagId]
       );
 
-      expect(tagAfter.updated_at).toBeDefined();
-      expect(tagAfter.created_at).toBe(tagBefore.created_at);
-      // updated_at should be different after update
-      expect(new Date(tagAfter.updated_at).getTime()).toBeGreaterThanOrEqual(
-        new Date(tagBefore.updated_at).getTime()
-      );
+      verifyTimestampUpdate(tagBefore, tagAfter);
     });
   });
 
@@ -259,17 +249,8 @@ describe('CRUD Timestamp Tests', () => {
 
     beforeAll(async () => {
       // Create users
-      const result1 = await db.run(
-        `INSERT INTO users (username, password_hash) VALUES (?, ?)`,
-        ['shareuser1', 'hashedpassword']
-      );
-      userId1 = result1.insertId;
-
-      const result2 = await db.run(
-        `INSERT INTO users (username, password_hash) VALUES (?, ?)`,
-        ['shareuser2', 'hashedpassword']
-      );
-      userId2 = result2.insertId;
+      userId1 = await createTestUser('shareuser1');
+      userId2 = await createTestUser('shareuser2');
 
       // Create a note
       const noteResult = await db.run(
@@ -317,12 +298,7 @@ describe('CRUD Timestamp Tests', () => {
         [shareId]
       );
 
-      expect(shareAfter.updated_at).toBeDefined();
-      expect(shareAfter.created_at).toBe(shareBefore.created_at);
-      // updated_at should be different after update
-      expect(new Date(shareAfter.updated_at).getTime()).toBeGreaterThanOrEqual(
-        new Date(shareBefore.updated_at).getTime()
-      );
+      verifyTimestampUpdate(shareBefore, shareAfter);
     });
   });
 
@@ -332,11 +308,7 @@ describe('CRUD Timestamp Tests', () => {
 
     beforeAll(async () => {
       // Create a user
-      const result = await db.run(
-        `INSERT INTO users (username, password_hash) VALUES (?, ?)`,
-        ['inviteuser', 'hashedpassword']
-      );
-      userId = result.insertId;
+      userId = await createTestUser('inviteuser');
     });
 
     it('should set created_at and updated_at when creating an invitation', async () => {
@@ -378,12 +350,7 @@ describe('CRUD Timestamp Tests', () => {
         [invitationId]
       );
 
-      expect(invitationAfter.updated_at).toBeDefined();
-      expect(invitationAfter.created_at).toBe(invitationBefore.created_at);
-      // updated_at should be different after update
-      expect(new Date(invitationAfter.updated_at).getTime()).toBeGreaterThanOrEqual(
-        new Date(invitationBefore.updated_at).getTime()
-      );
+      verifyTimestampUpdate(invitationBefore, invitationAfter);
     });
   });
 
@@ -393,11 +360,7 @@ describe('CRUD Timestamp Tests', () => {
 
     beforeAll(async () => {
       // Create a user
-      const result = await db.run(
-        `INSERT INTO users (username, password_hash) VALUES (?, ?)`,
-        ['resetuser', 'hashedpassword']
-      );
-      userId = result.insertId;
+      userId = await createTestUser('resetuser');
     });
 
     it('should set created_at and updated_at when creating a password_reset_token', async () => {
@@ -439,12 +402,7 @@ describe('CRUD Timestamp Tests', () => {
         [tokenId]
       );
 
-      expect(tokenAfter.updated_at).toBeDefined();
-      expect(tokenAfter.created_at).toBe(tokenBefore.created_at);
-      // updated_at should be different after update
-      expect(new Date(tokenAfter.updated_at).getTime()).toBeGreaterThanOrEqual(
-        new Date(tokenBefore.updated_at).getTime()
-      );
+      verifyTimestampUpdate(tokenBefore, tokenAfter);
     });
   });
 });
