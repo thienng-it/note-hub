@@ -60,9 +60,26 @@ NOTES_ADMIN_PASSWORD=YourSecurePassword123!
 - `LETSENCRYPT_EMAIL` receives certificate expiration warnings
 - `LETSENCRYPT_STAGING=0` for production (set to 1 for testing)
 
-### Step 2: Verify DNS Configuration
+### Step 2: Verify Configuration
 
-Before requesting certificates, verify your domain points to your server:
+Run the validation script to check your setup:
+
+```bash
+# Make script executable
+chmod +x scripts/validate-ssl-setup.sh
+
+# Run validation
+./scripts/validate-ssl-setup.sh
+```
+
+The script will check:
+- ✅ Required environment variables
+- ✅ DNS configuration
+- ✅ Docker installation
+- ✅ Port availability
+- ✅ Configuration files
+
+**Manual DNS verification** (if needed):
 
 ```bash
 # Check DNS resolution

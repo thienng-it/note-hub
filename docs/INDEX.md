@@ -5,6 +5,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 ## 📖 Main Documentation
 
 - [README](README.md) - Complete project overview, features, installation, and quick start guide
+- [DEPLOYMENT_OPTIONS](DEPLOYMENT_OPTIONS.md) - Quick reference for all deployment options (HTTP, HTTPS, Cloudflare)
 
 ## 🏗️ Architecture
 
@@ -25,14 +26,27 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ## 📚 Guides
 
-- [DEPLOYMENT](guides/DEPLOYMENT.md) - Deployment guide for production environments
+### Deployment & Infrastructure
+- [CERTBOT_SETUP](guides/CERTBOT_SETUP.md) - Let's Encrypt SSL/TLS certificate setup with Certbot
+- [HETZNER_DEPLOYMENT](guides/HETZNER_DEPLOYMENT.md) - Deploy to Hetzner VPS with Cloudflare Tunnel
+- [DEPLOYMENT](guides/DEPLOYMENT.md) - General deployment guide for production environments
+
+### Database & Performance
 - [MIGRATION_GUIDE](guides/MIGRATION_GUIDE.md) - Database migration guide
 - [MYSQL_MIGRATION_GUIDE](guides/MYSQL_MIGRATION_GUIDE.md) - MySQL-specific migration guide
 - [MYSQL_MIGRATION_SUMMARY](guides/MYSQL_MIGRATION_SUMMARY.md) - MySQL migration summary
 - [PERFORMANCE_GUIDE](guides/PERFORMANCE_GUIDE.md) - Performance optimization guide
+- [CACHING_AND_SEARCH](guides/CACHING_AND_SEARCH.md) - Redis caching and Elasticsearch setup
+
+### Authentication & Features
+- [GOOGLE_SSO_SETUP](guides/GOOGLE_SSO_SETUP.md) - Google OAuth Single Sign-On configuration
+- [GOOGLE_OAUTH_TROUBLESHOOTING](guides/GOOGLE_OAUTH_TROUBLESHOOTING.md) - Google OAuth troubleshooting
+
+### Development
 - [CONTRIBUTING](guides/CONTRIBUTING.md) - Contribution guidelines
 - [CONFIG](guides/CONFIG.md) - Configuration guide
 - [SCRIPTS](guides/SCRIPTS.md) - Scripts documentation
+- [ERROR_HANDLING](guides/ERROR_HANDLING.md) - Error handling guide
 
 ## 🔒 Security
 
