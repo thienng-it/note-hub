@@ -157,24 +157,24 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
           </button>
 
           {showStyleMenu && (
-            <div className="absolute top-full mt-1 left-0 glass-card rounded-lg shadow-lg py-1 z-50 min-w-[150px]">
+            <div className="absolute top-full mt-1 left-0 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-xl py-1 z-[100] min-w-[150px]">
               <button
                 onClick={() => handleRewrite('professional')}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
               >
                 <i className="fas fa-briefcase mr-2"></i>
                 Professional
               </button>
               <button
                 onClick={() => handleRewrite('casual')}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
               >
                 <i className="fas fa-smile mr-2"></i>
                 Casual
               </button>
               <button
                 onClick={() => handleRewrite('concise')}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
               >
                 <i className="fas fa-compress mr-2"></i>
                 Concise
