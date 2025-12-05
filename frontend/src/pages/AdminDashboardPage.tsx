@@ -209,13 +209,13 @@ export function AdminDashboardPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by username or email..."
-              className="glass-input w-full pl-11 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="glass-input w-full pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex gap-2">
             <button
               type="submit"
-              className="btn-primary px-6 py-3 rounded-lg font-medium flex items-center gap-2"
+              className="btn-apple"
             >
               <i className="glass-i fas fa-search" aria-hidden="true"></i>
               <span>Search</span>
@@ -339,7 +339,7 @@ export function AdminDashboardPage() {
                               Enabled
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--bg-tertiary)] text-[var(--text-muted)]">
+                            <span className="glass-span">
                               <i className="glass-i fas fa-shield-alt mr-1" aria-hidden="true"></i>
                               Disabled
                             </span>
@@ -349,7 +349,7 @@ export function AdminDashboardPage() {
                           {u.has_2fa && (
                             <button
                               onClick={() => handleDisable2FA(u.id, u.username)}
-                              className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                              className="glass-span"
                               title="Disable 2FA for this user"
                             >
                               <i className="glass-i fas fa-shield-alt mr-1.5" aria-hidden="true"></i>

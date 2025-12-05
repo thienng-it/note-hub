@@ -51,16 +51,11 @@ export function Layout() {
     }`;
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Skip to main content link for accessibility */}
-      <a href="#main-content" className="skip-link">
-        Skip to main content
-      </a>
-
+    <div className="glass-card flex h-screen overflow-hidden">
       {/* Desktop Sidebar */}
       <aside
         id="sidebar"
-        className={`sidebar ${sidebarCollapsed ? 'w-20' : 'w-72'} flex-shrink-0 hidden lg:flex flex-col transition-all duration-300`}
+        className={`sidebar ${sidebarCollapsed ? 'w-30' : 'w-72'} glass-card flex-shrink-0 hidden lg:flex flex-col transition-all duration-300`}
         role="navigation"
         aria-label="Main navigation"
       >
@@ -171,7 +166,6 @@ export function Layout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-primary)]">
         {/* Mobile Header */}
         <header className="lg:hidden bg-[var(--bg-secondary)] border-b border-[var(--border-color)] px-4 py-3 safe-area-top">
           <div className="flex items-center justify-between">
@@ -212,7 +206,7 @@ export function Layout() {
         {/* Page Content */}
         <div
           id="main-content"
-          className="flex-1 overflow-auto bg-[var(--bg-primary)]"
+          className="glass-card flex-1 overflow-auto bg-[var(--bg-primary)]"
           onScroll={handleScroll}
           tabIndex={-1}
         >
@@ -230,7 +224,6 @@ export function Layout() {
         >
           <i className="glass-i fas fa-arrow-up text-white" aria-hidden="true"></i>
         </button>
-      </main>
 
       {/* Mobile Bottom Navigation */}
       {user && (

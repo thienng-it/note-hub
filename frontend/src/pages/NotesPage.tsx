@@ -162,7 +162,7 @@ export function NotesPage() {
         </div>
 
         {/* Search Form */}
-        <div className="rounded-xl shadow-sm p-4 border bg-[var(--bg-secondary)] border-[var(--border-color)]">
+        <div className="glass-card shadow-sm p-4 border bg-[var(--bg-secondary)] border-[var(--border-color)]">
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -207,7 +207,7 @@ export function NotesPage() {
       </div>
 
       {/* Quick Filter Tabs */}
-      <div className="flex space-x-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
+      <div className="glass-card flex space-x-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
         <Link
           to="/"
           className={`flex-1 text-center py-2 px-4 rounded-md transition-all ${
@@ -345,7 +345,7 @@ export function NotesPage() {
         </div>
       ) : (
         /* Empty State */
-        <div className="glass-div glass-div-center">
+        <div className="glass-card glass-div-center">
           <div className="max-w-md mx-auto">
             {(() => {
               const emptyState = getEmptyState();

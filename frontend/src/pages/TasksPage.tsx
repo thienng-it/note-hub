@@ -248,7 +248,7 @@ export function TasksPage() {
       )}
 
       {/* Filters */}
-      <div className="flex space-x-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
+      <div className="glass-card flex space-x-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
         {(['all', 'active', 'completed', 'overdue'] as TaskFilterType[]).map((f) => (
           <button
             key={f}
@@ -410,7 +410,7 @@ export function TasksPage() {
           ))}
         </div>
       ) : (
-        <div className="glass-div glass-div-center">
+        <div className="glass-card glass-div-center">
           <i className="glass-i fas fa-tasks text-6xl mb-4 text-[var(--text-muted)]"></i>
           <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">No tasks found</h3>
           <p className="text-[var(--text-secondary)] mb-6">
