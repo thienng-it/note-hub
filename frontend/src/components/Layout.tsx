@@ -55,13 +55,13 @@ export function Layout() {
       {/* Desktop Sidebar */}
       <aside
         id="sidebar"
-        className={`sidebar ${sidebarCollapsed ? 'w-30' : 'w-72'} glass-card flex-shrink-0 hidden lg:flex flex-col transition-all duration-300`}
+        className={`sidebar ${sidebarCollapsed ? 'w-20' : 'w-72'} glass-card flex-shrink-0 hidden lg:flex flex-col transition-all duration-300`}
         role="navigation"
         aria-label="Main navigation"
       >
         <div className="p-4 border-b border-[var(--border-color)]">
-          <div className={`flex items-center ${sidebarCollapsed ? 'flex-col gap-3' : 'justify-between'}`}>
-            <Link to="/" className="flex items-center gap-3">
+          <div className={`flex ${sidebarCollapsed ? 'flex-col items-center gap-3' : 'items-center justify-between'}`}>
+            <Link to="/" className={`flex items-center gap-3 ${sidebarCollapsed ? 'justify-center' : ''}`}>
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                 <i className="glass-i fas fa-book text-white" aria-hidden="true"></i>
               </div>
@@ -72,7 +72,7 @@ export function Layout() {
               )}
             </Link>
             {user && (
-              <div className={`flex items-center ${sidebarCollapsed ? 'flex-col gap-1' : 'gap-1'}`}>
+              <div className={`flex ${sidebarCollapsed ? 'flex-col items-center gap-1' : 'items-center gap-1'}`}>
                 <button
                   onClick={toggleTheme}
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
@@ -94,54 +94,55 @@ export function Layout() {
 
         {user && (
           <>
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto" aria-label="Primary navigation">
-              <Link to="/" className={linkClass(isActive('/'))}>
+            <nav className={`flex-1 p-4 space-y-2 overflow-y-auto ${sidebarCollapsed ? 'flex flex-col items-center' : ''}`} aria-label="Primary navigation">
+              <Link to="/" className={`${linkClass(isActive('/'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
                 <i className="glass-i fas fa-home w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>All Notes</span>}
               </Link>
-              <Link to="/?view=favorites" className={linkClass(isActive('/', 'favorites'))}>
+              <Link to="/?view=favorites" className={`${linkClass(isActive('/', 'favorites'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
                 <i className="glass-i fas fa-heart w-5 text-center text-red-500" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Favorites</span>}
               </Link>
-              <Link to="/?view=archived" className={linkClass(isActive('/', 'archived'))}>
+              <Link to="/?view=archived" className={`${linkClass(isActive('/', 'archived'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
                 <i className="glass-i fas fa-archive w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Archived</span>}
               </Link>
-              <Link to="/?view=shared" className={linkClass(isActive('/', 'shared'))}>
+              <Link to="/?view=shared" className={`${linkClass(isActive('/', 'shared'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
                 <i className="glass-i fas fa-share-alt w-5 text-center text-green-500" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Shared With Me</span>}
               </Link>
 
-              <div className="pt-2">
+              <div className={`pt-2 ${sidebarCollapsed ? 'w-full flex justify-center' : ''}`}>
                 <Link
                   to="/notes/new"
+                  className={`${sidebarCollapsed ? 'justify-center' : ''}`}
                 >
                   <i className="glass-i fas fa-plus w-5 text-center" aria-hidden="true"></i>
                   {!sidebarCollapsed && <span className="glass-span">New Note</span>}
                 </Link>
               </div>
 
-              <Link to="/tasks" className={linkClass(isActive('/tasks'))}>
+              <Link to="/tasks" className={`${linkClass(isActive('/tasks'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
                 <i className="glass-i fas fa-tasks w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Tasks</span>}
               </Link>
 
-              <div className="pt-4 mt-4 border-t border-[var(--border-color)] space-y-2">
+              <div className={`pt-4 mt-4 border-t border-[var(--border-color)] space-y-2 ${sidebarCollapsed ? 'w-full flex flex-col items-center' : ''}`}>
                 {user.username === 'admin' && (
-                  <Link to="/admin" className={linkClass(isActive('/admin'))}>
+                  <Link to="/admin" className={`${linkClass(isActive('/admin'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
                     <i className="glass-i fas fa-users-cog w-5 text-center" aria-hidden="true"></i>
                     {!sidebarCollapsed && <span>Admin Dashboard</span>}
                   </Link>
                 )}
-                <Link to="/profile" className={linkClass(isActive('/profile'))}>
+                <Link to="/profile" className={`${linkClass(isActive('/profile'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
                   <i className="glass-i fas fa-user-circle w-5 text-center" aria-hidden="true"></i>
                   {!sidebarCollapsed && <span>Profile</span>}
                 </Link>
               </div>
             </nav>
 
-            <div className="p-4 border-t border-[var(--border-color)]">
-              <div className="flex items-center justify-between gap-3">
+            <div className={`p-4 border-t border-[var(--border-color)] ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
+              <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between gap-3'}`}>
                 {!sidebarCollapsed && (
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
