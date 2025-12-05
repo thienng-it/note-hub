@@ -149,7 +149,7 @@ docker compose down
 
 ### Certificate request failed
 
-**Problem:** DNS not configured or ports blocked
+**Problem:** DNS not configured, ports blocked, or webroot challenge failing
 
 **Quick fix:**
 ```bash
@@ -161,14 +161,25 @@ dig +short your-domain.com
 curl http://your-domain.com
 # Should connect (even if shows error page)
 
-# 3. Try staging mode first (avoids rate limits)
+# 3. Verify nginx-ssl is running and can serve challenge files
+docker compose ps nginx-ssl
+docker compose exec nginx-ssl ls -la /var/www/certbot/
+
+# 4. Check nginx logs for errors
+docker compose logs nginx-ssl | tail -20
+
+# 5. Try staging mode first (avoids rate limits)
 # In .env, set: LETSENCRYPT_STAGING=1
 ./scripts/init-letsencrypt.sh
 
-# 4. Once staging works, switch to production
+# 6. Once staging works, switch to production
 # In .env, set: LETSENCRYPT_STAGING=0
 ./scripts/init-letsencrypt.sh
 ```
+
+**Common error:** `Invalid response from http://domain/.well-known/acme-challenge/xxx: 404`
+- **Cause:** nginx can't serve challenge files
+- **Fix:** Ensure nginx-ssl is running and restart it: `docker compose restart nginx-ssl`
 
 ### nginx won't start
 

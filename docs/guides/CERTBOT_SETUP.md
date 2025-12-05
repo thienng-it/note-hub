@@ -369,6 +369,34 @@ docker compose run --rm certbot certbot delete \
    iptables -A INPUT -p tcp --dport 443 -j ACCEPT
    ```
 
+2.5. **Webroot Challenge Failed (404 error)**:
+   ```
+   Error: Invalid response from http://domain/.well-known/acme-challenge/xxx: 404
+   ```
+   
+   **Cause**: nginx cannot serve the challenge files
+   
+   **Fix**: 
+   ```bash
+   # Ensure nginx-ssl is running
+   docker compose ps nginx-ssl
+   
+   # Check webroot directory permissions
+   ls -la docker/certbot/www/
+   
+   # Verify nginx can access webroot
+   docker compose exec nginx-ssl ls -la /var/www/certbot/
+   
+   # Test challenge path accessibility
+   docker compose exec nginx-ssl wget -O- http://localhost/.well-known/acme-challenge/test 2>&1 | grep -i "404\|403"
+   
+   # Restart nginx-ssl if needed
+   docker compose restart nginx-ssl
+   
+   # Try initialization again
+   ./scripts/init-letsencrypt.sh
+   ```
+
 3. **Rate Limit Exceeded**:
    ```
    Error: too many certificates already issued for: your-domain.com

@@ -269,7 +269,7 @@ services:
       - "443:443"
     volumes:
       - ./docker/certbot/conf:/etc/letsencrypt:ro
-      - ./docker/certbot/www:/var/www/certbot:ro
+      - ./docker/certbot/www:/var/www/certbot
     depends_on:
       backend:
         condition: service_healthy
