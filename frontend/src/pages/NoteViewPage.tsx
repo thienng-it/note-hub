@@ -230,7 +230,7 @@ export function NoteViewPage() {
 
         {/* AI Actions */}
         {note.body && (
-          <div className="px-6 pt-4 pb-2 border-b border-[var(--border-color)]">
+          <div className="px-6 pt-4 pb-2 border-b border-[var(--border-color)] overflow-visible relative z-10">
             <AIActions text={note.body} />
           </div>
         )}
