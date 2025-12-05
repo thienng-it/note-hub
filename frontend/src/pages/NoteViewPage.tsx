@@ -13,6 +13,27 @@ export function NoteViewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isContentHidden, setIsContentHidden] = useState(() => {
+    const saved = localStorage.getItem('hiddenNotes');
+    const hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set();
+    return id ? hiddenSet.has(parseInt(id)) : false;
+  });
+
+  const toggleHideContent = () => {
+    if (!id) return;
+    const noteId = parseInt(id);
+    const saved = localStorage.getItem('hiddenNotes');
+    const hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set<number>();
+    
+    if (isContentHidden) {
+      hiddenSet.delete(noteId);
+    } else {
+      hiddenSet.add(noteId);
+    }
+    
+    localStorage.setItem('hiddenNotes', JSON.stringify([...hiddenSet]));
+    setIsContentHidden(!isContentHidden);
+  };
 
   const loadNote = useCallback(async () => {
     if (!id) return;
@@ -228,19 +249,62 @@ export function NoteViewPage() {
           </div>
         </div>
 
-        {/* AI Actions */}
-        {note.body && (
-          <div className="px-6 pt-4 pb-2 border-b border-[var(--border-color)] overflow-visible relative z-10">
-            <AIActions text={note.body} />
-          </div>
-        )}
-
-        {/* Note Content */}
-        <div className="p-6 note-content prose prose-lg dark:prose-invert max-w-none">
-          <Markdown remarkPlugins={[remarkGfm]}>
-            {note.body || '*No content*'}
-          </Markdown>
+        {/* Hide/Show Content Toggle */}
+        <div className="px-6 py-3 border-b border-[var(--border-color)] flex items-center justify-between">
+          <button
+            onClick={toggleHideContent}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              isContentHidden 
+                ? 'bg-purple-500 text-white hover:bg-purple-600' 
+                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]'
+            }`}
+          >
+            <i className={`fas ${isContentHidden ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+            <span>{isContentHidden ? 'Show Content' : 'Hide Content'}</span>
+          </button>
+          {isContentHidden && (
+            <span className="text-sm text-[var(--text-muted)]">
+              <i className="fas fa-shield-alt mr-1"></i>
+              Content hidden for privacy
+            </span>
+          )}
         </div>
+
+        {isContentHidden ? (
+          /* Hidden Content Placeholder */
+          <div className="p-12 flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
+              <i className="fas fa-eye-slash text-3xl text-purple-500"></i>
+            </div>
+            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Content Hidden</h3>
+            <p className="text-[var(--text-secondary)] mb-4 max-w-md">
+              This note's content is hidden for privacy. Click the button above to reveal it.
+            </p>
+            <button
+              onClick={toggleHideContent}
+              className="px-6 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+            >
+              <i className="fas fa-eye mr-2"></i>
+              Show Content
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* AI Actions */}
+            {note.body && (
+              <div className="px-6 pt-4 pb-2 border-b border-[var(--border-color)] overflow-visible relative z-10">
+                <AIActions text={note.body} />
+              </div>
+            )}
+
+            {/* Note Content */}
+            <div className="p-6 note-content prose prose-lg dark:prose-invert max-w-none">
+              <Markdown remarkPlugins={[remarkGfm]}>
+                {note.body || '*No content*'}
+              </Markdown>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}

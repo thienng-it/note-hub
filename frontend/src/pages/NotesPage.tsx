@@ -11,6 +11,23 @@ export function NotesPage() {
   const [error, setError] = useState('');
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
+  const [hiddenNotes, setHiddenNotes] = useState<Set<number>>(() => {
+    const saved = localStorage.getItem('hiddenNotes');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  const toggleHideNote = (noteId: number) => {
+    setHiddenNotes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(noteId)) {
+        newSet.delete(noteId);
+      } else {
+        newSet.add(noteId);
+      }
+      localStorage.setItem('hiddenNotes', JSON.stringify([...newSet]));
+      return newSet;
+    });
+  };
 
   const view = (searchParams.get('view') || 'all') as NoteViewType;
 
@@ -281,32 +298,50 @@ export function NotesPage() {
 
               {/* Note Content */}
               <div className="mb-4">
-                <h3 className="font-semibold text-lg mb-2 line-clamp-1 pr-12">
-                  <Link
-                    to={`/notes/${note.id}`}
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[var(--text-primary)]"
-                  >
-                    {note.title}
-                  </Link>
-                </h3>
-                {note.excerpt && (
-                  <p className="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">
-                    {note.excerpt}
-                  </p>
-                )}
-
-                {/* Tags */}
-                {note.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {note.tags.slice(0, 3).map((tag) => (
-                      <span key={tag.id} className="tag">
-                        {tag.name}
-                      </span>
-                    ))}
-                    {note.tags.length > 3 && (
-                      <span className="text-xs text-[var(--text-muted)]">+{note.tags.length - 3} more</span>
-                    )}
+                <div className="flex items-center justify-between mb-2 pr-12">
+                  <h3 className="font-semibold text-lg line-clamp-1">
+                    <Link
+                      to={`/notes/${note.id}`}
+                      className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[var(--text-primary)]"
+                    >
+                      {note.title}
+                    </Link>
+                  </h3>
+                </div>
+                
+                {hiddenNotes.has(note.id) ? (
+                  <div className="flex items-center justify-center py-4 bg-[var(--bg-tertiary)] rounded-lg mb-3">
+                    <i className="fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
+                    <span className="text-sm text-[var(--text-muted)]">Content hidden</span>
+                    <button
+                      onClick={(e) => { e.preventDefault(); toggleHideNote(note.id); }}
+                      className="ml-3 text-xs px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                    >
+                      Show
+                    </button>
                   </div>
+                ) : (
+                  <>
+                    {note.excerpt && (
+                      <p className="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">
+                        {note.excerpt}
+                      </p>
+                    )}
+
+                    {/* Tags */}
+                    {note.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {note.tags.slice(0, 3).map((tag) => (
+                          <span key={tag.id} className="tag">
+                            {tag.name}
+                          </span>
+                        ))}
+                        {note.tags.length > 3 && (
+                          <span className="text-xs text-[var(--text-muted)]">+{note.tags.length - 3} more</span>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -324,6 +359,13 @@ export function NotesPage() {
 
                 {/* Quick Actions */}
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+                  <button
+                    onClick={() => toggleHideNote(note.id)}
+                    className={`${hiddenNotes.has(note.id) ? 'text-purple-600 hover:text-purple-800' : 'text-gray-400 hover:text-purple-600'} transition-colors`}
+                    title={hiddenNotes.has(note.id) ? 'Show content' : 'Hide content'}
+                  >
+                    <i className={`glass-i fas ${hiddenNotes.has(note.id) ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                  </button>
                   <Link
                     to={`/notes/${note.id}/edit`}
                     className="text-blue-600 hover:text-blue-800 transition-colors"
