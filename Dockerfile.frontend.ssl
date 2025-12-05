@@ -25,8 +25,8 @@ RUN npm run build
 # Stage 2: Serve with nginx (with SSL support)
 FROM nginx:alpine
 
-# Install bash for shell commands
-RUN apk add --no-cache bash
+# Install bash and gettext (for envsubst command)
+RUN apk add --no-cache bash gettext
 
 # Copy nginx SSL configuration template
 COPY docker/nginx-ssl.conf /etc/nginx/templates/default.conf.template

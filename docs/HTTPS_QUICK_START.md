@@ -228,6 +228,32 @@ docker compose up -d backend nginx-ssl certbot
 - Don't use `docker compose --profile ssl up -d` as it starts both frontend and nginx-ssl
 - Use specific service names: `docker compose up -d backend nginx-ssl certbot`
 
+### HTTPS not accessible (ECONNREFUSED)
+
+**Problem:** HTTPS site returns `ECONNREFUSED` on port 443
+
+**Quick diagnosis:**
+```bash
+# Check if nginx-ssl is running
+docker compose ps nginx-ssl
+
+# If not running, check logs
+docker compose logs nginx-ssl
+
+# Look for certificate path errors
+docker compose logs nginx-ssl | grep -i error
+```
+
+**Quick fix:**
+```bash
+# Rebuild and restart nginx-ssl
+docker compose build nginx-ssl
+docker compose up -d nginx-ssl
+
+# If still not working, check firewall
+ufw allow 443/tcp
+```
+
 ### Can't access site
 
 **Problem:** Firewall blocking ports

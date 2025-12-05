@@ -141,6 +141,15 @@ if [ $? -eq 0 ]; then
     echo "Your site should now be accessible via HTTPS:"
     echo "  https://$domains"
     echo ""
+    echo "Verifying nginx is running..."
+    sleep 2
+    if docker compose ps nginx-ssl | grep -q "running"; then
+        echo -e "${GREEN}✓ nginx-ssl is running${NC}"
+    else
+        echo -e "${RED}✗ nginx-ssl failed to start${NC}"
+        echo "Check logs with: docker compose logs nginx-ssl"
+    fi
+    echo ""
     echo "Certificate will auto-renew before expiration."
     echo "Check renewal with: docker compose logs certbot"
     echo ""

@@ -504,22 +504,41 @@ docker compose run --rm nginx-ssl nginx -t
    
    **Fix**: Run `./scripts/init-letsencrypt.sh` again
 
-### HTTPS Not Working
+### HTTPS Not Working (ECONNREFUSED on port 443)
 
-**Symptom**: Can access HTTP but not HTTPS
+**Symptom**: Can access HTTP but not HTTPS, or get `ECONNREFUSED` on port 443
 
 **Diagnosis**:
 ```bash
+# Check if nginx-ssl is running
+docker compose ps nginx-ssl
+
+# Check nginx logs
+docker compose logs nginx-ssl
+
 # Test HTTPS locally
 curl -I https://your-domain.com
 
-# Test from external
-curl -I https://your-domain.com --resolve your-domain.com:443:YOUR_SERVER_IP
+# Check if port 443 is listening
+docker compose exec nginx-ssl netstat -tlnp | grep 443
 ```
 
 **Common Issues**:
 
-1. **Port 443 Not Open**:
+1. **nginx Failed to Start (Certificate Path Error)**:
+   ```
+   Error: cannot load certificate "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
+   ```
+   
+   **Cause**: The `${DOMAIN}` variable wasn't substituted in nginx config
+   
+   **Fix**: Rebuild the nginx-ssl container:
+   ```bash
+   docker compose build nginx-ssl
+   docker compose up -d nginx-ssl
+   ```
+
+2. **Port 443 Not Open in Firewall**:
    ```bash
    # Check firewall
    ufw status
