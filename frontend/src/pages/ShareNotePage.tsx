@@ -82,7 +82,7 @@ export function ShareNotePage() {
     }
 
     try {
-      await apiClient.delete(`/api/notes/${id}/shares/${userId}`);
+      await apiClient.delete(`/api/notes/${id}/share/${userId}`);
       setSharedWith(prev => prev.filter((u) => u.id !== userId));
       setSuccess(`Share removed for ${userName}`);
     } catch (err: unknown) {
