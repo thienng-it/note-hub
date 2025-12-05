@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { aiApi } from '../api/client';
 import type { AIStatus, AIRewriteStyle } from '../types';
+import { logger } from '../utils/logger';
 
 interface AIActionsProps {
   text: string;
@@ -25,7 +26,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
       const status = await aiApi.getStatus();
       setAiStatus(status);
     } catch (err) {
-      console.error('Failed to load AI status:', err);
+      logger.error('Failed to load AI status', err);
     }
   };
 
