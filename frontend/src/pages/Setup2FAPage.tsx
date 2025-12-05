@@ -20,7 +20,7 @@ export function Setup2FAPage() {
 
   const fetchSetupData = async () => {
     try {
-      const data = await apiClient.get<{ qr_code: string; secret: string }>('/api/auth/2fa/setup');
+      const data = await apiClient.get<{ qr_code: string; secret: string }>('/api/v1/auth/2fa/setup');
       setQrCode(data.qr_code);
       setSecret(data.secret);
     } catch (err: unknown) {
@@ -42,7 +42,7 @@ export function Setup2FAPage() {
 
     setIsSubmitting(true);
     try {
-      await apiClient.post('/api/auth/2fa/enable', {
+      await apiClient.post('/api/v1/auth/2fa/enable', {
         secret,
         totp_code: totpCode,
       });

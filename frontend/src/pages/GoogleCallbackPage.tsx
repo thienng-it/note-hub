@@ -35,7 +35,7 @@ export function GoogleCallbackPage() {
       }
 
       try {
-        const response = await apiClient.post<{ access_token: string; refresh_token: string; user: { id: number; username: string; email: string } }>('/api/auth/google/callback', { code });
+        const response = await apiClient.post<{ access_token: string; refresh_token: string; user: { id: number; username: string; email: string } }>('/api/v1/auth/google/callback', { code });
         const { access_token, refresh_token, user } = response;
 
         // Store tokens using constants

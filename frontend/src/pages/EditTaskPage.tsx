@@ -61,7 +61,7 @@ export function EditTaskPage() {
       if (isEdit) {
         await apiClient.put(`/api/tasks/${id}`, formData);
       } else {
-        await apiClient.post('/api/tasks', formData);
+        await apiClient.post('/api/v1/tasks', formData);
       }
       navigate('/tasks');
     } catch (err: unknown) {
