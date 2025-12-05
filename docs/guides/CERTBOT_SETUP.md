@@ -369,33 +369,52 @@ docker compose run --rm certbot certbot delete \
    iptables -A INPUT -p tcp --dport 443 -j ACCEPT
    ```
 
-2.5. **Webroot Challenge Failed (404 error)**:
+2.5. **Challenge Failed - Port 80 Not Accessible from Internet (404 error)**:
    ```
    Error: Invalid response from http://domain/.well-known/acme-challenge/xxx: 404
    ```
    
-   **Cause**: nginx cannot serve the challenge files
+   **Cause**: Let's Encrypt cannot access port 80 on your server from the internet
+   
+   **This is the most common issue, especially with:**
+   - Home/residential internet connections
+   - DuckDNS or other dynamic DNS services
+   - Router/firewall port forwarding not configured
+   - ISP blocking port 80
    
    **Fix**: 
    ```bash
-   # Ensure nginx-ssl is running
-   docker compose ps nginx-ssl
+   # 1. Test if port 80 is accessible from internet
+   # From ANOTHER computer/network (not your server):
+   curl -I http://your-domain.com
+   # Or use online tool: https://www.yougetsignal.com/tools/open-ports/
    
-   # Check webroot directory permissions
-   ls -la docker/certbot/www/
+   # 2. If port 80 is NOT accessible, check:
    
-   # Verify nginx can access webroot
-   docker compose exec nginx-ssl ls -la /var/www/certbot/
+   # a) Router port forwarding
+   #    - Log into your router
+   #    - Forward external port 80 to your server's local IP:80
+   #    - Forward external port 443 to your server's local IP:443
    
-   # Test challenge path accessibility
-   docker compose exec nginx-ssl wget -O- http://localhost/.well-known/acme-challenge/test 2>&1 | grep -i "404\|403"
+   # b) Firewall on server
+   ufw status
+   ufw allow 80/tcp
+   ufw allow 443/tcp
    
-   # Restart nginx-ssl if needed
-   docker compose restart nginx-ssl
+   # c) Check if your ISP blocks port 80
+   #    Some residential ISPs block port 80 for hosting
+   #    Solution: Use alternative port or business internet
    
-   # Try initialization again
+   # 3. For DuckDNS users:
+   #    - Verify your DuckDNS domain is updated with correct public IP
+   #    - Check at: https://www.duckdns.org/
+   #    - Update your IP: curl "https://www.duckdns.org/update?domains=YOUR_SUBDOMAIN&token=YOUR_TOKEN&ip="
+   
+   # 4. After fixing network access, try again:
    ./scripts/init-letsencrypt.sh
    ```
+   
+   **Note**: The init script now uses standalone mode, which is more reliable than webroot mode.
 
 3. **Rate Limit Exceeded**:
    ```

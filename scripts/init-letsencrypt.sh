@@ -89,31 +89,8 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
     echo -e "${GREEN}✓ TLS parameters downloaded${NC}"
 fi
 
-# Create dummy certificate for initial nginx startup
-echo "Creating dummy certificate for $domains..."
-path="/etc/letsencrypt/live/$domains"
-mkdir -p "$data_path/conf/live/$domains"
-docker compose run --rm --entrypoint "\
-    openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1 \
-    -keyout '$path/privkey.pem' \
-    -out '$path/fullchain.pem' \
-    -subj '/CN=localhost'" certbot
-echo -e "${GREEN}✓ Dummy certificate created${NC}"
-
-# Start nginx with dummy certificate
-echo "Starting nginx..."
-docker compose up -d nginx-ssl
-echo -e "${GREEN}✓ nginx started${NC}"
-
-# Remove dummy certificate
-echo "Removing dummy certificate..."
-docker compose run --rm --entrypoint "\
-    rm -rf /etc/letsencrypt/live/$domains && \
-    rm -rf /etc/letsencrypt/archive/$domains && \
-    rm -rf /etc/letsencrypt/renewal/$domains.conf" certbot
-echo -e "${GREEN}✓ Dummy certificate removed${NC}"
-
-# Request real certificate
+# Request real certificate using standalone mode
+# This is more reliable as it doesn't depend on nginx configuration
 echo "Requesting Let's Encrypt certificate for $domains..."
 domain_args=""
 for domain in $(echo $domains | tr "," "\n"); do
@@ -129,15 +106,22 @@ else
     echo -e "${GREEN}Using Let's Encrypt production server${NC}"
 fi
 
-docker compose run --rm --entrypoint "\
-    certbot certonly --webroot -w /var/www/certbot \
+# Make sure nginx-ssl is not running to free port 80
+echo "Stopping nginx-ssl if running..."
+docker compose stop nginx-ssl 2>/dev/null || true
+
+# Use standalone mode - Certbot will start its own web server on port 80
+echo "Starting Certbot with standalone web server..."
+docker compose run --rm -p 80:80 --entrypoint "\
+    certbot certonly --standalone \
     $staging_arg \
     $domain_args \
     --email $email \
     --rsa-key-size $rsa_key_size \
     --agree-tos \
     --no-eff-email \
-    --force-renewal" certbot
+    --force-renewal \
+    --preferred-challenges http" certbot
 
 if [ $? -eq 0 ]; then
     echo ""
@@ -145,8 +129,8 @@ if [ $? -eq 0 ]; then
     echo -e "  ✓ Certificate successfully obtained!"
     echo -e "==================================================${NC}"
     echo ""
-    echo "Reloading nginx with real certificate..."
-    docker compose exec nginx-ssl nginx -s reload
+    echo "Starting nginx-ssl with real certificate..."
+    docker compose up -d nginx-ssl
     echo ""
     echo -e "${GREEN}✓ Setup complete!${NC}"
     echo ""
@@ -163,10 +147,17 @@ else
     echo ""
     echo "Possible issues:"
     echo "  - Domain not pointing to this server"
-    echo "  - Firewall blocking ports 80/443"
-    echo "  - Domain has existing rate limits"
+    echo "  - Firewall blocking port 80 from the internet"
+    echo "  - Router/firewall not forwarding port 80 to this server"
+    echo "  - DuckDNS or dynamic DNS not properly configured"
+    echo "  - ISP blocking port 80 (some residential ISPs do this)"
     echo ""
-    echo "Try running with staging mode first:"
-    echo "  LETSENCRYPT_STAGING=1 ./scripts/init-letsencrypt.sh"
+    echo "Troubleshooting steps:"
+    echo "  1. Check if port 80 is accessible from internet:"
+    echo "     curl -I http://$domains"
+    echo "  2. Test from external service: https://www.yougetsignal.com/tools/open-ports/"
+    echo "  3. Check router port forwarding configuration"
+    echo "  4. Try running with staging mode first:"
+    echo "     LETSENCRYPT_STAGING=1 ./scripts/init-letsencrypt.sh"
     exit 1
 fi

@@ -110,12 +110,25 @@ if [ ! -z "$DOMAIN" ] && [ "$DOMAIN" != "example.com" ]; then
             # Check if it resolves to localhost (development)
             if [ "$DNS_IP" = "127.0.0.1" ] || [ "$DNS_IP" = "::1" ]; then
                 warning "Domain resolves to localhost (development only)"
+            # Check if it's a private IP (LAN)
+            elif echo "$DNS_IP" | grep -qE "^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)"; then
+                warning "Domain resolves to private IP: $DNS_IP"
+                info "Let's Encrypt needs public IP. Check router port forwarding."
             fi
         fi
     else
         warning "dig command not available, skipping DNS check"
         info "Install dnsutils: apt install dnsutils"
     fi
+    
+    # Additional check: warn about port 80 accessibility
+    echo ""
+    info "IMPORTANT: For Let's Encrypt to work, port 80 must be accessible from the internet"
+    info "Common issues:"
+    info "  - Router not forwarding port 80 to this server"
+    info "  - ISP blocking port 80 (common on residential connections)"
+    info "  - Firewall blocking port 80"
+    info "Test externally: https://www.yougetsignal.com/tools/open-ports/"
 fi
 
 # Check Docker and Docker Compose

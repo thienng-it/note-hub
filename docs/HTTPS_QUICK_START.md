@@ -149,37 +149,44 @@ docker compose down
 
 ### Certificate request failed
 
-**Problem:** DNS not configured, ports blocked, or webroot challenge failing
+**Problem:** Port 80 not accessible from internet (most common issue)
 
 **Quick fix:**
 ```bash
-# 1. Check DNS
+# 1. Check if port 80 is accessible from the INTERNET
+# Test from another network/computer (not your server):
+curl -I http://your-domain.com
+# Or use: https://www.yougetsignal.com/tools/open-ports/
+
+# 2. If port 80 is NOT accessible:
+
+# a) Check router port forwarding
+#    - Forward port 80 → your server's local IP:80
+#    - Forward port 443 → your server's local IP:443
+
+# b) Check firewall
+ufw allow 80/tcp
+ufw allow 443/tcp
+
+# c) For DuckDNS users - verify IP is current:
+#    Go to https://www.duckdns.org/ and check your IP
+
+# 3. Check DNS resolves to correct IP
 dig +short your-domain.com
-# Should return your server IP
+# Should return your PUBLIC IP (not 192.168.x.x)
 
-# 2. Check ports
-curl http://your-domain.com
-# Should connect (even if shows error page)
-
-# 3. Verify nginx-ssl is running and can serve challenge files
-docker compose ps nginx-ssl
-docker compose exec nginx-ssl ls -la /var/www/certbot/
-
-# 4. Check nginx logs for errors
-docker compose logs nginx-ssl | tail -20
-
-# 5. Try staging mode first (avoids rate limits)
+# 4. Try staging mode first (avoids rate limits)
 # In .env, set: LETSENCRYPT_STAGING=1
 ./scripts/init-letsencrypt.sh
 
-# 6. Once staging works, switch to production
+# 5. Once staging works, switch to production
 # In .env, set: LETSENCRYPT_STAGING=0
 ./scripts/init-letsencrypt.sh
 ```
 
 **Common error:** `Invalid response from http://domain/.well-known/acme-challenge/xxx: 404`
-- **Cause:** nginx can't serve challenge files
-- **Fix:** Ensure nginx-ssl is running and restart it: `docker compose restart nginx-ssl`
+- **Cause:** Let's Encrypt cannot reach your server on port 80 from the internet
+- **Fix:** Configure port forwarding on your router and ensure firewall allows port 80
 
 ### nginx won't start
 
