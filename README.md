@@ -104,6 +104,7 @@ All new features are **optional** and designed for graceful degradation. NoteHub
 - ✅ **Task Management** - Create and track tasks with priorities and due dates
 - 👥 **Collaboration** - Share notes with other users with view/edit permissions
 - 🎨 **Customizable UI** - Light/dark mode, responsive glassmorphism design
+- 🌍 **Internationalization (i18n)** - Multi-language support (English, German, Vietnamese, Japanese)
 - 📱 **Mobile-Friendly** - Works seamlessly on all devices
 - 👤 **User Profiles** - Customizable profiles with themes and bio
 
@@ -405,6 +406,7 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 | [Logging Configuration](docs/guides/LOGGING_CONFIGURATION.md) | Structured logging setup       |
 | [Caching & Search Setup](docs/guides/CACHING_AND_SEARCH.md)   | Redis & Elasticsearch setup    |
 | [Google OAuth Setup](docs/guides/GOOGLE_SSO_SETUP.md)         | Configure Google Single Sign-On|
+| [Internationalization (i18n)](docs/guides/I18N_GUIDE.md)      | Multi-language support guide   |
 | [Contributing](docs/guides/CONTRIBUTING.md)                    | Development guidelines         |
 
 ### Architecture & Security

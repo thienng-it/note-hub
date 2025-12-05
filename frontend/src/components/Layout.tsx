@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { LanguageSelector } from './LanguageSelector';
 
 export function Layout() {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
@@ -73,6 +76,7 @@ export function Layout() {
             </Link>
             {user && (
               <div className={`flex ${sidebarCollapsed ? 'flex-col items-center gap-1' : 'items-center gap-1'}`}>
+                {!sidebarCollapsed && <LanguageSelector />}
                 <button
                   onClick={toggleTheme}
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
@@ -97,11 +101,11 @@ export function Layout() {
             <nav className={`flex-1 p-4 space-y-2 ${sidebarCollapsed ? 'overflow-hidden' : 'overflow-y-auto'}`} aria-label="Primary navigation">
               <Link to="/" className={linkClass(isActive('/'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-home w-5 text-center" aria-hidden="true"></i>
-                {!sidebarCollapsed && <span>All Notes</span>}
+                {!sidebarCollapsed && <span>{t('notes.allNotes')}</span>}
               </Link>
               <Link to="/?view=favorites" className={linkClass(isActive('/', 'favorites'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-heart w-5 text-center text-red-500" aria-hidden="true"></i>
-                {!sidebarCollapsed && <span>Favorites</span>}
+                {!sidebarCollapsed && <span>{t('notes.favorites')}</span>}
               </Link>
               <Link to="/?view=archived" className={linkClass(isActive('/', 'archived'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-archive w-5 text-center" aria-hidden="true"></i>
@@ -118,25 +122,25 @@ export function Layout() {
                   className={linkClass(false, sidebarCollapsed)}
                 >
                   <i className="glass-i fas fa-plus w-5 text-center" aria-hidden="true"></i>
-                  {!sidebarCollapsed && <span className="glass-span">New Note</span>}
+                  {!sidebarCollapsed && <span className="glass-span">{t('notes.newNote')}</span>}
                 </Link>
               </div>
 
               <Link to="/tasks" className={linkClass(isActive('/tasks'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-tasks w-5 text-center" aria-hidden="true"></i>
-                {!sidebarCollapsed && <span>Tasks</span>}
+                {!sidebarCollapsed && <span>{t('tasks.title')}</span>}
               </Link>
 
               <div className="pt-4 mt-4 border-t border-[var(--border-color)] space-y-2">
                 {user.username === 'admin' && (
                   <Link to="/admin" className={linkClass(isActive('/admin'), sidebarCollapsed)}>
                     <i className="glass-i fas fa-users-cog w-5 text-center" aria-hidden="true"></i>
-                    {!sidebarCollapsed && <span>Admin Dashboard</span>}
+                    {!sidebarCollapsed && <span>{t('admin.title')}</span>}
                   </Link>
                 )}
                 <Link to="/profile" className={linkClass(isActive('/profile'), sidebarCollapsed)}>
                   <i className="glass-i fas fa-user-circle w-5 text-center" aria-hidden="true"></i>
-                  {!sidebarCollapsed && <span>Profile</span>}
+                  {!sidebarCollapsed && <span>{t('profile.title')}</span>}
                 </Link>
               </div>
             </nav>
@@ -178,6 +182,7 @@ export function Layout() {
             </Link>
             {user && (
               <div className="flex items-center gap-1">
+                <LanguageSelector />
                 <button
                   onClick={toggleTheme}
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
@@ -239,7 +244,7 @@ export function Layout() {
             aria-current={isActive('/') ? 'page' : undefined}
           >
             <i className="glass-i fas fa-home" aria-hidden="true"></i>
-            <span>Notes</span>
+            <span>{t('notes.title')}</span>
           </Link>
           <Link
             to="/tasks"
@@ -247,7 +252,7 @@ export function Layout() {
             aria-current={isActive('/tasks') ? 'page' : undefined}
           >
             <i className="glass-i fas fa-tasks" aria-hidden="true"></i>
-            <span>Tasks</span>
+            <span>{t('tasks.title')}</span>
           </Link>
           <Link
             to="/notes/new"
@@ -264,7 +269,7 @@ export function Layout() {
             aria-current={isActive('/', 'favorites') ? 'page' : undefined}
           >
             <i className="glass-i fas fa-heart" aria-hidden="true"></i>
-            <span>Favorites</span>
+            <span>{t('notes.favorites')}</span>
           </Link>
           <Link
             to="/profile"
@@ -272,7 +277,7 @@ export function Layout() {
             aria-current={isActive('/profile') ? 'page' : undefined}
           >
             <i className="glass-i fas fa-user" aria-hidden="true"></i>
-            <span>Profile</span>
+            <span>{t('profile.title')}</span>
           </Link>
         </nav>
       )}
