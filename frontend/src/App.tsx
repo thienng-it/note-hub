@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Layout } from './components/Layout';
@@ -24,6 +25,7 @@ import { ErrorPage } from './pages/ErrorPage';
 import { GoogleCallbackPage } from './pages/GoogleCallbackPage';
 
 function AppRoutes() {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -31,7 +33,7 @@ function AppRoutes() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-          <p className="text-[var(--text-secondary)]">Loading...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loading')}</p>
         </div>
       </div>
     );
