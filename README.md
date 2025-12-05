@@ -227,7 +227,8 @@ docker compose --profile ssl up -d
 # Access at https://your-domain.com
 ```
 
-See [Certbot Setup Guide](docs/guides/CERTBOT_SETUP.md) for complete HTTPS configuration.
+**Quick Start:** [HTTPS Quick Start Guide](docs/HTTPS_QUICK_START.md) (5-minute setup)  
+**Complete Guide:** [Certbot Setup Guide](docs/guides/CERTBOT_SETUP.md) (full documentation)
 
 #### Development with MySQL
 

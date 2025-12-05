@@ -5,6 +5,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 ## 📖 Main Documentation
 
 - [README](README.md) - Complete project overview, features, installation, and quick start guide
+- [HTTPS_QUICK_START](HTTPS_QUICK_START.md) - 5-minute HTTPS setup guide with Let's Encrypt
 - [DEPLOYMENT_OPTIONS](DEPLOYMENT_OPTIONS.md) - Quick reference for all deployment options (HTTP, HTTPS, Cloudflare)
 
 ## 🏗️ Architecture
