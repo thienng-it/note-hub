@@ -44,7 +44,7 @@ export function Modal({ isOpen, onClose, title, children, showCloseButton = true
     >
       <div
         ref={modalRef}
-        className="glass-card w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-fadeIn"
+        className="glass-card w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-fade-in"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color)]">
