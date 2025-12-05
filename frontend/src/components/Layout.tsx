@@ -94,7 +94,7 @@ export function Layout() {
 
         {user && (
           <>
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto" aria-label="Primary navigation">
+            <nav className={`flex-1 p-4 space-y-2 ${sidebarCollapsed ? 'overflow-hidden' : 'overflow-y-auto'}`} aria-label="Primary navigation">
               <Link to="/" className={linkClass(isActive('/'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-home w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>All Notes</span>}
