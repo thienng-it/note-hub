@@ -210,6 +210,25 @@ docker compose exec backend node scripts/seed_db.js
 # Access at http://localhost
 ```
 
+#### Production Mode with HTTPS (Let's Encrypt)
+
+```bash
+# Configure environment with your domain
+cp .env.example .env
+nano .env  # Set DOMAIN, LETSENCRYPT_EMAIL, and other values
+
+# Initialize Let's Encrypt certificates
+chmod +x scripts/init-letsencrypt.sh
+./scripts/init-letsencrypt.sh
+
+# Start with SSL profile
+docker compose --profile ssl up -d
+
+# Access at https://your-domain.com
+```
+
+See [Certbot Setup Guide](docs/guides/CERTBOT_SETUP.md) for complete HTTPS configuration.
+
 #### Development with MySQL
 
 ```bash
@@ -338,7 +357,35 @@ See [Test Suite Summary](docs/testing/TEST_SUITE_SUMMARY.md) for complete detail
 The frontend is automatically deployed to GitHub Pages on push to main.
 Configure the API URL via `VITE_API_URL` environment variable.
 
-### Option 2: Hetzner VPS + Docker (Full Stack)
+### Option 2: VPS with Let's Encrypt HTTPS (Recommended)
+
+**~€3-5/month with free SSL certificates!**
+
+| Component             | Cost     | Benefits                                  |
+| --------------------- | -------- | ----------------------------------------- |
+| **VPS**               | €3-5/mo  | 2 vCPU, 2GB RAM, 40GB SSD                 |
+| **Let's Encrypt SSL** | Free     | Automatic SSL/TLS certificates, auto-renewal |
+
+```bash
+# On your VPS
+git clone https://github.com/thienng-it/note-hub.git
+cd note-hub
+
+# Configure with your domain
+cp .env.example .env
+nano .env  # Set DOMAIN, LETSENCRYPT_EMAIL, etc.
+
+# Initialize SSL certificates
+chmod +x scripts/init-letsencrypt.sh
+./scripts/init-letsencrypt.sh
+
+# Deploy with HTTPS
+docker compose --profile ssl up -d
+```
+
+See [Certbot Setup Guide](docs/guides/CERTBOT_SETUP.md) for complete HTTPS setup.
+
+### Option 3: Hetzner VPS + Cloudflare Tunnel
 
 **~€3.50/month with unlimited bandwidth!**
 
@@ -400,6 +447,7 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 ### Guides
 | Document                                                       | Description                    |
 | -------------------------------------------------------------- | ------------------------------ |
+| [Certbot/HTTPS Setup](docs/guides/CERTBOT_SETUP.md)           | Let's Encrypt SSL certificates |
 | [Hetzner Deployment](docs/guides/HETZNER_DEPLOYMENT.md)        | Deploy to Hetzner VPS          |
 | [Caching & Search Setup](docs/guides/CACHING_AND_SEARCH.md)   | Redis & Elasticsearch setup    |
 | [Google OAuth Setup](docs/guides/GOOGLE_SSO_SETUP.md)         | Configure Google Single Sign-On|

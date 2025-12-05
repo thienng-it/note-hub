@@ -250,6 +250,55 @@ services:
       retries: 3
       start_period: 5s
 
+  # ==========================================================================
+  # Frontend with SSL/TLS - nginx with Let's Encrypt (use --profile ssl)
+  # ==========================================================================
+  nginx-ssl:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.ssl
+      args:
+        - VITE_API_URL=
+        - DOMAIN=${DOMAIN}
+    container_name: notehub-nginx-ssl
+    restart: unless-stopped
+    profiles:
+      - ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/certbot/conf:/etc/letsencrypt:ro
+      - ./docker/certbot/www:/var/www/certbot:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - notehub-network
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ==========================================================================
+  # Certbot - Let's Encrypt SSL Certificate Management (use --profile ssl)
+  # ==========================================================================
+  certbot:
+    image: certbot/certbot:latest
+    container_name: notehub-certbot
+    restart: unless-stopped
+    profiles:
+      - ssl
+    volumes:
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - notehub-network
+
 networks:
   notehub-network:
     driver: bridge

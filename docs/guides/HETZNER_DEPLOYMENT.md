@@ -14,9 +14,11 @@ Deploy NoteHub on **Hetzner VPS** (€3.29/month) with **Cloudflare Tunnel** (fr
 ## 📋 Prerequisites
 
 1. **Hetzner Account**: [hetzner.com](https://hetzner.com)
-2. **Cloudflare Account** (free): [cloudflare.com](https://cloudflare.com)
-3. **Domain Name**: Added to Cloudflare
-4. **SSH Client**: Terminal (macOS/Linux) or PuTTY (Windows)
+2. **Domain Name**: Registered and DNS configured
+3. **SSH Client**: Terminal (macOS/Linux) or PuTTY (Windows)
+4. **HTTPS Option**: Choose one:
+   - **Cloudflare Tunnel** (free): DDoS protection + CDN
+   - **Let's Encrypt** (free): Direct HTTPS with Certbot (see below)
 
 ---
 
@@ -379,6 +381,72 @@ docker compose logs --no-log-prefix notehub 2>&1 | tail -1000 > /tmp/recent_logs
 - [Cloudflare Zero Trust](https://one.dash.cloudflare.com)
 - [Docker Documentation](https://docs.docker.com)
 - [Project GitHub](https://github.com/thienng-it/note-hub)
+
+---
+
+## 🔒 Alternative: Let's Encrypt HTTPS (Instead of Cloudflare Tunnel)
+
+If you prefer direct HTTPS without Cloudflare Tunnel:
+
+### Setup Steps
+
+1. **Configure DNS**: Point your domain's A record to your server IP
+   ```bash
+   # Example DNS record:
+   # Type: A
+   # Name: @ (or subdomain)
+   # Value: YOUR_SERVER_IP
+   # TTL: Auto
+   ```
+
+2. **Configure Environment**:
+   ```bash
+   # Edit .env
+   nano .env
+   
+   # Add SSL configuration
+   DOMAIN=notehub.example.com
+   LETSENCRYPT_EMAIL=admin@example.com
+   LETSENCRYPT_STAGING=0
+   ```
+
+3. **Initialize SSL Certificates**:
+   ```bash
+   # Make script executable
+   chmod +x scripts/init-letsencrypt.sh
+   
+   # Run initialization
+   ./scripts/init-letsencrypt.sh
+   ```
+
+4. **Deploy with SSL**:
+   ```bash
+   # Start with SSL profile
+   docker compose --profile ssl up -d
+   
+   # Check status
+   docker compose ps
+   
+   # Access at https://notehub.example.com
+   ```
+
+### Let's Encrypt vs Cloudflare Tunnel
+
+| Feature | Let's Encrypt | Cloudflare Tunnel |
+|---------|---------------|-------------------|
+| **Cost** | Free | Free |
+| **Setup** | One script | Manual token setup |
+| **DDoS Protection** | ❌ | ✅ |
+| **CDN** | ❌ | ✅ |
+| **Direct Connection** | ✅ | ❌ (proxied) |
+| **SSL Rating** | A+ | A+ |
+| **Bandwidth** | Server limited | Unlimited |
+
+**Recommendation**: 
+- Use **Let's Encrypt** for simple, direct HTTPS
+- Use **Cloudflare Tunnel** for DDoS protection and unlimited bandwidth
+
+See [Certbot Setup Guide](CERTBOT_SETUP.md) for complete Let's Encrypt documentation.
 
 ---
 

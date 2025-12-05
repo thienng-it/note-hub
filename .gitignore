@@ -129,3 +129,11 @@ yarn-error.log
 # Local Netlify folder
 .netlify
 *.backup
+
+# SSL/TLS Certificates (SENSITIVE - never commit)
+# Let's Encrypt certificates and private keys
+docker/certbot/conf/
+docker/certbot/www/
+*.csr
+ssl-cert-snakeoil.key
+ssl-cert-snakeoil.pem
