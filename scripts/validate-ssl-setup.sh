@@ -53,8 +53,10 @@ info() {
 echo "Checking configuration files..."
 if [ -f .env ]; then
     success ".env file exists"
-    # Load .env file properly (handle comments and empty lines)
-    export $(cat .env | grep -v '^#' | grep -v '^$' | xargs)
+    # Load .env file safely (avoids command injection)
+    set -a
+    source .env
+    set +a
 else
     error ".env file not found"
     info "Create one with: cp .env.example .env"
@@ -138,11 +140,11 @@ fi
 echo ""
 echo "Validating docker-compose configuration..."
 
-if docker compose config --quiet 2>&1 | grep -i "error" > /dev/null; then
+if docker compose config > /dev/null 2>&1; then
+    success "docker-compose.yml is valid"
+else
     error "docker-compose.yml has syntax errors"
     docker compose config 2>&1 | head -5
-else
-    success "docker-compose.yml is valid"
 fi
 
 # Check if SSL profile is available
