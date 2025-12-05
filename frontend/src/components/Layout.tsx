@@ -43,8 +43,8 @@ export function Layout() {
     return location.pathname === path && !view;
   };
 
-  const linkClass = (active: boolean) =>
-    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+  const linkClass = (active: boolean, collapsed: boolean = false) =>
+    `flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-xl transition-all duration-200 ${
       active
         ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 font-medium'
         : 'hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]'
@@ -94,54 +94,54 @@ export function Layout() {
 
         {user && (
           <>
-            <nav className={`flex-1 p-4 space-y-2 overflow-y-auto ${sidebarCollapsed ? 'flex flex-col items-center' : ''}`} aria-label="Primary navigation">
-              <Link to="/" className={`${linkClass(isActive('/'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto" aria-label="Primary navigation">
+              <Link to="/" className={linkClass(isActive('/'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-home w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>All Notes</span>}
               </Link>
-              <Link to="/?view=favorites" className={`${linkClass(isActive('/', 'favorites'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+              <Link to="/?view=favorites" className={linkClass(isActive('/', 'favorites'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-heart w-5 text-center text-red-500" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Favorites</span>}
               </Link>
-              <Link to="/?view=archived" className={`${linkClass(isActive('/', 'archived'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+              <Link to="/?view=archived" className={linkClass(isActive('/', 'archived'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-archive w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Archived</span>}
               </Link>
-              <Link to="/?view=shared" className={`${linkClass(isActive('/', 'shared'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+              <Link to="/?view=shared" className={linkClass(isActive('/', 'shared'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-share-alt w-5 text-center text-green-500" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Shared With Me</span>}
               </Link>
 
-              <div className={`pt-2 ${sidebarCollapsed ? 'w-full flex justify-center' : ''}`}>
+              <div className="pt-2">
                 <Link
                   to="/notes/new"
-                  className={`${sidebarCollapsed ? 'justify-center' : ''}`}
+                  className={linkClass(false, sidebarCollapsed)}
                 >
                   <i className="glass-i fas fa-plus w-5 text-center" aria-hidden="true"></i>
                   {!sidebarCollapsed && <span className="glass-span">New Note</span>}
                 </Link>
               </div>
 
-              <Link to="/tasks" className={`${linkClass(isActive('/tasks'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+              <Link to="/tasks" className={linkClass(isActive('/tasks'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-tasks w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Tasks</span>}
               </Link>
 
-              <div className={`pt-4 mt-4 border-t border-[var(--border-color)] space-y-2 ${sidebarCollapsed ? 'w-full flex flex-col items-center' : ''}`}>
+              <div className="pt-4 mt-4 border-t border-[var(--border-color)] space-y-2">
                 {user.username === 'admin' && (
-                  <Link to="/admin" className={`${linkClass(isActive('/admin'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+                  <Link to="/admin" className={linkClass(isActive('/admin'), sidebarCollapsed)}>
                     <i className="glass-i fas fa-users-cog w-5 text-center" aria-hidden="true"></i>
                     {!sidebarCollapsed && <span>Admin Dashboard</span>}
                   </Link>
                 )}
-                <Link to="/profile" className={`${linkClass(isActive('/profile'))} ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+                <Link to="/profile" className={linkClass(isActive('/profile'), sidebarCollapsed)}>
                   <i className="glass-i fas fa-user-circle w-5 text-center" aria-hidden="true"></i>
                   {!sidebarCollapsed && <span>Profile</span>}
                 </Link>
               </div>
             </nav>
 
-            <div className={`p-4 border-t border-[var(--border-color)] ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
+            <div className="p-4 border-t border-[var(--border-color)]">
               <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between gap-3'}`}>
                 {!sidebarCollapsed && (
                   <div className="flex items-center gap-3 min-w-0">
