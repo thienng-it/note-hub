@@ -191,6 +191,12 @@ function defineModels() {
       type: DataTypes.TEXT,
       defaultValue: ''
     },
+    images: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      comment: 'JSON array of image paths'
+    },
     pinned: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
@@ -236,6 +242,12 @@ function defineModels() {
     description: {
       type: DataTypes.TEXT,
       allowNull: true
+    },
+    images: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+      comment: 'JSON array of image paths'
     },
     completed: {
       type: DataTypes.BOOLEAN,

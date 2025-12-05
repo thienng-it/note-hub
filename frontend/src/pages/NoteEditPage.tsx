@@ -4,6 +4,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
+import { ImageUpload } from '../components/ImageUpload';
 import type { Note } from '../types';
 import { noteTemplates, type NoteTemplate } from '../utils/templates';
 
@@ -15,6 +16,7 @@ export function NoteEditPage() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [tags, setTags] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [pinned, setPinned] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [archived, setArchived] = useState(false);
@@ -34,6 +36,7 @@ export function NoteEditPage() {
       setTitle(note.title);
       setBody(note.body);
       setTags(note.tags.map(t => t.name).join(', '));
+      setImages(note.images || []);
       setPinned(note.pinned);
       setFavorite(note.favorite);
       setArchived(note.archived);
@@ -61,7 +64,7 @@ export function NoteEditPage() {
     setError('');
 
     try {
-      const data = { title: title.trim(), body, tags, pinned, favorite, archived };
+      const data = { title: title.trim(), body, tags, images, pinned, favorite, archived };
       let note: Note;
 
       if (isNew) {
@@ -235,6 +238,13 @@ export function NoteEditPage() {
               Separate multiple tags with commas
             </p>
           </div>
+
+          {/* Images */}
+          <ImageUpload
+            images={images}
+            onImagesChange={setImages}
+            maxImages={5}
+          />
 
           {/* AI Actions */}
           {body.trim() && !showPreview && (

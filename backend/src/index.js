@@ -34,6 +34,7 @@ const tasksRoutes = require('./routes/tasks');
 const profileRoutes = require('./routes/profile');
 const adminRoutes = require('./routes/admin');
 const aiRoutes = require('./routes/ai');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -81,6 +82,9 @@ const staticLimiter = rateLimit({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static uploads directory
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // Request ID middleware for tracking
 const requestIdMiddleware = require('./middleware/requestId');
 app.use(requestIdMiddleware);
@@ -104,6 +108,7 @@ app.use('/api/v1/tasks', markAsV1, tasksRoutes);
 app.use('/api/v1/profile', markAsV1, profileRoutes);
 app.use('/api/v1/admin', markAsV1, adminRoutes);
 app.use('/api/v1/ai', markAsV1, aiRoutes);
+app.use('/api/v1/upload', markAsV1, uploadRoutes);
 
 // Backward compatibility: /api/* routes use legacy response format
 app.use('/api/auth', authRoutes);
@@ -112,6 +117,7 @@ app.use('/api/tasks', tasksRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check endpoints with standardized response
 const responseHandler = require('./utils/responseHandler');

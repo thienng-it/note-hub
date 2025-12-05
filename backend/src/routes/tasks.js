@@ -21,6 +21,7 @@ router.get('/', jwtRequired, async (req, res) => {
         id: task.id,
         title: task.title,
         description: task.description,
+        images: task.images ? JSON.parse(task.images) : [],
         completed: !!task.completed,
         priority: task.priority,
         due_date: task.due_date,
@@ -52,6 +53,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
         id: task.id,
         title: task.title,
         description: task.description,
+        images: task.images ? JSON.parse(task.images) : [],
         completed: !!task.completed,
         priority: task.priority,
         due_date: task.due_date,
@@ -70,7 +72,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
  */
 router.post('/', jwtRequired, async (req, res) => {
   try {
-    const { title, description, due_date, priority = 'medium' } = req.body;
+    const { title, description, due_date, priority = 'medium', images = [] } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: 'Title is required' });
@@ -81,7 +83,8 @@ router.post('/', jwtRequired, async (req, res) => {
       title.trim(),
       description,
       due_date,
-      priority
+      priority,
+      images
     );
 
     res.status(201).json({
@@ -89,6 +92,7 @@ router.post('/', jwtRequired, async (req, res) => {
         id: task.id,
         title: task.title,
         description: task.description,
+        images: task.images ? JSON.parse(task.images) : [],
         completed: !!task.completed,
         priority: task.priority,
         due_date: task.due_date,
@@ -116,7 +120,7 @@ async function updateTask(req, res) {
       return res.status(404).json({ error: 'Task not found or access denied' });
     }
 
-    const { title, description, due_date, priority, completed } = req.body;
+    const { title, description, due_date, priority, completed, images } = req.body;
 
     const updatedTask = await TaskService.updateTask(
       taskId,
@@ -124,7 +128,8 @@ async function updateTask(req, res) {
       description,
       due_date,
       priority,
-      completed
+      completed,
+      images
     );
 
     res.json({
@@ -132,6 +137,7 @@ async function updateTask(req, res) {
         id: updatedTask.id,
         title: updatedTask.title,
         description: updatedTask.description,
+        images: updatedTask.images ? JSON.parse(updatedTask.images) : [],
         completed: !!updatedTask.completed,
         priority: updatedTask.priority,
         due_date: updatedTask.due_date,

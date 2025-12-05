@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { tasksApi } from '../api/client';
 import type { Task, TaskFilterType } from '../types';
 import { taskTemplates, type TaskTemplate } from '../utils/templates';
+import { ImageUpload } from '../components/ImageUpload';
 
 export function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -14,6 +15,7 @@ export function TasksPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
+  const [newImages, setNewImages] = useState<string[]>([]);
   const [newDueDate, setNewDueDate] = useState('');
   const [newPriority, setNewPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [isCreating, setIsCreating] = useState(false);
@@ -93,6 +95,7 @@ export function TasksPage() {
       const task = await tasksApi.create({
         title: newTitle.trim(),
         description: newDescription.trim() || undefined,
+        images: newImages,
         due_date: newDueDate || undefined,
         priority: newPriority,
       });
@@ -147,6 +150,7 @@ export function TasksPage() {
     setShowTemplates(false);
     setNewTitle('');
     setNewDescription('');
+    setNewImages([]);
     setNewDueDate('');
     setNewPriority('medium');
   };
@@ -323,6 +327,11 @@ export function TasksPage() {
                 rows={2}
               />
             </div>
+            <ImageUpload
+              images={newImages}
+              onImagesChange={setNewImages}
+              maxImages={3}
+            />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="dueDate" className="block text-sm font-medium text-[var(--text-primary)] mb-2">

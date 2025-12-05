@@ -49,6 +49,7 @@ export interface Note {
   title: string;
   body: string;
   excerpt?: string;
+  images?: string[];
   pinned: boolean;
   favorite: boolean;
   archived: boolean;
@@ -63,6 +64,7 @@ export interface NoteFormData {
   title: string;
   body: string;
   tags: string;
+  images?: string[];
   pinned?: boolean;
   favorite?: boolean;
   archived?: boolean;
@@ -73,6 +75,7 @@ export interface Task {
   id: number;
   title: string;
   description?: string;
+  images?: string[];
   completed: boolean;
   priority: 'low' | 'medium' | 'high';
   due_date?: string;
@@ -83,6 +86,7 @@ export interface Task {
 export interface TaskFormData {
   title: string;
   description?: string;
+  images?: string[];
   due_date?: string;
   priority?: 'low' | 'medium' | 'high';
 }
