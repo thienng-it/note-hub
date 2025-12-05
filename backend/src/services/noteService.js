@@ -230,11 +230,13 @@ class NoteService {
    * Create a new note.
    * Invalidates cache and indexes in Elasticsearch.
    */
-  static async createNote(userId, title, body = '', tags = '', pinned = false, favorite = false, archived = false) {
+  static async createNote(userId, title, body = '', tags = '', pinned = false, favorite = false, archived = false, images = []) {
+    const imagesJson = Array.isArray(images) ? JSON.stringify(images) : null;
+    
     const result = await db.run(`
-      INSERT INTO notes (title, body, pinned, favorite, archived, owner_id)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `, [title, body, pinned ? 1 : 0, favorite ? 1 : 0, archived ? 1 : 0, userId]);
+      INSERT INTO notes (title, body, images, pinned, favorite, archived, owner_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [title, body, imagesJson, pinned ? 1 : 0, favorite ? 1 : 0, archived ? 1 : 0, userId]);
 
     const noteId = result.insertId;
 
@@ -265,7 +267,7 @@ class NoteService {
    * Update an existing note.
    * Invalidates cache and updates Elasticsearch index.
    */
-  static async updateNote(noteId, title, body, tags, pinned, favorite, archived) {
+  static async updateNote(noteId, title, body, tags, pinned, favorite, archived, images) {
     const updates = [];
     const params = [];
 
@@ -276,6 +278,10 @@ class NoteService {
     if (body !== undefined) {
       updates.push('body = ?');
       params.push(body);
+    }
+    if (images !== undefined) {
+      updates.push('images = ?');
+      params.push(Array.isArray(images) ? JSON.stringify(images) : null);
     }
     if (pinned !== undefined) {
       updates.push('pinned = ?');

@@ -81,11 +81,13 @@ class TaskService {
   /**
    * Create a new task.
    */
-  static async createTask(userId, title, description = null, dueDate = null, priority = 'medium') {
+  static async createTask(userId, title, description = null, dueDate = null, priority = 'medium', images = []) {
+    const imagesJson = Array.isArray(images) ? JSON.stringify(images) : null;
+    
     const result = await db.run(`
-      INSERT INTO tasks (title, description, due_date, priority, owner_id)
-      VALUES (?, ?, ?, ?, ?)
-    `, [title, description, dueDate, priority, userId]);
+      INSERT INTO tasks (title, description, images, due_date, priority, owner_id)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `, [title, description, imagesJson, dueDate, priority, userId]);
 
     return this.getTaskById(result.insertId);
   }
@@ -93,7 +95,7 @@ class TaskService {
   /**
    * Update an existing task.
    */
-  static async updateTask(taskId, title, description, dueDate, priority, completed) {
+  static async updateTask(taskId, title, description, dueDate, priority, completed, images) {
     const updates = [];
     const params = [];
 
@@ -104,6 +106,10 @@ class TaskService {
     if (description !== undefined) {
       updates.push('description = ?');
       params.push(description);
+    }
+    if (images !== undefined) {
+      updates.push('images = ?');
+      params.push(Array.isArray(images) ? JSON.stringify(images) : null);
     }
     if (dueDate !== undefined) {
       updates.push('due_date = ?');

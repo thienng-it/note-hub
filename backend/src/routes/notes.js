@@ -23,6 +23,7 @@ router.get('/', jwtRequired, async (req, res) => {
         title: note.title,
         body: note.body,
         excerpt: NoteService.getExcerpt(note.body),
+        images: note.images ? JSON.parse(note.images) : [],
         pinned: !!note.pinned,
         favorite: !!note.favorite,
         archived: !!note.archived,
@@ -60,6 +61,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
         title: note.title,
         body: note.body,
         html: NoteService.renderMarkdown(note.body),
+        images: note.images ? JSON.parse(note.images) : [],
         pinned: !!note.pinned,
         favorite: !!note.favorite,
         archived: !!note.archived,
@@ -80,7 +82,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
  */
 router.post('/', jwtRequired, async (req, res) => {
   try {
-    const { title, body = '', tags = '', pinned = false, favorite = false, archived = false } = req.body;
+    const { title, body = '', tags = '', images = [], pinned = false, favorite = false, archived = false } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: 'Title is required' });
@@ -93,7 +95,8 @@ router.post('/', jwtRequired, async (req, res) => {
       tags,
       pinned,
       favorite,
-      archived
+      archived,
+      images
     );
 
     res.status(201).json({
@@ -101,6 +104,7 @@ router.post('/', jwtRequired, async (req, res) => {
         id: note.id,
         title: note.title,
         body: note.body,
+        images: note.images ? JSON.parse(note.images) : [],
         pinned: !!note.pinned,
         favorite: !!note.favorite,
         archived: !!note.archived,
@@ -137,7 +141,7 @@ async function updateNote(req, res) {
       return res.status(403).json({ error: 'You do not have edit permissions for this note' });
     }
 
-    const { title, body, tags, pinned, favorite, archived } = req.body;
+    const { title, body, tags, images, pinned, favorite, archived } = req.body;
 
     const updatedNote = await NoteService.updateNote(
       noteId,
@@ -146,7 +150,8 @@ async function updateNote(req, res) {
       tags,
       pinned,
       favorite,
-      archived
+      archived,
+      images
     );
 
     res.json({
@@ -155,6 +160,7 @@ async function updateNote(req, res) {
         title: updatedNote.title,
         body: updatedNote.body,
         excerpt: NoteService.getExcerpt(updatedNote.body),
+        images: updatedNote.images ? JSON.parse(updatedNote.images) : [],
         pinned: !!updatedNote.pinned,
         favorite: !!updatedNote.favorite,
         archived: !!updatedNote.archived,
