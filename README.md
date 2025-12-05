@@ -218,13 +218,17 @@ cp .env.example .env
 nano .env  # Set DOMAIN, LETSENCRYPT_EMAIL, and other values
 
 # Initialize Let's Encrypt certificates
+# This script automatically stops conflicting services and starts SSL services
 chmod +x scripts/init-letsencrypt.sh
 ./scripts/init-letsencrypt.sh
 
-# Start with SSL profile
-docker compose --profile ssl up -d
-
+# Services are now running with HTTPS
 # Access at https://your-domain.com
+```
+
+**Note**: The init script handles everything automatically. If you need to manually start services later:
+```bash
+docker compose --profile ssl up -d
 ```
 
 **Quick Start:** [HTTPS Quick Start Guide](docs/HTTPS_QUICK_START.md) (5-minute setup)  

@@ -29,8 +29,10 @@
 
 services:
   # ==========================================================================
-  # Frontend - React SPA with nginx (Development)
+  # Frontend - React SPA with nginx (Development - HTTP only)
   # ==========================================================================
+  # Note: When using SSL profile, stop this service first to avoid port conflict
+  # Use: docker compose stop frontend
   frontend:
     build:
       context: .

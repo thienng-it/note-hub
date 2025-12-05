@@ -106,9 +106,10 @@ else
     echo -e "${GREEN}Using Let's Encrypt production server${NC}"
 fi
 
-# Make sure nginx-ssl is not running to free port 80
-echo "Stopping nginx-ssl if running..."
+# Make sure port 80 is free
+echo "Stopping services that use port 80..."
 docker compose stop nginx-ssl 2>/dev/null || true
+docker compose stop frontend 2>/dev/null || true
 
 # Use standalone mode - Certbot will start its own web server on port 80
 echo "Starting Certbot with standalone web server..."
@@ -129,8 +130,8 @@ if [ $? -eq 0 ]; then
     echo -e "  ✓ Certificate successfully obtained!"
     echo -e "==================================================${NC}"
     echo ""
-    echo "Starting nginx-ssl with real certificate..."
-    docker compose up -d nginx-ssl
+    echo "Starting SSL services (nginx-ssl and certbot)..."
+    docker compose --profile ssl up -d
     echo ""
     echo -e "${GREEN}✓ Setup complete!${NC}"
     echo ""
@@ -139,6 +140,9 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "Certificate will auto-renew before expiration."
     echo "Check renewal with: docker compose logs certbot"
+    echo ""
+    echo -e "${YELLOW}Note: The default 'frontend' service has been stopped.${NC}"
+    echo "To use SSL, always start with: docker compose --profile ssl up -d"
 else
     echo ""
     echo -e "${RED}=================================================="

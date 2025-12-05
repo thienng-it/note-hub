@@ -146,19 +146,26 @@ Your site should now be accessible via HTTPS:
   https://notehub.example.com
 ```
 
-### Step 4: Start Services with SSL
+### Step 4: Verify Services
+
+The init script automatically starts the SSL services. Verify they're running:
 
 ```bash
-# Start with SSL profile
-docker compose --profile ssl up -d
-
-# Verify all containers are running
+# Check running containers
 docker compose ps
 
-# Check logs
+# Should show: nginx-ssl, certbot, backend (all running)
+
+# Check logs if needed
 docker compose logs -f nginx-ssl
 docker compose logs -f certbot
 ```
+
+**Important Notes:**
+- The `frontend` service (HTTP-only) is automatically stopped by the init script
+- When using SSL, always use `docker compose --profile ssl` commands
+- To manually start SSL services: `docker compose --profile ssl up -d`
+- To stop and switch back to HTTP: `docker compose --profile ssl down && docker compose up -d`
 
 ### Step 5: Verify HTTPS
 
@@ -450,12 +457,31 @@ docker compose run --rm nginx-ssl nginx -t
 
 **Common Issues**:
 
-1. **Port Already in Use**:
+1. **Port Already in Use (Port Conflict with Default Frontend)**:
+   ```
+   Error: Bind for 0.0.0.0:80 failed: port is already allocated
+   ```
+   
+   **Cause**: Both `frontend` (default) and `nginx-ssl` (SSL profile) use port 80
+   
+   **Fix**:
+   ```bash
+   # Stop the default frontend service
+   docker compose stop frontend
+   
+   # Start SSL services
+   docker compose --profile ssl up -d
+   
+   # Or run init script which handles this automatically
+   ./scripts/init-letsencrypt.sh
+   ```
+
+2. **Port Used by System Service**:
    ```bash
    # Find process using port 80/443
    netstat -tlnp | grep -E ':80|:443'
    
-   # Stop conflicting service
+   # Stop conflicting system service
    systemctl stop apache2  # or nginx
    ```
 

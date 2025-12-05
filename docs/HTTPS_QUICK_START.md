@@ -58,7 +58,11 @@ You're ready to deploy with SSL/TLS
 ### Step 3: Initialize SSL (2 minutes)
 
 ```bash
+# If you have default services running, stop them first
+docker compose stop frontend
+
 # Initialize Let's Encrypt certificates
+# This script will automatically stop conflicting services and start SSL services
 ./scripts/init-letsencrypt.sh
 ```
 
@@ -68,20 +72,24 @@ You're ready to deploy with SSL/TLS
 Your site should now be accessible via HTTPS
 ```
 
-### Step 4: Deploy (1 minute)
+**Note**: The init script automatically:
+- Stops services using port 80 (frontend, nginx-ssl)
+- Requests SSL certificate using Certbot standalone mode
+- Starts nginx-ssl and certbot services
+
+### Step 4: Verify (30 seconds)
 
 ```bash
-# Start with SSL profile
-docker compose --profile ssl up -d
-
 # Check status
 docker compose ps
+
+# Should show nginx-ssl and certbot running
 
 # View logs (optional)
 docker compose logs -f nginx-ssl
 ```
 
-### Step 5: Verify (30 seconds)
+### Step 5: Test HTTPS (30 seconds)
 
 ```bash
 # Test HTTPS
@@ -188,21 +196,25 @@ dig +short your-domain.com
 - **Cause:** Let's Encrypt cannot reach your server on port 80 from the internet
 - **Fix:** Configure port forwarding on your router and ensure firewall allows port 80
 
-### nginx won't start
+### Port conflict error
 
-**Problem:** Port already in use
+**Problem:** `Bind for 0.0.0.0:80 failed: port is already allocated`
+
+**Cause:** Both `frontend` (HTTP) and `nginx-ssl` (HTTPS) try to use port 80
 
 **Quick fix:**
 ```bash
-# Check what's using port 80/443
-netstat -tlnp | grep -E ':80|:443'
+# Stop the default frontend service
+docker compose stop frontend
 
-# Stop conflicting service
-systemctl stop apache2   # or nginx, or whatever is running
-
-# Try again
+# Then start SSL services
 docker compose --profile ssl up -d
+
+# Or just run the init script which handles this automatically
+./scripts/init-letsencrypt.sh
 ```
+
+**Note:** When using SSL, only use `docker compose --profile ssl` commands. The default `frontend` service is for HTTP-only deployments.
 
 ### Can't access site
 
