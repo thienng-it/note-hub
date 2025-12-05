@@ -106,11 +106,10 @@ export function AdminDashboardPage() {
 
       // Show success message (inline instead of alert)
       setError('');
-      // You could set a success state here for a toast notification
-      logger.info('2FA disabled successfully', { userId, username });
+      logger.info('Admin action: 2FA disabled successfully', { userId, username });
     } catch (err) {
       // Set error state instead of alert
-      logger.error('Failed to disable 2FA', err);
+      logger.error('Admin action: Failed to disable 2FA', err, { userId, username });
       setError(err instanceof Error ? err.message : 'Failed to disable 2FA');
     }
   };

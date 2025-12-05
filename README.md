@@ -401,6 +401,8 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 | Document                                                       | Description                    |
 | -------------------------------------------------------------- | ------------------------------ |
 | [Hetzner Deployment](docs/guides/HETZNER_DEPLOYMENT.md)        | Deploy to Hetzner VPS          |
+| [Environment Configuration](docs/guides/ENVIRONMENT_CONFIGURATION.md) | .env setup and management |
+| [Logging Configuration](docs/guides/LOGGING_CONFIGURATION.md) | Structured logging setup       |
 | [Caching & Search Setup](docs/guides/CACHING_AND_SEARCH.md)   | Redis & Elasticsearch setup    |
 | [Google OAuth Setup](docs/guides/GOOGLE_SSO_SETUP.md)         | Configure Google Single Sign-On|
 | [Contributing](docs/guides/CONTRIBUTING.md)                    | Development guidelines         |

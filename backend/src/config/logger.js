@@ -109,9 +109,11 @@ logger.security = (event, details) => {
   });
 };
 
-// Export logger and configuration info
-module.exports = logger;
-module.exports.config = {
+// Attach configuration to logger instance for easy access
+logger.config = {
   level: LOG_LEVEL,
   format: LOG_FORMAT
 };
+
+// Export logger
+module.exports = logger;

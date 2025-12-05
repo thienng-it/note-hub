@@ -25,7 +25,7 @@ function requestLogger(req, res, next) {
       path: req.path,
       statusCode: res.statusCode,
       duration: `${duration}ms`,
-      ip: req.ip || req.connection.remoteAddress,
+      ip: req.ip || req.socket?.remoteAddress,
       userAgent: req.get('user-agent')
     };
 

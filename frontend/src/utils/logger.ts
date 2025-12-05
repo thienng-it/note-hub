@@ -52,13 +52,11 @@ class Logger {
 
   /**
    * Debug level logging - detailed information for debugging
-   * Only shown in development mode or when LOG_LEVEL=debug
+   * Only shown when LOG_LEVEL=debug (respects explicit configuration)
    */
   debug(message: string, context?: LogContext): void {
     if (this.shouldLog('debug')) {
-      if (this.isDevelopment) {
-        console.debug(this.formatMessage('debug', message, context));
-      }
+      console.debug(this.formatMessage('debug', message, context));
     }
   }
 
