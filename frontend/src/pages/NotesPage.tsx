@@ -12,8 +12,12 @@ export function NotesPage() {
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
   const [hiddenNotes, setHiddenNotes] = useState<Set<number>>(() => {
-    const saved = localStorage.getItem('hiddenNotes');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
+    try {
+      const saved = localStorage.getItem('hiddenNotes');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
   });
 
   const toggleHideNote = (noteId: number) => {
@@ -24,7 +28,11 @@ export function NotesPage() {
       } else {
         newSet.add(noteId);
       }
-      localStorage.setItem('hiddenNotes', JSON.stringify([...newSet]));
+      try {
+        localStorage.setItem('hiddenNotes', JSON.stringify([...newSet]));
+      } catch {
+        // Silently fail if localStorage is unavailable (e.g., private browsing, storage full)
+      }
       return newSet;
     });
   };

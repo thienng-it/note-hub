@@ -21,8 +21,12 @@ export function TasksPage() {
 
   // Hide/show tasks functionality
   const [hiddenTasks, setHiddenTasks] = useState<Set<number>>(() => {
-    const saved = localStorage.getItem('hiddenTasks');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
+    try {
+      const saved = localStorage.getItem('hiddenTasks');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
   });
 
   const toggleHideTask = (taskId: number) => {
@@ -33,7 +37,11 @@ export function TasksPage() {
       } else {
         newSet.add(taskId);
       }
-      localStorage.setItem('hiddenTasks', JSON.stringify([...newSet]));
+      try {
+        localStorage.setItem('hiddenTasks', JSON.stringify([...newSet]));
+      } catch {
+        // Silently fail if localStorage is unavailable (e.g., private browsing, storage full)
+      }
       return newSet;
     });
   };
