@@ -8,7 +8,7 @@
 type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 
 interface LogContext {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 class Logger {
