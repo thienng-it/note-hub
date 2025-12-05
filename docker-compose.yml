@@ -65,7 +65,7 @@ services:
     environment:
       # Development mode (allows seeding)
       - NODE_ENV=development
-      
+
       # JWT Configuration
       - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
       - PORT=5000
@@ -76,6 +76,16 @@ services:
 
       # Database - SQLite (default for development)
       - NOTES_DB_PATH=${NOTES_DB_PATH:-/app/data/notes.db}
+
+      # OAuth Configuration (REQUIRED: set in .env file)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+
+      # AI Configuration (REQUIRED: set in .env file)
+      - AI_PROVIDER=${AI_PROVIDER:?Set AI_PROVIDER in .env file}
+      - OLLAMA_URL=${OLLAMA_URL:?Set OLLAMA_URL in .env file}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:?Set OLLAMA_MODEL in .env file}
     volumes:
       - notehub-data:/app/data
     healthcheck:
@@ -128,7 +138,7 @@ services:
     environment:
       # Production mode (blocks seeding)
       - NODE_ENV=production
-      
+
       # JWT Configuration (REQUIRED: use strong secret in production)
       - JWT_SECRET=${SECRET_KEY:?Set SECRET_KEY in .env file for production}
       - PORT=5000
@@ -140,13 +150,23 @@ services:
       # Database URL for cloud DB (MySQL/PostgreSQL)
       # Example: mysql://user:pass@host:3306/database
       - DATABASE_URL=${DATABASE_URL:-}
-      
+
       # OR separate MySQL config
       - MYSQL_HOST=${MYSQL_HOST:-}
       - MYSQL_PORT=${MYSQL_PORT:-3306}
       - MYSQL_USER=${MYSQL_USER:-}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-}
+
+      # OAuth Configuration (REQUIRED: set in .env file)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+
+      # AI Configuration (REQUIRED: set in .env file)
+      - AI_PROVIDER=${AI_PROVIDER:?Set AI_PROVIDER in .env file}
+      - OLLAMA_URL=${OLLAMA_URL:?Set OLLAMA_URL in .env file}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:?Set OLLAMA_MODEL in .env file}
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
       interval: 30s
@@ -170,7 +190,7 @@ services:
     environment:
       # Development mode (allows seeding)
       - NODE_ENV=development
-      
+
       # JWT Configuration
       - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
       - PORT=5000
@@ -186,6 +206,16 @@ services:
       - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
+
+      # OAuth Configuration (REQUIRED: set in .env file)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+
+      # AI Configuration (REQUIRED: set in .env file)
+      - AI_PROVIDER=${AI_PROVIDER:?Set AI_PROVIDER in .env file}
+      - OLLAMA_URL=${OLLAMA_URL:?Set OLLAMA_URL in .env file}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:?Set OLLAMA_MODEL in .env file}
     depends_on:
       mysql:
         condition: service_healthy
