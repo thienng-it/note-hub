@@ -81,11 +81,27 @@ const staticLimiter = rateLimit({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Request ID middleware for tracking
+const requestIdMiddleware = require('./middleware/requestId');
+app.use(requestIdMiddleware);
+
+// Additional security headers
+const securityHeadersMiddleware = require('./middleware/securityHeaders');
+app.use(securityHeadersMiddleware);
+
 // Request logging middleware
 const { requestLogger } = require('./middleware/logging');
 app.use(requestLogger);
 
-// API routes
+// API v1 routes (with versioning)
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/notes', notesRoutes);
+app.use('/api/v1/tasks', tasksRoutes);
+app.use('/api/v1/profile', profileRoutes);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/ai', aiRoutes);
+
+// Backward compatibility: redirect /api/* to /api/v1/*
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/tasks', tasksRoutes);
@@ -93,7 +109,30 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Health check
+// Health check endpoints with standardized response
+const responseHandler = require('./utils/responseHandler');
+app.get('/api/v1/health', async (req, res) => {
+  try {
+    const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
+    responseHandler.success(res, {
+      status: 'healthy',
+      database: 'connected',
+      services: {
+        cache: cache.isEnabled() ? 'enabled' : 'disabled',
+        search: elasticsearch.isEnabled() ? 'enabled' : 'disabled'
+      },
+      user_count: userCount?.count || 0
+    }, { message: 'Service is healthy' });
+  } catch (error) {
+    responseHandler.error(res, 'Service is unhealthy', {
+      statusCode: 503,
+      errorCode: 'SERVICE_UNAVAILABLE',
+      details: { error: error.message }
+    });
+  }
+});
+
+// Backward compatibility
 app.get('/api/health', async (req, res) => {
   try {
     const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
@@ -127,7 +166,7 @@ if (fs.existsSync(frontendPath)) {
 
 // 404 handler for API routes
 app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: 'Not found' });
+  responseHandler.notFound(res, 'Endpoint');
 });
 
 // Error handler
@@ -136,9 +175,15 @@ app.use((err, req, res, next) => {
     error: err.message,
     stack: err.stack,
     path: req.path,
-    method: req.method
+    method: req.method,
+    requestId: res.locals.requestId
   });
-  res.status(500).json({ error: 'Internal server error' });
+  
+  responseHandler.error(res, 'Internal server error', {
+    statusCode: 500,
+    errorCode: 'INTERNAL_ERROR',
+    details: process.env.NODE_ENV === 'development' ? { message: err.message } : undefined
+  });
 });
 
 // Initialize database and start server
