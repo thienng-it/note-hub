@@ -226,9 +226,13 @@ chmod +x scripts/init-letsencrypt.sh
 # Access at https://your-domain.com
 ```
 
-**Note**: The init script handles everything automatically. If you need to manually start services later:
+**Note**: The init script handles everything automatically. If you need to manually restart services:
 ```bash
-docker compose --profile ssl up -d
+# Restart SSL services
+docker compose restart nginx-ssl certbot
+
+# Or start them if stopped
+docker compose up -d backend nginx-ssl certbot
 ```
 
 **Quick Start:** [HTTPS Quick Start Guide](docs/HTTPS_QUICK_START.md) (5-minute setup)  

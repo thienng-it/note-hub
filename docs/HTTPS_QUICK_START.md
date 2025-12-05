@@ -75,7 +75,8 @@ Your site should now be accessible via HTTPS
 **Note**: The init script automatically:
 - Stops services using port 80 (frontend, nginx-ssl)
 - Requests SSL certificate using Certbot standalone mode
-- Starts nginx-ssl and certbot services
+- Starts only nginx-ssl, certbot, and backend services
+- Keeps frontend stopped to avoid port conflicts
 
 ### Step 4: Verify (30 seconds)
 
@@ -83,7 +84,8 @@ Your site should now be accessible via HTTPS
 # Check status
 docker compose ps
 
-# Should show nginx-ssl and certbot running
+# Should show: backend, nginx-ssl, certbot (running)
+# Should NOT show: frontend (to avoid port conflict)
 
 # View logs (optional)
 docker compose logs -f nginx-ssl
@@ -142,15 +144,22 @@ docker compose logs -f nginx-ssl      # Web server logs
 docker compose logs -f backend        # API logs
 
 # Restart services
-docker compose restart nginx-ssl      # Restart web server
-docker compose restart                # Restart all
+docker compose restart nginx-ssl certbot   # Restart SSL services
+docker compose restart backend             # Restart backend
+
+# Start services if stopped
+docker compose up -d backend nginx-ssl certbot
 
 # Force certificate renewal (if needed)
 docker compose run --rm certbot certbot renew --force-renewal
 docker compose exec nginx-ssl nginx -s reload
 
-# Stop everything
+# Stop SSL services
+docker compose stop nginx-ssl certbot
+
+# Switch back to HTTP (stop SSL, start frontend)
 docker compose down
+docker compose up -d  # Starts default: frontend + backend
 ```
 
 ## 🐛 Quick Troubleshooting
@@ -207,14 +216,17 @@ dig +short your-domain.com
 # Stop the default frontend service
 docker compose stop frontend
 
-# Then start SSL services
-docker compose --profile ssl up -d
+# Start only SSL services (not using --profile ssl to avoid starting frontend)
+docker compose up -d backend nginx-ssl certbot
 
 # Or just run the init script which handles this automatically
 ./scripts/init-letsencrypt.sh
 ```
 
-**Note:** When using SSL, only use `docker compose --profile ssl` commands. The default `frontend` service is for HTTP-only deployments.
+**Note:** 
+- The init script automatically manages services to avoid conflicts
+- Don't use `docker compose --profile ssl up -d` as it starts both frontend and nginx-ssl
+- Use specific service names: `docker compose up -d backend nginx-ssl certbot`
 
 ### Can't access site
 

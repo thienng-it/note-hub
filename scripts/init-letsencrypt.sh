@@ -131,7 +131,10 @@ if [ $? -eq 0 ]; then
     echo -e "==================================================${NC}"
     echo ""
     echo "Starting SSL services (nginx-ssl and certbot)..."
-    docker compose --profile ssl up -d
+    # Start backend if not running
+    docker compose up -d backend
+    # Start only SSL profile services (nginx-ssl and certbot)
+    docker compose up -d nginx-ssl certbot
     echo ""
     echo -e "${GREEN}✓ Setup complete!${NC}"
     echo ""
@@ -141,8 +144,8 @@ if [ $? -eq 0 ]; then
     echo "Certificate will auto-renew before expiration."
     echo "Check renewal with: docker compose logs certbot"
     echo ""
-    echo -e "${YELLOW}Note: The default 'frontend' service has been stopped.${NC}"
-    echo "To use SSL, always start with: docker compose --profile ssl up -d"
+    echo -e "${YELLOW}Note: Using SSL services. The 'frontend' service remains stopped.${NC}"
+    echo "To manage services: docker compose up -d nginx-ssl certbot backend"
 else
     echo ""
     echo -e "${RED}=================================================="

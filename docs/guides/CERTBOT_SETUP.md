@@ -163,9 +163,10 @@ docker compose logs -f certbot
 
 **Important Notes:**
 - The `frontend` service (HTTP-only) is automatically stopped by the init script
-- When using SSL, always use `docker compose --profile ssl` commands
-- To manually start SSL services: `docker compose --profile ssl up -d`
-- To stop and switch back to HTTP: `docker compose --profile ssl down && docker compose up -d`
+- The init script starts only: backend, nginx-ssl, and certbot
+- To manually restart SSL services: `docker compose restart nginx-ssl certbot`
+- To manually start SSL services: `docker compose up -d backend nginx-ssl certbot`
+- To switch back to HTTP: `docker compose down && docker compose up -d` (starts frontend + backend)
 
 ### Step 5: Verify HTTPS
 
