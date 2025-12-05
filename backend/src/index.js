@@ -11,6 +11,9 @@ const fs = require('fs');
 // Load .env from project root
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
+// Logger must be imported after dotenv config
+const logger = require('./config/logger');
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -78,6 +81,10 @@ const staticLimiter = rateLimit({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging middleware
+const { requestLogger } = require('./middleware/logging');
+app.use(requestLogger);
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
@@ -125,7 +132,12 @@ app.use('/api/*', (req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
+  logger.error('Server error:', {
+    error: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method
+  });
   res.status(500).json({ error: 'Internal server error' });
 });
 
@@ -147,22 +159,29 @@ async function start() {
     await elasticsearch.connect();
 
     app.listen(PORT, () => {
-      console.log(`🚀 NoteHub API server running on port ${PORT}`);
-      console.log(`📦 Database: ${db.isSQLite ? 'SQLite' : 'MySQL'}`);
-      console.log(`🔧 ORM: Sequelize`);
-      console.log(`🔴 Cache: ${cache.isEnabled() ? 'Redis (enabled)' : 'Disabled'}`);
-      console.log(`🔍 Search: ${elasticsearch.isEnabled() ? 'Elasticsearch (enabled)' : 'SQL LIKE (fallback)'}`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info('🚀 NoteHub API server started', {
+        port: PORT,
+        database: db.isSQLite ? 'SQLite' : 'MySQL',
+        orm: 'Sequelize',
+        cache: cache.isEnabled() ? 'Redis (enabled)' : 'Disabled',
+        search: elasticsearch.isEnabled() ? 'Elasticsearch (enabled)' : 'SQL LIKE (fallback)',
+        environment: process.env.NODE_ENV || 'development',
+        logLevel: logger.config.level,
+        logFormat: logger.config.format
+      });
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logger.error('Failed to start server', {
+      error: error.message,
+      stack: error.stack
+    });
     process.exit(1);
   }
 }
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
+  logger.info('SIGTERM received, shutting down gracefully...');
   await closeDatabase();
   await db.close();
   await cache.close();
@@ -171,7 +190,7 @@ process.on('SIGTERM', async () => {
 });
 
 process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully...');
+  logger.info('SIGINT received, shutting down gracefully...');
   await closeDatabase();
   await db.close();
   await cache.close();

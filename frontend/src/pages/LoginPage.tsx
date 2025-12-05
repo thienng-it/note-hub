@@ -2,6 +2,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiClient } from '../api/client';
+import { logger } from '../utils/logger';
 
 export function LoginPage() {
   const [username, setUsername] = useState('');
@@ -62,7 +63,7 @@ export function LoginPage() {
       // Redirect to Google OAuth
       window.location.href = auth_url;
     } catch (err) {
-      console.error('Google Sign-In error:', err);
+      logger.error('Google Sign-In error', err);
       setError('Google Sign-In is temporarily unavailable. Please try again or sign in with username and password.');
     }
   };

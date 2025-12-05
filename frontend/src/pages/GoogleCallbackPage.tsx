@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { logger } from '../utils/logger';
 
 // Constants for localStorage keys
 const STORAGE_KEYS = {
@@ -48,7 +49,7 @@ export function GoogleCallbackPage() {
         // Redirect to home
         navigate('/', { replace: true });
       } catch (err) {
-        console.error('Google callback error:', err);
+        logger.error('Google callback error', err);
         setError('Failed to complete Google sign-in');
         setTimeout(() => navigate('/login'), 3000);
       }
