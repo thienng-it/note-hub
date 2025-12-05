@@ -13,14 +13,12 @@ interface LogContext {
 
 class Logger {
   private level: LogLevel;
-  private isDevelopment: boolean;
 
   constructor() {
     // Get log level from environment or default based on mode
     const envLogLevel = import.meta.env.VITE_LOG_LEVEL || 
                        (import.meta.env.MODE === 'production' ? 'error' : 'info');
     this.level = envLogLevel as LogLevel;
-    this.isDevelopment = import.meta.env.MODE === 'development';
   }
 
   /**

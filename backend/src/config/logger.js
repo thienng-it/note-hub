@@ -5,7 +5,6 @@
  * Supports multiple formats and transports for different environments.
  */
 const winston = require('winston');
-const path = require('path');
 
 // Get log configuration from environment
 const LOG_LEVEL = process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'error' : 'info');
