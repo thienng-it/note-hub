@@ -19,6 +19,25 @@ export function TasksPage() {
   // Edit task
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
+  // Hide/show tasks functionality
+  const [hiddenTasks, setHiddenTasks] = useState<Set<number>>(() => {
+    const saved = localStorage.getItem('hiddenTasks');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  const toggleHideTask = (taskId: number) => {
+    setHiddenTasks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(taskId)) {
+        newSet.delete(taskId);
+      } else {
+        newSet.add(taskId);
+      }
+      localStorage.setItem('hiddenTasks', JSON.stringify([...newSet]));
+      return newSet;
+    });
+  };
+
   const loadTasks = useCallback(async () => {
     setIsLoading(true);
     setError('');
@@ -369,26 +388,48 @@ export function TasksPage() {
                         </span>
                       )}
                     </div>
-                    {task.description && (
-                      <p className="text-sm text-[var(--text-secondary)] mb-2">{task.description}</p>
+                    {hiddenTasks.has(task.id) ? (
+                      <div className="flex items-center py-2 bg-[var(--bg-tertiary)] rounded-lg mb-2 px-3">
+                        <i className="fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
+                        <span className="text-sm text-[var(--text-muted)]">Content hidden</span>
+                        <button
+                          onClick={(e) => { e.preventDefault(); toggleHideTask(task.id); }}
+                          className="ml-3 text-xs px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                        >
+                          Show
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        {task.description && (
+                          <p className="text-sm text-[var(--text-secondary)] mb-2">{task.description}</p>
+                        )}
+                        <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
+                          {task.due_date && (
+                            <span>
+                              <i className="glass-i fas fa-calendar mr-1"></i>
+                              {new Date(task.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                          {task.created_at && (
+                            <span>
+                              <i className="glass-i fas fa-clock mr-1"></i>
+                              Created {new Date(task.created_at).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      </>
                     )}
-                    <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
-                      {task.due_date && (
-                        <span>
-                          <i className="glass-i fas fa-calendar mr-1"></i>
-                          {new Date(task.due_date).toLocaleDateString()}
-                        </span>
-                      )}
-                      {task.created_at && (
-                        <span>
-                          <i className="glass-i fas fa-clock mr-1"></i>
-                          Created {new Date(task.created_at).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleHideTask(task.id)}
+                      className={`p-2 rounded-lg transition-colors ${hiddenTasks.has(task.id) ? 'text-purple-600 hover:bg-purple-500/10' : 'text-gray-400 hover:bg-[var(--bg-tertiary)] hover:text-purple-600'}`}
+                      title={hiddenTasks.has(task.id) ? 'Show content' : 'Hide content'}
+                    >
+                      <i className={`glass-i fas ${hiddenTasks.has(task.id) ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                    </button>
                     <button
                       onClick={() => setEditingTask(task)}
                       className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-blue-600 transition-colors"
