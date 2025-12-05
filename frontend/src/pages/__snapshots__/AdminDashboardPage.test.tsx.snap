@@ -172,7 +172,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
       class="mb-4 text-[var(--text-secondary)]"
     >
       <p>
-        Showing
+        Showing 
         <strong>
           2
         </strong>
