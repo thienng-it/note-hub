@@ -1,10 +1,13 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { apiClient } from '../api/client';
 import { logger } from '../utils/logger';
+import { LanguageSelector } from '../components/LanguageSelector';
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [totpCode, setTotpCode] = useState('');
@@ -46,10 +49,10 @@ export function LoginPage() {
       } else if (result.requires2FA) {
         setRequires2FA(true);
       } else {
-        setError(result.error || 'Login failed');
+        setError(result.error || t('auth.login.loginFailed'));
       }
     } catch {
-      setError('An unexpected error occurred');
+      setError(t('auth.login.unexpectedError'));
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +67,7 @@ export function LoginPage() {
       window.location.href = auth_url;
     } catch (err) {
       logger.error('Google Sign-In error', err);
-      setError('Google Sign-In is temporarily unavailable. Please try again or sign in with username and password.');
+      setError(t('auth.login.googleSignInUnavailable'));
     }
   };
 
@@ -79,11 +82,14 @@ export function LoginPage() {
             </svg>
           </div>
           <h1 className="text-4xl font-bold mb-2 text-gradient tracking-tight">
-            NoteHub
+            {t('app.name')}
           </h1>
           <p className="text-muted-glass text-lg">
-            {requires2FA ? 'Two-Factor Authentication' : 'Welcome back! Sign in to continue'}
+            {requires2FA ? t('auth.login.title2FA') : t('auth.login.title')}
           </p>
+          <div className="mt-4 flex justify-center">
+            <LanguageSelector />
+          </div>
         </div>
 
         {/* Login Card */}
@@ -104,7 +110,7 @@ export function LoginPage() {
                 {/* Username Field */}
                 <div className="mb-5">
                   <label htmlFor="username" className="form-label-glass">
-                    Username or Email
+                    {t('auth.login.username')}
                   </label>
                   <input
                     id="username"
@@ -113,7 +119,7 @@ export function LoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="glass-input"
-                    placeholder="Enter your username or email"
+                    placeholder={t('auth.login.usernamePlaceholder')}
                     required
                     autoFocus
                     autoComplete="username"
@@ -123,7 +129,7 @@ export function LoginPage() {
                 {/* Password Field */}
                 <div className="mb-6">
                   <label htmlFor="password" className="form-label-glass">
-                    Password
+                    {t('auth.login.password')}
                   </label>
                   <div className="relative">
                     <input
@@ -133,7 +139,7 @@ export function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="glass-input pr-12"
-                      placeholder="Enter your password"
+                      placeholder={t('auth.login.passwordPlaceholder')}
                       required
                       autoComplete="current-password"
                     />
@@ -141,7 +147,7 @@ export function LoginPage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-glass hover:text-gray-600 transition-colors"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
                     >
                       {showPassword ? (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +167,7 @@ export function LoginPage() {
               /* 2FA Code Field */
               <div className="mb-6">
                 <label htmlFor="totp" className="form-label-glass">
-                  Verification Code
+                  {t('auth.login.verificationCode')}
                 </label>
                 <input
                   id="totp"
@@ -171,7 +177,7 @@ export function LoginPage() {
                   value={totpCode}
                   onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
                   className="glass-input text-center font-mono tracking-widest text-xl"
-                  placeholder="000000"
+                  placeholder={t('auth.login.verificationCodePlaceholder')}
                   maxLength={6}
                   pattern="[0-9]{6}"
                   required
@@ -183,7 +189,7 @@ export function LoginPage() {
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
                   </svg>
-                  Enter the 6-digit code from your authenticator app
+                  {t('auth.login.verificationCodeHint')}
                 </p>
               </div>
             )}
@@ -201,10 +207,10 @@ export function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                   </svg>
-                  Signing in...
+                  {t('auth.login.signingIn')}
                 </span>
               ) : (
-                <span>{requires2FA ? 'Verify & Sign In' : 'Sign In'}</span>
+                <span>{requires2FA ? t('auth.login.verifyAndSignIn') : t('auth.login.signIn')}</span>
               )}
             </button>
           </form>
@@ -217,7 +223,7 @@ export function LoginPage() {
                   <div className="w-full border-t border-gray-200/50"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-[var(--bg-primary)] text-muted-glass">Or continue with</span>
+                  <span className="px-2 bg-[var(--bg-primary)] text-muted-glass">{t('auth.login.orContinueWith')}</span>
                 </div>
               </div>
 
@@ -232,7 +238,7 @@ export function LoginPage() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Sign in with Google
+                {t('auth.login.signInWithGoogle')}
               </button>
             </>
           )}
@@ -243,18 +249,18 @@ export function LoginPage() {
               to="/forgot-password"
               className="block mb-5 text-apple-blue hover:underline transition-colors"
             >
-              Forgot your password?
+              {t('auth.login.forgotPassword')}
             </Link>
 
             <div className="border-t border-gray-200/50 my-5" />
 
-            <p className="text-muted-glass mb-4">New to NoteHub?</p>
+            <p className="text-muted-glass mb-4">{t('auth.login.newToNoteHub')}</p>
 
             <Link
               to="/register"
               className="btn-secondary-glass w-full py-4 block"
             >
-              Create an account
+              {t('auth.login.createAccount')}
             </Link>
           </div>
 
@@ -272,14 +278,14 @@ export function LoginPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
-              <span>Back to login</span>
+              <span>{t('auth.login.backToLogin')}</span>
             </button>
           )}
         </div>
 
         {/* Footer */}
         <p className="mt-8 text-center text-muted-glass text-sm">
-          Secure note-taking for everyone
+          {t('app.tagline')}
         </p>
       </div>
     </div>

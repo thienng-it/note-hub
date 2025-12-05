@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { LanguageSelector } from './LanguageSelector';
 
 export function Layout() {
   const { user, logout } = useAuth();
@@ -73,6 +74,7 @@ export function Layout() {
             </Link>
             {user && (
               <div className={`flex ${sidebarCollapsed ? 'flex-col items-center gap-1' : 'items-center gap-1'}`}>
+                {!sidebarCollapsed && <LanguageSelector />}
                 <button
                   onClick={toggleTheme}
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
@@ -178,6 +180,7 @@ export function Layout() {
             </Link>
             {user && (
               <div className="flex items-center gap-1">
+                <LanguageSelector />
                 <button
                   onClick={toggleTheme}
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
