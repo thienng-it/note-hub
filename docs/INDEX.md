@@ -28,6 +28,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ### Deployment & Infrastructure
 - [CERTBOT_SETUP](guides/CERTBOT_SETUP.md) - Let's Encrypt SSL/TLS certificate setup with Certbot
+- [SSL_IMPLEMENTATION_SUMMARY](guides/SSL_IMPLEMENTATION_SUMMARY.md) - Technical summary of SSL/TLS implementation
 - [HETZNER_DEPLOYMENT](guides/HETZNER_DEPLOYMENT.md) - Deploy to Hetzner VPS with Cloudflare Tunnel
 - [DEPLOYMENT](guides/DEPLOYMENT.md) - General deployment guide for production environments
 
