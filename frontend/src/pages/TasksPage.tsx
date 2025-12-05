@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { tasksApi } from '../api/client';
 import type { Task, TaskFilterType } from '../types';
+import { taskTemplates, type TaskTemplate } from '../utils/templates';
 
 export function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -10,6 +11,7 @@ export function TasksPage() {
 
   // New task form
   const [showForm, setShowForm] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newDueDate, setNewDueDate] = useState('');
@@ -142,10 +144,18 @@ export function TasksPage() {
 
   const resetForm = () => {
     setShowForm(false);
+    setShowTemplates(false);
     setNewTitle('');
     setNewDescription('');
     setNewDueDate('');
     setNewPriority('medium');
+  };
+
+  const applyTaskTemplate = (template: TaskTemplate) => {
+    setNewTitle(template.title);
+    setNewDescription(template.description);
+    setNewPriority(template.priority);
+    setShowTemplates(false);
   };
 
   const getPriorityColor = (priority: string) => {
@@ -224,10 +234,67 @@ export function TasksPage() {
       {/* New Task Form */}
       {showForm && (
         <div className="glass-card p-6 rounded-xl">
-          <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-            <i className="glass-i fas fa-plus-circle mr-2 text-blue-600"></i>
-            Create New Task
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+              <i className="glass-i fas fa-plus-circle mr-2 text-blue-600"></i>
+              Create New Task
+            </h2>
+            {!showTemplates && (
+              <button
+                type="button"
+                onClick={() => setShowTemplates(true)}
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+              >
+                <i className="glass-i fas fa-magic mr-1"></i>
+                Use template
+              </button>
+            )}
+          </div>
+
+          {/* Template Selection */}
+          {showTemplates && (
+            <div className="mb-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-md font-semibold text-[var(--text-primary)]">
+                  <i className="glass-i fas fa-magic mr-2 text-purple-600"></i>
+                  Choose a Template
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowTemplates(false)}
+                  className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  <i className="glass-i fas fa-times mr-1"></i>
+                  Close
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {taskTemplates.map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => applyTaskTemplate(template)}
+                    className="glass-card p-3 rounded-lg text-left hover:shadow-md transition-all hover:scale-[1.02] border border-[var(--border-color)] hover:border-blue-500"
+                  >
+                    <div className="flex items-start gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                        <i className={`glass-i fas ${template.icon} text-blue-600 text-sm`}></i>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm text-[var(--text-primary)] mb-0.5">
+                          {template.name}
+                        </h4>
+                        <p className="text-xs text-[var(--text-secondary)] line-clamp-2">
+                          {template.templateDescription}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleCreateTask} className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-[var(--text-primary)] mb-2">

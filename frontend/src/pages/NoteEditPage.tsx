@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import type { Note } from '../types';
+import { noteTemplates, type NoteTemplate } from '../utils/templates';
 
 export function NoteEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +22,8 @@ export function NoteEditPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(isNew);
+  const [hasAppliedTemplate, setHasAppliedTemplate] = useState(false);
 
   const loadNote = useCallback(async () => {
     if (!id) return;
@@ -75,6 +78,14 @@ export function NoteEditPage() {
     }
   };
 
+  const applyTemplate = (template: NoteTemplate) => {
+    setTitle(template.title);
+    setBody(template.body);
+    setTags(template.tags);
+    setShowTemplates(false);
+    setHasAppliedTemplate(true);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -107,6 +118,84 @@ export function NoteEditPage() {
               <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
               {error}
             </div>
+          )}
+
+          {/* Template Selection - Only show for new notes */}
+          {isNew && (
+            <>
+              {showTemplates ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+                      <i className="glass-i fas fa-magic mr-2 text-purple-600"></i>
+                      Choose a Template
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => setShowTemplates(false)}
+                      className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                    >
+                      <i className="glass-i fas fa-times mr-1"></i>
+                      Skip templates
+                    </button>
+                  </div>
+                  <p className="text-sm text-[var(--text-secondary)]">
+                    Start with a pre-formatted template or create a blank note
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {noteTemplates.map((template) => (
+                      <button
+                        key={template.id}
+                        type="button"
+                        onClick={() => applyTemplate(template)}
+                        className="glass-card p-4 rounded-xl text-left hover:shadow-lg transition-all hover:scale-[1.02] border border-[var(--border-color)] hover:border-blue-500"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                            <i className={`glass-i fas ${template.icon} text-blue-600`}></i>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-[var(--text-primary)] mb-1">
+                              {template.name}
+                            </h3>
+                            <p className="text-xs text-[var(--text-secondary)] line-clamp-2">
+                              {template.description}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : hasAppliedTemplate && (
+                <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                  <div className="flex items-center text-sm text-green-600 dark:text-green-400">
+                    <i className="glass-i fas fa-check-circle mr-2"></i>
+                    Template applied! You can customize it below.
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowTemplates(true);
+                      setHasAppliedTemplate(false);
+                    }}
+                    className="text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                  >
+                    Choose different template
+                  </button>
+                </div>
+              )}
+              {!showTemplates && !hasAppliedTemplate && (
+                <button
+                  type="button"
+                  onClick={() => setShowTemplates(true)}
+                  className="w-full p-3 rounded-lg border-2 border-dashed border-[var(--border-color)] hover:border-blue-500 text-[var(--text-muted)] hover:text-blue-600 transition-colors"
+                >
+                  <i className="glass-i fas fa-magic mr-2"></i>
+                  Use a template
+                </button>
+              )}
+            </>
           )}
 
           {/* Title */}
