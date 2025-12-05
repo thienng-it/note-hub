@@ -223,10 +223,9 @@ export function Layout() {
         <button
           id="backToTop"
           onClick={scrollToTop}
-          className={`fixed bottom-24 lg:bottom-8 right-4 lg:right-8 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40 ${
+          className={`btn-back-to-top ${
             showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
           }`}
-          style={{ background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))' }}
           aria-label="Scroll to top"
         >
           <i className="glass-i fas fa-arrow-up text-white" aria-hidden="true"></i>

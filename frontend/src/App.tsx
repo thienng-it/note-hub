@@ -22,7 +22,6 @@ import { InvitePage } from './pages/InvitePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ErrorPage } from './pages/ErrorPage';
 import { GoogleCallbackPage } from './pages/GoogleCallbackPage';
-import './App.css';
 
 function AppRoutes() {
   const { isAuthenticated, isLoading } = useAuth();
