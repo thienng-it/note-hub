@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
+import { ConfirmModal } from '../components/Modal';
 
 interface SharedUser {
   id: number;
@@ -25,6 +26,8 @@ export function ShareNotePage() {
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [unshareModal, setUnshareModal] = useState<{ userId: number; userName: string } | null>(null);
+  const [isUnsharing, setIsUnsharing] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -76,18 +79,24 @@ export function ShareNotePage() {
     }
   };
 
-  const handleUnshare = async (userId: number, userName: string) => {
-    if (!window.confirm(`Remove share with ${userName}?`)) {
-      return;
-    }
+  const handleUnshareClick = (userId: number, userName: string) => {
+    setUnshareModal({ userId, userName });
+  };
 
+  const handleUnshareConfirm = async () => {
+    if (!unshareModal) return;
+
+    setIsUnsharing(true);
     try {
-      await apiClient.delete(`/api/notes/${id}/share/${userId}`);
-      setSharedWith(prev => prev.filter((u) => u.id !== userId));
-      setSuccess(`Share removed for ${userName}`);
+      await apiClient.delete(`/api/notes/${id}/share/${unshareModal.userId}`);
+      setSharedWith(prev => prev.filter((u) => u.id !== unshareModal.userId));
+      setSuccess(`Share removed for ${unshareModal.userName}`);
+      setUnshareModal(null);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to remove share';
       setError(errorMessage);
+    } finally {
+      setIsUnsharing(false);
     }
   };
 
@@ -223,7 +232,7 @@ export function ShareNotePage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => handleUnshare(user.id, user.username)}
+                  onClick={() => handleUnshareClick(user.id, user.username)}
                   className="text-red-600 hover:text-red-800 transition-colors p-2"
                   aria-label={`Remove share for ${user.username}`}
                 >
@@ -239,6 +248,19 @@ export function ShareNotePage() {
           </div>
         )}
       </div>
+
+      {/* Unshare Confirmation Modal */}
+      <ConfirmModal
+        isOpen={unshareModal !== null}
+        onClose={() => setUnshareModal(null)}
+        onConfirm={handleUnshareConfirm}
+        title="Remove Share Access"
+        message={`Are you sure you want to remove share access for ${unshareModal?.userName}? They will no longer be able to view or edit this note.`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isUnsharing}
+      />
     </div>
   );
 }

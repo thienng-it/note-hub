@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import type { Note } from '../types';
+import { getTagColor } from '../utils/tagColors';
 
 export function NoteViewPage() {
   const { id } = useParams<{ id: string }>();
@@ -165,7 +166,10 @@ export function NoteViewPage() {
               {note.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {note.tags.map((tag) => (
-                    <span key={tag.id} className="tag">
+                    <span 
+                      key={tag.id} 
+                      className={`px-3 py-1 text-sm font-medium rounded-full border ${getTagColor(tag.name)}`}
+                    >
                       {tag.name}
                     </span>
                   ))}

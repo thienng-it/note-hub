@@ -46,6 +46,25 @@ export function TasksPage() {
     });
   };
 
+  const hideAllTasks = () => {
+    const allTaskIds = new Set(tasks.map(task => task.id));
+    setHiddenTasks(allTaskIds);
+    try {
+      localStorage.setItem('hiddenTasks', JSON.stringify([...allTaskIds]));
+    } catch {
+      // Silently fail if localStorage is unavailable
+    }
+  };
+
+  const showAllTasks = () => {
+    setHiddenTasks(new Set());
+    try {
+      localStorage.setItem('hiddenTasks', JSON.stringify([]));
+    } catch {
+      // Silently fail if localStorage is unavailable
+    }
+  };
+
   const loadTasks = useCallback(async () => {
     setIsLoading(true);
     setError('');
@@ -153,13 +172,33 @@ export function TasksPage() {
           <i className="glass-i fas fa-tasks mr-3 text-blue-600"></i>
           Tasks
         </h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="btn-apple px-4 py-2 rounded-lg font-medium"
-        >
-          <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
-          {showForm ? 'Cancel' : 'New Task'}
-        </button>
+        <div className="flex items-center gap-2">
+          {tasks.length > 0 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={hideAllTasks}
+                className="btn-secondary-glass text-sm"
+                title="Hide all task contents"
+              >
+                <i className="glass-i fas fa-eye-slash mr-2"></i>Hide All
+              </button>
+              <button
+                onClick={showAllTasks}
+                className="btn-secondary-glass text-sm"
+                title="Show all task contents"
+              >
+                <i className="glass-i fas fa-eye mr-2"></i>Show All
+              </button>
+            </div>
+          )}
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="btn-apple px-4 py-2 rounded-lg font-medium"
+          >
+            <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
+            {showForm ? 'Cancel' : 'New Task'}
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
