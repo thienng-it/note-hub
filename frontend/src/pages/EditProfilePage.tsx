@@ -25,7 +25,7 @@ export function EditProfilePage() {
 
     setIsLoading(true);
     try {
-      await apiClient.put('/api/user/profile', formData);
+      await apiClient.put('/api/v1/profile', formData);
       await refreshUser();
       navigate('/profile', { state: { message: 'Profile updated successfully' } });
     } catch (err: unknown) {

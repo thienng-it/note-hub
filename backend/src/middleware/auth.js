@@ -3,6 +3,7 @@
  */
 const jwtService = require('../services/jwtService');
 const db = require('../config/database');
+const responseHandler = require('../utils/responseHandler');
 
 /**
  * Middleware that requires a valid JWT token.
@@ -11,24 +12,24 @@ const jwtRequired = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ error: 'No authorization header' });
+    return responseHandler.unauthorized(res, 'No authorization header');
   }
 
   // Validate Bearer token format
   if (!authHeader.toLowerCase().startsWith('bearer ')) {
-    return res.status(401).json({ error: 'Invalid authorization header format' });
+    return responseHandler.unauthorized(res, 'Invalid authorization header format');
   }
 
   const parts = authHeader.split(' ');
   if (parts.length !== 2) {
-    return res.status(401).json({ error: 'Invalid authorization header format' });
+    return responseHandler.unauthorized(res, 'Invalid authorization header format');
   }
 
   const token = parts[1];
   const result = jwtService.validateToken(token);
 
   if (!result.valid) {
-    return res.status(401).json({ error: result.error || 'Invalid token' });
+    return responseHandler.unauthorized(res, result.error || 'Invalid token');
   }
 
   // Get user from database
@@ -38,7 +39,7 @@ const jwtRequired = async (req, res, next) => {
   );
 
   if (!user) {
-    return res.status(401).json({ error: 'User not found' });
+    return responseHandler.unauthorized(res, 'User not found');
   }
 
   // Add user to request
@@ -85,7 +86,7 @@ const jwtOptional = async (req, res, next) => {
  */
 const adminRequired = async (req, res, next) => {
   if (!req.user || req.user.username !== 'admin') {
-    return res.status(403).json({ error: 'Admin privileges required' });
+    return responseHandler.forbidden(res, 'Admin privileges required');
   }
   next();
 };

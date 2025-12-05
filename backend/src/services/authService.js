@@ -59,11 +59,16 @@ class AuthService {
   /**
    * Authenticate a user by username/email and password.
    * Automatically rehashes password if using old work factor.
+   * Handles case-insensitive and whitespace-trimmed comparison.
    */
   static async authenticateUser(usernameOrEmail, password) {
+    // Trim whitespace from input
+    const trimmedInput = usernameOrEmail.trim();
+    
+    // Query with case-insensitive comparison (COLLATE NOCASE for SQLite, LOWER() for MySQL)
     const user = await db.queryOne(
-      `SELECT * FROM users WHERE username = ? OR email = ?`,
-      [usernameOrEmail, usernameOrEmail]
+      `SELECT * FROM users WHERE LOWER(TRIM(username)) = LOWER(?) OR LOWER(TRIM(email)) = LOWER(?)`,
+      [trimmedInput, trimmedInput]
     );
 
     if (!user) {
@@ -101,10 +106,11 @@ class AuthService {
       return { success: false, error: validation.error };
     }
 
-    // Check if username exists
+    // Check if username exists (case-insensitive and trimmed)
+    const trimmedUsername = username.trim();
     const existingUser = await db.queryOne(
-      `SELECT id FROM users WHERE username = ?`,
-      [username]
+      `SELECT id FROM users WHERE LOWER(TRIM(username)) = LOWER(?)`,
+      [trimmedUsername]
     );
     if (existingUser) {
       return { success: false, error: 'Username already exists' };
@@ -121,11 +127,12 @@ class AuthService {
       }
     }
 
-    // Hash password and create user
+    // Hash password and create user (store trimmed username/email)
     const passwordHash = await this.hashPassword(password);
+    const trimmedEmail = email ? email.trim() : null;
     const result = await db.run(
       `INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)`,
-      [username, passwordHash, email]
+      [trimmedUsername, passwordHash, trimmedEmail]
     );
 
     // Mark invitation as used

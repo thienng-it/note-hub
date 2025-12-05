@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { notesApi } from '../api/client';
 import type { Note, NoteViewType, Tag } from '../types';
+import { getTagColor } from '../utils/tagColors';
 
 export function NotesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,8 +13,12 @@ export function NotesPage() {
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
   const [hiddenNotes, setHiddenNotes] = useState<Set<number>>(() => {
-    const saved = localStorage.getItem('hiddenNotes');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
+    try {
+      const saved = localStorage.getItem('hiddenNotes');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
   });
 
   const toggleHideNote = (noteId: number) => {
@@ -24,9 +29,32 @@ export function NotesPage() {
       } else {
         newSet.add(noteId);
       }
-      localStorage.setItem('hiddenNotes', JSON.stringify([...newSet]));
+      try {
+        localStorage.setItem('hiddenNotes', JSON.stringify([...newSet]));
+      } catch {
+        // Silently fail if localStorage is unavailable (e.g., private browsing, storage full)
+      }
       return newSet;
     });
+  };
+
+  const hideAllNotes = () => {
+    const allNoteIds = new Set(notes.map(note => note.id));
+    setHiddenNotes(allNoteIds);
+    try {
+      localStorage.setItem('hiddenNotes', JSON.stringify([...allNoteIds]));
+    } catch {
+      // Silently fail if localStorage is unavailable
+    }
+  };
+
+  const showAllNotes = () => {
+    setHiddenNotes(new Set());
+    try {
+      localStorage.setItem('hiddenNotes', JSON.stringify([]));
+    } catch {
+      // Silently fail if localStorage is unavailable
+    }
   };
 
   const view = (searchParams.get('view') || 'all') as NoteViewType;
@@ -169,6 +197,24 @@ export function NotesPage() {
           </h1>
           <div className="flex items-center space-x-3">
             <span className="text-sm text-[var(--text-secondary)]">{notes.length} notes</span>
+            {notes.length > 0 && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={hideAllNotes}
+                  className="btn-secondary-glass text-sm"
+                  title="Hide all note contents"
+                >
+                  <i className="glass-i fas fa-eye-slash mr-2"></i>Hide All
+                </button>
+                <button
+                  onClick={showAllNotes}
+                  className="btn-secondary-glass text-sm"
+                  title="Show all note contents"
+                >
+                  <i className="glass-i fas fa-eye mr-2"></i>Show All
+                </button>
+              </div>
+            )}
             <Link
               to="/notes/new"
               className="btn-apple"
@@ -332,7 +378,10 @@ export function NotesPage() {
                     {note.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-3">
                         {note.tags.slice(0, 3).map((tag) => (
-                          <span key={tag.id} className="tag">
+                          <span 
+                            key={tag.id} 
+                            className={`px-2 py-1 text-xs font-medium rounded-full border ${getTagColor(tag.name)}`}
+                          >
                             {tag.name}
                           </span>
                         ))}
@@ -444,7 +493,7 @@ export function NotesPage() {
                   params.set('tag', tag.name);
                   setSearchParams(params);
                 }}
-                className="tag hover:scale-105"
+                className={`px-3 py-1.5 text-sm font-medium rounded-full border transition-transform hover:scale-105 ${getTagColor(tag.name)}`}
               >
                 {tag.name}
                 <span className="ml-1 opacity-75">({tag.note_count})</span>

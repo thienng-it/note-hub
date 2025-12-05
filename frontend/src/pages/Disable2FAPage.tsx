@@ -15,7 +15,7 @@ export function Disable2FAPage() {
     setIsSubmitting(true);
     
     try {
-      await apiClient.post('/api/auth/2fa/disable');
+      await apiClient.post('/api/v1/auth/2fa/disable');
       // Refresh user data to update has_2fa status
       await refreshUser();
       navigate('/profile', { state: { message: 'Two-factor authentication disabled' } });

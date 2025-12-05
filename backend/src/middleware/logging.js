@@ -26,7 +26,8 @@ function requestLogger(req, res, next) {
       statusCode: res.statusCode,
       duration: `${duration}ms`,
       ip: req.ip || req.socket?.remoteAddress,
-      userAgent: req.get('user-agent')
+      userAgent: req.get('user-agent'),
+      requestId: res.locals.requestId
     };
 
     // Log at appropriate level based on status code

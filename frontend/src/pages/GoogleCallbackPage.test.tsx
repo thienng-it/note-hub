@@ -86,7 +86,7 @@ describe('GoogleCallbackPage', () => {
     );
 
     await waitFor(() => {
-      expect(apiClient.apiClient.post).toHaveBeenCalledWith('/api/auth/google/callback', { code: 'test-code' });
+      expect(apiClient.apiClient.post).toHaveBeenCalledWith('/api/v1/auth/google/callback', { code: 'test-code' });
     });
 
     await waitFor(() => {

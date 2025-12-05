@@ -31,7 +31,7 @@ export function ChangePasswordPage() {
 
     setIsLoading(true);
     try {
-      await apiClient.post('/api/user/change-password', {
+      await apiClient.post('/api/v1/auth/change-password', {
         current_password: formData.currentPassword,
         new_password: formData.newPassword,
       });

@@ -27,7 +27,7 @@ export function InvitePage() {
 
   const fetchInvitations = async () => {
     try {
-      const data = await apiClient.get<{ invitations: Invitation[] }>('/api/invitations');
+      const data = await apiClient.get<{ invitations: Invitation[] }>('/api/v1/invitations');
       setInvitations(data.invitations || []);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load invitations';
@@ -44,7 +44,7 @@ export function InvitePage() {
 
     setIsSubmitting(true);
     try {
-      const data = await apiClient.post<{ token: string }>('/api/invitations', {
+      const data = await apiClient.post<{ token: string }>('/api/v1/invitations', {
         email: email.trim() || undefined,
         message: message.trim() || undefined,
       });

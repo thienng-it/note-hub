@@ -19,6 +19,8 @@ import type {
 
 // Use relative URL in production (same origin), absolute in development
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+// Use API v1 for new standardized response format
+const API_VERSION = '/api/v1';
 
 // Token storage
 const TOKEN_KEY = 'notehub_access_token';
@@ -45,6 +47,7 @@ export const clearStoredAuth = (): void => {
 };
 
 // HTTP client with auth headers
+// Handles v1 API responses with standardized format
 async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -75,10 +78,14 @@ async function apiRequest<T>(
         },
       });
       if (!retryResponse.ok) {
-        const error = await retryResponse.json().catch(() => ({ error: 'Request failed' }));
-        throw new Error(error.error || 'Request failed');
+        const errorData = await retryResponse.json().catch(() => ({ error: { message: 'Request failed' } }));
+        // Handle v1 error format
+        const errorMessage = errorData.error?.message || errorData.error || 'Request failed';
+        throw new Error(errorMessage);
       }
-      return retryResponse.json();
+      const data = await retryResponse.json();
+      // Extract data from v1 response format if present
+      return (data.success !== undefined ? data.data : data) as T;
     } else {
       clearStoredAuth();
       window.location.href = '/login';
@@ -87,11 +94,15 @@ async function apiRequest<T>(
   }
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(error.error || 'Request failed');
+    const errorData = await response.json().catch(() => ({ error: { message: 'Request failed' } }));
+    // Handle v1 error format
+    const errorMessage = errorData.error?.message || errorData.error || 'Request failed';
+    throw new Error(errorMessage);
   }
 
-  return response.json();
+  const data = await response.json();
+  // Extract data from v1 response format if present
+  return (data.success !== undefined ? data.data : data) as T;
 }
 
 // Refresh token
@@ -100,7 +111,7 @@ async function refreshToken(): Promise<boolean> {
   if (!refresh) return false;
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: refresh }),
@@ -109,7 +120,9 @@ async function refreshToken(): Promise<boolean> {
     if (!response.ok) return false;
 
     const data = await response.json();
-    localStorage.setItem(TOKEN_KEY, data.access_token);
+    // Handle v1 response format
+    const accessToken = data.success ? data.data.access_token : data.access_token;
+    localStorage.setItem(TOKEN_KEY, accessToken);
     return true;
   } catch {
     return false;
@@ -119,24 +132,29 @@ async function refreshToken(): Promise<boolean> {
 // Auth API
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
     if (!response.ok) {
-      throw { ...data, status: response.status };
+      // Handle v1 error format
+      const errorMessage = result.error?.message || result.error || 'Login failed';
+      const requires2fa = result.error?.details?.requires_2fa || result.requires_2fa;
+      throw { error: errorMessage, requires_2fa: requires2fa, status: response.status };
     }
 
+    // Handle v1 response format
+    const data = result.success ? result.data : result;
     setStoredAuth(data.access_token, data.refresh_token, data.user);
     return data;
   },
 
   async validate(): Promise<{ valid: boolean; user: User }> {
-    return apiRequest('/api/auth/validate');
+    return apiRequest(`${API_VERSION}/auth/validate`);
   },
 
   logout(): void {
@@ -151,17 +169,17 @@ export const notesApi = {
     if (query) params.append('q', query);
     if (tag) params.append('tag', tag);
 
-    const response = await apiRequest<NotesResponse>(`/api/notes?${params}`);
+    const response = await apiRequest<NotesResponse>(`${API_VERSION}/notes?${params}`);
     return response.notes;
   },
 
   async get(id: number): Promise<Note> {
-    const response = await apiRequest<NoteResponse>(`/api/notes/${id}`);
+    const response = await apiRequest<NoteResponse>(`${API_VERSION}/notes/${id}`);
     return response.note;
   },
 
   async create(data: NoteFormData): Promise<Note> {
-    const response = await apiRequest<NoteResponse>('/api/notes', {
+    const response = await apiRequest<NoteResponse>(`${API_VERSION}/notes`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -169,7 +187,7 @@ export const notesApi = {
   },
 
   async update(id: number, data: Partial<NoteFormData & { pinned?: boolean; favorite?: boolean; archived?: boolean }>): Promise<Note> {
-    const response = await apiRequest<NoteResponse>(`/api/notes/${id}`, {
+    const response = await apiRequest<NoteResponse>(`${API_VERSION}/notes/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
@@ -177,7 +195,7 @@ export const notesApi = {
   },
 
   async delete(id: number): Promise<void> {
-    await apiRequest(`/api/notes/${id}`, { method: 'DELETE' });
+    await apiRequest(`${API_VERSION}/notes/${id}`, { method: 'DELETE' });
   },
 
   async toggleFavorite(note: Note): Promise<Note> {
@@ -197,17 +215,17 @@ export const notesApi = {
 export const tasksApi = {
   async list(filter: TaskFilterType = 'all'): Promise<Task[]> {
     const params = new URLSearchParams({ filter });
-    const response = await apiRequest<TasksResponse>(`/api/tasks?${params}`);
+    const response = await apiRequest<TasksResponse>(`${API_VERSION}/tasks?${params}`);
     return response.tasks;
   },
 
   async get(id: number): Promise<Task> {
-    const response = await apiRequest<TaskResponse>(`/api/tasks/${id}`);
+    const response = await apiRequest<TaskResponse>(`${API_VERSION}/tasks/${id}`);
     return response.task;
   },
 
   async create(data: TaskFormData): Promise<Task> {
-    const response = await apiRequest<TaskResponse>('/api/tasks', {
+    const response = await apiRequest<TaskResponse>(`${API_VERSION}/tasks`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -215,7 +233,7 @@ export const tasksApi = {
   },
 
   async update(id: number, data: Partial<TaskFormData & { completed?: boolean }>): Promise<Task> {
-    const response = await apiRequest<TaskResponse>(`/api/tasks/${id}`, {
+    const response = await apiRequest<TaskResponse>(`${API_VERSION}/tasks/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
@@ -223,7 +241,7 @@ export const tasksApi = {
   },
 
   async delete(id: number): Promise<void> {
-    await apiRequest(`/api/tasks/${id}`, { method: 'DELETE' });
+    await apiRequest(`${API_VERSION}/tasks/${id}`, { method: 'DELETE' });
   },
 
   async toggleComplete(task: Task): Promise<Task> {
@@ -234,7 +252,7 @@ export const tasksApi = {
 // Health check
 export const healthApi = {
   async check(): Promise<{ status: string }> {
-    return apiRequest('/api/health');
+    return apiRequest(`${API_VERSION}/health`);
   },
 };
 
@@ -273,11 +291,11 @@ export const apiClient = {
 // AI API
 export const aiApi = {
   async getStatus(): Promise<AIStatus> {
-    return apiRequest('/api/ai/status');
+    return apiRequest(`${API_VERSION}/ai/status`);
   },
 
   async proofread(text: string): Promise<string> {
-    const result = await apiRequest<AIOperationResult>('/api/ai/proofread', {
+    const result = await apiRequest<AIOperationResult>(`${API_VERSION}/ai/proofread`, {
       method: 'POST',
       body: JSON.stringify({ text }),
     });
@@ -285,7 +303,7 @@ export const aiApi = {
   },
 
   async summarize(text: string): Promise<string> {
-    const result = await apiRequest<AIOperationResult>('/api/ai/summarize', {
+    const result = await apiRequest<AIOperationResult>(`${API_VERSION}/ai/summarize`, {
       method: 'POST',
       body: JSON.stringify({ text }),
     });
@@ -293,7 +311,7 @@ export const aiApi = {
   },
 
   async rewrite(text: string, style: AIRewriteStyle = 'professional'): Promise<string> {
-    const result = await apiRequest<AIOperationResult>('/api/ai/rewrite', {
+    const result = await apiRequest<AIOperationResult>(`${API_VERSION}/ai/rewrite`, {
       method: 'POST',
       body: JSON.stringify({ text, style }),
     });

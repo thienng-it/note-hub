@@ -119,7 +119,7 @@ describe('Disable2FAPage', () => {
     });
 
     await waitFor(() => {
-      expect(apiClient.apiClient.post).toHaveBeenCalledWith('/api/auth/2fa/disable');
+      expect(apiClient.apiClient.post).toHaveBeenCalledWith('/api/v1/auth/2fa/disable');
       expect(mockRefreshUser).toHaveBeenCalled();
       expect(mockNavigate).toHaveBeenCalledWith('/profile', { state: { message: 'Two-factor authentication disabled' } });
     });

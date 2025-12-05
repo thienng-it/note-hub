@@ -81,11 +81,31 @@ const staticLimiter = rateLimit({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Request ID middleware for tracking
+const requestIdMiddleware = require('./middleware/requestId');
+app.use(requestIdMiddleware);
+
+// Additional security headers
+const securityHeadersMiddleware = require('./middleware/securityHeaders');
+app.use(securityHeadersMiddleware);
+
 // Request logging middleware
 const { requestLogger } = require('./middleware/logging');
 app.use(requestLogger);
 
-// API routes
+// Response adapter for backward compatibility
+const { markAsV1, legacyResponseAdapter } = require('./middleware/responseAdapter');
+app.use(legacyResponseAdapter);
+
+// API v1 routes (with versioning and new response format)
+app.use('/api/v1/auth', markAsV1, authRoutes);
+app.use('/api/v1/notes', markAsV1, notesRoutes);
+app.use('/api/v1/tasks', markAsV1, tasksRoutes);
+app.use('/api/v1/profile', markAsV1, profileRoutes);
+app.use('/api/v1/admin', markAsV1, adminRoutes);
+app.use('/api/v1/ai', markAsV1, aiRoutes);
+
+// Backward compatibility: /api/* routes use legacy response format
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/tasks', tasksRoutes);
@@ -93,20 +113,43 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Health check
+// Health check endpoints with standardized response
+const responseHandler = require('./utils/responseHandler');
+app.get('/api/v1/health', markAsV1, async (req, res) => {
+  try {
+    const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
+    responseHandler.success(res, {
+      status: 'healthy',
+      database: 'connected',
+      services: {
+        cache: cache.isEnabled() ? 'enabled' : 'disabled',
+        search: elasticsearch.isEnabled() ? 'enabled' : 'disabled'
+      },
+      user_count: userCount?.count || 0
+    }, { message: 'Service is healthy' });
+  } catch (error) {
+    responseHandler.error(res, 'Service is unhealthy', {
+      statusCode: 503,
+      errorCode: 'SERVICE_UNAVAILABLE',
+      details: { error: error.message }
+    });
+  }
+});
+
+// Backward compatibility - uses legacy format via adapter
 app.get('/api/health', async (req, res) => {
   try {
     const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
-    res.json({
+    responseHandler.success(res, {
       status: 'healthy',
       database: 'connected',
       user_count: userCount?.count || 0,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    res.status(503).json({
-      status: 'unhealthy',
-      error: error.message
+    responseHandler.error(res, 'Service is unhealthy', {
+      statusCode: 503,
+      errorCode: 'SERVICE_UNAVAILABLE'
     });
   }
 });
@@ -127,7 +170,7 @@ if (fs.existsSync(frontendPath)) {
 
 // 404 handler for API routes
 app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: 'Not found' });
+  responseHandler.notFound(res, 'Endpoint');
 });
 
 // Error handler
@@ -136,9 +179,15 @@ app.use((err, req, res, next) => {
     error: err.message,
     stack: err.stack,
     path: req.path,
-    method: req.method
+    method: req.method,
+    requestId: res.locals.requestId
   });
-  res.status(500).json({ error: 'Internal server error' });
+  
+  responseHandler.error(res, 'Internal server error', {
+    statusCode: 500,
+    errorCode: 'INTERNAL_ERROR',
+    details: process.env.NODE_ENV === 'development' ? { message: err.message } : undefined
+  });
 });
 
 // Initialize database and start server
