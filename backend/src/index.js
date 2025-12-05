@@ -93,15 +93,19 @@ app.use(securityHeadersMiddleware);
 const { requestLogger } = require('./middleware/logging');
 app.use(requestLogger);
 
-// API v1 routes (with versioning)
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/notes', notesRoutes);
-app.use('/api/v1/tasks', tasksRoutes);
-app.use('/api/v1/profile', profileRoutes);
-app.use('/api/v1/admin', adminRoutes);
-app.use('/api/v1/ai', aiRoutes);
+// Response adapter for backward compatibility
+const { markAsV1, legacyResponseAdapter } = require('./middleware/responseAdapter');
+app.use(legacyResponseAdapter);
 
-// Backward compatibility: redirect /api/* to /api/v1/*
+// API v1 routes (with versioning and new response format)
+app.use('/api/v1/auth', markAsV1, authRoutes);
+app.use('/api/v1/notes', markAsV1, notesRoutes);
+app.use('/api/v1/tasks', markAsV1, tasksRoutes);
+app.use('/api/v1/profile', markAsV1, profileRoutes);
+app.use('/api/v1/admin', markAsV1, adminRoutes);
+app.use('/api/v1/ai', markAsV1, aiRoutes);
+
+// Backward compatibility: /api/* routes use legacy response format
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/tasks', tasksRoutes);
@@ -111,7 +115,7 @@ app.use('/api/ai', aiRoutes);
 
 // Health check endpoints with standardized response
 const responseHandler = require('./utils/responseHandler');
-app.get('/api/v1/health', async (req, res) => {
+app.get('/api/v1/health', markAsV1, async (req, res) => {
   try {
     const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
     responseHandler.success(res, {
@@ -132,20 +136,20 @@ app.get('/api/v1/health', async (req, res) => {
   }
 });
 
-// Backward compatibility
+// Backward compatibility - uses legacy format via adapter
 app.get('/api/health', async (req, res) => {
   try {
     const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
-    res.json({
+    responseHandler.success(res, {
       status: 'healthy',
       database: 'connected',
       user_count: userCount?.count || 0,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    res.status(503).json({
-      status: 'unhealthy',
-      error: error.message
+    responseHandler.error(res, 'Service is unhealthy', {
+      statusCode: 503,
+      errorCode: 'SERVICE_UNAVAILABLE'
     });
   }
 });

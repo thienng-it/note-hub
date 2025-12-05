@@ -7,6 +7,8 @@ const AuthService = require('../services/authService');
 const jwtService = require('../services/jwtService');
 const googleOAuthService = require('../services/googleOAuthService');
 const { jwtRequired } = require('../middleware/auth');
+const responseHandler = require('../utils/responseHandler');
+const { validateRequiredFields, sanitizeStrings, validateEmail, validateLength } = require('../middleware/validation');
 const db = require('../config/database');
 const { authenticator } = require('otplib');
 const QRCode = require('qrcode');
@@ -15,116 +17,130 @@ const crypto = require('crypto');
 /**
  * POST /api/auth/login - User login
  */
-router.post('/login', async (req, res) => {
-  try {
-    const { username, password, totp_code } = req.body;
+router.post('/login', 
+  sanitizeStrings(['username', 'password']),
+  async (req, res) => {
+    try {
+      const { username, password, totp_code } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username/email and password required' });
-    }
-
-    const user = await AuthService.authenticateUser(username, password);
-
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Check 2FA if enabled
-    if (user.totp_secret && !totp_code) {
-      return res.status(401).json({ error: '2FA code required', requires_2fa: true });
-    }
-
-    if (user.totp_secret) {
-      const isValidTotp = authenticator.verify({ token: totp_code, secret: user.totp_secret });
-      if (!isValidTotp) {
-        return res.status(401).json({ error: 'Invalid 2FA code' });
+      if (!username || !password) {
+        return responseHandler.validationError(res, {
+          missingFields: ['username', 'password'],
+          message: 'Username/email and password required'
+        });
       }
-    }
 
-    // Generate tokens
-    const accessToken = jwtService.generateToken(user.id);
-    const refreshToken = jwtService.generateRefreshToken(user.id);
+      const user = await AuthService.authenticateUser(username, password);
 
-    // Update last login
-    await AuthService.updateLastLogin(user.id);
-
-    res.json({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      token_type: 'Bearer',
-      expires_in: 86400, // 24 hours
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        has_2fa: !!user.totp_secret
+      if (!user) {
+        return responseHandler.unauthorized(res, 'Invalid credentials');
       }
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+
+      // Check 2FA if enabled
+      if (user.totp_secret && !totp_code) {
+        return responseHandler.error(res, '2FA code required', {
+          statusCode: 401,
+          errorCode: 'REQUIRES_2FA',
+          details: { requires_2fa: true }
+        });
+      }
+
+      if (user.totp_secret) {
+        const isValidTotp = authenticator.verify({ token: totp_code, secret: user.totp_secret });
+        if (!isValidTotp) {
+          return responseHandler.unauthorized(res, 'Invalid 2FA code');
+        }
+      }
+
+      // Generate tokens
+      const accessToken = jwtService.generateToken(user.id);
+      const refreshToken = jwtService.generateRefreshToken(user.id);
+
+      // Update last login
+      await AuthService.updateLastLogin(user.id);
+
+      return responseHandler.success(res, {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        token_type: 'Bearer',
+        expires_in: 86400, // 24 hours
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          has_2fa: !!user.totp_secret
+        }
+      }, { message: 'Login successful' });
+    } catch (error) {
+      console.error('Login error:', error);
+      return responseHandler.error(res, 'Internal server error', {
+        statusCode: 500,
+        errorCode: 'LOGIN_ERROR'
+      });
+    }
   }
-});
+);
 
 /**
  * POST /api/auth/register - User registration
  */
-router.post('/register', async (req, res) => {
-  try {
-    const { username, password, email, invite_token } = req.body;
+router.post('/register', 
+  sanitizeStrings(['username', 'password', 'email']),
+  validateRequiredFields(['username', 'password']),
+  validateLength('username', { min: 3, max: 50 }),
+  validateEmail('email'),
+  async (req, res) => {
+    try {
+      const { username, password, email, invite_token } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password required' });
+      const result = await AuthService.registerUser(username, password, email, invite_token);
+
+      if (!result.success) {
+        return responseHandler.validationError(res, {
+          message: result.error
+        });
+      }
+
+      return responseHandler.created(res, {
+        user: result.user
+      }, 'Registration successful');
+    } catch (error) {
+      console.error('Registration error:', error);
+      return responseHandler.error(res, 'Internal server error', {
+        statusCode: 500,
+        errorCode: 'REGISTRATION_ERROR'
+      });
     }
-
-    if (username.length < 3) {
-      return res.status(400).json({ error: 'Username must be at least 3 characters' });
-    }
-
-    const result = await AuthService.registerUser(username, password, email, invite_token);
-
-    if (!result.success) {
-      return res.status(400).json({ error: result.error });
-    }
-
-    res.status(201).json({
-      message: 'Registration successful',
-      user: result.user
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-});
+);
 
 /**
  * POST /api/auth/refresh - Refresh access token
  */
-router.post('/refresh', (req, res) => {
-  const { refresh_token } = req.body;
+router.post('/refresh', 
+  validateRequiredFields(['refresh_token']),
+  (req, res) => {
+    const { refresh_token } = req.body;
 
-  if (!refresh_token) {
-    return res.status(400).json({ error: 'Refresh token required' });
+    const result = jwtService.refreshAccessToken(refresh_token);
+
+    if (!result.success) {
+      return responseHandler.unauthorized(res, result.error);
+    }
+
+    return responseHandler.success(res, {
+      access_token: result.accessToken,
+      token_type: 'Bearer',
+      expires_in: 86400 // 24 hours
+    }, { message: 'Token refreshed successfully' });
   }
-
-  const result = jwtService.refreshAccessToken(refresh_token);
-
-  if (!result.success) {
-    return res.status(401).json({ error: result.error });
-  }
-
-  res.json({
-    access_token: result.accessToken,
-    token_type: 'Bearer',
-    expires_in: 86400 // 24 hours
-  });
-});
+);
 
 /**
  * GET /api/auth/validate - Validate JWT token and return user info
  */
 router.get('/validate', jwtRequired, (req, res) => {
-  res.json({
+  return responseHandler.success(res, {
     valid: true,
     user: {
       id: req.user.id,
@@ -135,7 +151,7 @@ router.get('/validate', jwtRequired, (req, res) => {
       has_2fa: !!req.user.totp_secret,
       created_at: req.user.created_at
     }
-  });
+  }, { message: 'Token is valid' });
 });
 
 /**
