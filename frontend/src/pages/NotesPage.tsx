@@ -331,6 +331,13 @@ export function NotesPage() {
                   >
                     <i className="glass-i fas fa-edit"></i>
                   </Link>
+                  <Link
+                    to={`/notes/${note.id}/share`}
+                    className="text-green-600 hover:text-green-800 transition-colors"
+                    title="Share"
+                  >
+                    <i className="glass-i fas fa-share-alt"></i>
+                  </Link>
                   <button
                     onClick={() => handleToggleFavorite(note)}
                     className={`${note.favorite ? 'text-red-600 hover:text-red-800' : 'text-gray-400 hover:text-red-600'} transition-colors`}

@@ -171,6 +171,13 @@ export function NoteViewPage() {
                 >
                   <i className="glass-i fas fa-edit"></i>
                 </Link>
+                <Link
+                  to={`/notes/${note.id}/share`}
+                  className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-green-600 transition-colors"
+                  title="Share"
+                >
+                  <i className="glass-i fas fa-share-alt"></i>
+                </Link>
                 <button
                   onClick={handleTogglePin}
                   className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${

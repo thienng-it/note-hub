@@ -60,10 +60,10 @@ export function Layout() {
         aria-label="Main navigation"
       >
         <div className="p-4 border-b border-[var(--border-color)]">
-          <div className="flex items-center justify-between">
+          <div className={`flex items-center ${sidebarCollapsed ? 'flex-col gap-3' : 'justify-between'}`}>
             <Link to="/" className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                <i className="glass-i fas fa-sticky-note text-white" aria-hidden="true"></i>
+                <i className="glass-i fas fa-book text-white" aria-hidden="true"></i>
               </div>
               {!sidebarCollapsed && (
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -72,20 +72,20 @@ export function Layout() {
               )}
             </Link>
             {user && (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
-                  aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                >
-                  <i className={`fas fa-chevron-${sidebarCollapsed ? 'right' : 'left'}`} aria-hidden="true"></i>
-                </button>
+              <div className={`flex items-center ${sidebarCollapsed ? 'flex-col gap-1' : 'gap-1'}`}>
                 <button
                   onClick={toggleTheme}
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
                   aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
                 >
                   <i className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'}`} aria-hidden="true"></i>
+                </button>
+                <button
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
+                  aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                  <i className={`fas fa-chevron-${sidebarCollapsed ? 'right' : 'left'}`} aria-hidden="true"></i>
                 </button>
               </div>
             )}
@@ -171,7 +171,7 @@ export function Layout() {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <i className="glass-i fas fa-sticky-note text-white text-sm" aria-hidden="true"></i>
+                <i className="glass-i fas fa-book text-white text-sm" aria-hidden="true"></i>
               </div>
               <span className="text-lg font-bold text-[var(--text-primary)]">NoteHub</span>
             </Link>
