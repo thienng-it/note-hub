@@ -96,11 +96,6 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
-
-      # AI Configuration (REQUIRED: set in .env file)
-      - AI_PROVIDER=${AI_PROVIDER:?Set AI_PROVIDER in .env file}
-      - OLLAMA_URL=${OLLAMA_URL:?Set OLLAMA_URL in .env file}
-      - OLLAMA_MODEL=${OLLAMA_MODEL:?Set OLLAMA_MODEL in .env file}
     volumes:
       - notehub-data:/app/data
     healthcheck:
@@ -181,11 +176,6 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
-
-      # AI Configuration (REQUIRED: set in .env file)
-      - AI_PROVIDER=${AI_PROVIDER:?Set AI_PROVIDER in .env file}
-      - OLLAMA_URL=${OLLAMA_URL:?Set OLLAMA_URL in .env file}
-      - OLLAMA_MODEL=${OLLAMA_MODEL:?Set OLLAMA_MODEL in .env file}
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
       interval: 30s
@@ -232,11 +222,6 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
-
-      # AI Configuration (REQUIRED: set in .env file)
-      - AI_PROVIDER=${AI_PROVIDER:?Set AI_PROVIDER in .env file}
-      - OLLAMA_URL=${OLLAMA_URL:?Set OLLAMA_URL in .env file}
-      - OLLAMA_MODEL=${OLLAMA_MODEL:?Set OLLAMA_MODEL in .env file}
     depends_on:
       mysql:
         condition: service_healthy

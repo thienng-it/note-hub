@@ -144,7 +144,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             class="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"
           />
           <input
-            class="glass-input w-full pl-11 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="glass-input w-full pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Search by username or email..."
             type="text"
             value=""
@@ -154,7 +154,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
           class="flex gap-2"
         >
           <button
-            class="btn-primary px-6 py-3 rounded-lg font-medium flex items-center gap-2"
+            class="btn-apple"
             type="submit"
           >
             <i
@@ -317,7 +317,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                 class="px-4 sm:px-6 py-4 whitespace-nowrap"
               >
                 <button
-                  class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                  class="glass-span"
                   title="Disable 2FA for this user"
                 >
                   <i
@@ -395,7 +395,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                 class="px-4 sm:px-6 py-4 whitespace-nowrap"
               >
                 <span
-                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--bg-tertiary)] text-[var(--text-muted)]"
+                  class="glass-span"
                 >
                   <i
                     aria-hidden="true"

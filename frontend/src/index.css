@@ -1,9 +1,15 @@
-/* Import Tailwind CSS v4 only - no Bootstrap */
+/* ============================================================
+   NOTEHUB CSS - Apple-inspired Liquid Glass Design System
+   ============================================================ */
+
+/* Import Tailwind CSS v4 */
 @import "tailwindcss";
 
-/* Apple-inspired Liquid Glass Design System */
+/* ============================================================
+   CSS CUSTOM PROPERTIES (Theme Variables)
+   ============================================================ */
 :root {
-  /* Primary colors - Apple-inspired blue */
+  /* Apple-inspired brand colors */
   --apple-blue: #007AFF;
   --apple-blue-hover: #0056CC;
   --apple-purple: #AF52DE;
@@ -12,7 +18,7 @@
   --apple-green: #34C759;
   --apple-red: #FF3B30;
 
-  /* Primary color for buttons */
+  /* Semantic colors */
   --primary-color: #3b82f6;
   --primary-dark: #2563eb;
   --secondary-color: #64748b;
@@ -20,12 +26,12 @@
   --warning-color: #f59e0b;
   --error-color: #ef4444;
 
-  /* Background colors */
+  /* Background colors (light mode) */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #e2e8f0;
 
-  /* Text colors */
+  /* Text colors (light mode) */
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
@@ -36,7 +42,7 @@
   /* Typography */
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  /* Glass Effects */
+  /* Glassmorphism effects */
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(210, 203, 203, 0.3);
   --glass-shadow: rgba(31, 38, 135, 0.2);
@@ -44,7 +50,7 @@
   --glass-blur-light: blur(12px);
 }
 
-/* Dark mode */
+/* Dark mode color overrides */
 .dark {
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
@@ -58,7 +64,9 @@
   --glass-shadow: rgba(0, 0, 0, 0.4);
 }
 
-/* Base resets */
+/* ============================================================
+   BASE STYLES & RESETS
+   ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 1px;
@@ -68,6 +76,9 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  /* Better text rendering on mobile */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -79,6 +90,8 @@ body {
   background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 50%, #FCE4EC 100%);
   background-attachment: fixed;
   color: var(--text-primary);
+  /* Improve touch scrolling on mobile */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Dark mode background */
@@ -93,6 +106,10 @@ body.dark {
   min-height: 100vh;
 }
 
+/* ============================================================
+   GLASSMORPHISM COMPONENTS
+   ============================================================ */
+
 /* Card Component - Glassmorphism */
 .card,
 .glass-card {
@@ -103,14 +120,24 @@ body.dark {
   box-shadow: 0 8px 32px 0 var(--glass-shadow);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 1.5rem;
-  padding: 2rem;
-  margin: 1rem;
+  padding: 0.5rem;
+  margin: 0.5rem;
 }
 
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 40px 0 var(--glass-shadow);
   border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Mobile-optimized card spacing */
+@media (max-width: 640px) {
+  .card,
+  .glass-card {
+    padding: 1.25rem;
+    margin: 0.75rem;
+    border-radius: 1rem;
+  }
 }
 
 /* Glass Input */
@@ -121,11 +148,21 @@ body.dark {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-border);
   border-radius: 0.75rem;
-  padding: 0.875rem 1rem 0.875rem 48px;
+
+  /* ✅ HARD-FIX: space for the icon */
+  padding-left: 3rem;   /* 48px */
+  padding-right: 1rem;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+
   font-size: 1rem;
   color: var(--text-primary);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 44px;
+  -webkit-appearance: none;
+  appearance: none;
 }
+
 
 .glass-input:focus {
   outline: none;
@@ -135,6 +172,14 @@ body.dark {
 
 .glass-input::placeholder {
   color: var(--text-muted);
+}
+
+/* Mobile input adjustments */
+@media (max-width: 640px) {
+  .glass-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.875rem 0.875rem;
+  }
 }
 
 /* Form Label */
@@ -160,15 +205,15 @@ body.dark {
   font-weight: 600;
   border: none;
   border-radius: 0.75rem;
-  padding: 5px 5px 5px 5px;
+  padding: .5rem .5rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 14px rgba(0, 122, 255, 0.4);
-  font-size: 14px
-}
-
-.btn-apple span .child {
-  font-size: 14px;
+  font-size: 1rem;
+  /* Better touch target */
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-apple:hover {
@@ -178,12 +223,21 @@ body.dark {
 
 .btn-apple:active {
   transform: translateY(0);
+  opacity: 0.9;
 }
 
 .btn-apple:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Mobile button adjustments */
+@media (max-width: 640px) {
+  .btn-apple {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9375rem;
+  }
 }
 
 /* Secondary Glass Button */
@@ -675,11 +729,16 @@ body.dark {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
-/* Mobile Navigation */
+/* ============================================================
+   MOBILE NAVIGATION & RESPONSIVE ENHANCEMENTS
+   ============================================================ */
+
+/* Mobile Navigation - Hidden by default, shows on mobile */
 .mobile-nav {
   display: none;
 }
 
+/* Mobile-specific styles (tablets and phones) */
 @media (max-width: 1023px) {
   .mobile-nav {
     display: flex;
@@ -712,8 +771,13 @@ body.dark {
     font-size: 0.65rem;
     font-weight: 500;
     position: relative;
+    /* Better touch target - minimum 44x44px for accessibility */
     min-height: 56px;
+    min-width: 44px;
+    /* Remove tap highlight on mobile */
     -webkit-tap-highlight-color: transparent;
+    /* Better touch response */
+    touch-action: manipulation;
   }
 
   .mobile-nav-item i,
@@ -727,6 +791,11 @@ body.dark {
 
   .mobile-nav-item span {
     transition: all 0.2s ease;
+    /* Better text wrapping on small screens */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   .mobile-nav-item.active {
@@ -750,8 +819,10 @@ body.dark {
     border-radius: 0 0 4px 4px;
   }
 
+  /* Visual feedback on tap */
   .mobile-nav-item:active {
     transform: scale(0.95);
+    opacity: 0.7;
   }
 
   .mobile-nav-item.create-btn {
@@ -768,7 +839,71 @@ body.dark {
   }
 }
 
-/* Scrollbar styling */
+/* Tablet-specific adjustments (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mobile-nav-item {
+    font-size: 0.75rem;
+  }
+
+  .mobile-nav-item i,
+  .mobile-nav-item svg {
+    font-size: 1.5rem;
+  }
+}
+
+/* Small phone adjustments (max 375px) */
+@media (max-width: 375px) {
+  .mobile-nav-item {
+    font-size: 0.625rem;
+    padding: 0.5rem 0.125rem;
+  }
+
+  .mobile-nav {
+    padding: 0.375rem 0.125rem;
+  }
+}
+
+/* Back to Top Button */
+.btn-back-to-top {
+  position: fixed;
+  bottom: 6rem; /* 96px - above mobile nav on mobile */
+  right: 1rem;
+  padding: 0.75rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 40;
+  border: none;
+  cursor: pointer;
+  /* Better touch target */
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-back-to-top:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5);
+}
+
+.btn-back-to-top:active {
+  transform: scale(0.95);
+}
+
+/* Desktop positioning */
+@media (min-width: 1024px) {
+  .btn-back-to-top {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
+/* ============================================================
+   SCROLLBAR STYLING
+   ============================================================ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -1332,4 +1467,103 @@ body.dark {
 .glass-em {
   font-style: italic;
   color: var(--text-secondary);
+}
+
+/* ============================================================
+   MOBILE-SPECIFIC RESPONSIVE ENHANCEMENTS
+   ============================================================ */
+
+/* Improve tap targets on mobile for all interactive elements */
+@media (max-width: 640px) {
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Better text sizing on mobile */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+
+  /* Improve form spacing on mobile */
+  .form-label-glass {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Better modal sizing on mobile */
+  .glass-modal-content {
+    max-width: 95vw;
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  /* Better table responsiveness */
+  .glass-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Reduce animation on mobile for better performance */
+  .card:hover,
+  .btn-apple:hover,
+  .tag:hover {
+    transform: none;
+  }
+}
+
+/* Landscape phone adjustments */
+@media (max-width: 767px) and (orientation: landscape) {
+  .mobile-nav {
+    padding: 0.25rem 0.125rem;
+  }
+
+  .mobile-nav-item {
+    min-height: 48px;
+    padding: 0.375rem 0.25rem;
+  }
+}
+
+/* Very small screens (< 320px) */
+@media (max-width: 320px) {
+  .glass-card,
+  .card {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  .btn-apple {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  /* Hide navigation and non-essential elements when printing */
+  .sidebar,
+  .mobile-nav,
+  .btn-back-to-top,
+  button {
+    display: none !important;
+  }
+
+  /* Optimize colors for printing */
+  body {
+    background: white;
+    color: black;
+  }
+
+  .glass-card,
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
 }
