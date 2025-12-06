@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
+import { versionApi } from '../api/client';
+import packageJson from '../../package.json';
 
 export function Layout() {
   const { t } = useTranslation();
@@ -21,12 +23,27 @@ export function Layout() {
     return localStorage.getItem('sidebarCollapsed') === 'true';
   });
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [backendVersion, setBackendVersion] = useState<string | null>(null);
 
   const view = new URLSearchParams(location.search).get('view');
 
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', String(sidebarCollapsed));
   }, [sidebarCollapsed]);
+
+  // Fetch backend version on mount
+  useEffect(() => {
+    const fetchVersion = async () => {
+      try {
+        const version = await versionApi.get();
+        setBackendVersion(version.version);
+      } catch (error) {
+        // Silently fail - version display is non-critical
+        console.debug('Could not fetch backend version:', error);
+      }
+    };
+    fetchVersion();
+  }, []);
 
   // Handle resize to adjust sidebar on tablet
   useEffect(() => {
@@ -209,6 +226,14 @@ export function Layout() {
                   <i className="glass-i fas fa-sign-out-alt" aria-hidden="true"></i>
                 </button>
               </div>
+              {!sidebarCollapsed && (
+                <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
+                  <div className="flex items-center justify-between text-xs text-[var(--text-tertiary)]">
+                    <span>Frontend: v{packageJson.version}</span>
+                    {backendVersion && <span>Backend: v{backendVersion}</span>}
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}

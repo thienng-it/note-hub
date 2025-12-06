@@ -263,6 +263,13 @@ export const healthApi = {
   },
 };
 
+// Version API
+export const versionApi = {
+  async get(): Promise<{ version: string; name: string; description: string }> {
+    return apiRequest(`${API_VERSION}/version`);
+  },
+};
+
 // Generic API client for custom endpoints
 export const apiClient = {
   async get<T = unknown>(endpoint: string): Promise<T> {
