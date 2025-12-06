@@ -114,6 +114,27 @@ app.use('/api/v1/upload', markAsV1, uploadRoutes);
 const responseHandler = require('./utils/responseHandler');
 const packageJson = require('../package.json');
 
+// Backward-compatible health endpoint (without version prefix for Docker healthchecks)
+app.get('/api/health', async (req, res) => {
+  try {
+    const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
+    res.status(200).json({
+      status: 'healthy',
+      database: 'connected',
+      services: {
+        cache: cache.isEnabled() ? 'enabled' : 'disabled',
+        search: elasticsearch.isEnabled() ? 'enabled' : 'disabled'
+      },
+      user_count: userCount?.count || 0
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message
+    });
+  }
+});
+
 app.get('/api/v1/health', markAsV1, async (req, res) => {
   try {
     const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
