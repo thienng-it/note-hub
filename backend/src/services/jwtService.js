@@ -13,6 +13,13 @@ class JWTService {
   }
 
   /**
+   * Get current timestamp in ISO format for database storage.
+   */
+  getCurrentTimestamp() {
+    return new Date().toISOString();
+  }
+
+  /**
    * Generate an access token for a user.
    */
   generateToken(userId) {
@@ -50,11 +57,12 @@ class JWTService {
   async storeRefreshToken(userId, tokenId, expiresAt, deviceInfo = null, ipAddress = null, parentTokenHash = null) {
     try {
       const tokenHash = this.hashToken(tokenId);
+      const now = this.getCurrentTimestamp();
       // Check if refresh_tokens table exists (for backward compatibility with tests/old DBs)
       const result = await db.run(
         `INSERT INTO refresh_tokens (user_id, token_hash, device_info, ip_address, expires_at, parent_token_hash, last_used_at) 
-         VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
-        [userId, tokenHash, deviceInfo, ipAddress, expiresAt, parentTokenHash]
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [userId, tokenHash, deviceInfo, ipAddress, expiresAt, parentTokenHash, now]
       ).catch(err => {
         // Silently fail if table doesn't exist (graceful degradation for tests/old DBs)
         if (err.message && (err.message.includes('no such table') || err.message.includes('refresh_tokens'))) {
@@ -182,18 +190,20 @@ class JWTService {
       newExpiresAt.setDate(newExpiresAt.getDate() + 7);
 
       // Revoke the old refresh token
+      const revokedAt = this.getCurrentTimestamp();
       await db.run(
-        `UPDATE refresh_tokens SET revoked = 1, revoked_at = datetime('now') WHERE token_hash = ?`,
-        [tokenHash]
+        `UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE token_hash = ?`,
+        [revokedAt, tokenHash]
       );
 
       // Store the new refresh token with parent tracking
       await this.storeRefreshToken(userId, newTokenId, newExpiresAt.toISOString(), deviceInfo, ipAddress, tokenHash);
 
       // Update last_used_at for the old token
+      const lastUsedAt = this.getCurrentTimestamp();
       await db.run(
-        `UPDATE refresh_tokens SET last_used_at = datetime('now') WHERE token_hash = ?`,
-        [tokenHash]
+        `UPDATE refresh_tokens SET last_used_at = ? WHERE token_hash = ?`,
+        [lastUsedAt, tokenHash]
       );
 
       return { 
@@ -217,9 +227,10 @@ class JWTService {
   async revokeRefreshToken(tokenId) {
     try {
       const tokenHash = this.hashToken(tokenId);
+      const revokedAt = this.getCurrentTimestamp();
       await db.run(
-        `UPDATE refresh_tokens SET revoked = 1, revoked_at = datetime('now') WHERE token_hash = ?`,
-        [tokenHash]
+        `UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE token_hash = ?`,
+        [revokedAt, tokenHash]
       );
       return { success: true };
     } catch (error) {
@@ -233,9 +244,10 @@ class JWTService {
    */
   async revokeAllUserTokens(userId) {
     try {
+      const revokedAt = this.getCurrentTimestamp();
       await db.run(
-        `UPDATE refresh_tokens SET revoked = 1, revoked_at = datetime('now') WHERE user_id = ? AND revoked = 0`,
-        [userId]
+        `UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE user_id = ? AND revoked = 0`,
+        [revokedAt, userId]
       );
       return { success: true };
     } catch (error) {
@@ -249,8 +261,10 @@ class JWTService {
    */
   async cleanupExpiredTokens() {
     try {
+      const now = this.getCurrentTimestamp();
       const result = await db.run(
-        `DELETE FROM refresh_tokens WHERE expires_at < datetime('now')`
+        `DELETE FROM refresh_tokens WHERE expires_at < ?`,
+        [now]
       );
       return { success: true, deleted: result.affectedRows };
     } catch (error) {
@@ -264,12 +278,13 @@ class JWTService {
    */
   async getUserTokens(userId) {
     try {
+      const now = this.getCurrentTimestamp();
       const tokens = await db.query(
         `SELECT id, device_info, ip_address, created_at, last_used_at, expires_at 
          FROM refresh_tokens 
-         WHERE user_id = ? AND revoked = 0 AND expires_at > datetime('now')
+         WHERE user_id = ? AND revoked = 0 AND expires_at > ?
          ORDER BY last_used_at DESC`,
-        [userId]
+        [userId, now]
       );
       return { success: true, tokens };
     } catch (error) {

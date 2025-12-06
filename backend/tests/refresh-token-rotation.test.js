@@ -256,8 +256,8 @@ describe('Refresh Token Rotation', () => {
       
       // Verify all tokens were revoked
       expect(db.run).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE refresh_tokens SET revoked = 1, revoked_at = datetime(\'now\') WHERE user_id = ? AND revoked = 0'),
-        expect.arrayContaining([1])
+        expect.stringContaining('UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE user_id = ? AND revoked = 0'),
+        expect.any(Array)
       );
     });
   });

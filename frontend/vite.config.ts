@@ -1,10 +1,19 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { readFileSync } from 'fs'
+
+// Read version from package.json
+const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  
+  // Define constants at build time
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+  },
 
   // Test configuration
   test: {

@@ -5,7 +5,9 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
 import { versionApi } from '../api/client';
-import packageJson from '../../package.json';
+
+// Version is injected at build time by Vite
+declare const __APP_VERSION__: string;
 
 export function Layout() {
   const { t } = useTranslation();
@@ -229,7 +231,7 @@ export function Layout() {
               {!sidebarCollapsed && (
                 <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
                   <div className="flex items-center justify-between text-xs text-[var(--text-tertiary)]">
-                    <span>Frontend: v{packageJson.version}</span>
+                    <span>Frontend: v{__APP_VERSION__}</span>
                     {backendVersion && <span>Backend: v{backendVersion}</span>}
                   </div>
                 </div>
