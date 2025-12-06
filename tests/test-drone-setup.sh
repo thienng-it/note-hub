@@ -222,8 +222,13 @@ fi
 TESTS_RUN=$((TESTS_RUN + 1))
 print_test "Ensuring no port conflicts with NoteHub"
 
-notehub_port=$(grep -E '^\s*-\s*"[0-9]+:[0-9]+"' docker-compose.yml | head -1 | grep -o '"[0-9]\+:' | tr -d '":' || echo "80")
-drone_port=$(grep -E '^\s*-\s*"[0-9]+:[0-9]+"' docker-compose.drone.yml | head -1 | grep -o '"[0-9]\+:' | tr -d '":' || echo "8080")
+# Simplified port extraction using sed
+notehub_port=$(sed -n 's/.*"\([0-9]\+\):[0-9]\+".*/\1/p' docker-compose.yml | head -1)
+drone_port=$(sed -n 's/.*"\([0-9]\+\):[0-9]\+".*/\1/p' docker-compose.drone.yml | head -1)
+
+# Default to known values if extraction fails
+notehub_port=${notehub_port:-80}
+drone_port=${drone_port:-8080}
 
 if [ "$notehub_port" != "$drone_port" ]; then
     print_pass "No port conflict: NoteHub uses $notehub_port, Drone uses $drone_port"

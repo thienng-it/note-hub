@@ -88,13 +88,15 @@ if [ "$SKIP_ENV_CREATION" != "true" ]; then
     # Generate RPC secret
     print_info "Generating RPC secret..."
     RPC_SECRET=$(openssl rand -hex 16)
-    sed -i.bak "s/DRONE_RPC_SECRET=.*/DRONE_RPC_SECRET=$RPC_SECRET/" .env.drone
+    # Use @ as delimiter to avoid issues with special characters
+    sed -i.bak "s@DRONE_RPC_SECRET=.*@DRONE_RPC_SECRET=$RPC_SECRET@" .env.drone
     print_success "Generated RPC secret"
     
     # Generate PostgreSQL password
     print_info "Generating PostgreSQL password..."
     POSTGRES_PASSWORD=$(openssl rand -base64 24)
-    sed -i.bak "s/DRONE_POSTGRES_PASSWORD=.*/DRONE_POSTGRES_PASSWORD=$POSTGRES_PASSWORD/" .env.drone
+    # Use @ as delimiter to avoid issues with special characters
+    sed -i.bak "s@DRONE_POSTGRES_PASSWORD=.*@DRONE_POSTGRES_PASSWORD=$POSTGRES_PASSWORD@" .env.drone
     print_success "Generated PostgreSQL password"
     
     # Clean up backup files
@@ -147,7 +149,27 @@ print_success "Configuration looks good!"
 
 # Check if port 8080 is available
 print_info "Checking if port 8080 is available..."
-if lsof -Pi :8080 -sTCP:LISTEN -t >/dev/null 2>&1; then
+PORT_IN_USE=false
+
+# Try multiple commands for port checking (lsof, ss, netstat)
+if command -v lsof >/dev/null 2>&1; then
+    if lsof -Pi :8080 -sTCP:LISTEN -t >/dev/null 2>&1; then
+        PORT_IN_USE=true
+    fi
+elif command -v ss >/dev/null 2>&1; then
+    if ss -ltn | grep -q ":8080 "; then
+        PORT_IN_USE=true
+    fi
+elif command -v netstat >/dev/null 2>&1; then
+    if netstat -ltn | grep -q ":8080 "; then
+        PORT_IN_USE=true
+    fi
+else
+    print_warning "Cannot check port availability (lsof/ss/netstat not found)"
+    print_info "Proceeding anyway - Docker will fail if port is in use"
+fi
+
+if [ "$PORT_IN_USE" = true ]; then
     print_error "Port 8080 is already in use"
     print_info "Please stop the service using port 8080 or change the port in docker-compose.drone.yml"
     exit 1

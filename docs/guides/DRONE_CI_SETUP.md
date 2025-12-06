@@ -456,8 +456,8 @@ steps:
 
 5. **Regular backups**
    ```bash
-   # Backup PostgreSQL data
-   docker compose -f docker-compose.drone.yml exec drone-db \
+   # Backup PostgreSQL data (use -T to disable TTY)
+   docker compose -f docker-compose.drone.yml exec -T drone-db \
      pg_dump -U drone drone > drone-backup-$(date +%Y%m%d).sql
    ```
 
