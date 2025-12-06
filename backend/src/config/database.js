@@ -500,6 +500,12 @@ class Database {
 
       // Helper function to add images column if missing
       const addImagesColumn = (tableName, displayName) => {
+        // Validate table name against whitelist to prevent SQL injection
+        const allowedTables = ['notes', 'tasks'];
+        if (!allowedTables.includes(tableName)) {
+          throw new Error(`Invalid table name for images column migration: ${tableName}`);
+        }
+        
         const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all();
         const hasImages = columns.some(col => col.name === 'images');
         
@@ -644,6 +650,20 @@ class Database {
     try {
       // Helper function to check and add missing column in MySQL
       const addColumnIfMissing = async (tableName, columnName, columnDef, displayName) => {
+        // Validate table name and column name against whitelists to prevent SQL injection
+        const allowedTables = ['users', 'tags', 'notes', 'tasks', 'share_notes', 'password_reset_tokens', 'invitations'];
+        const allowedColumns = {
+          'updated_at': 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+          'images': 'TEXT'
+        };
+        
+        if (!allowedTables.includes(tableName)) {
+          throw new Error(`Invalid table name for migration: ${tableName}`);
+        }
+        if (!allowedColumns[columnName]) {
+          throw new Error(`Invalid column name for migration: ${columnName}`);
+        }
+        
         const [columns] = await this.db.execute(
           `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '${tableName}'`
         );
