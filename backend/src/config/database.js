@@ -144,6 +144,7 @@ class Database {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL DEFAULT 'Untitled',
         body TEXT DEFAULT '',
+        images TEXT,
         pinned INTEGER DEFAULT 0,
         archived INTEGER DEFAULT 0,
         favorite INTEGER DEFAULT 0,
@@ -188,6 +189,7 @@ class Database {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         description TEXT,
+        images TEXT,
         completed INTEGER DEFAULT 0,
         due_date DATETIME,
         priority TEXT DEFAULT 'medium',
@@ -331,6 +333,7 @@ class Database {
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
         body TEXT,
+        images TEXT,
         pinned BOOLEAN DEFAULT FALSE,
         archived BOOLEAN DEFAULT FALSE,
         favorite BOOLEAN DEFAULT FALSE,
@@ -374,6 +377,7 @@ class Database {
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(200) NOT NULL,
         description TEXT,
+        images TEXT,
         completed BOOLEAN DEFAULT FALSE,
         due_date DATETIME,
         priority VARCHAR(20) DEFAULT 'medium',
@@ -494,6 +498,23 @@ class Database {
         }
       };
 
+      // Helper function to add images column if missing
+      const addImagesColumn = (tableName, displayName) => {
+        // Validate table name against whitelist to prevent SQL injection
+        const allowedTables = ['notes', 'tasks'];
+        if (!allowedTables.includes(tableName)) {
+          throw new Error(`Invalid table name for images column migration: ${tableName}`);
+        }
+        
+        const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all();
+        const hasImages = columns.some(col => col.name === 'images');
+        
+        if (!hasImages) {
+          console.log(`🔄 Migrating ${displayName} table: adding images column`);
+          this.db.exec(`ALTER TABLE ${tableName} ADD COLUMN images TEXT`);
+        }
+      };
+
       // Migrate all tables that have timestamp columns
       fixTimestampColumns('users', 'users');
       fixTimestampColumns('tags', 'tags');
@@ -503,6 +524,10 @@ class Database {
       fixTimestampColumns('password_reset_tokens', 'password_reset_tokens');
       fixTimestampColumns('invitations', 'invitations');
       fixTimestampColumns('refresh_tokens', 'refresh_tokens');
+
+      // Add images column to notes and tasks tables if missing
+      addImagesColumn('notes', 'notes');
+      addImagesColumn('tasks', 'tasks');
 
       console.log('✅ SQLite schema migration completed');
     } catch (error) {
@@ -623,60 +648,45 @@ class Database {
    */
   async migrateMySQLSchema() {
     try {
-      // Check and add missing columns for users table
-      const [userColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'"
-      );
-      const hasUpdatedAt = userColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!hasUpdatedAt) {
-        console.log('🔄 Migrating users table: adding updated_at column');
-        await this.db.execute('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
+      // Helper function to check and add missing column in MySQL
+      const addColumnIfMissing = async (tableName, columnName, displayName) => {
+        // Validate table name and column name against whitelists to prevent SQL injection
+        const allowedTables = ['users', 'tags', 'notes', 'tasks', 'share_notes', 'password_reset_tokens', 'invitations'];
+        const allowedColumns = {
+          'updated_at': 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+          'images': 'TEXT'
+        };
+        
+        if (!allowedTables.includes(tableName)) {
+          throw new Error(`Invalid table name for migration: ${tableName}`);
+        }
+        if (!allowedColumns[columnName]) {
+          throw new Error(`Invalid column name for migration: ${columnName}`);
+        }
+        
+        const [columns] = await this.db.execute(
+          `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '${tableName}'`
+        );
+        const hasColumn = columns.some(col => col.COLUMN_NAME === columnName);
+        
+        if (!hasColumn) {
+          console.log(`🔄 Migrating ${displayName} table: adding ${columnName} column`);
+          // Use predefined column definition from whitelist
+          const columnDef = allowedColumns[columnName];
+          await this.db.execute(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDef}`);
+        }
+      };
 
-      // Check and add missing columns for tags table
-      const [tagColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tags'"
-      );
-      const tagHasUpdatedAt = tagColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!tagHasUpdatedAt) {
-        console.log('🔄 Migrating tags table: adding updated_at column');
-        await this.db.execute('ALTER TABLE tags ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
+      // Add missing updated_at columns to tables
+      await addColumnIfMissing('users', 'updated_at', 'users');
+      await addColumnIfMissing('tags', 'updated_at', 'tags');
+      await addColumnIfMissing('share_notes', 'updated_at', 'share_notes');
+      await addColumnIfMissing('password_reset_tokens', 'updated_at', 'password_reset_tokens');
+      await addColumnIfMissing('invitations', 'updated_at', 'invitations');
 
-      // Check and add missing columns for share_notes table
-      const [shareColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'share_notes'"
-      );
-      const shareHasUpdatedAt = shareColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!shareHasUpdatedAt) {
-        console.log('🔄 Migrating share_notes table: adding updated_at column');
-        await this.db.execute('ALTER TABLE share_notes ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing columns for password_reset_tokens table
-      const [tokenColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'password_reset_tokens'"
-      );
-      const tokenHasUpdatedAt = tokenColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!tokenHasUpdatedAt) {
-        console.log('🔄 Migrating password_reset_tokens table: adding updated_at column');
-        await this.db.execute('ALTER TABLE password_reset_tokens ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing columns for invitations table
-      const [inviteColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'invitations'"
-      );
-      const inviteHasUpdatedAt = inviteColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!inviteHasUpdatedAt) {
-        console.log('🔄 Migrating invitations table: adding updated_at column');
-        await this.db.execute('ALTER TABLE invitations ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
+      // Add missing images columns to notes and tasks tables
+      await addColumnIfMissing('notes', 'images', 'notes');
+      await addColumnIfMissing('tasks', 'images', 'tasks');
 
       console.log('✅ MySQL schema migration completed');
     } catch (error) {
