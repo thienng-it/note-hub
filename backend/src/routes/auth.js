@@ -52,9 +52,17 @@ router.post('/login',
         }
       }
 
-      // Generate tokens
+      // Generate tokens with rotation
       const accessToken = jwtService.generateToken(user.id);
-      const refreshToken = jwtService.generateRefreshToken(user.id);
+      const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(user.id);
+
+      // Store refresh token in database
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      const deviceInfo = req.headers['user-agent'] || null;
+      const ipAddress = req.ip || req.connection.remoteAddress || null;
+      
+      await jwtService.storeRefreshToken(user.id, tokenId, expiresAt.toISOString(), deviceInfo, ipAddress);
 
       // Update last login
       await AuthService.updateLastLogin(user.id);
@@ -115,24 +123,35 @@ router.post('/register',
 );
 
 /**
- * POST /api/auth/refresh - Refresh access token
+ * POST /api/auth/refresh - Refresh access token with rotation
  */
 router.post('/refresh', 
   validateRequiredFields(['refresh_token']),
-  (req, res) => {
+  async (req, res) => {
     const { refresh_token } = req.body;
+    const deviceInfo = req.headers['user-agent'] || null;
+    const ipAddress = req.ip || req.connection.remoteAddress || null;
 
-    const result = jwtService.refreshAccessToken(refresh_token);
+    const result = await jwtService.refreshAccessToken(refresh_token, deviceInfo, ipAddress);
 
     if (!result.success) {
       return responseHandler.unauthorized(res, result.error);
     }
 
-    return responseHandler.success(res, {
+    const response = {
       access_token: result.accessToken,
       token_type: 'Bearer',
       expires_in: 86400 // 24 hours
-    }, { message: 'Token refreshed successfully' });
+    };
+
+    // Include new refresh token if rotation occurred
+    if (result.rotated && result.refreshToken) {
+      response.refresh_token = result.refreshToken;
+    }
+
+    return responseHandler.success(res, response, { 
+      message: 'Token refreshed successfully' 
+    });
   }
 );
 
@@ -418,9 +437,17 @@ router.post('/google/callback', async (req, res) => {
       console.log(`[AUTH] User logged in via Google OAuth: ${user.username} (${googleUser.email})`);
     }
 
-    // Generate tokens (no 2FA for Google OAuth users)
+    // Generate tokens with rotation (no 2FA for Google OAuth users)
     const accessToken = jwtService.generateToken(user.id);
-    const refreshToken = jwtService.generateRefreshToken(user.id);
+    const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(user.id);
+
+    // Store refresh token in database
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    const deviceInfo = req.headers['user-agent'] || null;
+    const ipAddress = req.ip || req.connection.remoteAddress || null;
+    
+    await jwtService.storeRefreshToken(user.id, tokenId, expiresAt.toISOString(), deviceInfo, ipAddress);
 
     // Update last login
     await AuthService.updateLastLogin(user.id);
@@ -451,6 +478,83 @@ router.get('/google/status', (req, res) => {
   res.json({
     enabled: googleOAuthService.isEnabled()
   });
+});
+
+/**
+ * POST /api/auth/logout - Logout and revoke refresh token
+ */
+router.post('/logout', jwtRequired, async (req, res) => {
+  try {
+    const { refresh_token } = req.body;
+    
+    if (refresh_token) {
+      // Decode to get token ID
+      const jwt = require('jsonwebtoken');
+      try {
+        const decoded = jwt.decode(refresh_token);
+        if (decoded && decoded.jti) {
+          await jwtService.revokeRefreshToken(decoded.jti);
+        }
+      } catch (error) {
+        // Invalid token, ignore
+      }
+    }
+
+    return responseHandler.success(res, { 
+      message: 'Logged out successfully' 
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return responseHandler.error(res, 'Internal server error', {
+      statusCode: 500,
+      errorCode: 'LOGOUT_ERROR'
+    });
+  }
+});
+
+/**
+ * POST /api/auth/logout-all - Logout from all devices
+ */
+router.post('/logout-all', jwtRequired, async (req, res) => {
+  try {
+    await jwtService.revokeAllUserTokens(req.userId);
+
+    return responseHandler.success(res, { 
+      message: 'Logged out from all devices successfully' 
+    });
+  } catch (error) {
+    console.error('Logout all error:', error);
+    return responseHandler.error(res, 'Internal server error', {
+      statusCode: 500,
+      errorCode: 'LOGOUT_ALL_ERROR'
+    });
+  }
+});
+
+/**
+ * GET /api/auth/sessions - Get active sessions
+ */
+router.get('/sessions', jwtRequired, async (req, res) => {
+  try {
+    const result = await jwtService.getUserTokens(req.userId);
+
+    if (!result.success) {
+      return responseHandler.error(res, 'Failed to retrieve sessions', {
+        statusCode: 500,
+        errorCode: 'SESSIONS_ERROR'
+      });
+    }
+
+    return responseHandler.success(res, {
+      sessions: result.tokens
+    });
+  } catch (error) {
+    console.error('Get sessions error:', error);
+    return responseHandler.error(res, 'Internal server error', {
+      statusCode: 500,
+      errorCode: 'SESSIONS_ERROR'
+    });
+  }
 });
 
 module.exports = router;

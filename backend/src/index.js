@@ -121,6 +121,8 @@ app.use('/api/upload', uploadRoutes);
 
 // Health check endpoints with standardized response
 const responseHandler = require('./utils/responseHandler');
+const packageJson = require('../package.json');
+
 app.get('/api/v1/health', markAsV1, async (req, res) => {
   try {
     const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
@@ -140,6 +142,23 @@ app.get('/api/v1/health', markAsV1, async (req, res) => {
       details: { error: error.message }
     });
   }
+});
+
+// Version endpoint
+app.get('/api/v1/version', markAsV1, (req, res) => {
+  responseHandler.success(res, {
+    version: packageJson.version,
+    name: packageJson.name,
+    description: packageJson.description
+  }, { message: 'Version information' });
+});
+
+app.get('/api/version', (req, res) => {
+  responseHandler.success(res, {
+    version: packageJson.version,
+    name: packageJson.name,
+    description: packageJson.description
+  });
 });
 
 // Backward compatibility - uses legacy format via adapter

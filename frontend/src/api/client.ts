@@ -105,7 +105,7 @@ async function apiRequest<T>(
   return (data.success !== undefined ? data.data : data) as T;
 }
 
-// Refresh token
+// Refresh token with rotation support
 async function refreshToken(): Promise<boolean> {
   const refresh = getStoredRefreshToken();
   if (!refresh) return false;
@@ -121,8 +121,15 @@ async function refreshToken(): Promise<boolean> {
 
     const data = await response.json();
     // Handle v1 response format
-    const accessToken = data.success ? data.data.access_token : data.access_token;
+    const responseData = data.success ? data.data : data;
+    const accessToken = responseData.access_token;
     localStorage.setItem(TOKEN_KEY, accessToken);
+    
+    // Store new refresh token if rotation occurred
+    if (responseData.refresh_token) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, responseData.refresh_token);
+    }
+    
     return true;
   } catch {
     return false;

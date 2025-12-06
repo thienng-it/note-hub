@@ -227,6 +227,26 @@ class Database {
         FOREIGN KEY (used_by_id) REFERENCES users(id)
       );
       CREATE INDEX IF NOT EXISTS ix_invitations_token ON invitations(token);
+
+      -- Refresh tokens table
+      CREATE TABLE IF NOT EXISTS refresh_tokens (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        token_hash TEXT UNIQUE NOT NULL,
+        device_info TEXT,
+        ip_address TEXT,
+        expires_at DATETIME NOT NULL,
+        revoked INTEGER DEFAULT 0,
+        revoked_at DATETIME,
+        parent_token_hash TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_used_at DATETIME,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS ix_refresh_tokens_user ON refresh_tokens(user_id);
+      CREATE INDEX IF NOT EXISTS ix_refresh_tokens_hash ON refresh_tokens(token_hash);
+      CREATE INDEX IF NOT EXISTS ix_refresh_tokens_expires ON refresh_tokens(expires_at);
     `;
 
     // Execute each statement separately for SQLite
@@ -393,6 +413,26 @@ class Database {
         FOREIGN KEY (inviter_id) REFERENCES users(id),
         FOREIGN KEY (used_by_id) REFERENCES users(id)
       );
+
+      -- Refresh tokens table
+      CREATE TABLE IF NOT EXISTS refresh_tokens (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        token_hash VARCHAR(255) UNIQUE NOT NULL,
+        device_info VARCHAR(255),
+        ip_address VARCHAR(45),
+        expires_at DATETIME NOT NULL,
+        revoked BOOLEAN DEFAULT FALSE,
+        revoked_at DATETIME,
+        parent_token_hash VARCHAR(255),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        last_used_at DATETIME,
+        INDEX ix_refresh_tokens_user (user_id),
+        INDEX ix_refresh_tokens_hash (token_hash),
+        INDEX ix_refresh_tokens_expires (expires_at),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
     `;
 
     // Execute each statement separately for MySQL
@@ -462,6 +502,7 @@ class Database {
       fixTimestampColumns('share_notes', 'share_notes');
       fixTimestampColumns('password_reset_tokens', 'password_reset_tokens');
       fixTimestampColumns('invitations', 'invitations');
+      fixTimestampColumns('refresh_tokens', 'refresh_tokens');
 
       console.log('✅ SQLite schema migration completed');
     } catch (error) {
