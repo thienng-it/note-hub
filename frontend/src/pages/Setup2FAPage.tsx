@@ -14,10 +14,6 @@ export function Setup2FAPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchSetupData();
-  }, [fetchSetupData]);
-
   const fetchSetupData = async () => {
     try {
       const data = await apiClient.get<{ qr_code: string; secret: string }>(
@@ -32,6 +28,10 @@ export function Setup2FAPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSetupData();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -103,7 +103,7 @@ export function ResetPasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl" role="main">
+        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl">
           {success ? (
             <div className="text-center space-y-6">
               <div className="p-6 rounded-xl bg-green-500/10 border border-green-500/30">

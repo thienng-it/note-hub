@@ -76,7 +76,7 @@ export function RegisterPage() {
         </div>
 
         {/* Register Card */}
-        <div className="glass-card" role="main">
+        <div className="glass-card">
           <form onSubmit={handleSubmit} aria-label="Registration form">
             {/* Error Alert */}
             {error && (

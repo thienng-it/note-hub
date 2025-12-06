@@ -31,12 +31,6 @@ export function ShareNotePage() {
   );
   const [isUnsharing, setIsUnsharing] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      fetchNoteAndShares();
-    }
-  }, [id, fetchNoteAndShares]);
-
   const fetchNoteAndShares = async () => {
     try {
       const [noteData, sharesData] = await Promise.all([
@@ -52,6 +46,12 @@ export function ShareNotePage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (id) {
+      fetchNoteAndShares();
+    }
+  }, [id]);
 
   const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,13 +147,10 @@ export function ShareNotePage() {
       )}
 
       {success && (
-        <div
-          className="mb-6 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 flex items-start"
-          role="status"
-        >
+        <output className="mb-6 p-4 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 flex items-start">
           <i className="glass-i fas fa-check-circle mr-2 mt-0.5" aria-hidden="true"></i>
           <span>{success}</span>
-        </div>
+        </output>
       )}
 
       {/* Share Form */}

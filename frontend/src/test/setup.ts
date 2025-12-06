@@ -8,11 +8,21 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => {},
+    addListener: () => {
+      // Mock implementation
+    },
+    removeListener: () => {
+      // Mock implementation
+    },
+    addEventListener: () => {
+      // Mock implementation
+    },
+    removeEventListener: () => {
+      // Mock implementation
+    },
+    dispatchEvent: () => {
+      // Mock implementation
+    },
   }),
 });
 
@@ -27,7 +37,9 @@ const localStorageMock = {
     delete store[key];
   },
   clear: () => {
-    Object.keys(store).forEach((key) => delete store[key]);
+    Object.keys(store).forEach((key) => {
+      delete store[key];
+    });
   },
   get length() {
     return Object.keys(store).length;

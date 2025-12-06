@@ -96,7 +96,6 @@ export function Layout() {
       <aside
         id="sidebar"
         className={`sidebar ${sidebarCollapsed ? 'w-20' : 'w-72 md:w-64 lg:w-72'} flex-shrink-0 hidden md:flex flex-col transition-all duration-300 border-r border-[var(--border-color)]`}
-        role="navigation"
         aria-label="Main navigation"
       >
         <div className="p-4 border-b border-[var(--border-color)]">

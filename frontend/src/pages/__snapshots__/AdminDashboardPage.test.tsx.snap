@@ -187,7 +187,6 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
       >
         <table
           class="w-full"
-          role="table"
         >
           <thead
             class="bg-[var(--bg-tertiary)]"

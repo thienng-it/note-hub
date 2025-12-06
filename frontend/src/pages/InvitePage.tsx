@@ -21,10 +21,6 @@ export function InvitePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchInvitations();
-  }, [fetchInvitations]);
-
   const fetchInvitations = async () => {
     try {
       const data = await apiClient.get<{ invitations: Invitation[] }>('/api/v1/invitations');
@@ -36,6 +32,10 @@ export function InvitePage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchInvitations();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

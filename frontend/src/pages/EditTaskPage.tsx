@@ -24,12 +24,6 @@ export function EditTaskPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(isEdit);
 
-  useEffect(() => {
-    if (isEdit && id) {
-      fetchTask();
-    }
-  }, [id, isEdit, fetchTask]);
-
   const fetchTask = async () => {
     try {
       const data = await apiClient.get<{ task: TaskFormData & { due_date?: string } }>(
@@ -48,6 +42,12 @@ export function EditTaskPage() {
       setIsFetching(false);
     }
   };
+
+  useEffect(() => {
+    if (isEdit && id) {
+      fetchTask();
+    }
+  }, [id, isEdit]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

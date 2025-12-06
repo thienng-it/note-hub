@@ -96,7 +96,7 @@ export function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="glass-card" role="main">
+        <div className="glass-card">
           <form onSubmit={handleSubmit} aria-label="Login form">
             {/* Error Alert */}
             {error && (
