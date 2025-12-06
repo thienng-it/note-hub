@@ -88,35 +88,48 @@ class NoteService {
     }
 
     // Fall back to SQL query
-    let sql = `
-      SELECT DISTINCT n.*, 
-        GROUP_CONCAT(t.name) as tag_names,
-        GROUP_CONCAT(t.id) as tag_ids
-      FROM notes n
-      LEFT JOIN note_tag nt ON n.id = nt.note_id
-      LEFT JOIN tags t ON nt.tag_id = t.id
-      LEFT JOIN share_notes sn ON n.id = sn.note_id
-      WHERE (n.owner_id = ? OR sn.shared_with_id = ?)
-    `;
-    const params = [userId, userId];
+    let sql, params;
+    
+    // Special handling for 'shared' view - use INNER JOIN to only get shared notes
+    if (viewType === 'shared') {
+      sql = `
+        SELECT DISTINCT n.*, 
+          GROUP_CONCAT(t.name) as tag_names,
+          GROUP_CONCAT(t.id) as tag_ids
+        FROM notes n
+        INNER JOIN share_notes sn ON n.id = sn.note_id
+        LEFT JOIN note_tag nt ON n.id = nt.note_id
+        LEFT JOIN tags t ON nt.tag_id = t.id
+        WHERE sn.shared_with_id = ? AND n.owner_id != ?
+      `;
+      params = [userId, userId];
+    } else {
+      // Standard query for other views
+      sql = `
+        SELECT DISTINCT n.*, 
+          GROUP_CONCAT(t.name) as tag_names,
+          GROUP_CONCAT(t.id) as tag_ids
+        FROM notes n
+        LEFT JOIN note_tag nt ON n.id = nt.note_id
+        LEFT JOIN tags t ON nt.tag_id = t.id
+        LEFT JOIN share_notes sn ON n.id = sn.note_id
+        WHERE (n.owner_id = ? OR sn.shared_with_id = ?)
+      `;
+      params = [userId, userId];
 
-    // Apply view filter
-    switch (viewType) {
-      case 'favorites':
-        sql += ` AND n.favorite = 1`;
-        break;
-      case 'archived':
-        sql += ` AND n.archived = 1`;
-        break;
-      case 'shared':
-        // Show only notes shared WITH this user (not owned by them)
-        sql += ` AND sn.shared_with_id = ? AND n.owner_id != ?`;
-        params.push(userId, userId);
-        break;
-      case 'all':
-      default:
-        sql += ` AND n.archived = 0`;
-        break;
+      // Apply view filter
+      switch (viewType) {
+        case 'favorites':
+          sql += ` AND n.favorite = 1`;
+          break;
+        case 'archived':
+          sql += ` AND n.archived = 1`;
+          break;
+        case 'all':
+        default:
+          sql += ` AND n.archived = 0`;
+          break;
+      }
     }
 
     // Apply search filter (SQL LIKE as fallback)
