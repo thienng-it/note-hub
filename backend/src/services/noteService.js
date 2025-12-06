@@ -462,6 +462,9 @@ class NoteService {
       VALUES (?, ?, ?, ?)
     `, [noteId, ownerId, sharedWithUser.id, canEdit ? 1 : 0]);
 
+    // Invalidate the recipient's notes cache so they see the shared note
+    await cache.delPattern(`notes:user:${sharedWithUser.id}:*`);
+
     return { success: true, sharedWith: sharedWithUser };
   }
 
@@ -469,7 +472,18 @@ class NoteService {
    * Unshare a note.
    */
   static async unshareNote(noteId, shareId) {
+    // First get the share to know which user's cache to invalidate
+    const share = await db.queryOne(
+      `SELECT shared_with_id FROM share_notes WHERE id = ? AND note_id = ?`,
+      [shareId, noteId]
+    );
+
     await db.run(`DELETE FROM share_notes WHERE id = ? AND note_id = ?`, [shareId, noteId]);
+
+    // Invalidate the recipient's notes cache so the note disappears from their shared view
+    if (share && share.shared_with_id) {
+      await cache.delPattern(`notes:user:${share.shared_with_id}:*`);
+    }
   }
 
   /**

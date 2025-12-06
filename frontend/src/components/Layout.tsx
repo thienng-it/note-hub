@@ -126,14 +126,15 @@ export function Layout() {
           
           {/* Controls Row - only when expanded */}
           {user && !sidebarCollapsed && (
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--border-color)]">
+            <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-[var(--border-color)]">
               <LanguageSelector />
               <button
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
+                className="flex items-center gap-2 p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
                 aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               >
                 <i className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'} text-lg`} aria-hidden="true"></i>
+                <span className="text-sm">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
               </button>
             </div>
           )}
@@ -185,7 +186,7 @@ export function Layout() {
                   className={linkClass(false, sidebarCollapsed)}
                 >
                   <i className="glass-i fas fa-plus w-5 text-center" aria-hidden="true"></i>
-                  {!sidebarCollapsed && <span className="glass-span">{t('notes.newNote')}</span>}
+                  {!sidebarCollapsed && <span>{t('notes.newNote')}</span>}
                 </Link>
               </div>
 
