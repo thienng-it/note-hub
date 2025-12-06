@@ -95,10 +95,10 @@ services:
       # Database - SQLite (default for development)
       - NOTES_DB_PATH=${NOTES_DB_PATH:-/app/data/notes.db}
 
-      # OAuth Configuration (REQUIRED: set in .env file)
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+      # OAuth Configuration (Optional: for Google Single Sign-On)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
     volumes:
       - notehub-data:/app/data
       - notehub-uploads:/app/uploads
@@ -179,10 +179,10 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-}
 
-      # OAuth Configuration (REQUIRED: set in .env file)
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+      # OAuth Configuration (Optional: for Google Single Sign-On)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
     volumes:
       - notehub-uploads:/app/uploads
     healthcheck:
@@ -227,10 +227,10 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
 
-      # OAuth Configuration (REQUIRED: set in .env file)
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+      # OAuth Configuration (Optional: for Google Single Sign-On)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
     volumes:
       - notehub-uploads:/app/uploads
     depends_on:
