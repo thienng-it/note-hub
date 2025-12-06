@@ -144,6 +144,7 @@ class Database {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL DEFAULT 'Untitled',
         body TEXT DEFAULT '',
+        images TEXT,
         pinned INTEGER DEFAULT 0,
         archived INTEGER DEFAULT 0,
         favorite INTEGER DEFAULT 0,
@@ -188,6 +189,7 @@ class Database {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         description TEXT,
+        images TEXT,
         completed INTEGER DEFAULT 0,
         due_date DATETIME,
         priority TEXT DEFAULT 'medium',
@@ -331,6 +333,7 @@ class Database {
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(200) NOT NULL DEFAULT 'Untitled',
         body TEXT,
+        images TEXT,
         pinned BOOLEAN DEFAULT FALSE,
         archived BOOLEAN DEFAULT FALSE,
         favorite BOOLEAN DEFAULT FALSE,
@@ -374,6 +377,7 @@ class Database {
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(200) NOT NULL,
         description TEXT,
+        images TEXT,
         completed BOOLEAN DEFAULT FALSE,
         due_date DATETIME,
         priority VARCHAR(20) DEFAULT 'medium',
@@ -494,6 +498,17 @@ class Database {
         }
       };
 
+      // Helper function to add images column if missing
+      const addImagesColumn = (tableName, displayName) => {
+        const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all();
+        const hasImages = columns.some(col => col.name === 'images');
+        
+        if (!hasImages) {
+          console.log(`🔄 Migrating ${displayName} table: adding images column`);
+          this.db.exec(`ALTER TABLE ${tableName} ADD COLUMN images TEXT`);
+        }
+      };
+
       // Migrate all tables that have timestamp columns
       fixTimestampColumns('users', 'users');
       fixTimestampColumns('tags', 'tags');
@@ -503,6 +518,10 @@ class Database {
       fixTimestampColumns('password_reset_tokens', 'password_reset_tokens');
       fixTimestampColumns('invitations', 'invitations');
       fixTimestampColumns('refresh_tokens', 'refresh_tokens');
+
+      // Add images column to notes and tasks tables if missing
+      addImagesColumn('notes', 'notes');
+      addImagesColumn('tasks', 'tasks');
 
       console.log('✅ SQLite schema migration completed');
     } catch (error) {
@@ -676,6 +695,28 @@ class Database {
       if (!inviteHasUpdatedAt) {
         console.log('🔄 Migrating invitations table: adding updated_at column');
         await this.db.execute('ALTER TABLE invitations ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+      }
+
+      // Check and add missing images column for notes table
+      const [noteColumns] = await this.db.execute(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notes'"
+      );
+      const noteHasImages = noteColumns.some(col => col.COLUMN_NAME === 'images');
+      
+      if (!noteHasImages) {
+        console.log('🔄 Migrating notes table: adding images column');
+        await this.db.execute('ALTER TABLE notes ADD COLUMN images TEXT');
+      }
+
+      // Check and add missing images column for tasks table
+      const [taskColumns] = await this.db.execute(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tasks'"
+      );
+      const taskHasImages = taskColumns.some(col => col.COLUMN_NAME === 'images');
+      
+      if (!taskHasImages) {
+        console.log('🔄 Migrating tasks table: adding images column');
+        await this.db.execute('ALTER TABLE tasks ADD COLUMN images TEXT');
       }
 
       console.log('✅ MySQL schema migration completed');
