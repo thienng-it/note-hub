@@ -38,8 +38,8 @@ export function ShareNotePage() {
   const fetchNoteAndShares = async () => {
     try {
       const [noteData, sharesData] = await Promise.all([
-        apiClient.get<{ note: Note }>(`/api/notes/${id}`),
-        apiClient.get<{ shares: SharedUser[] }>(`/api/notes/${id}/shares`),
+        apiClient.get<{ note: Note }>(`/api/v1/notes/${id}`),
+        apiClient.get<{ shares: SharedUser[] }>(`/api/v1/notes/${id}/shares`),
       ]);
       setNote(noteData.note);
       setSharedWith(sharesData.shares || []);
@@ -63,7 +63,7 @@ export function ShareNotePage() {
 
     setIsSubmitting(true);
     try {
-      await apiClient.post(`/api/notes/${id}/share`, {
+      await apiClient.post(`/api/v1/notes/${id}/share`, {
         username: username.trim(),
         can_edit: canEdit,
       });
@@ -88,7 +88,7 @@ export function ShareNotePage() {
 
     setIsUnsharing(true);
     try {
-      await apiClient.delete(`/api/notes/${id}/share/${unshareModal.userId}`);
+      await apiClient.delete(`/api/v1/notes/${id}/share/${unshareModal.userId}`);
       setSharedWith(prev => prev.filter((u) => u.id !== unshareModal.userId));
       setSuccess(`Share removed for ${unshareModal.userName}`);
       setUnshareModal(null);

@@ -109,8 +109,9 @@ class NoteService {
         sql += ` AND n.archived = 1`;
         break;
       case 'shared':
-        sql += ` AND sn.shared_with_id = ?`;
-        params.push(userId);
+        // Show only notes shared WITH this user (not owned by them)
+        sql += ` AND sn.shared_with_id = ? AND n.owner_id != ?`;
+        params.push(userId, userId);
         break;
       case 'all':
       default:

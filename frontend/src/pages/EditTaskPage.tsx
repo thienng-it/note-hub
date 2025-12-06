@@ -32,7 +32,7 @@ export function EditTaskPage() {
 
   const fetchTask = async () => {
     try {
-      const data = await apiClient.get<{ task: TaskFormData & { due_date?: string } }>(`/api/tasks/${id}`);
+      const data = await apiClient.get<{ task: TaskFormData & { due_date?: string } }>(`/api/v1/tasks/${id}`);
       setFormData({
         title: data.task.title || '',
         description: data.task.description || '',
