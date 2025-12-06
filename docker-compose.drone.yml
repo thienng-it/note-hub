@@ -6,8 +6,8 @@
 #
 # IMPORTANT: Port Configuration
 # This configuration uses different ports than NoteHub to avoid conflicts:
-#   - NoteHub uses:     80 (frontend), 5000 (backend - internal)
-#   - Drone uses:       8080 (server UI), 9000 (runner - internal)
+#   - NoteHub uses:     80 (nginx + frontend), 5000 (backend - internal)
+#   - Drone uses:       8080 (nginx proxy), drone-server (internal)
 #
 # Prerequisites:
 #   1. GitHub OAuth App for Drone CI authentication
@@ -21,23 +21,50 @@
 #   4. Run docker compose: docker compose -f docker-compose.drone.yml up -d
 #
 # Services:
-#   - drone-server: Drone CI server with web UI (port 8080)
+#   - drone-nginx: nginx reverse proxy (port 8080)
+#   - drone-server: Drone CI server with web UI (internal)
 #   - drone-runner: Docker-based pipeline runner (internal)
-#   - drone-db: PostgreSQL database for Drone (optional, internal port 5432)
+#   - drone-db: PostgreSQL database for Drone (internal port 5432)
 #
 # Access:
 #   - Drone CI UI: http://your-server:8080
 #   - NoteHub UI:  http://your-server (port 80)
 #
-# Network:
-#   Both Drone and NoteHub can run on the same server without conflicts.
-#   Use a reverse proxy (nginx, Caddy, Traefik) for production HTTPS setup.
+# Architecture:
+#   Both Drone and NoteHub use nginx as reverse proxy for consistency.
+#   - NoteHub: nginx (port 80) → frontend + backend
+#   - Drone CI: nginx (port 8080) → drone-server
+#   This provides consistent architecture, SSL termination, caching, and compression.
 #
 # =============================================================================
 
 services:
   # ==========================================================================
-  # Drone Server - Main API and Web UI
+  # nginx - Reverse Proxy for Drone CI
+  # ==========================================================================
+  drone-nginx:
+    image: nginx:alpine
+    container_name: drone-nginx
+    restart: unless-stopped
+    ports:
+      # External port 8080 to avoid conflict with NoteHub (port 80)
+      - "8080:80"
+    volumes:
+      - ./docker/nginx-drone.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      drone-server:
+        condition: service_healthy
+    networks:
+      - drone-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ==========================================================================
+  # Drone Server - Main API and Web UI (Internal)
   # ==========================================================================
   drone-server:
     image: drone/drone:2
@@ -68,9 +95,7 @@ services:
       # Optional: Logs
       - DRONE_LOGS_DEBUG=${DRONE_LOGS_DEBUG:-false}
       - DRONE_LOGS_TRACE=${DRONE_LOGS_TRACE:-false}
-    ports:
-      # Use port 8080 to avoid conflict with NoteHub (port 80)
-      - "8080:80"
+    # No exposed ports - accessed via nginx reverse proxy
     volumes:
       - drone-data:/data
     depends_on:

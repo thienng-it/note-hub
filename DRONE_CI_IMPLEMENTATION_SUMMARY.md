@@ -22,10 +22,13 @@ Drone CI has been successfully integrated into the NoteHub project with a separa
 
 ### ✅ Service Architecture
 
-Drone CI deployment includes:
-1. **Drone Server** - Main API and web UI (port 8080)
-2. **Drone Runner** - Docker-based pipeline executor (internal)
-3. **PostgreSQL** - Database for Drone (internal port 5432)
+Drone CI uses nginx reverse proxy (consistent with NoteHub architecture):
+1. **nginx** - Reverse proxy with compression and caching (port 8080)
+2. **Drone Server** - Main API and web UI (internal)
+3. **Drone Runner** - Docker-based pipeline executor (internal)
+4. **PostgreSQL** - Database for Drone (internal port 5432)
+
+This mirrors NoteHub's architecture where nginx serves as the entry point.
 
 ## Files Added
 
@@ -34,6 +37,7 @@ Drone CI deployment includes:
 | File | Purpose |
 |------|---------|
 | `docker-compose.drone.yml` | Docker Compose configuration for Drone CI |
+| `docker/nginx-drone.conf` | nginx configuration for Drone CI reverse proxy |
 | `.env.drone.example` | Environment variables template |
 | `.drone.yml.example` | Example CI/CD pipeline for NoteHub |
 
@@ -65,14 +69,19 @@ Drone CI deployment includes:
 
 ```yaml
 # NoteHub (docker-compose.yml)
+# nginx serves frontend and proxies to backend
 frontend:
   ports:
     - "80:80"
 
 # Drone CI (docker-compose.drone.yml)
-drone-server:
+# nginx proxies to drone-server
+drone-nginx:
   ports:
     - "8080:80"  # External 8080 maps to internal 80
+
+drone-server:
+  # No exposed ports - accessed via nginx
 ```
 
 ### Environment Variables

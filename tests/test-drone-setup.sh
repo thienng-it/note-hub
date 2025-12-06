@@ -94,6 +94,12 @@ else
     print_fail "setup-drone.sh is missing"
 fi
 
+if [ -f "docker/nginx-drone.conf" ]; then
+    print_pass "nginx-drone.conf exists"
+else
+    print_fail "nginx-drone.conf is missing"
+fi
+
 # Test 2: Check docker-compose syntax
 TESTS_RUN=$((TESTS_RUN + 1))
 print_test "Validating docker-compose.drone.yml syntax"
@@ -140,10 +146,17 @@ TESTS_RUN=$((TESTS_RUN + 1))
 print_test "Checking service definitions"
 
 services_count=$(grep -c "^\s*drone-" docker-compose.drone.yml || true)
-if [ "$services_count" -ge 3 ]; then
-    print_pass "All required services defined (server, runner, db)"
+if [ "$services_count" -ge 4 ]; then
+    print_pass "All required services defined (nginx, server, runner, db)"
 else
     print_fail "Missing services in docker-compose.drone.yml"
+fi
+
+# Check for nginx service specifically
+if grep -q "drone-nginx:" docker-compose.drone.yml; then
+    print_pass "nginx reverse proxy configured"
+else
+    print_fail "nginx reverse proxy missing"
 fi
 
 # Test 6: Check environment variables

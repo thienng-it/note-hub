@@ -30,11 +30,20 @@ This guide explains how to deploy Drone CI alongside NoteHub on the same VPS ser
 
 ## Architecture
 
-Drone CI consists of three main components:
+Drone CI uses nginx as a reverse proxy (similar to NoteHub) for consistency and production-readiness:
 
 ```
 ┌─────────────────┐
-│  Drone Server   │ ← Web UI & API (Port 8080)
+│  nginx Proxy    │ ← Port 8080 (External)
+│                 │
+│  - Compression  │
+│  - SSL/TLS      │
+│  - Caching      │
+└────────┬────────┘
+         │ HTTP Proxy
+         │
+┌────────▼────────┐
+│  Drone Server   │ ← Web UI & API (Internal)
 │                 │
 │  - Web UI       │
 │  - API Server   │
@@ -44,7 +53,7 @@ Drone CI consists of three main components:
          │ RPC (Internal)
          │
 ┌────────▼────────┐
-│  Drone Runner   │ ← Pipeline Executor (No exposed ports)
+│  Drone Runner   │ ← Pipeline Executor (Internal)
 │                 │
 │  - Docker       │
 │  - Executes CI  │
@@ -60,19 +69,26 @@ Drone CI consists of three main components:
 └─────────────────┘
 ```
 
+**Key Points:**
+- nginx handles all external traffic on port 8080
+- Consistent with NoteHub's architecture (nginx → services)
+- Ready for SSL/TLS termination in production
+- Provides compression and caching out of the box
+
 ## Port Configuration
 
 To avoid conflicts with NoteHub:
 
 | Service | Internal Port | External Port | Purpose |
 |---------|--------------|---------------|---------|
-| **NoteHub Frontend** | 80 | 80 | NoteHub web application |
+| **NoteHub nginx** | 80 | 80 | NoteHub reverse proxy |
 | **NoteHub Backend** | 5000 | Internal only | NoteHub API |
-| **Drone Server** | 80 | **8080** | Drone CI web UI |
+| **Drone nginx** | 80 | **8080** | Drone CI reverse proxy |
+| **Drone Server** | 80 | Internal only | Drone CI server |
 | **Drone Runner** | - | Internal only | Pipeline executor |
 | **PostgreSQL (Drone)** | 5432 | Internal only | Drone database |
 
-**Key Point**: Drone Server uses port **8080** externally to avoid conflict with NoteHub's port 80.
+**Key Point**: Both NoteHub and Drone CI use nginx as a reverse proxy. Drone's nginx uses port **8080** externally to avoid conflict with NoteHub's port 80.
 
 ## Prerequisites
 

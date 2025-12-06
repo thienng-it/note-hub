@@ -10,21 +10,27 @@ Both NoteHub and Drone CI can run simultaneously on the same server without port
 
 | Service | Internal Port | External Port | Purpose | Access |
 |---------|--------------|---------------|---------|--------|
-| **NoteHub Frontend** | 80 | 80 | Web application | http://server:80 |
+| **NoteHub nginx** | 80 | 80 | Reverse proxy | http://server:80 |
 | **NoteHub Backend** | 5000 | (internal) | API server | Internal only |
 | **NoteHub MySQL** | 3306 | (internal) | Database (optional) | Internal only |
-| **Drone Server** | 80 | **8080** | CI/CD web UI | http://server:8080 |
+| **Drone nginx** | 80 | **8080** | Reverse proxy | http://server:8080 |
+| **Drone Server** | 80 | (internal) | CI/CD server | Internal only |
 | **Drone Runner** | - | (internal) | Pipeline executor | Internal only |
 | **Drone PostgreSQL** | 5432 | (internal) | CI/CD database | Internal only |
 
-## Network Isolation
+## Architecture & Network Isolation
 
-Each stack uses its own Docker network to ensure isolation:
+Both applications use nginx as a reverse proxy for consistent architecture:
 
-- **NoteHub**: Uses `notehub-network` bridge network
-- **Drone CI**: Uses `drone-network` bridge network
+- **NoteHub**: `nginx (port 80)` → `frontend + backend` via `notehub-network`
+- **Drone CI**: `nginx (port 8080)` → `drone-server` via `drone-network`
 
-This provides complete network isolation between the two applications while allowing them to coexist on the same host.
+This design provides:
+- Complete network isolation between the two applications
+- Consistent architecture and management
+- Built-in SSL/TLS termination capability
+- Compression and caching out of the box
+- Production-ready from day one
 
 ## Port Conflict Resolution
 
