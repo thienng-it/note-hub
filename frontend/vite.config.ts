@@ -3,8 +3,14 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import { readFileSync } from 'fs'
 
-// Read version from package.json
-const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'))
+// Read version from package.json with error handling
+let packageVersion = '1.0.0'; // Fallback version
+try {
+  const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'))
+  packageVersion = packageJson.version || packageVersion;
+} catch (error) {
+  console.warn('Could not read package.json version, using fallback:', packageVersion);
+}
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,7 +18,7 @@ export default defineConfig({
   
   // Define constants at build time
   define: {
-    __APP_VERSION__: JSON.stringify(packageJson.version),
+    __APP_VERSION__: JSON.stringify(packageVersion),
   },
 
   // Test configuration

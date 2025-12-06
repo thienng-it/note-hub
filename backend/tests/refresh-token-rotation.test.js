@@ -33,8 +33,7 @@ describe('Refresh Token Rotation', () => {
 
   describe('POST /api/auth/login', () => {
     it('should generate refresh token with JTI and store it in database', async () => {
-      const bcryptjs = require('bcryptjs');
-      const hash = await bcryptjs.hash('TestPassword123', 12);
+      const hash = await bcrypt.hash('TestPassword123', 12);
       
       db.queryOne.mockResolvedValue({
         id: 1,
