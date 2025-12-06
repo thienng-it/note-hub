@@ -1,9 +1,12 @@
 # Drone CI Setup Guide
 
-This guide explains how to deploy Drone CI alongside NoteHub on the same VPS server without port conflicts.
+This guide explains how to deploy Drone CI as a **standalone, independent CI/CD platform**. While it can be deployed alongside NoteHub on the same server, **Drone CI is completely independent** and can be deployed anywhere.
+
+> 📘 **Important**: Drone CI is a **standalone application** that does not depend on NoteHub. It has its own services, configuration, network, and data storage. See [DRONE_CI_STANDALONE.md](DRONE_CI_STANDALONE.md) for detailed independence documentation.
 
 ## Table of Contents
 
+- [Independence Notice](#independence-notice)
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Port Configuration](#port-configuration)
@@ -15,9 +18,29 @@ This guide explains how to deploy Drone CI alongside NoteHub on the same VPS ser
 - [Troubleshooting](#troubleshooting)
 - [Security Best Practices](#security-best-practices)
 
+## Independence Notice
+
+**🔴 Critical: Drone CI is completely independent from NoteHub**
+
+- ✅ Can be deployed on a **different server** from NoteHub
+- ✅ Can be deployed **without NoteHub** at all
+- ✅ Uses its **own configuration** file (`.env.drone`)
+- ✅ Uses its **own Docker network** (`drone-network`)
+- ✅ Uses its **own database** (PostgreSQL)
+- ✅ Uses its **own services** (nginx, server, runner)
+- ✅ Can be **moved, updated, or removed** without affecting NoteHub
+
+**What this means:**
+- NoteHub can be removed without affecting Drone CI
+- Drone CI can be removed without affecting NoteHub
+- Each can be deployed on completely different infrastructure
+- No shared configuration, data, or services between them
+
+For complete independence documentation, see **[DRONE_CI_STANDALONE.md](DRONE_CI_STANDALONE.md)**.
+
 ## Overview
 
-[Drone CI](https://www.drone.io/) is a modern, container-native continuous integration platform. This setup allows you to run Drone CI alongside NoteHub on the same VPS server without port conflicts.
+[Drone CI](https://www.drone.io/) is a modern, container-native continuous integration platform. This setup allows you to run Drone CI as a standalone service or alongside other applications without conflicts.
 
 ### Key Features
 

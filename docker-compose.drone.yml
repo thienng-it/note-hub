@@ -2,23 +2,38 @@
 # Docker Compose for Drone CI - Continuous Integration Platform
 # =============================================================================
 #
-# Deploy Drone CI alongside NoteHub on the same VPS server.
+# IMPORTANT: Drone CI is COMPLETELY INDEPENDENT
+# 
+# This is a standalone application that:
+# - Does NOT depend on NoteHub or any other application
+# - Can be deployed on the same server, different server, or alone
+# - Uses its own services, configuration, network, and data storage
+# - Can be started, stopped, moved, or removed independently
 #
-# IMPORTANT: Port Configuration
-# This configuration uses different ports than NoteHub to avoid conflicts:
-#   - NoteHub uses:     80 (nginx + frontend), 5000 (backend - internal)
-#   - Drone uses:       8080 (nginx proxy), drone-server (internal)
+# When deployed on the same server as NoteHub:
+#   - NoteHub uses port 80 (nginx + frontend)
+#   - Drone uses port 8080 (nginx proxy) - NO CONFLICTS
+#   - Separate networks: notehub-network vs drone-network
+#   - Separate configurations: .env vs .env.drone
+#   - Separate data volumes: completely isolated
 #
-# Prerequisites:
-#   1. GitHub OAuth App for Drone CI authentication
-#   2. Shared secret for server-runner communication
-#   3. Configure .env.drone with your settings
+# Prerequisites (INDEPENDENT):
+#   1. Docker and Docker Compose installed
+#   2. GitHub OAuth App for Drone CI authentication (separate from any other apps)
+#   3. .env.drone configuration file (completely independent from .env)
 #
-# Setup:
+# Quick Setup:
 #   1. Copy .env.drone.example to .env.drone:  cp .env.drone.example .env.drone
-#   2. Edit .env.drone with your GitHub OAuth credentials
+#   2. Edit .env.drone with your GitHub OAuth credentials (see below)
 #   3. Generate a shared secret: openssl rand -hex 16
 #   4. Run docker compose: docker compose -f docker-compose.drone.yml up -d
+#
+# GitHub OAuth Setup (INDEPENDENT):
+#   1. Go to https://github.com/settings/developers
+#   2. Create NEW OAuth App specifically for Drone CI
+#   3. Set callback URL: http://your-server:8080/login
+#   4. Copy Client ID and Secret to .env.drone
+#   Note: This is SEPARATE from any other GitHub OAuth apps you may have
 #
 # Services:
 #   - drone-nginx: nginx reverse proxy (port 8080)
