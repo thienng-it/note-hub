@@ -145,7 +145,7 @@ fi
 
 # Test 13: Check static file caching configuration
 echo "Test 13: Check static file caching configuration..."
-if grep -q 'location ~.*\.(js|css|png' docker/nginx.conf.template; then
+if grep -q 'location ~\*.*\\\.(js\|css\|png' docker/nginx.conf.template; then
   print_result "Template has static file caching" 0
 else
   print_result "Template has static file caching" 1 "Cache configuration not found"
