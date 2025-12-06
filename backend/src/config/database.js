@@ -642,82 +642,29 @@ class Database {
    */
   async migrateMySQLSchema() {
     try {
-      // Check and add missing columns for users table
-      const [userColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'"
-      );
-      const hasUpdatedAt = userColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!hasUpdatedAt) {
-        console.log('🔄 Migrating users table: adding updated_at column');
-        await this.db.execute('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
+      // Helper function to check and add missing column in MySQL
+      const addColumnIfMissing = async (tableName, columnName, columnDef, displayName) => {
+        const [columns] = await this.db.execute(
+          `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '${tableName}'`
+        );
+        const hasColumn = columns.some(col => col.COLUMN_NAME === columnName);
+        
+        if (!hasColumn) {
+          console.log(`🔄 Migrating ${displayName} table: adding ${columnName} column`);
+          await this.db.execute(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDef}`);
+        }
+      };
 
-      // Check and add missing columns for tags table
-      const [tagColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tags'"
-      );
-      const tagHasUpdatedAt = tagColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!tagHasUpdatedAt) {
-        console.log('🔄 Migrating tags table: adding updated_at column');
-        await this.db.execute('ALTER TABLE tags ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
+      // Add missing updated_at columns to tables
+      await addColumnIfMissing('users', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'users');
+      await addColumnIfMissing('tags', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'tags');
+      await addColumnIfMissing('share_notes', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'share_notes');
+      await addColumnIfMissing('password_reset_tokens', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'password_reset_tokens');
+      await addColumnIfMissing('invitations', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'invitations');
 
-      // Check and add missing columns for share_notes table
-      const [shareColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'share_notes'"
-      );
-      const shareHasUpdatedAt = shareColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!shareHasUpdatedAt) {
-        console.log('🔄 Migrating share_notes table: adding updated_at column');
-        await this.db.execute('ALTER TABLE share_notes ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing columns for password_reset_tokens table
-      const [tokenColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'password_reset_tokens'"
-      );
-      const tokenHasUpdatedAt = tokenColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!tokenHasUpdatedAt) {
-        console.log('🔄 Migrating password_reset_tokens table: adding updated_at column');
-        await this.db.execute('ALTER TABLE password_reset_tokens ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing columns for invitations table
-      const [inviteColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'invitations'"
-      );
-      const inviteHasUpdatedAt = inviteColumns.some(col => col.COLUMN_NAME === 'updated_at');
-      
-      if (!inviteHasUpdatedAt) {
-        console.log('🔄 Migrating invitations table: adding updated_at column');
-        await this.db.execute('ALTER TABLE invitations ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
-      }
-
-      // Check and add missing images column for notes table
-      const [noteColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notes'"
-      );
-      const noteHasImages = noteColumns.some(col => col.COLUMN_NAME === 'images');
-      
-      if (!noteHasImages) {
-        console.log('🔄 Migrating notes table: adding images column');
-        await this.db.execute('ALTER TABLE notes ADD COLUMN images TEXT');
-      }
-
-      // Check and add missing images column for tasks table
-      const [taskColumns] = await this.db.execute(
-        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tasks'"
-      );
-      const taskHasImages = taskColumns.some(col => col.COLUMN_NAME === 'images');
-      
-      if (!taskHasImages) {
-        console.log('🔄 Migrating tasks table: adding images column');
-        await this.db.execute('ALTER TABLE tasks ADD COLUMN images TEXT');
-      }
+      // Add missing images columns to notes and tasks tables
+      await addColumnIfMissing('notes', 'images', 'TEXT', 'notes');
+      await addColumnIfMissing('tasks', 'images', 'TEXT', 'tasks');
 
       console.log('✅ MySQL schema migration completed');
     } catch (error) {
