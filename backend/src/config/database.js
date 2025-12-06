@@ -649,7 +649,7 @@ class Database {
   async migrateMySQLSchema() {
     try {
       // Helper function to check and add missing column in MySQL
-      const addColumnIfMissing = async (tableName, columnName, columnDef, displayName) => {
+      const addColumnIfMissing = async (tableName, columnName, displayName) => {
         // Validate table name and column name against whitelists to prevent SQL injection
         const allowedTables = ['users', 'tags', 'notes', 'tasks', 'share_notes', 'password_reset_tokens', 'invitations'];
         const allowedColumns = {
@@ -671,20 +671,22 @@ class Database {
         
         if (!hasColumn) {
           console.log(`🔄 Migrating ${displayName} table: adding ${columnName} column`);
+          // Use predefined column definition from whitelist
+          const columnDef = allowedColumns[columnName];
           await this.db.execute(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDef}`);
         }
       };
 
       // Add missing updated_at columns to tables
-      await addColumnIfMissing('users', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'users');
-      await addColumnIfMissing('tags', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'tags');
-      await addColumnIfMissing('share_notes', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'share_notes');
-      await addColumnIfMissing('password_reset_tokens', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'password_reset_tokens');
-      await addColumnIfMissing('invitations', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP', 'invitations');
+      await addColumnIfMissing('users', 'updated_at', 'users');
+      await addColumnIfMissing('tags', 'updated_at', 'tags');
+      await addColumnIfMissing('share_notes', 'updated_at', 'share_notes');
+      await addColumnIfMissing('password_reset_tokens', 'updated_at', 'password_reset_tokens');
+      await addColumnIfMissing('invitations', 'updated_at', 'invitations');
 
       // Add missing images columns to notes and tasks tables
-      await addColumnIfMissing('notes', 'images', 'TEXT', 'notes');
-      await addColumnIfMissing('tasks', 'images', 'TEXT', 'tasks');
+      await addColumnIfMissing('notes', 'images', 'notes');
+      await addColumnIfMissing('tasks', 'images', 'tasks');
 
       console.log('✅ MySQL schema migration completed');
     } catch (error) {
