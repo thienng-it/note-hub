@@ -63,8 +63,15 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
 # Deploy Drone CI
+# Option 1: Clone the repository
 git clone https://github.com/thienng-it/note-hub.git
 cd note-hub
+
+# Option 2: Or copy just the Drone CI files to your server:
+# - docker-compose.drone.yml
+# - .env.drone.example
+# - docker/nginx-drone.conf
+# - scripts/setup-drone.sh (optional)
 
 # Configure
 cp .env.drone.example .env.drone

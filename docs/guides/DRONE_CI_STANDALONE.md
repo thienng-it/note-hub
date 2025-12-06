@@ -308,26 +308,33 @@ Deploy Drone CI for **client projects**:
 
 Drone CI can be moved **without affecting NoteHub**:
 
+**Step 1: Backup on old server**
 ```bash
-# Step 1: Backup on old server
 cd /path/to/drone
 docker compose -f docker-compose.drone.yml down
 docker run --rm -v drone-data:/data -v $(pwd):/backup alpine \
   tar czf /backup/drone-backup.tar.gz /data
+```
 
-# Step 2: Deploy on new server
+**Step 2: Deploy on new server**
+```bash
 ssh new-server
 mkdir drone-ci
 cd drone-ci
-# Copy files: docker-compose.drone.yml, .env.drone, nginx-drone.conf
+# Copy files: docker-compose.drone.yml, .env.drone, docker/nginx-drone.conf
+```
 
-# Step 3: Restore and start
+**Step 3: Restore and start**
+```bash
 docker run --rm -v drone-data:/data -v $(pwd):/backup alpine \
   tar xzf /backup/drone-backup.tar.gz -C /
 docker compose -f docker-compose.drone.yml up -d
+```
 
-# Step 4: Update DNS/GitHub OAuth callback URL
+**Step 4: Update DNS/GitHub OAuth callback URL**
+```bash
 # Point drone.example.com to new server
+# Update GitHub OAuth App callback URL to new server
 ```
 
 **NoteHub is not affected at all** during this migration.
