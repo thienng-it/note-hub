@@ -145,18 +145,21 @@ fi
 TESTS_RUN=$((TESTS_RUN + 1))
 print_test "Checking service definitions"
 
-services_count=$(grep -c "^\s*drone-" docker-compose.drone.yml || true)
-if [ "$services_count" -ge 4 ]; then
-    print_pass "All required services defined (nginx, server, runner, db)"
-else
-    print_fail "Missing services in docker-compose.drone.yml"
-fi
+# Check each required service explicitly
+required_services=("drone-nginx" "drone-server" "drone-runner" "drone-db")
+all_services_present=true
 
-# Check for nginx service specifically
-if grep -q "drone-nginx:" docker-compose.drone.yml; then
-    print_pass "nginx reverse proxy configured"
-else
-    print_fail "nginx reverse proxy missing"
+for service in "${required_services[@]}"; do
+    if grep -q "^\s*${service}:" docker-compose.drone.yml; then
+        print_pass "${service} service defined"
+    else
+        print_fail "${service} service missing"
+        all_services_present=false
+    fi
+done
+
+if [ "$all_services_present" = true ]; then
+    print_pass "All required services present"
 fi
 
 # Test 6: Check environment variables
