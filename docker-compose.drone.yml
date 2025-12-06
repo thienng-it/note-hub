@@ -1,0 +1,157 @@
+# =============================================================================
+# Docker Compose for Drone CI - Continuous Integration Platform
+# =============================================================================
+#
+# Deploy Drone CI alongside NoteHub on the same VPS server.
+#
+# IMPORTANT: Port Configuration
+# This configuration uses different ports than NoteHub to avoid conflicts:
+#   - NoteHub uses:     80 (frontend), 5000 (backend - internal)
+#   - Drone uses:       8080 (server UI), 9000 (runner - internal)
+#
+# Prerequisites:
+#   1. GitHub OAuth App for Drone CI authentication
+#   2. Shared secret for server-runner communication
+#   3. Configure .env.drone with your settings
+#
+# Setup:
+#   1. Copy .env.drone.example to .env.drone:  cp .env.drone.example .env.drone
+#   2. Edit .env.drone with your GitHub OAuth credentials
+#   3. Generate a shared secret: openssl rand -hex 16
+#   4. Run docker compose: docker compose -f docker-compose.drone.yml up -d
+#
+# Services:
+#   - drone-server: Drone CI server with web UI (port 8080)
+#   - drone-runner: Docker-based pipeline runner (internal)
+#   - drone-db: PostgreSQL database for Drone (optional, internal port 5432)
+#
+# Access:
+#   - Drone CI UI: http://your-server:8080
+#   - NoteHub UI:  http://your-server (port 80)
+#
+# Network:
+#   Both Drone and NoteHub can run on the same server without conflicts.
+#   Use a reverse proxy (nginx, Caddy, Traefik) for production HTTPS setup.
+#
+# =============================================================================
+
+services:
+  # ==========================================================================
+  # Drone Server - Main API and Web UI
+  # ==========================================================================
+  drone-server:
+    image: drone/drone:2
+    container_name: drone-server
+    restart: unless-stopped
+    env_file:
+      - .env.drone
+    environment:
+      # Database Configuration
+      - DRONE_DATABASE_DRIVER=postgres
+      - DRONE_DATABASE_DATASOURCE=postgres://${DRONE_POSTGRES_USER:-drone}:${DRONE_POSTGRES_PASSWORD}@drone-db:5432/${DRONE_POSTGRES_DB:-drone}?sslmode=disable
+      
+      # GitHub OAuth Configuration (REQUIRED)
+      - DRONE_GITHUB_CLIENT_ID=${DRONE_GITHUB_CLIENT_ID:?Set DRONE_GITHUB_CLIENT_ID in .env.drone}
+      - DRONE_GITHUB_CLIENT_SECRET=${DRONE_GITHUB_CLIENT_SECRET:?Set DRONE_GITHUB_CLIENT_SECRET in .env.drone}
+      
+      # Server Configuration
+      - DRONE_SERVER_HOST=${DRONE_SERVER_HOST:?Set DRONE_SERVER_HOST in .env.drone}
+      - DRONE_SERVER_PROTO=${DRONE_SERVER_PROTO:-http}
+      - DRONE_RPC_SECRET=${DRONE_RPC_SECRET:?Set DRONE_RPC_SECRET in .env.drone}
+      
+      # User Configuration
+      - DRONE_USER_CREATE=${DRONE_USER_CREATE:-}
+      
+      # Optional: Registration Mode
+      - DRONE_REGISTRATION_CLOSED=${DRONE_REGISTRATION_CLOSED:-false}
+      
+      # Optional: Logs
+      - DRONE_LOGS_DEBUG=${DRONE_LOGS_DEBUG:-false}
+      - DRONE_LOGS_TRACE=${DRONE_LOGS_TRACE:-false}
+    ports:
+      # Use port 8080 to avoid conflict with NoteHub (port 80)
+      - "8080:80"
+    volumes:
+      - drone-data:/data
+    depends_on:
+      drone-db:
+        condition: service_healthy
+    networks:
+      - drone-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ==========================================================================
+  # Drone Runner - Docker-based Pipeline Executor
+  # ==========================================================================
+  drone-runner:
+    image: drone/drone-runner-docker:1
+    container_name: drone-runner
+    restart: unless-stopped
+    env_file:
+      - .env.drone
+    environment:
+      # Runner Configuration
+      - DRONE_RPC_PROTO=${DRONE_SERVER_PROTO:-http}
+      - DRONE_RPC_HOST=drone-server
+      - DRONE_RPC_SECRET=${DRONE_RPC_SECRET:?Set DRONE_RPC_SECRET in .env.drone}
+      
+      # Runner Capacity
+      - DRONE_RUNNER_CAPACITY=${DRONE_RUNNER_CAPACITY:-2}
+      - DRONE_RUNNER_NAME=${DRONE_RUNNER_NAME:-docker-runner}
+      
+      # Docker Configuration
+      - DRONE_RUNNER_NETWORKS=drone-network
+      
+      # Optional: Logs
+      - DRONE_DEBUG=${DRONE_DEBUG:-false}
+      - DRONE_TRACE=${DRONE_TRACE:-false}
+    volumes:
+      # Mount Docker socket to allow runner to create containers
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      drone-server:
+        condition: service_healthy
+    networks:
+      - drone-network
+    # Runner doesn't expose ports - communicates with server via RPC
+
+  # ==========================================================================
+  # PostgreSQL Database for Drone
+  # ==========================================================================
+  drone-db:
+    image: postgres:15-alpine
+    container_name: drone-db
+    restart: unless-stopped
+    env_file:
+      - .env.drone
+    environment:
+      - POSTGRES_USER=${DRONE_POSTGRES_USER:-drone}
+      - POSTGRES_PASSWORD=${DRONE_POSTGRES_PASSWORD:?Set DRONE_POSTGRES_PASSWORD in .env.drone}
+      - POSTGRES_DB=${DRONE_POSTGRES_DB:-drone}
+    volumes:
+      - drone-postgres-data:/var/lib/postgresql/data
+    networks:
+      - drone-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DRONE_POSTGRES_USER:-drone}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  # Separate network for Drone CI
+  # NoteHub uses 'notehub-network', so no conflicts
+  drone-network:
+    driver: bridge
+
+volumes:
+  drone-data:
+    driver: local
+  drone-postgres-data:
+    driver: local

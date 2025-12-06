@@ -5,6 +5,7 @@
 .env.production
 .env.production.local
 *.env
+.env.drone
 
 # Database files (SENSITIVE - never commit)
 *.db

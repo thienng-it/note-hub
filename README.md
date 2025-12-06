@@ -363,6 +363,29 @@ docker compose up -d
 
 See [Hetzner Deployment Guide](docs/guides/HETZNER_DEPLOYMENT.md) for complete setup.
 
+### Option 3: Drone CI for Continuous Integration
+
+Deploy your own Drone CI instance alongside NoteHub on the same VPS server without port conflicts.
+
+**Key Features:**
+- 🐳 Container-native CI/CD platform
+- 🔗 Automatic GitHub integration
+- 🚀 Parallel pipeline execution
+- 📊 Beautiful web UI on port 8080
+
+```bash
+# Setup Drone CI (uses port 8080 - no conflict with NoteHub on port 80)
+cp .env.drone.example .env.drone
+nano .env.drone  # Configure GitHub OAuth and secrets
+
+# Deploy Drone CI
+docker compose -f docker-compose.drone.yml up -d
+
+# Access Drone CI at http://your-server:8080
+```
+
+See [Drone CI Setup Guide](docs/guides/DRONE_CI_SETUP.md) for complete configuration.
+
 ## 📚 API Documentation
 
 The API uses JWT authentication with optional Google OAuth 2.0 SSO. Key endpoints:
@@ -402,6 +425,7 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 | Document                                                       | Description                    |
 | -------------------------------------------------------------- | ------------------------------ |
 | [Hetzner Deployment](docs/guides/HETZNER_DEPLOYMENT.md)        | Deploy to Hetzner VPS          |
+| [Drone CI Setup](docs/guides/DRONE_CI_SETUP.md)               | Deploy Drone CI alongside NoteHub |
 | [Environment Configuration](docs/guides/ENVIRONMENT_CONFIGURATION.md) | .env setup and management |
 | [Logging Configuration](docs/guides/LOGGING_CONFIGURATION.md) | Structured logging setup       |
 | [Caching & Search Setup](docs/guides/CACHING_AND_SEARCH.md)   | Redis & Elasticsearch setup    |

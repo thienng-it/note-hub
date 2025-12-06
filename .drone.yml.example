@@ -1,0 +1,241 @@
+# =============================================================================
+# Drone CI Pipeline Configuration for NoteHub
+# =============================================================================
+# This is an example Drone CI pipeline for NoteHub.
+# To use it, copy this file to .drone.yml:
+#   cp .drone.yml.example .drone.yml
+#
+# Pipeline stages:
+# 1. Test Backend - Run backend tests, linting
+# 2. Test Frontend - Run frontend tests, linting, type checking
+# 3. Build - Build frontend for production
+# 4. Docker Build (optional) - Build Docker images
+# 5. Deploy (optional) - Deploy to production
+#
+# =============================================================================
+
+kind: pipeline
+type: docker
+name: default
+
+# =============================================================================
+# Pipeline Steps
+# =============================================================================
+steps:
+  # ===========================================================================
+  # Backend Testing
+  # ===========================================================================
+  - name: backend-lint
+    image: node:20-alpine
+    commands:
+      - cd backend
+      - npm ci
+      - npm run lint
+
+  - name: backend-test
+    image: node:20-alpine
+    commands:
+      - cd backend
+      - npm ci
+      - npm test -- --coverage
+    environment:
+      # Test environment configuration
+      NODE_ENV: test
+      JWT_SECRET: test-secret-key
+      NOTES_ADMIN_USERNAME: admin
+      NOTES_ADMIN_PASSWORD: TestPassword123!
+      NOTES_DB_PATH: ":memory:"
+
+  # ===========================================================================
+  # Frontend Testing
+  # ===========================================================================
+  - name: frontend-lint
+    image: node:20-alpine
+    commands:
+      - cd frontend
+      - npm ci
+      - npm run lint
+
+  - name: frontend-type-check
+    image: node:20-alpine
+    commands:
+      - cd frontend
+      - npm ci
+      - npm run type-check
+
+  - name: frontend-test
+    image: node:20-alpine
+    commands:
+      - cd frontend
+      - npm ci
+      - npm test
+
+  # ===========================================================================
+  # Build
+  # ===========================================================================
+  - name: frontend-build
+    image: node:20-alpine
+    commands:
+      - cd frontend
+      - npm ci
+      - npm run build
+    when:
+      branch:
+        - main
+        - develop
+
+  # ===========================================================================
+  # Optional: Docker Build
+  # ===========================================================================
+  # Uncomment to build Docker images
+  # 
+  # - name: docker-build-backend
+  #   image: plugins/docker
+  #   settings:
+  #     repo: your-dockerhub-username/notehub-backend
+  #     dockerfile: Dockerfile.backend.node
+  #     tags:
+  #       - latest
+  #       - ${DRONE_COMMIT_SHA:0:7}
+  #     username:
+  #       from_secret: docker_username
+  #     password:
+  #       from_secret: docker_password
+  #   when:
+  #     branch:
+  #       - main
+  #     event:
+  #       - push
+
+  # - name: docker-build-frontend
+  #   image: plugins/docker
+  #   settings:
+  #     repo: your-dockerhub-username/notehub-frontend
+  #     dockerfile: Dockerfile.frontend
+  #     tags:
+  #       - latest
+  #       - ${DRONE_COMMIT_SHA:0:7}
+  #     username:
+  #       from_secret: docker_username
+  #     password:
+  #       from_secret: docker_password
+  #   when:
+  #     branch:
+  #       - main
+  #     event:
+  #       - push
+
+  # ===========================================================================
+  # Optional: Deploy to Production
+  # ===========================================================================
+  # Uncomment to enable automatic deployment
+  #
+  # - name: deploy-production
+  #   image: appleboy/drone-ssh
+  #   settings:
+  #     host:
+  #       from_secret: production_host
+  #     username:
+  #       from_secret: production_username
+  #     key:
+  #       from_secret: production_ssh_key
+  #     port: 22
+  #     script:
+  #       - cd /opt/note-hub
+  #       - git pull origin main
+  #       - docker compose pull
+  #       - docker compose up -d
+  #   when:
+  #     branch:
+  #       - main
+  #     event:
+  #       - push
+
+  # ===========================================================================
+  # Notifications (Optional)
+  # ===========================================================================
+  # Uncomment to enable Slack notifications
+  #
+  # - name: slack-notification
+  #   image: plugins/slack
+  #   settings:
+  #     webhook:
+  #       from_secret: slack_webhook
+  #     channel: ci-notifications
+  #     template: >
+  #       {{#success build.status}}
+  #         ✅ Build #{{build.number}} succeeded. Branch: {{build.branch}}
+  #       {{else}}
+  #         ❌ Build #{{build.number}} failed. Branch: {{build.branch}}
+  #       {{/success}}
+  #       
+  #       Commit: {{build.commit}}
+  #       Author: {{build.author}}
+  #       Duration: {{since build.started}}
+  #       
+  #       {{build.link}}
+  #   when:
+  #     status:
+  #       - success
+  #       - failure
+
+# =============================================================================
+# Trigger Configuration
+# =============================================================================
+trigger:
+  # Run on push and pull request
+  event:
+    - push
+    - pull_request
+  
+  # Run on all branches
+  branch:
+    - main
+    - develop
+    - feature/*
+    - bugfix/*
+
+# =============================================================================
+# Secrets Configuration
+# =============================================================================
+# To use secrets in your pipeline, add them in Drone UI:
+# 1. Go to your repository in Drone
+# 2. Click Settings > Secrets
+# 3. Add the following secrets:
+#
+# For Docker Hub:
+#   - docker_username: Your Docker Hub username
+#   - docker_password: Your Docker Hub password or token
+#
+# For SSH deployment:
+#   - production_host: Your production server IP/domain
+#   - production_username: SSH username
+#   - production_ssh_key: SSH private key
+#
+# For Slack notifications:
+#   - slack_webhook: Slack webhook URL
+#
+# =============================================================================
+
+# =============================================================================
+# Additional Configuration
+# =============================================================================
+
+# Node modules caching (speeds up builds)
+# volumes:
+#   - name: node-cache
+#     host:
+#       path: /var/lib/drone/cache/node_modules
+
+# Services (for integration tests)
+# services:
+#   - name: mysql
+#     image: mysql:8.0
+#     environment:
+#       MYSQL_ROOT_PASSWORD: test
+#       MYSQL_DATABASE: notehub_test
+#       MYSQL_USER: test
+#       MYSQL_PASSWORD: test
+#
+#   - name: redis
+#     image: redis:7-alpine
