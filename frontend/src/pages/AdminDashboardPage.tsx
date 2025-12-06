@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { logger } from '../utils/logger';
@@ -22,7 +22,11 @@ interface AdminStats {
 export function AdminDashboardPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
-  const [stats, setStats] = useState<AdminStats>({ total_users: 0, users_with_2fa: 0, users_with_email: 0 });
+  const [stats, setStats] = useState<AdminStats>({
+    total_users: 0,
+    users_with_2fa: 0,
+    users_with_email: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,7 +46,7 @@ export function AdminDashboardPage() {
 
       const response = await fetch(`${API_BASE_URL}/api/admin/users?${params}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -64,7 +68,7 @@ export function AdminDashboardPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [API_BASE_URL, page, searchQuery]);
+  }, [page, searchQuery]);
 
   useEffect(() => {
     loadUsers();
@@ -82,7 +86,11 @@ export function AdminDashboardPage() {
   };
 
   const handleDisable2FA = async (userId: number, username: string) => {
-    if (!confirm(`Are you sure you want to disable 2FA for user "${username}"?\n\nThis action is for account recovery purposes only.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to disable 2FA for user "${username}"?\n\nThis action is for account recovery purposes only.`,
+      )
+    ) {
       return;
     }
 
@@ -91,7 +99,7 @@ export function AdminDashboardPage() {
       const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/disable-2fa`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -126,10 +134,7 @@ export function AdminDashboardPage() {
           <p className="text-[var(--text-secondary)] mb-6">
             You don't have permission to access the admin dashboard.
           </p>
-          <Link
-            to="/"
-            className="btn-apple"
-          >
+          <Link to="/" className="btn-apple">
             <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
             <span>Back to Notes</span>
           </Link>
@@ -148,7 +153,9 @@ export function AdminDashboardPage() {
               <i className="glass-i fas fa-users-cog text-blue-600" aria-hidden="true"></i>
               Admin Dashboard
             </h1>
-            <p className="text-[var(--text-secondary)] mt-2">Manage users and view system statistics</p>
+            <p className="text-[var(--text-secondary)] mt-2">
+              Manage users and view system statistics
+            </p>
           </div>
           <Link
             to="/"
@@ -166,7 +173,9 @@ export function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">Total Users</p>
-              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">{stats.total_users}</p>
+              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">
+                {stats.total_users}
+              </p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
               <i className="glass-avatar fas fa-users text-xl sm:text-2xl" aria-hidden="true"></i>
@@ -177,11 +186,18 @@ export function AdminDashboardPage() {
         <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">2FA Enabled</p>
-              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">{stats.users_with_2fa}</p>
+              <p className="text-green-100 text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">
+                2FA Enabled
+              </p>
+              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">
+                {stats.users_with_2fa}
+              </p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="glass-avatar fas fa-shield-alt text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i
+                className="glass-avatar fas fa-shield-alt text-xl sm:text-2xl"
+                aria-hidden="true"
+              ></i>
             </div>
           </div>
         </div>
@@ -190,10 +206,15 @@ export function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">With Email</p>
-              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">{stats.users_with_email}</p>
+              <p className="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]">
+                {stats.users_with_email}
+              </p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="glass-avatar fas fa-envelope text-xl sm:text-2xl" aria-hidden="true"></i>
+              <i
+                className="glass-avatar fas fa-envelope text-xl sm:text-2xl"
+                aria-hidden="true"
+              ></i>
             </div>
           </div>
         </div>
@@ -203,7 +224,10 @@ export function AdminDashboardPage() {
       <div className="glass-card p-4 sm:p-6 rounded-xl mb-6">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <i className="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]" aria-hidden="true"></i>
+            <i
+              className="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"
+              aria-hidden="true"
+            ></i>
             <input
               type="text"
               value={searchQuery}
@@ -213,10 +237,7 @@ export function AdminDashboardPage() {
             />
           </div>
           <div className="flex gap-2">
-            <button
-              type="submit"
-              className="btn-apple"
-            >
+            <button type="submit" className="btn-apple">
               <i className="glass-i fas fa-search" aria-hidden="true"></i>
               <span>Search</span>
             </button>
@@ -237,9 +258,13 @@ export function AdminDashboardPage() {
       {/* Results Info */}
       <div className="mb-4 text-[var(--text-secondary)]">
         {searchQuery ? (
-          <p>Found <strong>{stats.total_users}</strong> users matching "{searchQuery}"</p>
+          <p>
+            Found <strong>{stats.total_users}</strong> users matching "{searchQuery}"
+          </p>
         ) : (
-          <p>Showing <strong>{stats.total_users}</strong> users</p>
+          <p>
+            Showing <strong>{stats.total_users}</strong> users
+          </p>
         )}
       </div>
 
@@ -254,7 +279,10 @@ export function AdminDashboardPage() {
       {/* Loading State */}
       {isLoading ? (
         <div className="glass-card p-12 rounded-xl text-center">
-          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i
+            className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
+            aria-hidden="true"
+          ></i>
           <p className="text-[var(--text-secondary)]">Loading users...</p>
         </div>
       ) : (
@@ -262,25 +290,47 @@ export function AdminDashboardPage() {
           {/* Users Table */}
           <div className="glass-card rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full" role="table">
+              <table className="w-full">
                 <thead className="bg-[var(--bg-tertiary)]">
                   <tr>
-                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">ID</th>
-                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Username</th>
-                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden sm:table-cell">Email</th>
-                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell">Created At</th>
-                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell">Last Login</th>
-                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">2FA</th>
-                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
+                      ID
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
+                      Username
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden sm:table-cell">
+                      Email
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell">
+                      Created At
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell">
+                      Last Login
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
+                      2FA
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-color)]">
                   {users.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center text-[var(--text-secondary)]">
-                        <i className="glass-i fas fa-users text-4xl mb-4 text-[var(--text-muted)]" aria-hidden="true"></i>
+                      <td
+                        colSpan={7}
+                        className="px-6 py-12 text-center text-[var(--text-secondary)]"
+                      >
+                        <i
+                          className="glass-i fas fa-users text-4xl mb-4 text-[var(--text-muted)]"
+                          aria-hidden="true"
+                        ></i>
                         <p className="text-lg">No users found</p>
-                        {searchQuery && <p className="text-sm mt-2">Try adjusting your search criteria</p>}
+                        {searchQuery && (
+                          <p className="text-sm mt-2">Try adjusting your search criteria</p>
+                        )}
                       </td>
                     </tr>
                   ) : (
@@ -309,7 +359,10 @@ export function AdminDashboardPage() {
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden sm:table-cell">
                           {u.email ? (
                             <span className="flex items-center gap-2">
-                              <i className="glass-i fas fa-envelope text-[var(--text-muted)]" aria-hidden="true"></i>
+                              <i
+                                className="glass-i fas fa-envelope text-[var(--text-muted)]"
+                                aria-hidden="true"
+                              ></i>
                               {u.email}
                             </span>
                           ) : (
@@ -318,14 +371,20 @@ export function AdminDashboardPage() {
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden md:table-cell">
                           <span className="flex items-center gap-2">
-                            <i className="glass-i fas fa-calendar-plus text-[var(--text-muted)]" aria-hidden="true"></i>
+                            <i
+                              className="glass-i fas fa-calendar-plus text-[var(--text-muted)]"
+                              aria-hidden="true"
+                            ></i>
                             {u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}
                           </span>
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden lg:table-cell">
                           {u.last_login ? (
                             <span className="flex items-center gap-2">
-                              <i className="glass-i fas fa-sign-in-alt text-[var(--text-muted)]" aria-hidden="true"></i>
+                              <i
+                                className="glass-i fas fa-sign-in-alt text-[var(--text-muted)]"
+                                aria-hidden="true"
+                              ></i>
                               {new Date(u.last_login).toLocaleDateString()}
                             </span>
                           ) : (
@@ -352,7 +411,10 @@ export function AdminDashboardPage() {
                               className="glass-span"
                               title="Disable 2FA for this user"
                             >
-                              <i className="glass-i fas fa-shield-alt mr-1.5" aria-hidden="true"></i>
+                              <i
+                                className="glass-i fas fa-shield-alt mr-1.5"
+                                aria-hidden="true"
+                              ></i>
                               Disable 2FA
                             </button>
                           )}

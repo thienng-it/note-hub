@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react';
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { tasksApi } from '../api/client';
-import type { Task, TaskFilterType } from '../types';
-import { taskTemplates, type TaskTemplate } from '../utils/templates';
 import { ImageUpload } from '../components/ImageUpload';
+import type { Task, TaskFilterType } from '../types';
+import { type TaskTemplate, taskTemplates } from '../utils/templates';
 
 export function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -34,7 +34,7 @@ export function TasksPage() {
   });
 
   const toggleHideTask = (taskId: number) => {
-    setHiddenTasks(prev => {
+    setHiddenTasks((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(taskId)) {
         newSet.delete(taskId);
@@ -51,7 +51,7 @@ export function TasksPage() {
   };
 
   const hideAllTasks = () => {
-    const allTaskIds = new Set(tasks.map(task => task.id));
+    const allTaskIds = new Set(tasks.map((task) => task.id));
     setHiddenTasks(allTaskIds);
     try {
       localStorage.setItem('hiddenTasks', JSON.stringify([...allTaskIds]));
@@ -111,7 +111,7 @@ export function TasksPage() {
   const handleToggleComplete = async (task: Task) => {
     try {
       const updated = await tasksApi.toggleComplete(task);
-      setTasks(tasks.map(t => (t.id === task.id ? updated : t)));
+      setTasks(tasks.map((t) => (t.id === task.id ? updated : t)));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update task');
     }
@@ -121,7 +121,7 @@ export function TasksPage() {
     if (!confirm(`Delete task "${task.title}"?`)) return;
     try {
       await tasksApi.delete(task.id);
-      setTasks(tasks.filter(t => t.id !== task.id));
+      setTasks(tasks.filter((t) => t.id !== task.id));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete task');
     }
@@ -138,7 +138,7 @@ export function TasksPage() {
         due_date: editingTask.due_date,
         priority: editingTask.priority,
       });
-      setTasks(tasks.map(t => (t.id === updated.id ? updated : t)));
+      setTasks(tasks.map((t) => (t.id === updated.id ? updated : t)));
       setEditingTask(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update task');
@@ -164,18 +164,22 @@ export function TasksPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'text-red-500 bg-red-500/10 border-red-500/20';
-      case 'medium': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
-      case 'low': return 'text-green-500 bg-green-500/10 border-green-500/20';
-      default: return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
+      case 'high':
+        return 'text-red-500 bg-red-500/10 border-red-500/20';
+      case 'medium':
+        return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
+      case 'low':
+        return 'text-green-500 bg-green-500/10 border-green-500/20';
+      default:
+        return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
     }
   };
 
   const stats = {
     total: tasks.length,
-    completed: tasks.filter(t => t.completed).length,
-    active: tasks.filter(t => !t.completed).length,
-    overdue: tasks.filter(t => t.is_overdue && !t.completed).length,
+    completed: tasks.filter((t) => t.completed).length,
+    active: tasks.filter((t) => !t.completed).length,
+    overdue: tasks.filter((t) => t.is_overdue && !t.completed).length,
   };
 
   return (
@@ -301,7 +305,10 @@ export function TasksPage() {
 
           <form onSubmit={handleCreateTask} className="space-y-4">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+              >
                 Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -315,7 +322,10 @@ export function TasksPage() {
               />
             </div>
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+              >
                 Description
               </label>
               <textarea
@@ -327,14 +337,13 @@ export function TasksPage() {
                 rows={2}
               />
             </div>
-            <ImageUpload
-              images={newImages}
-              onImagesChange={setNewImages}
-              maxImages={3}
-            />
+            <ImageUpload images={newImages} onImagesChange={setNewImages} maxImages={3} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="dueDate" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <label
+                  htmlFor="dueDate"
+                  className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+                >
                   Due Date
                 </label>
                 <input
@@ -346,7 +355,10 @@ export function TasksPage() {
                 />
               </div>
               <div>
-                <label htmlFor="priority" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <label
+                  htmlFor="priority"
+                  className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+                >
                   Priority
                 </label>
                 <select
@@ -440,7 +452,9 @@ export function TasksPage() {
                   />
                   <textarea
                     value={editingTask.description || ''}
-                    onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
+                    onChange={(e) =>
+                      setEditingTask({ ...editingTask, description: e.target.value })
+                    }
                     className="glass-input w-full px-3 py-2 rounded-lg resize-y"
                     rows={2}
                   />
@@ -453,7 +467,12 @@ export function TasksPage() {
                     />
                     <select
                       value={editingTask.priority}
-                      onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value as 'low' | 'medium' | 'high' })}
+                      onChange={(e) =>
+                        setEditingTask({
+                          ...editingTask,
+                          priority: e.target.value as 'low' | 'medium' | 'high',
+                        })
+                      }
                       className="glass-input w-full px-3 py-2 rounded-lg"
                     >
                       <option value="low">Low</option>
@@ -516,7 +535,10 @@ export function TasksPage() {
                         <i className="fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
                         <span className="text-sm text-[var(--text-muted)]">Content hidden</span>
                         <button
-                          onClick={(e) => { e.preventDefault(); toggleHideTask(task.id); }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleHideTask(task.id);
+                          }}
                           className="ml-3 text-xs px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
                         >
                           Show
@@ -525,7 +547,9 @@ export function TasksPage() {
                     ) : (
                       <>
                         {task.description && (
-                          <p className="text-sm text-[var(--text-secondary)] mb-2">{task.description}</p>
+                          <p className="text-sm text-[var(--text-secondary)] mb-2">
+                            {task.description}
+                          </p>
                         )}
                         <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
                           {task.due_date && (
@@ -551,7 +575,9 @@ export function TasksPage() {
                       className={`p-2 rounded-lg transition-colors ${hiddenTasks.has(task.id) ? 'text-purple-600 hover:bg-purple-500/10' : 'text-gray-400 hover:bg-[var(--bg-tertiary)] hover:text-purple-600'}`}
                       title={hiddenTasks.has(task.id) ? 'Show content' : 'Hide content'}
                     >
-                      <i className={`glass-i fas ${hiddenTasks.has(task.id) ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                      <i
+                        className={`glass-i fas ${hiddenTasks.has(task.id) ? 'fa-eye' : 'fa-eye-slash'}`}
+                      ></i>
                     </button>
                     <button
                       onClick={() => setEditingTask(task)}

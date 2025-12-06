@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 
 interface ImageUploadProps {
   images: string[];
@@ -57,7 +57,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
           throw new Error('Failed to upload image');
         }
 
-        const response = await fetchResponse.json() as { path: string };
+        const response = (await fetchResponse.json()) as { path: string };
 
         if (response.path) {
           uploadedPaths.push(response.path);
@@ -91,11 +91,11 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
           },
         });
       }
-      onImagesChange(images.filter(img => img !== imagePath));
+      onImagesChange(images.filter((img) => img !== imagePath));
     } catch (err) {
       console.error('Failed to delete image:', err);
       // Still remove from list even if API call fails
-      onImagesChange(images.filter(img => img !== imagePath));
+      onImagesChange(images.filter((img) => img !== imagePath));
     }
   };
 

@@ -31,7 +31,7 @@ export const noteTemplates: NoteTemplate[] = [
     title: '',
     body: '',
     tags: '',
-    description: 'Start from scratch with an empty note'
+    description: 'Start from scratch with an empty note',
   },
   {
     id: 'meeting-notes',
@@ -60,7 +60,7 @@ export const noteTemplates: NoteTemplate[] = [
 - 
 `,
     tags: 'meeting, work',
-    description: 'Template for recording meeting discussions and action items'
+    description: 'Template for recording meeting discussions and action items',
   },
   {
     id: 'project-planning',
@@ -97,7 +97,7 @@ Brief description of the project
 - 
 `,
     tags: 'project, planning',
-    description: 'Plan and organize project details and milestones'
+    description: 'Plan and organize project details and milestones',
   },
   {
     id: 'daily-journal',
@@ -133,7 +133,7 @@ Brief description of the project
 - 
 `,
     tags: 'journal, personal',
-    description: 'Reflect on your day and plan for tomorrow'
+    description: 'Reflect on your day and plan for tomorrow',
   },
   {
     id: 'research-notes',
@@ -168,7 +168,7 @@ Brief description of the project
 - 
 `,
     tags: 'research, study',
-    description: 'Organize research findings and references'
+    description: 'Organize research findings and references',
   },
   {
     id: 'recipe',
@@ -202,7 +202,7 @@ Brief description of the project
 - 
 `,
     tags: 'recipe, cooking',
-    description: 'Save your favorite recipes'
+    description: 'Save your favorite recipes',
   },
   {
     id: 'book-notes',
@@ -237,7 +237,7 @@ Brief overview of the book
 ⭐⭐⭐⭐⭐ / 5
 `,
     tags: 'book, reading',
-    description: 'Record insights from books you read'
+    description: 'Record insights from books you read',
   },
   {
     id: 'bug-report',
@@ -278,7 +278,7 @@ What actually happens
 - [ ] Critical
 `,
     tags: 'bug, development',
-    description: 'Document and track software bugs'
+    description: 'Document and track software bugs',
   },
   {
     id: 'travel-planning',
@@ -327,8 +327,8 @@ What actually happens
 - 
 `,
     tags: 'travel, planning',
-    description: 'Plan your trips and keep travel details organized'
-  }
+    description: 'Plan your trips and keep travel details organized',
+  },
 ];
 
 export const taskTemplates: TaskTemplate[] = [
@@ -339,7 +339,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: '',
     description: '',
     priority: 'medium',
-    templateDescription: 'Start from scratch with an empty task'
+    templateDescription: 'Start from scratch with an empty task',
   },
   {
     id: 'daily-routine',
@@ -348,7 +348,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Daily Routine',
     description: 'Complete morning routine, exercise, plan the day',
     priority: 'medium',
-    templateDescription: 'Track daily habits and routines'
+    templateDescription: 'Track daily habits and routines',
   },
   {
     id: 'code-review',
@@ -357,7 +357,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Review Pull Request #',
     description: 'Review code changes, check for bugs, test functionality, provide feedback',
     priority: 'high',
-    templateDescription: 'Review and provide feedback on code changes'
+    templateDescription: 'Review and provide feedback on code changes',
   },
   {
     id: 'blog-post',
@@ -366,7 +366,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Write Blog Post: [Topic]',
     description: 'Research topic, create outline, write draft, edit, add images, publish',
     priority: 'medium',
-    templateDescription: 'Plan and write a blog post'
+    templateDescription: 'Plan and write a blog post',
   },
   {
     id: 'grocery-shopping',
@@ -375,25 +375,27 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Grocery Shopping',
     description: 'Buy vegetables, fruits, dairy, proteins, pantry items',
     priority: 'low',
-    templateDescription: 'Plan your grocery shopping trip'
+    templateDescription: 'Plan your grocery shopping trip',
   },
   {
     id: 'workout',
     name: 'Workout Session',
     icon: 'fa-dumbbell',
     title: 'Workout Session',
-    description: 'Warm-up (10 min), strength training (30 min), cardio (20 min), cool-down (10 min)',
+    description:
+      'Warm-up (10 min), strength training (30 min), cardio (20 min), cool-down (10 min)',
     priority: 'medium',
-    templateDescription: 'Schedule and track workout sessions'
+    templateDescription: 'Schedule and track workout sessions',
   },
   {
     id: 'study-session',
     name: 'Study Session',
     icon: 'fa-graduation-cap',
     title: 'Study: [Subject/Topic]',
-    description: 'Review notes, complete practice problems, watch video tutorials, create flashcards',
+    description:
+      'Review notes, complete practice problems, watch video tutorials, create flashcards',
     priority: 'high',
-    templateDescription: 'Plan focused study time'
+    templateDescription: 'Plan focused study time',
   },
   {
     id: 'home-maintenance',
@@ -402,7 +404,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Home Maintenance',
     description: 'Clean gutters, change air filters, check smoke detectors, lawn care',
     priority: 'low',
-    templateDescription: 'Keep track of home maintenance tasks'
+    templateDescription: 'Keep track of home maintenance tasks',
   },
   {
     id: 'birthday-planning',
@@ -411,7 +413,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Plan Birthday: [Name]',
     description: 'Send invitations, order cake, buy decorations, plan activities, buy gift',
     priority: 'medium',
-    templateDescription: 'Organize birthday party or celebration'
+    templateDescription: 'Organize birthday party or celebration',
   },
   {
     id: 'budget-review',
@@ -420,7 +422,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Review Monthly Budget',
     description: 'Review expenses, check subscriptions, update savings goals, plan next month',
     priority: 'medium',
-    templateDescription: 'Review and plan monthly finances'
+    templateDescription: 'Review and plan monthly finances',
   },
   {
     id: 'presentation',
@@ -429,7 +431,7 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Prepare Presentation: [Topic]',
     description: 'Create slides, gather data, practice delivery, prepare Q&A, test equipment',
     priority: 'high',
-    templateDescription: 'Prepare for an important presentation'
+    templateDescription: 'Prepare for an important presentation',
   },
   {
     id: 'car-maintenance',
@@ -438,20 +440,20 @@ export const taskTemplates: TaskTemplate[] = [
     title: 'Car Maintenance',
     description: 'Oil change, tire rotation, check fluids, wash and vacuum',
     priority: 'low',
-    templateDescription: 'Schedule regular car maintenance'
-  }
+    templateDescription: 'Schedule regular car maintenance',
+  },
 ];
 
 /**
  * Get a note template by ID
  */
 export function getNoteTemplate(id: string): NoteTemplate | undefined {
-  return noteTemplates.find(t => t.id === id);
+  return noteTemplates.find((t) => t.id === id);
 }
 
 /**
  * Get a task template by ID
  */
 export function getTaskTemplate(id: string): TaskTemplate | undefined {
-  return taskTemplates.find(t => t.id === id);
+  return taskTemplates.find((t) => t.id === id);
 }

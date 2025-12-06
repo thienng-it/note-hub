@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { aiApi } from '../api/client';
-import type { AIStatus, AIRewriteStyle } from '../types';
+import type { AIRewriteStyle, AIStatus } from '../types';
 import { logger } from '../utils/logger';
 
 interface AIActionsProps {
@@ -17,10 +17,6 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
   const [showResult, setShowResult] = useState(false);
   const [showStyleMenu, setShowStyleMenu] = useState(false);
 
-  useEffect(() => {
-    loadAIStatus();
-  }, []);
-
   const loadAIStatus = async () => {
     try {
       const status = await aiApi.getStatus();
@@ -29,6 +25,10 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
       logger.error('Failed to load AI status', err);
     }
   };
+
+  useEffect(() => {
+    loadAIStatus();
+  }, []);
 
   const handleProofread = async () => {
     if (!text.trim()) {
@@ -123,7 +123,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
           <i className="fas fa-sparkles mr-1"></i>
           AI Tools:
         </span>
-        
+
         <button
           onClick={handleProofread}
           disabled={isLoading}
@@ -244,10 +244,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
 
       {/* Click outside to close style menu */}
       {showStyleMenu && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setShowStyleMenu(false)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setShowStyleMenu(false)} />
       )}
     </>
   );

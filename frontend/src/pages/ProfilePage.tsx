@@ -79,7 +79,9 @@ export function ProfilePage() {
               onClick={toggleTheme}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] transition-colors"
             >
-              <i className={`fas fa-${theme === 'dark' ? 'sun text-yellow-500' : 'moon text-blue-500'}`}></i>
+              <i
+                className={`fas fa-${theme === 'dark' ? 'sun text-yellow-500' : 'moon text-blue-500'}`}
+              ></i>
               <span className="text-[var(--text-primary)] capitalize">{theme}</span>
             </button>
           </div>
@@ -102,9 +104,13 @@ export function ProfilePage() {
           {/* 2FA Settings */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <span className="font-medium text-[var(--text-primary)]">Two-Factor Authentication</span>
+              <span className="font-medium text-[var(--text-primary)]">
+                Two-Factor Authentication
+              </span>
               <p className="text-sm text-[var(--text-muted)]">
-                {user.has_2fa ? 'Enabled - Your account is protected' : 'Add an extra layer of security'}
+                {user.has_2fa
+                  ? 'Enabled - Your account is protected'
+                  : 'Add an extra layer of security'}
               </p>
             </div>
             {user.has_2fa ? (

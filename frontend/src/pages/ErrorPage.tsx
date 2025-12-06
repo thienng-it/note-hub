@@ -21,7 +21,8 @@ export function ErrorPage() {
           icon: 'fa-search',
           iconColor: 'text-gray-400',
           title: 'Page Not Found',
-          description: "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+          description:
+            "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
           tips: [
             'Check the URL for typos',
             'Use the navigation menu to find what you need',
@@ -33,7 +34,8 @@ export function ErrorPage() {
           icon: 'fa-lock',
           iconColor: 'text-red-400',
           title: 'Access Denied',
-          description: "You don't have permission to access this resource. Please check your credentials.",
+          description:
+            "You don't have permission to access this resource. Please check your credentials.",
           tips: [
             'Make sure you are logged in',
             'Contact an administrator if you need access',
@@ -45,7 +47,8 @@ export function ErrorPage() {
           icon: 'fa-exclamation-triangle',
           iconColor: 'text-orange-400',
           title: 'Server Error',
-          description: "Something went wrong on our end. We're working to fix this issue. Please try again later.",
+          description:
+            "Something went wrong on our end. We're working to fix this issue. Please try again later.",
           tips: [
             'Refresh the page and try again',
             'Clear your browser cache',
@@ -57,7 +60,8 @@ export function ErrorPage() {
           icon: 'fa-server',
           iconColor: 'text-blue-400',
           title: 'Service Unavailable',
-          description: 'The server is temporarily unavailable. This may be due to maintenance. Please wait a moment and try again.',
+          description:
+            'The server is temporarily unavailable. This may be due to maintenance. Please wait a moment and try again.',
           tips: [
             'Wait 30-60 seconds for the server to wake up',
             'Refresh the page to try reconnecting',
@@ -69,7 +73,8 @@ export function ErrorPage() {
           icon: 'fa-exclamation-circle',
           iconColor: 'text-gray-400',
           title: error,
-          description: 'An unexpected error occurred. Please try again or contact support if the problem persists.',
+          description:
+            'An unexpected error occurred. Please try again or contact support if the problem persists.',
           tips: [
             'Try refreshing the page',
             'Check your internet connection',
@@ -86,13 +91,18 @@ export function ErrorPage() {
       <div className="max-w-lg w-full text-center">
         {/* Error Icon */}
         <div className="mb-8">
-          <i className={`fas ${details.icon} text-8xl ${details.iconColor} mb-4`} aria-hidden="true"></i>
+          <i
+            className={`fas ${details.icon} text-8xl ${details.iconColor} mb-4`}
+            aria-hidden="true"
+          ></i>
         </div>
 
         {/* Error Message */}
         <div className="mb-8">
           <h1 className="text-6xl font-bold text-[var(--text-primary)] mb-4">{code}</h1>
-          <h2 className="text-2xl font-semibold text-[var(--text-secondary)] mb-4">{details.title}</h2>
+          <h2 className="text-2xl font-semibold text-[var(--text-secondary)] mb-4">
+            {details.title}
+          </h2>
           <p className="text-[var(--text-muted)] mb-6">{details.description}</p>
         </div>
 

@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import * as apiClient from '../api/client';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { Disable2FAPage } from './Disable2FAPage';
-import * as apiClient from '../api/client';
 
 // Mock the API client
 vi.mock('../api/client', () => ({
@@ -50,9 +50,7 @@ vi.mock('../context/AuthContext', async () => {
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
     <ThemeProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   </BrowserRouter>
 );
@@ -66,7 +64,7 @@ describe('Disable2FAPage', () => {
     render(
       <TestWrapper>
         <Disable2FAPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText('Disable Two-Factor Authentication')).toBeInTheDocument();
@@ -78,7 +76,7 @@ describe('Disable2FAPage', () => {
     const { container } = render(
       <TestWrapper>
         <Disable2FAPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(container).toMatchSnapshot();
@@ -88,7 +86,7 @@ describe('Disable2FAPage', () => {
     render(
       <TestWrapper>
         <Disable2FAPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const disableButton = screen.getByRole('button', { name: /disable 2fa/i });
@@ -105,7 +103,7 @@ describe('Disable2FAPage', () => {
     render(
       <TestWrapper>
         <Disable2FAPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Click disable button
@@ -121,17 +119,21 @@ describe('Disable2FAPage', () => {
     await waitFor(() => {
       expect(apiClient.apiClient.post).toHaveBeenCalledWith('/api/v1/auth/2fa/disable');
       expect(mockRefreshUser).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledWith('/profile', { state: { message: 'Two-factor authentication disabled' } });
+      expect(mockNavigate).toHaveBeenCalledWith('/profile', {
+        state: { message: 'Two-factor authentication disabled' },
+      });
     });
   });
 
   it('handles error when disabling 2FA fails', async () => {
-    (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Network error'));
+    (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error('Network error'),
+    );
 
     render(
       <TestWrapper>
         <Disable2FAPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Click disable button
@@ -153,7 +155,7 @@ describe('Disable2FAPage', () => {
     render(
       <TestWrapper>
         <Disable2FAPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Click disable button
@@ -175,7 +177,7 @@ describe('Disable2FAPage', () => {
     render(
       <TestWrapper>
         <Disable2FAPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const cancelLink = screen.getByText(/cancel/i);

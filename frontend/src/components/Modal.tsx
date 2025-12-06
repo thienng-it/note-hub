@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -118,7 +118,9 @@ export function ConfirmModal({
       <div className="space-y-6">
         {/* Icon */}
         <div className="flex justify-center">
-          <div className={`w-16 h-16 rounded-full ${style.iconBg} flex items-center justify-center`}>
+          <div
+            className={`w-16 h-16 rounded-full ${style.iconBg} flex items-center justify-center`}
+          >
             <i className={`glass-i fas ${style.icon} text-3xl ${style.iconColor}`}></i>
           </div>
         </div>

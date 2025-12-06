@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import * as apiClient from '../api/client';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { GoogleCallbackPage } from './GoogleCallbackPage';
-import * as apiClient from '../api/client';
 
 // Mock the API client
 vi.mock('../api/client', () => ({
@@ -33,12 +33,16 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const TestWrapper = ({ children, initialEntries = ['/auth/google/callback?code=test-code'] }: { children: React.ReactNode, initialEntries?: string[] }) => (
+const TestWrapper = ({
+  children,
+  initialEntries = ['/auth/google/callback?code=test-code'],
+}: {
+  children: React.ReactNode;
+  initialEntries?: string[];
+}) => (
   <MemoryRouter initialEntries={initialEntries}>
     <ThemeProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   </MemoryRouter>
 );
@@ -53,7 +57,7 @@ describe('GoogleCallbackPage', () => {
     render(
       <TestWrapper>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText(/signing you in/i)).toBeInTheDocument();
@@ -64,7 +68,7 @@ describe('GoogleCallbackPage', () => {
     const { container } = render(
       <TestWrapper>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(container).toMatchSnapshot();
@@ -72,9 +76,9 @@ describe('GoogleCallbackPage', () => {
 
   it('successfully handles Google OAuth callback', async () => {
     const mockResponse = {
-        access_token: 'test-access-token',
-        refresh_token: 'test-refresh-token',
-        user: { id: 1, username: 'testuser', email: 'test@example.com' },
+      access_token: 'test-access-token',
+      refresh_token: 'test-refresh-token',
+      user: { id: 1, username: 'testuser', email: 'test@example.com' },
     };
 
     (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
@@ -82,11 +86,13 @@ describe('GoogleCallbackPage', () => {
     render(
       <TestWrapper>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
-      expect(apiClient.apiClient.post).toHaveBeenCalledWith('/api/v1/auth/google/callback', { code: 'test-code' });
+      expect(apiClient.apiClient.post).toHaveBeenCalledWith('/api/v1/auth/google/callback', {
+        code: 'test-code',
+      });
     });
 
     await waitFor(() => {
@@ -101,59 +107,74 @@ describe('GoogleCallbackPage', () => {
     render(
       <TestWrapper initialEntries={['/auth/google/callback']}>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
       expect(screen.getByText(/No authorization code received/i)).toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/login');
-    }, { timeout: 4000 });
+    await waitFor(
+      () => {
+        expect(mockNavigate).toHaveBeenCalledWith('/login');
+      },
+      { timeout: 4000 },
+    );
   });
 
   it('handles OAuth error parameter', async () => {
     render(
       <TestWrapper initialEntries={['/auth/google/callback?error=access_denied']}>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Google authentication was cancelled or failed/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Google authentication was cancelled or failed/i),
+      ).toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/login');
-    }, { timeout: 4000 });
+    await waitFor(
+      () => {
+        expect(mockNavigate).toHaveBeenCalledWith('/login');
+      },
+      { timeout: 4000 },
+    );
   });
 
   it('handles API error during callback', async () => {
-    (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Network error'));
+    (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error('Network error'),
+    );
 
     render(
       <TestWrapper>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
       expect(screen.getByText(/Failed to complete Google sign-in/i)).toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/login');
-    }, { timeout: 4000 });
+    await waitFor(
+      () => {
+        expect(mockNavigate).toHaveBeenCalledWith('/login');
+      },
+      { timeout: 4000 },
+    );
   });
 
   it('displays appropriate error messages', async () => {
-    (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Invalid OAuth code'));
+    (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error('Invalid OAuth code'),
+    );
 
     render(
       <TestWrapper>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -165,9 +186,9 @@ describe('GoogleCallbackPage', () => {
 
   it('stores tokens using correct localStorage keys', async () => {
     const mockResponse = {
-        access_token: 'token123',
-        refresh_token: 'refresh456',
-        user: { id: 1, username: 'user1' },
+      access_token: 'token123',
+      refresh_token: 'refresh456',
+      user: { id: 1, username: 'user1' },
     };
 
     (apiClient.apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
@@ -175,7 +196,7 @@ describe('GoogleCallbackPage', () => {
     render(
       <TestWrapper>
         <GoogleCallbackPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {

@@ -101,7 +101,10 @@ export function ChangePasswordPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
               >
-                <i className={`fas ${showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true"></i>
+                <i
+                  className={`fas ${showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                  aria-hidden="true"
+                ></i>
               </button>
             </div>
           </div>
@@ -134,7 +137,10 @@ export function ChangePasswordPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 aria-label={showNewPassword ? 'Hide password' : 'Show password'}
               >
-                <i className={`fas ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true"></i>
+                <i
+                  className={`fas ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                  aria-hidden="true"
+                ></i>
               </button>
             </div>
             <p id="password-hint" className="mt-1 text-sm text-[var(--text-muted)]">
@@ -168,7 +174,10 @@ export function ChangePasswordPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
               >
-                <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true"></i>
+                <i
+                  className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                  aria-hidden="true"
+                ></i>
               </button>
             </div>
           </div>
@@ -176,14 +185,17 @@ export function ChangePasswordPage() {
           {/* Security Notice */}
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <div className="flex items-start">
-              <i className="glass-i fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-500 mt-1 mr-3" aria-hidden="true"></i>
+              <i
+                className="glass-i fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-500 mt-1 mr-3"
+                aria-hidden="true"
+              ></i>
               <div>
                 <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-1">
                   Security Notice
                 </h3>
                 <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                  After changing your password, you will remain logged in on this device.
-                  However, you will be logged out from all other devices for security reasons.
+                  After changing your password, you will remain logged in on this device. However,
+                  you will be logged out from all other devices for security reasons.
                 </p>
               </div>
             </div>

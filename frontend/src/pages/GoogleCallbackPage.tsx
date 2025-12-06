@@ -35,7 +35,11 @@ export function GoogleCallbackPage() {
       }
 
       try {
-        const response = await apiClient.post<{ access_token: string; refresh_token: string; user: { id: number; username: string; email: string } }>('/api/v1/auth/google/callback', { code });
+        const response = await apiClient.post<{
+          access_token: string;
+          refresh_token: string;
+          user: { id: number; username: string; email: string };
+        }>('/api/v1/auth/google/callback', { code });
         const { access_token, refresh_token, user } = response;
 
         // Store tokens using constants
@@ -56,7 +60,7 @@ export function GoogleCallbackPage() {
     };
 
     handleCallback();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, refreshUser]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
@@ -65,27 +69,29 @@ export function GoogleCallbackPage() {
           {error ? (
             <>
               <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
-                <i className="glass-i fas fa-exclamation-circle text-3xl text-red-600 dark:text-red-400" aria-hidden="true"></i>
+                <i
+                  className="glass-i fas fa-exclamation-circle text-3xl text-red-600 dark:text-red-400"
+                  aria-hidden="true"
+                ></i>
               </div>
               <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
                 Authentication Failed
               </h1>
               <p className="text-[var(--text-secondary)] mb-4">{error}</p>
-              <p className="text-sm text-[var(--text-muted)]">
-                Redirecting to login page...
-              </p>
+              <p className="text-sm text-[var(--text-muted)]">Redirecting to login page...</p>
             </>
           ) : (
             <>
               <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-                <i className="glass-i fas fa-spinner fa-spin text-3xl text-blue-600 dark:text-blue-400" aria-hidden="true"></i>
+                <i
+                  className="glass-i fas fa-spinner fa-spin text-3xl text-blue-600 dark:text-blue-400"
+                  aria-hidden="true"
+                ></i>
               </div>
               <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
                 Signing you in...
               </h1>
-              <p className="text-[var(--text-secondary)]">
-                Completing Google authentication
-              </p>
+              <p className="text-[var(--text-secondary)]">Completing Google authentication</p>
             </>
           )}
         </div>

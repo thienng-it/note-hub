@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { noteTemplates, taskTemplates, getNoteTemplate, getTaskTemplate } from './templates';
+import { describe, expect, it } from 'vitest';
+import { getNoteTemplate, getTaskTemplate, noteTemplates, taskTemplates } from './templates';
 
 describe('templates', () => {
   describe('noteTemplates', () => {
@@ -8,7 +8,7 @@ describe('templates', () => {
     });
 
     it('should include blank note template', () => {
-      const blankTemplate = noteTemplates.find(t => t.id === 'blank');
+      const blankTemplate = noteTemplates.find((t) => t.id === 'blank');
       expect(blankTemplate).toBeDefined();
       expect(blankTemplate?.name).toBe('Blank Note');
       expect(blankTemplate?.title).toBe('');
@@ -16,7 +16,7 @@ describe('templates', () => {
     });
 
     it('should include meeting notes template', () => {
-      const meetingTemplate = noteTemplates.find(t => t.id === 'meeting-notes');
+      const meetingTemplate = noteTemplates.find((t) => t.id === 'meeting-notes');
       expect(meetingTemplate).toBeDefined();
       expect(meetingTemplate?.name).toBe('Meeting Notes');
       expect(meetingTemplate?.body).toContain('Attendees');
@@ -24,7 +24,7 @@ describe('templates', () => {
     });
 
     it('should have valid structure for all templates', () => {
-      noteTemplates.forEach(template => {
+      noteTemplates.forEach((template) => {
         expect(template.id).toBeTruthy();
         expect(template.name).toBeTruthy();
         expect(template.icon).toBeTruthy();
@@ -36,7 +36,7 @@ describe('templates', () => {
     });
 
     it('should have unique IDs', () => {
-      const ids = noteTemplates.map(t => t.id);
+      const ids = noteTemplates.map((t) => t.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(noteTemplates.length);
     });
@@ -48,7 +48,7 @@ describe('templates', () => {
     });
 
     it('should include blank task template', () => {
-      const blankTemplate = taskTemplates.find(t => t.id === 'blank');
+      const blankTemplate = taskTemplates.find((t) => t.id === 'blank');
       expect(blankTemplate).toBeDefined();
       expect(blankTemplate?.name).toBe('Blank Task');
       expect(blankTemplate?.title).toBe('');
@@ -56,14 +56,14 @@ describe('templates', () => {
     });
 
     it('should include daily routine template', () => {
-      const routineTemplate = taskTemplates.find(t => t.id === 'daily-routine');
+      const routineTemplate = taskTemplates.find((t) => t.id === 'daily-routine');
       expect(routineTemplate).toBeDefined();
       expect(routineTemplate?.name).toBe('Daily Routine');
       expect(routineTemplate?.priority).toBe('medium');
     });
 
     it('should have valid structure for all templates', () => {
-      taskTemplates.forEach(template => {
+      taskTemplates.forEach((template) => {
         expect(template.id).toBeTruthy();
         expect(template.name).toBeTruthy();
         expect(template.icon).toBeTruthy();
@@ -75,7 +75,7 @@ describe('templates', () => {
     });
 
     it('should have unique IDs', () => {
-      const ids = taskTemplates.map(t => t.id);
+      const ids = taskTemplates.map((t) => t.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(taskTemplates.length);
     });

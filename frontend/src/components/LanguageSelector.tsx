@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const languages = [
@@ -14,8 +14,8 @@ export function LanguageSelector() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentLanguage = useMemo(
-    () => languages.find(lang => lang.code === i18n.language) || languages[0],
-    [i18n.language]
+    () => languages.find((lang) => lang.code === i18n.language) || languages[0],
+    [i18n.language],
   );
 
   const changeLanguage = (langCode: string) => {
@@ -55,9 +55,14 @@ export function LanguageSelector() {
         aria-haspopup="menu"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+          />
         </svg>
-        <span className="hidden sm:inline" aria-label={`Current language: ${currentLanguage.name}`}>
+        <span className="hidden sm:inline">
           {currentLanguage.name}
         </span>
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +72,7 @@ export function LanguageSelector() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div 
+        <div
           className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-[var(--bg-primary)] border border-gray-200 dark:border-gray-700 z-50"
           role="menu"
           aria-label="Language options"
@@ -85,11 +90,22 @@ export function LanguageSelector() {
                 role="menuitem"
                 aria-current={i18n.language === language.code ? 'true' : undefined}
               >
-                <span className="text-lg" aria-hidden="true">{language.flag}</span>
+                <span className="text-lg" aria-hidden="true">
+                  {language.flag}
+                </span>
                 <span>{language.name}</span>
                 {i18n.language === language.code && (
-                  <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-4 h-4 ml-auto"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 )}
               </button>

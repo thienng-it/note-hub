@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 
 interface TaskFormData {
@@ -28,11 +28,13 @@ export function EditTaskPage() {
     if (isEdit && id) {
       fetchTask();
     }
-  }, [id, isEdit]);
+  }, [id, isEdit, fetchTask]);
 
   const fetchTask = async () => {
     try {
-      const data = await apiClient.get<{ task: TaskFormData & { due_date?: string } }>(`/api/v1/tasks/${id}`);
+      const data = await apiClient.get<{ task: TaskFormData & { due_date?: string } }>(
+        `/api/v1/tasks/${id}`,
+      );
       setFormData({
         title: data.task.title || '',
         description: data.task.description || '',
@@ -76,7 +78,10 @@ export function EditTaskPage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
-          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i
+            className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
+            aria-hidden="true"
+          ></i>
           <p className="text-[var(--text-secondary)]">Loading task...</p>
         </div>
       </div>
@@ -96,7 +101,10 @@ export function EditTaskPage() {
           Back to Tasks
         </Link>
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className={`fas fa-${isEdit ? 'edit' : 'plus'} mr-3 text-blue-600`} aria-hidden="true"></i>
+          <i
+            className={`fas fa-${isEdit ? 'edit' : 'plus'} mr-3 text-blue-600`}
+            aria-hidden="true"
+          ></i>
           {isEdit ? 'Edit Task' : 'Create New Task'}
         </h1>
       </div>
@@ -168,7 +176,9 @@ export function EditTaskPage() {
               <select
                 id="priority"
                 value={formData.priority}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value as TaskFormData['priority'] })}
+                onChange={(e) =>
+                  setFormData({ ...formData, priority: e.target.value as TaskFormData['priority'] })
+                }
                 className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
               >
                 <option value="low">Low</option>

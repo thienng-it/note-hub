@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { versionApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
-import { versionApi } from '../api/client';
 
 // Version is injected at build time by Vite
 declare const __APP_VERSION__: string;
@@ -15,10 +15,10 @@ export function Layout() {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // Check if we're on tablet (between 768px and 1024px)
   const isTablet = () => window.innerWidth >= 768 && window.innerWidth < 1024;
-  
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Auto-collapse on tablets, otherwise use saved preference
     if (isTablet()) return true;
@@ -54,10 +54,10 @@ export function Layout() {
         setSidebarCollapsed(true);
       }
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [sidebarCollapsed]);
+  }, [sidebarCollapsed, isTablet]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.target as HTMLDivElement;
@@ -101,7 +101,9 @@ export function Layout() {
       >
         <div className="p-4 border-b border-[var(--border-color)]">
           {/* Logo Row */}
-          <div className={`flex ${sidebarCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between'}`}>
+          <div
+            className={`flex ${sidebarCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between'}`}
+          >
             <Link to="/" className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                 <i className="fas fa-feather-alt text-white text-lg" aria-hidden="true"></i>
@@ -123,7 +125,7 @@ export function Layout() {
               </button>
             )}
           </div>
-          
+
           {/* Controls Row - only when expanded */}
           {user && !sidebarCollapsed && (
             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-[var(--border-color)]">
@@ -133,12 +135,15 @@ export function Layout() {
                 className="flex items-center gap-2 p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
                 aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               >
-                <i className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'} text-lg`} aria-hidden="true"></i>
+                <i
+                  className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'} text-lg`}
+                  aria-hidden="true"
+                ></i>
                 <span className="text-sm">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
               </button>
             </div>
           )}
-          
+
           {/* Controls when collapsed - stacked vertically */}
           {user && sidebarCollapsed && (
             <div className="flex flex-col items-center gap-2 mt-3">
@@ -147,7 +152,10 @@ export function Layout() {
                 className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
                 aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               >
-                <i className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'}`} aria-hidden="true"></i>
+                <i
+                  className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'}`}
+                  aria-hidden="true"
+                ></i>
               </button>
               <button
                 onClick={() => setSidebarCollapsed(false)}
@@ -162,29 +170,44 @@ export function Layout() {
 
         {user && (
           <>
-            <nav className={`flex-1 p-4 space-y-2 ${sidebarCollapsed ? 'overflow-hidden' : 'overflow-y-auto'}`} aria-label="Primary navigation">
+            <nav
+              className={`flex-1 p-4 space-y-2 ${sidebarCollapsed ? 'overflow-hidden' : 'overflow-y-auto'}`}
+              aria-label="Primary navigation"
+            >
               <Link to="/" className={linkClass(isActive('/'), sidebarCollapsed)}>
                 <i className="glass-i fas fa-home w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>{t('notes.allNotes')}</span>}
               </Link>
-              <Link to="/?view=favorites" className={linkClass(isActive('/', 'favorites'), sidebarCollapsed)}>
-                <i className="glass-i fas fa-heart w-5 text-center text-red-500" aria-hidden="true"></i>
+              <Link
+                to="/?view=favorites"
+                className={linkClass(isActive('/', 'favorites'), sidebarCollapsed)}
+              >
+                <i
+                  className="glass-i fas fa-heart w-5 text-center text-red-500"
+                  aria-hidden="true"
+                ></i>
                 {!sidebarCollapsed && <span>{t('notes.favorites')}</span>}
               </Link>
-              <Link to="/?view=archived" className={linkClass(isActive('/', 'archived'), sidebarCollapsed)}>
+              <Link
+                to="/?view=archived"
+                className={linkClass(isActive('/', 'archived'), sidebarCollapsed)}
+              >
                 <i className="glass-i fas fa-archive w-5 text-center" aria-hidden="true"></i>
                 {!sidebarCollapsed && <span>Archived</span>}
               </Link>
-              <Link to="/?view=shared" className={linkClass(isActive('/', 'shared'), sidebarCollapsed)}>
-                <i className="glass-i fas fa-share-alt w-5 text-center text-green-500" aria-hidden="true"></i>
+              <Link
+                to="/?view=shared"
+                className={linkClass(isActive('/', 'shared'), sidebarCollapsed)}
+              >
+                <i
+                  className="glass-i fas fa-share-alt w-5 text-center text-green-500"
+                  aria-hidden="true"
+                ></i>
                 {!sidebarCollapsed && <span>Shared With Me</span>}
               </Link>
 
               <div className="pt-2">
-                <Link
-                  to="/notes/new"
-                  className={linkClass(false, sidebarCollapsed)}
-                >
+                <Link to="/notes/new" className={linkClass(false, sidebarCollapsed)}>
                   <i className="glass-i fas fa-plus w-5 text-center" aria-hidden="true"></i>
                   {!sidebarCollapsed && <span>{t('notes.newNote')}</span>}
                 </Link>
@@ -210,7 +233,9 @@ export function Layout() {
             </nav>
 
             <div className="p-4 border-t border-[var(--border-color)]">
-              <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between gap-3'}`}>
+              <div
+                className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between gap-3'}`}
+              >
                 {!sidebarCollapsed && (
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -218,7 +243,9 @@ export function Layout() {
                         {user.username.charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-sm text-[var(--text-secondary)] truncate">{user.username}</span>
+                    <span className="text-sm text-[var(--text-secondary)] truncate">
+                      {user.username}
+                    </span>
                   </div>
                 )}
                 <button
@@ -261,7 +288,10 @@ export function Layout() {
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
                   aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
                 >
-                  <i className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'}`} aria-hidden="true"></i>
+                  <i
+                    className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'}`}
+                    aria-hidden="true"
+                  ></i>
                 </button>
                 <Link
                   to="/profile"
@@ -307,11 +337,7 @@ export function Layout() {
 
       {/* Mobile Bottom Navigation - Only on phones */}
       {user && (
-        <nav
-          className="mobile-nav md:hidden safe-area-bottom"
-          role="navigation"
-          aria-label="Mobile navigation"
-        >
+        <nav className="mobile-nav md:hidden safe-area-bottom" aria-label="Mobile navigation">
           <Link
             to="/"
             className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`}
@@ -328,11 +354,7 @@ export function Layout() {
             <i className="glass-i fas fa-tasks" aria-hidden="true"></i>
             <span>{t('tasks.title')}</span>
           </Link>
-          <Link
-            to="/notes/new"
-            className="mobile-nav-item create-btn"
-            aria-label="Create new note"
-          >
+          <Link to="/notes/new" className="mobile-nav-item create-btn" aria-label="Create new note">
             <div className="w-12 h-12 -mt-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
               <i className="glass-i fas fa-plus text-white text-lg" aria-hidden="true"></i>
             </div>

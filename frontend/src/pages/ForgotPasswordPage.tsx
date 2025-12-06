@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export function ForgotPasswordPage() {
@@ -102,13 +102,20 @@ export function ForgotPasswordPage() {
               role="alert"
               aria-live="polite"
             >
-              <i className="glass-i fas fa-exclamation-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
+              <i
+                className="glass-i fas fa-exclamation-circle mt-0.5 flex-shrink-0"
+                aria-hidden="true"
+              ></i>
               <span>{error}</span>
             </div>
           )}
 
           {step === 'username' && (
-            <form onSubmit={handleSubmitUsername} className="space-y-6" aria-label="Forgot password form">
+            <form
+              onSubmit={handleSubmitUsername}
+              className="space-y-6"
+              aria-label="Forgot password form"
+            >
               {/* Username Field */}
               <div className="space-y-2">
                 <label
@@ -119,7 +126,10 @@ export function ForgotPasswordPage() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="glass-i fas fa-user text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i
+                      className="glass-i fas fa-user text-[var(--text-muted)]"
+                      aria-hidden="true"
+                    ></i>
                   </div>
                   <input
                     id="username"
@@ -130,7 +140,6 @@ export function ForgotPasswordPage() {
                     className="glass-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter your username or email"
                     required
-                    autoFocus
                     autoComplete="username"
                   />
                 </div>
@@ -169,7 +178,11 @@ export function ForgotPasswordPage() {
           )}
 
           {step === '2fa' && (
-            <form onSubmit={handleSubmit2FA} className="space-y-6" aria-label="2FA verification form">
+            <form
+              onSubmit={handleSubmit2FA}
+              className="space-y-6"
+              aria-label="2FA verification form"
+            >
               {/* 2FA Code Field */}
               <div className="space-y-2">
                 <label
@@ -180,7 +193,10 @@ export function ForgotPasswordPage() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="glass-i fas fa-shield-alt text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i
+                      className="glass-i fas fa-shield-alt text-[var(--text-muted)]"
+                      aria-hidden="true"
+                    ></i>
                   </div>
                   <input
                     id="totp"
@@ -194,7 +210,6 @@ export function ForgotPasswordPage() {
                     maxLength={6}
                     pattern="[0-9]{6}"
                     required
-                    autoFocus
                     autoComplete="one-time-code"
                   />
                 </div>
@@ -243,19 +258,18 @@ export function ForgotPasswordPage() {
           {step === 'success' && (
             <div className="text-center space-y-6">
               <div className="p-6 rounded-xl bg-green-500/10 border border-green-500/30">
-                <i className="glass-i fas fa-check-circle text-4xl text-green-500 mb-4" aria-hidden="true"></i>
+                <i
+                  className="glass-i fas fa-check-circle text-4xl text-green-500 mb-4"
+                  aria-hidden="true"
+                ></i>
                 <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">
                   Reset Token Generated
                 </h3>
                 <p className="text-sm text-green-600 dark:text-green-400">
                   {resetToken ? (
-                    <>
-                      Your reset token is ready. Click below to reset your password.
-                    </>
+                    <>Your reset token is ready. Click below to reset your password.</>
                   ) : (
-                    <>
-                      Please check your application server logs to retrieve the secure token.
-                    </>
+                    <>Please check your application server logs to retrieve the secure token.</>
                   )}
                 </p>
               </div>
@@ -297,9 +311,7 @@ export function ForgotPasswordPage() {
         </div>
 
         {/* Footer */}
-        <p className="mt-8 text-center text-sm text-white/70">
-          Secure password recovery
-        </p>
+        <p className="mt-8 text-center text-sm text-white/70">Secure password recovery</p>
       </div>
     </div>
   );

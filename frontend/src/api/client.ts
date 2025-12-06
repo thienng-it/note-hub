@@ -1,4 +1,7 @@
 import type {
+  AIOperationResult,
+  AIRewriteStyle,
+  AIStatus,
   LoginCredentials,
   LoginResponse,
   Note,
@@ -7,14 +10,11 @@ import type {
   NotesResponse,
   NoteViewType,
   Task,
+  TaskFilterType,
   TaskFormData,
   TaskResponse,
   TasksResponse,
-  TaskFilterType,
   User,
-  AIStatus,
-  AIOperationResult,
-  AIRewriteStyle,
 } from '../types';
 
 // Use relative URL in production (same origin), absolute in development
@@ -48,10 +48,7 @@ export const clearStoredAuth = (): void => {
 
 // HTTP client with auth headers
 // Handles v1 API responses with standardized format
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = getStoredToken();
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -78,7 +75,9 @@ async function apiRequest<T>(
         },
       });
       if (!retryResponse.ok) {
-        const errorData = await retryResponse.json().catch(() => ({ error: { message: 'Request failed' } }));
+        const errorData = await retryResponse
+          .json()
+          .catch(() => ({ error: { message: 'Request failed' } }));
         // Handle v1 error format
         const errorMessage = errorData.error?.message || errorData.error || 'Request failed';
         throw new Error(errorMessage);
@@ -124,12 +123,12 @@ async function refreshToken(): Promise<boolean> {
     const responseData = data.success ? data.data : data;
     const accessToken = responseData.access_token;
     localStorage.setItem(TOKEN_KEY, accessToken);
-    
+
     // Store new refresh token if rotation occurred
     if (responseData.refresh_token) {
       localStorage.setItem(REFRESH_TOKEN_KEY, responseData.refresh_token);
     }
-    
+
     return true;
   } catch {
     return false;
@@ -193,7 +192,10 @@ export const notesApi = {
     return response.note;
   },
 
-  async update(id: number, data: Partial<NoteFormData & { pinned?: boolean; favorite?: boolean; archived?: boolean }>): Promise<Note> {
+  async update(
+    id: number,
+    data: Partial<NoteFormData & { pinned?: boolean; favorite?: boolean; archived?: boolean }>,
+  ): Promise<Note> {
     const response = await apiRequest<NoteResponse>(`${API_VERSION}/notes/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),

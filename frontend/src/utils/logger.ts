@@ -16,8 +16,8 @@ class Logger {
 
   constructor() {
     // Get log level from environment or default based on mode
-    const envLogLevel = import.meta.env.VITE_LOG_LEVEL || 
-                       (import.meta.env.MODE === 'production' ? 'error' : 'info');
+    const envLogLevel =
+      import.meta.env.VITE_LOG_LEVEL || (import.meta.env.MODE === 'production' ? 'error' : 'info');
     this.level = envLogLevel as LogLevel;
   }
 
@@ -30,7 +30,7 @@ class Logger {
     const levels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
     const currentIndex = levels.indexOf(this.level);
     const requestedIndex = levels.indexOf(level);
-    
+
     return requestedIndex >= currentIndex;
   }
 
@@ -40,11 +40,11 @@ class Logger {
   private formatMessage(level: LogLevel, message: string, context?: LogContext): string {
     const timestamp = new Date().toISOString();
     const prefix = `[${timestamp}] ${level.toUpperCase()}:`;
-    
+
     if (context && Object.keys(context).length > 0) {
       return `${prefix} ${message} ${JSON.stringify(context)}`;
     }
-    
+
     return `${prefix} ${message}`;
   }
 
@@ -86,11 +86,14 @@ class Logger {
     if (this.shouldLog('error')) {
       const errorContext = {
         ...context,
-        error: error instanceof Error ? {
-          message: error.message,
-          stack: error.stack,
-          name: error.name
-        } : error
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                stack: error.stack,
+                name: error.name,
+              }
+            : error,
       };
       console.error(this.formatMessage('error', message, errorContext));
     }

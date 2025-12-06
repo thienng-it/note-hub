@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import Markdown from 'react-markdown';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 import { notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import { ImageUpload } from '../components/ImageUpload';
 import type { Note } from '../types';
-import { noteTemplates, type NoteTemplate } from '../utils/templates';
+import { type NoteTemplate, noteTemplates } from '../utils/templates';
 
 export function NoteEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -32,10 +32,10 @@ export function NoteEditPage() {
     setIsLoading(true);
     setError('');
     try {
-      const note = await notesApi.get(parseInt(id));
+      const note = await notesApi.get(parseInt(id, 10));
       setTitle(note.title);
       setBody(note.body);
-      setTags(note.tags.map(t => t.name).join(', '));
+      setTags(note.tags.map((t) => t.name).join(', '));
       setImages(note.images || []);
       setPinned(note.pinned);
       setFavorite(note.favorite);
@@ -70,7 +70,7 @@ export function NoteEditPage() {
       if (isNew) {
         note = await notesApi.create(data);
       } else {
-        note = await notesApi.update(parseInt(id!), data);
+        note = await notesApi.update(parseInt(id!, 10), data);
       }
 
       navigate(`/notes/${note.id}`);
@@ -101,7 +101,10 @@ export function NoteEditPage() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <Link to={id ? `/notes/${id}` : '/'} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+        <Link
+          to={id ? `/notes/${id}` : '/'}
+          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+        >
           <i className="glass-i fas fa-arrow-left mr-2"></i>
           {id ? 'Back to Note' : 'Back to Notes'}
         </Link>
@@ -170,23 +173,25 @@ export function NoteEditPage() {
                     ))}
                   </div>
                 </div>
-              ) : hasAppliedTemplate && (
-                <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                  <div className="flex items-center text-sm text-green-600 dark:text-green-400">
-                    <i className="glass-i fas fa-check-circle mr-2"></i>
-                    Template applied! You can customize it below.
+              ) : (
+                hasAppliedTemplate && (
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <div className="flex items-center text-sm text-green-600 dark:text-green-400">
+                      <i className="glass-i fas fa-check-circle mr-2"></i>
+                      Template applied! You can customize it below.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowTemplates(true);
+                        setHasAppliedTemplate(false);
+                      }}
+                      className="text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                    >
+                      Choose different template
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowTemplates(true);
-                      setHasAppliedTemplate(false);
-                    }}
-                    className="text-sm text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                  >
-                    Choose different template
-                  </button>
-                </div>
+                )
               )}
               {!showTemplates && !hasAppliedTemplate && (
                 <button
@@ -203,7 +208,10 @@ export function NoteEditPage() {
 
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+            >
               Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -214,13 +222,15 @@ export function NoteEditPage() {
               className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter note title"
               required
-              autoFocus
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label htmlFor="tags" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+            <label
+              htmlFor="tags"
+              className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+            >
               Tags
             </label>
             <div className="relative">
@@ -240,25 +250,20 @@ export function NoteEditPage() {
           </div>
 
           {/* Images */}
-          <ImageUpload
-            images={images}
-            onImagesChange={setImages}
-            maxImages={5}
-          />
+          <ImageUpload images={images} onImagesChange={setImages} maxImages={5} />
 
           {/* AI Actions */}
           {body.trim() && !showPreview && (
-            <AIActions
-              text={body}
-              onApply={(newText) => setBody(newText)}
-              className="mb-4"
-            />
+            <AIActions text={body} onApply={(newText) => setBody(newText)} className="mb-4" />
           )}
 
           {/* Content with Preview Toggle */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label htmlFor="body" className="block text-sm font-medium text-[var(--text-primary)]">
+              <label
+                htmlFor="body"
+                className="block text-sm font-medium text-[var(--text-primary)]"
+              >
                 Content (Markdown supported)
               </label>
               <button
@@ -273,9 +278,7 @@ export function NoteEditPage() {
 
             {showPreview ? (
               <div className="glass-input min-h-[300px] p-4 rounded-lg prose prose-lg dark:prose-invert max-w-none overflow-auto note-content">
-                <Markdown remarkPlugins={[remarkGfm]}>
-                  {body || '*No content to preview*'}
-                </Markdown>
+                <Markdown remarkPlugins={[remarkGfm]}>{body || '*No content to preview*'}</Markdown>
               </div>
             ) : (
               <textarea
@@ -330,17 +333,10 @@ export function NoteEditPage() {
 
           {/* Actions */}
           <div className="flex justify-end gap-4 pt-4 border-t border-[var(--border-color)]">
-            <Link
-              to={id ? `/notes/${id}` : '/'}
-              className="btn-secondary-glass"
-            >
+            <Link to={id ? `/notes/${id}` : '/'} className="btn-secondary-glass">
               Cancel
             </Link>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="btn-apple"
-            >
+            <button type="submit" disabled={isSaving} className="btn-apple">
               {isSaving ? (
                 <>
                   <i className="glass-i fas fa-spinner fa-spin mr-2"></i>

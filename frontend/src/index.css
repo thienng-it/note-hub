@@ -10,13 +10,13 @@
    ============================================================ */
 :root {
   /* Apple-inspired brand colors */
-  --apple-blue: #007AFF;
-  --apple-blue-hover: #0056CC;
-  --apple-purple: #AF52DE;
-  --apple-pink: #FF2D55;
-  --apple-orange: #FF9500;
-  --apple-green: #34C759;
-  --apple-red: #FF3B30;
+  --apple-blue: #007aff;
+  --apple-blue-hover: #0056cc;
+  --apple-purple: #af52de;
+  --apple-pink: #ff2d55;
+  --apple-orange: #ff9500;
+  --apple-green: #34c759;
+  --apple-red: #ff3b30;
 
   /* Semantic colors */
   --primary-color: #3b82f6;
@@ -40,7 +40,9 @@
   --border-color: #e2e8f0;
 
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
 
   /* Glassmorphism effects */
   --glass-bg: rgba(255, 255, 255, 0.85);
@@ -67,7 +69,9 @@
 /* ============================================================
    BASE STYLES & RESETS
    ============================================================ */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 1px;
   padding: 1px;
@@ -87,7 +91,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   line-height: 1.6;
-  background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 50%, #FCE4EC 100%);
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #fce4ec 100%);
   background-attachment: fixed;
   color: var(--text-primary);
   /* Improve touch scrolling on mobile */
@@ -150,7 +154,7 @@ body.dark {
   border-radius: 0.75rem;
 
   /* ✅ HARD-FIX: space for the icon */
-  padding-left: 3rem;   /* 48px */
+  padding-left: 3rem; /* 48px */
   padding-right: 1rem;
   padding-top: 0.875rem;
   padding-bottom: 0.875rem;
@@ -162,7 +166,6 @@ body.dark {
   -webkit-appearance: none;
   appearance: none;
 }
-
 
 .glass-input:focus {
   outline: none;
@@ -200,12 +203,12 @@ body.dark {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
+  background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
   color: white;
   font-weight: 600;
   border: none;
   border-radius: 0.75rem;
-  padding: .5rem .5rem;
+  padding: 0.5rem 0.5rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 14px rgba(0, 122, 255, 0.4);
@@ -411,7 +414,7 @@ body.dark {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FF3B30 0%, #cc2f27 100%);
+  background: linear-gradient(135deg, #ff3b30 0%, #cc2f27 100%);
   color: white;
   font-weight: 600;
   font-size: 1rem;
@@ -601,7 +604,7 @@ body.dark {
 
 /* Logo gradient */
 .logo-gradient {
-  background: linear-gradient(135deg, #007AFF 0%, #AF52DE 100%);
+  background: linear-gradient(135deg, #007aff 0%, #af52de 100%);
 }
 
 /* Shadow utilities */
@@ -647,9 +650,15 @@ body.dark {
   margin: 1rem 0 0.5rem;
 }
 
-.note-content h1 { font-size: 2rem; }
-.note-content h2 { font-size: 1.5rem; }
-.note-content h3 { font-size: 1.25rem; }
+.note-content h1 {
+  font-size: 2rem;
+}
+.note-content h2 {
+  font-size: 1.5rem;
+}
+.note-content h3 {
+  font-size: 1.25rem;
+}
 
 .note-content p {
   margin: 0.5rem 0;
@@ -675,7 +684,7 @@ body.dark {
   border-radius: 0.25rem;
   font-size: 0.875rem;
   border: 1px solid var(--glass-border);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .note-content pre code {
@@ -815,7 +824,7 @@ body.dark {
   }
 
   .mobile-nav-item.active::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 50%;
@@ -842,7 +851,7 @@ body.dark {
 
   /* Add bottom padding for mobile navigation */
   #main-content {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
 }
 
@@ -920,13 +929,23 @@ body.dark {
 
 /* Animation utilities */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .animate-fade-in {
@@ -948,10 +967,12 @@ body.dark {
 
 /* Reduced motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
   }
 }
 
@@ -1351,7 +1372,7 @@ body.dark {
   border: 1px solid var(--glass-border);
   border-radius: 0.375rem;
   padding: 0.125rem 0.375rem;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.875rem;
   color: var(--apple-purple);
 }
@@ -1365,7 +1386,7 @@ body.dark {
   border-radius: 0.75rem;
   padding: 1rem;
   overflow-x: auto;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.875rem;
 }
 
@@ -1373,7 +1394,14 @@ body.dark {
 .glass-hr {
   border: none;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--glass-border), var(--apple-blue), var(--glass-border), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--glass-border),
+    var(--apple-blue),
+    var(--glass-border),
+    transparent
+  );
   margin: 2rem 0;
 }
 
@@ -1480,9 +1508,15 @@ body.dark {
   }
 
   /* Better text sizing on mobile */
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
+  h1 {
+    font-size: 1.75rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.25rem;
+  }
 
   /* Improve form spacing on mobile */
   .form-label-glass {
@@ -1547,7 +1581,7 @@ body.dark {
   .mobile-nav,
   .btn-back-to-top,
   button {
-    display: none !important;
+    display: none;
   }
 
   /* Optimize colors for printing */

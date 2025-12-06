@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -16,11 +16,13 @@ export function Setup2FAPage() {
 
   useEffect(() => {
     fetchSetupData();
-  }, []);
+  }, [fetchSetupData]);
 
   const fetchSetupData = async () => {
     try {
-      const data = await apiClient.get<{ qr_code: string; secret: string }>('/api/v1/auth/2fa/setup');
+      const data = await apiClient.get<{ qr_code: string; secret: string }>(
+        '/api/v1/auth/2fa/setup',
+      );
       setQrCode(data.qr_code);
       setSecret(data.secret);
     } catch (err: unknown) {
@@ -48,7 +50,9 @@ export function Setup2FAPage() {
       });
       // Refresh user data to update has_2fa status
       await refreshUser();
-      navigate('/profile', { state: { message: 'Two-factor authentication enabled successfully' } });
+      navigate('/profile', {
+        state: { message: 'Two-factor authentication enabled successfully' },
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to enable 2FA';
       setError(errorMessage);
@@ -84,7 +88,10 @@ export function Setup2FAPage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
-          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i
+            className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
+            aria-hidden="true"
+          ></i>
           <p className="text-[var(--text-secondary)]">Loading 2FA setup...</p>
         </div>
       </div>
@@ -152,7 +159,8 @@ export function Setup2FAPage() {
         {showQR ? (
           <div className="text-center mb-6">
             <p className="mb-4 text-[var(--text-secondary)]">
-              Scan this QR code with your authenticator app (Google Authenticator, Authy, or Microsoft Authenticator).
+              Scan this QR code with your authenticator app (Google Authenticator, Authy, or
+              Microsoft Authenticator).
             </p>
             <div className="flex justify-center mb-4">
               <div className="p-4 bg-white rounded-lg border border-[var(--border-color)] shadow-sm">
@@ -168,7 +176,8 @@ export function Setup2FAPage() {
           /* Secret Key View */
           <div className="text-center mb-6">
             <p className="mb-4 text-[var(--text-secondary)]">
-              If you can't scan the QR code, enter this secret key manually into your authenticator app.
+              If you can't scan the QR code, enter this secret key manually into your authenticator
+              app.
             </p>
             <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-color)]">
               <code className="text-lg font-mono text-[var(--text-primary)] break-all select-all">
@@ -206,7 +215,6 @@ export function Setup2FAPage() {
               inputMode="numeric"
               pattern="[0-9]{6}"
               autoComplete="one-time-code"
-              autoFocus
             />
           </div>
 
@@ -243,7 +251,8 @@ export function Setup2FAPage() {
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-300">
             <i className="glass-i fas fa-info-circle mr-2" aria-hidden="true"></i>
-            <strong>Tip:</strong> After enabling 2FA, you'll need to enter a code from your authenticator app each time you log in.
+            <strong>Tip:</strong> After enabling 2FA, you'll need to enter a code from your
+            authenticator app each time you log in.
           </p>
         </div>
       </div>

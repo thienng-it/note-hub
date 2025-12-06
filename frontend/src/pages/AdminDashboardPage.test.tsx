@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { AdminDashboardPage } from './AdminDashboardPage';
@@ -26,17 +26,31 @@ global.confirm = vi.fn();
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
     <ThemeProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   </BrowserRouter>
 );
 
 const mockUsersResponse = {
   users: [
-    { id: 1, username: 'user1', email: 'user1@example.com', created_at: '2024-01-01T00:00:00Z', last_login: '2024-01-15T00:00:00Z', totp_secret: true, has_2fa: true },
-    { id: 2, username: 'user2', email: 'user2@example.com', created_at: '2024-01-02T00:00:00Z', last_login: null, totp_secret: false, has_2fa: false },
+    {
+      id: 1,
+      username: 'user1',
+      email: 'user1@example.com',
+      created_at: '2024-01-01T00:00:00Z',
+      last_login: '2024-01-15T00:00:00Z',
+      totp_secret: true,
+      has_2fa: true,
+    },
+    {
+      id: 2,
+      username: 'user2',
+      email: 'user2@example.com',
+      created_at: '2024-01-02T00:00:00Z',
+      last_login: null,
+      totp_secret: false,
+      has_2fa: false,
+    },
   ],
   pagination: { page: 1, per_page: 10, total: 2, total_pages: 1 },
 };
@@ -51,7 +65,7 @@ describe('AdminDashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.setItem('notehub_access_token', 'test-token');
-    
+
     // Default fetch mock - successful response
     (global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url) => {
       if (url.includes('/api/admin/users')) {
@@ -75,7 +89,7 @@ describe('AdminDashboardPage', () => {
     render(
       <TestWrapper>
         <AdminDashboardPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -87,7 +101,7 @@ describe('AdminDashboardPage', () => {
     const { container } = render(
       <TestWrapper>
         <AdminDashboardPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Wait for loading to complete and data to render
@@ -107,7 +121,7 @@ describe('AdminDashboardPage', () => {
     render(
       <TestWrapper>
         <AdminDashboardPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -122,7 +136,7 @@ describe('AdminDashboardPage', () => {
     render(
       <TestWrapper>
         <AdminDashboardPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {

@@ -1,0 +1,19 @@
+# Biome ignore file
+# See https://biomejs.dev/guides/how-biome-works/#ignore-files
+
+# Dependencies
+node_modules
+
+# Build output
+dist
+.vite
+
+# Coverage
+coverage
+
+# Test snapshots
+**/__snapshots__
+
+# Configuration
+*.config.js
+*.config.ts

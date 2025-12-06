@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
 import Markdown from 'react-markdown';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 import { notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
@@ -17,21 +17,21 @@ export function NoteViewPage() {
   const [isContentHidden, setIsContentHidden] = useState(() => {
     const saved = localStorage.getItem('hiddenNotes');
     const hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set();
-    return id ? hiddenSet.has(parseInt(id)) : false;
+    return id ? hiddenSet.has(parseInt(id, 10)) : false;
   });
 
   const toggleHideContent = () => {
     if (!id) return;
-    const noteId = parseInt(id);
+    const noteId = parseInt(id, 10);
     const saved = localStorage.getItem('hiddenNotes');
     const hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set<number>();
-    
+
     if (isContentHidden) {
       hiddenSet.delete(noteId);
     } else {
       hiddenSet.add(noteId);
     }
-    
+
     localStorage.setItem('hiddenNotes', JSON.stringify([...hiddenSet]));
     setIsContentHidden(!isContentHidden);
   };
@@ -41,7 +41,7 @@ export function NoteViewPage() {
     setIsLoading(true);
     setError('');
     try {
-      const fetchedNote = await notesApi.get(parseInt(id));
+      const fetchedNote = await notesApi.get(parseInt(id, 10));
       setNote(fetchedNote);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load note');
@@ -69,7 +69,7 @@ export function NoteViewPage() {
     try {
       const updated = await notesApi.toggleFavorite(note);
       // Merge updated data with existing note to preserve all fields
-      setNote(prev => prev ? { ...prev, ...updated } : updated);
+      setNote((prev) => (prev ? { ...prev, ...updated } : updated));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update note');
     }
@@ -121,10 +121,13 @@ export function NoteViewPage() {
     <div className="p-6">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <Link to="/" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+        <Link
+          to="/"
+          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+        >
           <i className="glass-i fas fa-arrow-left mr-2"></i>Back to Notes
         </Link>
-        
+
         {/* Share Button - Always visible for own notes */}
         {note.can_edit !== false && (
           <Link
@@ -166,8 +169,8 @@ export function NoteViewPage() {
               {note.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {note.tags.map((tag) => (
-                    <span 
-                      key={tag.id} 
+                    <span
+                      key={tag.id}
                       className={`px-3 py-1 text-sm font-medium rounded-full border ${getTagColor(tag.name)}`}
                     >
                       {tag.name}
@@ -258,8 +261,8 @@ export function NoteViewPage() {
           <button
             onClick={toggleHideContent}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-              isContentHidden 
-                ? 'bg-purple-500 text-white hover:bg-purple-600' 
+              isContentHidden
+                ? 'bg-purple-500 text-white hover:bg-purple-600'
                 : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]'
             }`}
           >
@@ -280,7 +283,9 @@ export function NoteViewPage() {
             <div className="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
               <i className="fas fa-eye-slash text-3xl text-purple-500"></i>
             </div>
-            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Content Hidden</h3>
+            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
+              Content Hidden
+            </h3>
             <p className="text-[var(--text-secondary)] mb-4 max-w-md">
               This note's content is hidden for privacy. Click the button above to reveal it.
             </p>
@@ -303,9 +308,7 @@ export function NoteViewPage() {
 
             {/* Note Content */}
             <div className="p-6 note-content prose prose-lg dark:prose-invert max-w-none">
-              <Markdown remarkPlugins={[remarkGfm]}>
-                {note.body || '*No content*'}
-              </Markdown>
+              <Markdown remarkPlugins={[remarkGfm]}>{note.body || '*No content*'}</Markdown>
             </div>
           </>
         )}

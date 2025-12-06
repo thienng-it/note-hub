@@ -13,7 +13,7 @@ export function Disable2FAPage() {
   const handleSubmit = async () => {
     setError('');
     setIsSubmitting(true);
-    
+
     try {
       await apiClient.post('/api/v1/auth/2fa/disable');
       // Refresh user data to update has_2fa status
@@ -34,7 +34,10 @@ export function Disable2FAPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full mb-4">
-              <i className="glass-i fas fa-shield-alt text-3xl text-yellow-600 dark:text-yellow-400" aria-hidden="true"></i>
+              <i
+                className="glass-i fas fa-shield-alt text-3xl text-yellow-600 dark:text-yellow-400"
+                aria-hidden="true"
+              ></i>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-2">
               Disable Two-Factor Authentication
@@ -58,11 +61,15 @@ export function Disable2FAPage() {
           {/* Warning Message */}
           <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded-r-lg">
             <div className="flex items-start">
-              <i className="glass-i fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 mr-3 mt-1" aria-hidden="true"></i>
+              <i
+                className="glass-i fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 mr-3 mt-1"
+                aria-hidden="true"
+              ></i>
               <div className="text-sm text-yellow-700 dark:text-yellow-300">
                 <p className="font-semibold mb-1">Security Warning</p>
                 <p>
-                  Disabling 2FA will make your account less secure. You will only need your password to log in.
+                  Disabling 2FA will make your account less secure. You will only need your password
+                  to log in.
                 </p>
               </div>
             </div>
@@ -71,11 +78,15 @@ export function Disable2FAPage() {
           {/* Info Message */}
           <div className="mb-6 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 p-4 rounded-r-lg">
             <div className="flex items-start">
-              <i className="glass-i fas fa-info-circle text-blue-600 dark:text-blue-400 mr-3 mt-1" aria-hidden="true"></i>
+              <i
+                className="glass-i fas fa-info-circle text-blue-600 dark:text-blue-400 mr-3 mt-1"
+                aria-hidden="true"
+              ></i>
               <div className="text-sm text-blue-700 dark:text-blue-300">
                 <p className="font-semibold mb-1">No OTP Required</p>
                 <p>
-                  You're already authenticated. Simply confirm to disable 2FA - no authenticator code needed.
+                  You're already authenticated. Simply confirm to disable 2FA - no authenticator
+                  code needed.
                 </p>
               </div>
             </div>

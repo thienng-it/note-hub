@@ -1,21 +1,21 @@
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import { readFileSync } from 'fs'
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
 
 // Read version from package.json with error handling
 let packageVersion = '1.0.0'; // Fallback version
 try {
-  const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'))
+  const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
   packageVersion = packageJson.version || packageVersion;
-} catch (error) {
+} catch (_error) {
   console.warn('Could not read package.json version, using fallback:', packageVersion);
 }
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  
+
   // Define constants at build time
   define: {
     __APP_VERSION__: JSON.stringify(packageVersion),
@@ -99,4 +99,4 @@ export default defineConfig({
       '@api': path.resolve(__dirname, './src/api'),
     },
   },
-})
+});

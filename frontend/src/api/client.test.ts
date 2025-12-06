@@ -1,15 +1,15 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock fetch globally
 global.fetch = vi.fn();
 
 import {
   authApi,
-  notesApi,
-  tasksApi,
-  getStoredToken,
-  setStoredAuth,
   clearStoredAuth,
+  getStoredToken,
+  notesApi,
+  setStoredAuth,
+  tasksApi,
 } from './client';
 
 describe('API Client', () => {
@@ -21,18 +21,18 @@ describe('API Client', () => {
   describe('Token Storage', () => {
     it('stores and retrieves auth tokens', () => {
       const mockUser = { id: 1, username: 'test', email: 'test@example.com' };
-      
+
       setStoredAuth('test-access-token', 'test-refresh-token', mockUser);
-      
+
       expect(getStoredToken()).toBe('test-access-token');
     });
 
     it('clears stored auth', () => {
       const mockUser = { id: 1, username: 'test', email: 'test@example.com' };
       setStoredAuth('test-access-token', 'test-refresh-token', mockUser);
-      
+
       clearStoredAuth();
-      
+
       expect(getStoredToken()).toBeNull();
     });
   });
@@ -66,8 +66,9 @@ describe('API Client', () => {
         json: () => Promise.resolve({ error: 'Invalid credentials' }),
       });
 
-      await expect(authApi.login({ username: 'test', password: 'wrong' }))
-        .rejects.toMatchObject({ error: 'Invalid credentials' });
+      await expect(authApi.login({ username: 'test', password: 'wrong' })).rejects.toMatchObject({
+        error: 'Invalid credentials',
+      });
     });
   });
 
@@ -79,9 +80,7 @@ describe('API Client', () => {
     });
 
     it('fetches notes list', async () => {
-      const mockNotes = [
-        { id: 1, title: 'Test Note', body: 'Content', tags: [] },
-      ];
+      const mockNotes = [{ id: 1, title: 'Test Note', body: 'Content', tags: [] }];
 
       (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
@@ -115,9 +114,7 @@ describe('API Client', () => {
     });
 
     it('fetches tasks list', async () => {
-      const mockTasks = [
-        { id: 1, title: 'Test Task', completed: false, priority: 'medium' },
-      ];
+      const mockTasks = [{ id: 1, title: 'Test Task', completed: false, priority: 'medium' }];
 
       (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,

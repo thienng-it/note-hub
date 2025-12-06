@@ -1,28 +1,28 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { ChangePasswordPage } from './pages/ChangePasswordPage';
+import { Disable2FAPage } from './pages/Disable2FAPage';
+import { EditProfilePage } from './pages/EditProfilePage';
+import { EditTaskPage } from './pages/EditTaskPage';
+import { ErrorPage } from './pages/ErrorPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
-import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { GoogleCallbackPage } from './pages/GoogleCallbackPage';
+import { InvitePage } from './pages/InvitePage';
+import { LoginPage } from './pages/LoginPage';
+import { NoteEditPage } from './pages/NoteEditPage';
 import { NotesPage } from './pages/NotesPage';
 import { NoteViewPage } from './pages/NoteViewPage';
-import { NoteEditPage } from './pages/NoteEditPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { Setup2FAPage } from './pages/Setup2FAPage';
 import { ShareNotePage } from './pages/ShareNotePage';
 import { TasksPage } from './pages/TasksPage';
-import { EditTaskPage } from './pages/EditTaskPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { EditProfilePage } from './pages/EditProfilePage';
-import { ChangePasswordPage } from './pages/ChangePasswordPage';
-import { Setup2FAPage } from './pages/Setup2FAPage';
-import { Disable2FAPage } from './pages/Disable2FAPage';
-import { InvitePage } from './pages/InvitePage';
-import { AdminDashboardPage } from './pages/AdminDashboardPage';
-import { ErrorPage } from './pages/ErrorPage';
-import { GoogleCallbackPage } from './pages/GoogleCallbackPage';
 
 function AppRoutes() {
   const { t } = useTranslation();
@@ -41,9 +41,18 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />} />
-      <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/" replace /> : <ForgotPasswordPage />} />
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+      />
+      <Route
+        path="/register"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />}
+      />
+      <Route
+        path="/forgot-password"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <ForgotPasswordPage />}
+      />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
       <Route

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { ConfirmModal } from '../components/Modal';
@@ -26,14 +26,16 @@ export function ShareNotePage() {
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [unshareModal, setUnshareModal] = useState<{ userId: number; userName: string } | null>(null);
+  const [unshareModal, setUnshareModal] = useState<{ userId: number; userName: string } | null>(
+    null,
+  );
   const [isUnsharing, setIsUnsharing] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchNoteAndShares();
     }
-  }, [id]);
+  }, [id, fetchNoteAndShares]);
 
   const fetchNoteAndShares = async () => {
     try {
@@ -89,7 +91,7 @@ export function ShareNotePage() {
     setIsUnsharing(true);
     try {
       await apiClient.delete(`/api/v1/notes/${id}/share/${unshareModal.userId}`);
-      setSharedWith(prev => prev.filter((u) => u.id !== unshareModal.userId));
+      setSharedWith((prev) => prev.filter((u) => u.id !== unshareModal.userId));
       setSuccess(`Share removed for ${unshareModal.userName}`);
       setUnshareModal(null);
     } catch (err: unknown) {
@@ -104,7 +106,10 @@ export function ShareNotePage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
-          <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4" aria-hidden="true"></i>
+          <i
+            className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
+            aria-hidden="true"
+          ></i>
           <p className="text-[var(--text-secondary)]">Loading...</p>
         </div>
       </div>
@@ -127,9 +132,7 @@ export function ShareNotePage() {
           <i className="glass-i fas fa-share-alt mr-3 text-blue-600" aria-hidden="true"></i>
           Share Note
         </h1>
-        {note && (
-          <p className="mt-2 text-[var(--text-secondary)]">{note.title}</p>
-        )}
+        {note && <p className="mt-2 text-[var(--text-secondary)]">{note.title}</p>}
       </div>
 
       {/* Alerts */}
@@ -225,9 +228,13 @@ export function ShareNotePage() {
                   <div>
                     <p className="font-medium text-[var(--text-primary)]">{user.username}</p>
                     <p className="text-sm text-[var(--text-muted)]">
-                      <i className={`fas fa-${user.can_edit ? 'edit' : 'eye'} mr-2`} aria-hidden="true"></i>
+                      <i
+                        className={`fas fa-${user.can_edit ? 'edit' : 'eye'} mr-2`}
+                        aria-hidden="true"
+                      ></i>
                       {user.can_edit ? 'Can edit' : 'View only'}
-                      {user.created_at && ` • Shared ${new Date(user.created_at).toLocaleDateString()}`}
+                      {user.created_at &&
+                        ` • Shared ${new Date(user.created_at).toLocaleDateString()}`}
                     </p>
                   </div>
                 </div>
@@ -243,8 +250,13 @@ export function ShareNotePage() {
           </div>
         ) : (
           <div className="text-center py-8">
-            <i className="glass-i fas fa-users text-4xl text-[var(--text-muted)] mb-4" aria-hidden="true"></i>
-            <p className="text-[var(--text-secondary)]">This note hasn't been shared with anyone yet.</p>
+            <i
+              className="glass-i fas fa-users text-4xl text-[var(--text-muted)] mb-4"
+              aria-hidden="true"
+            ></i>
+            <p className="text-[var(--text-secondary)]">
+              This note hasn't been shared with anyone yet.
+            </p>
           </div>
         )}
       </div>

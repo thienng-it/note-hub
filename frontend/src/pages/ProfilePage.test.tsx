@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { ProfilePage } from '../pages/ProfilePage';
@@ -30,9 +30,7 @@ vi.mock('../context/AuthContext', async () => {
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
     <ThemeProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   </BrowserRouter>
 );
@@ -42,7 +40,7 @@ describe('ProfilePage', () => {
     render(
       <TestWrapper>
         <ProfilePage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText('Profile')).toBeInTheDocument();
@@ -54,7 +52,7 @@ describe('ProfilePage', () => {
     render(
       <TestWrapper>
         <ProfilePage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText('Settings')).toBeInTheDocument();
@@ -66,7 +64,7 @@ describe('ProfilePage', () => {
     render(
       <TestWrapper>
         <ProfilePage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText('Security Tips')).toBeInTheDocument();

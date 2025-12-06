@@ -1,12 +1,14 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { authApi, getStoredToken, getStoredUser, clearStoredAuth } from '../api/client';
-import type { User, LoginCredentials, AuthError } from '../types';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { authApi, clearStoredAuth, getStoredToken, getStoredUser } from '../api/client';
+import type { AuthError, LoginCredentials, User } from '../types';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<{ success: boolean; requires2FA?: boolean; error?: string }>;
+  login: (
+    credentials: LoginCredentials,
+  ) => Promise<{ success: boolean; requires2FA?: boolean; error?: string }>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -21,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       const token = getStoredToken();
       const storedUser = getStoredUser();
-      
+
       if (token && storedUser) {
         try {
           const response = await authApi.validate();
@@ -37,7 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = async (credentials: LoginCredentials): Promise<{ success: boolean; requires2FA?: boolean; error?: string }> => {
+  const login = async (
+    credentials: LoginCredentials,
+  ): Promise<{ success: boolean; requires2FA?: boolean; error?: string }> => {
     try {
       const response = await authApi.login(credentials);
       setUser(response.user);

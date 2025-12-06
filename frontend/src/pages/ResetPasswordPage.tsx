@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { type FormEvent, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 export function ResetPasswordPage() {
@@ -64,9 +64,14 @@ export function ResetPasswordPage() {
         <div className="w-full max-w-md">
           <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 mb-6">
-              <i className="glass-i fas fa-exclamation-triangle text-3xl text-red-500" aria-hidden="true"></i>
+              <i
+                className="glass-i fas fa-exclamation-triangle text-3xl text-red-500"
+                aria-hidden="true"
+              ></i>
             </div>
-            <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Invalid Reset Link</h1>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
+              Invalid Reset Link
+            </h1>
             <p className="text-[var(--text-secondary)] mb-6">
               This password reset link is invalid or has expired. Please request a new one.
             </p>
@@ -94,9 +99,7 @@ export function ResetPasswordPage() {
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Reset Password
           </h1>
-          <p className="mt-2 text-base text-[var(--text-secondary)]">
-            Enter your new password
-          </p>
+          <p className="mt-2 text-base text-[var(--text-secondary)]">Enter your new password</p>
         </div>
 
         {/* Card */}
@@ -104,7 +107,10 @@ export function ResetPasswordPage() {
           {success ? (
             <div className="text-center space-y-6">
               <div className="p-6 rounded-xl bg-green-500/10 border border-green-500/30">
-                <i className="glass-i fas fa-check-circle text-4xl text-green-500 mb-4" aria-hidden="true"></i>
+                <i
+                  className="glass-i fas fa-check-circle text-4xl text-green-500 mb-4"
+                  aria-hidden="true"
+                ></i>
                 <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">
                   Password Reset Successful!
                 </h3>
@@ -130,7 +136,10 @@ export function ResetPasswordPage() {
                   role="alert"
                   aria-live="polite"
                 >
-                  <i className="glass-i fas fa-exclamation-circle mt-0.5 flex-shrink-0" aria-hidden="true"></i>
+                  <i
+                    className="glass-i fas fa-exclamation-circle mt-0.5 flex-shrink-0"
+                    aria-hidden="true"
+                  ></i>
                   <span>{error}</span>
                 </div>
               )}
@@ -145,7 +154,10 @@ export function ResetPasswordPage() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="glass-i fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i
+                      className="glass-i fas fa-lock text-[var(--text-muted)]"
+                      aria-hidden="true"
+                    ></i>
                   </div>
                   <input
                     id="password"
@@ -157,7 +169,6 @@ export function ResetPasswordPage() {
                     placeholder="Use at least 12 characters with mixed types"
                     required
                     minLength={12}
-                    autoFocus
                     autoComplete="new-password"
                   />
                   <button
@@ -166,7 +177,10 @@ export function ResetPasswordPage() {
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    <i className={`fas fa-eye${showPassword ? '-slash' : ''}`} aria-hidden="true"></i>
+                    <i
+                      className={`fas fa-eye${showPassword ? '-slash' : ''}`}
+                      aria-hidden="true"
+                    ></i>
                   </button>
                 </div>
               </div>
@@ -181,7 +195,10 @@ export function ResetPasswordPage() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i className="glass-i fas fa-lock text-[var(--text-muted)]" aria-hidden="true"></i>
+                    <i
+                      className="glass-i fas fa-lock text-[var(--text-muted)]"
+                      aria-hidden="true"
+                    ></i>
                   </div>
                   <input
                     id="passwordConfirm"
@@ -200,7 +217,10 @@ export function ResetPasswordPage() {
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                     aria-label={showPasswordConfirm ? 'Hide password' : 'Show password'}
                   >
-                    <i className={`fas fa-eye${showPasswordConfirm ? '-slash' : ''}`} aria-hidden="true"></i>
+                    <i
+                      className={`fas fa-eye${showPasswordConfirm ? '-slash' : ''}`}
+                      aria-hidden="true"
+                    ></i>
                   </button>
                 </div>
               </div>

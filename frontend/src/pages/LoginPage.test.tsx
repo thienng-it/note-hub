@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { describe, expect, it } from 'vitest';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { LoginPage } from '../pages/LoginPage';
@@ -8,9 +8,7 @@ import { LoginPage } from '../pages/LoginPage';
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
     <ThemeProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   </BrowserRouter>
 );
@@ -20,7 +18,7 @@ describe('LoginPage', () => {
     render(
       <TestWrapper>
         <LoginPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText('NoteHub')).toBeInTheDocument();
@@ -34,7 +32,7 @@ describe('LoginPage', () => {
     render(
       <TestWrapper>
         <LoginPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText('Forgot your password?')).toBeInTheDocument();
@@ -44,7 +42,7 @@ describe('LoginPage', () => {
     render(
       <TestWrapper>
         <LoginPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText('Create an account')).toBeInTheDocument();
@@ -54,14 +52,17 @@ describe('LoginPage', () => {
     render(
       <TestWrapper>
         <LoginPage />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Check for proper form labeling
     expect(screen.getByLabelText('Username or Email')).toBeInTheDocument();
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    
+
     // Check for proper input types
-    expect(screen.getByPlaceholderText('Enter your username or email')).toHaveAttribute('type', 'text');
+    expect(screen.getByPlaceholderText('Enter your username or email')).toHaveAttribute(
+      'type',
+      'text',
+    );
   });
 });
