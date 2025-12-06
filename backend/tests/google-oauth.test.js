@@ -68,7 +68,7 @@ describe('Google OAuth', () => {
   describe('GET /api/auth/google/status', () => {
     it('should return configured status when OAuth is set up', async () => {
       const response = await request(app)
-        .get('/api/auth/google/status');
+        .get('/api/v1/auth/google/status');
 
       expect(response.status).toBe(200);
       expect(response.body.configured).toBe(true);
@@ -83,7 +83,7 @@ describe('Google OAuth', () => {
       const freshApp = require('../src/index');
 
       const response = await request(freshApp)
-        .get('/api/auth/google/status');
+        .get('/api/v1/auth/google/status');
 
       expect(response.body.configured).toBe(false);
 
@@ -95,7 +95,7 @@ describe('Google OAuth', () => {
   describe('GET /api/auth/google', () => {
     it('should return Google OAuth authorization URL', async () => {
       const response = await request(app)
-        .get('/api/auth/google');
+        .get('/api/v1/auth/google');
 
       expect(response.status).toBe(200);
       expect(response.body.authUrl).toBeDefined();
@@ -110,7 +110,7 @@ describe('Google OAuth', () => {
       const freshApp = require('../src/index');
 
       const response = await request(freshApp)
-        .get('/api/auth/google');
+        .get('/api/v1/auth/google');
 
       expect(response.status).toBe(503);
       expect(response.body.error).toBe('Google OAuth not configured');
@@ -133,7 +133,7 @@ describe('Google OAuth', () => {
       });
 
       const response = await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'mock-auth-code' });
 
       expect(response.status).toBe(200);
@@ -154,7 +154,7 @@ describe('Google OAuth', () => {
       db.queryOne.mockResolvedValue(existingUser);
 
       const response = await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'mock-auth-code' });
 
       expect(response.status).toBe(200);
@@ -177,7 +177,7 @@ describe('Google OAuth', () => {
       });
 
       const response = await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'mock-auth-code' });
 
       expect(response.status).toBe(400);
@@ -186,7 +186,7 @@ describe('Google OAuth', () => {
 
     it('should return 400 if authorization code missing', async () => {
       const response = await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({});
 
       expect(response.status).toBe(400);
@@ -206,7 +206,7 @@ describe('Google OAuth', () => {
         });
 
       const response = await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'mock-auth-code' });
 
       expect(response.status).toBe(200);
@@ -228,7 +228,7 @@ describe('Google OAuth', () => {
       mockClient.getToken.mockRejectedValueOnce(new Error('Invalid authorization code'));
 
       const response = await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'invalid-code' });
 
       expect(response.status).toBe(500);
@@ -248,7 +248,7 @@ describe('Google OAuth', () => {
         });
 
       await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'mock-auth-code' });
 
       // Should hash a random password with 14 rounds
@@ -275,7 +275,7 @@ describe('Google OAuth', () => {
       const consoleSpy = jest.spyOn(console, 'log');
 
       await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'mock-auth-code' });
 
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -299,7 +299,7 @@ describe('Google OAuth', () => {
       const consoleSpy = jest.spyOn(console, 'log');
 
       await request(app)
-        .post('/api/auth/google/callback')
+        .post('/api/v1/auth/google/callback')
         .send({ code: 'mock-auth-code' });
 
       expect(consoleSpy).toHaveBeenCalledWith(

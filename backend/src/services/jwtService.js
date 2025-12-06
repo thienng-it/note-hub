@@ -21,6 +21,10 @@ class JWTService {
 
   /**
    * Generate an access token for a user.
+   * 
+   * Security: Token is cryptographically signed with HMAC-SHA256,
+   * preventing forgery or impersonation. User ID is embedded in the
+   * payload and verified on each request.
    */
   generateToken(userId) {
     return jwt.sign(

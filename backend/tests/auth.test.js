@@ -30,25 +30,27 @@ describe('Auth Routes', () => {
     jest.clearAllMocks();
   });
 
-  describe('POST /api/auth/login', () => {
+  describe('POST /api/v1/auth/login', () => {
     it('should return 400 if username or password is missing', async () => {
       const response = await request(app)
-        .post('/api/auth/login')
+        .post('/api/v1/auth/login')
         .send({});
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Username/email and password required');
+      const error = response.body.error?.message || response.body.error;
+      expect(error).toContain('Validation failed');
     });
 
     it('should return 401 for invalid credentials', async () => {
       db.queryOne.mockResolvedValue(null);
 
       const response = await request(app)
-        .post('/api/auth/login')
+        .post('/api/v1/auth/login')
         .send({ username: 'test', password: 'wrong' });
 
       expect(response.status).toBe(401);
-      expect(response.body.error).toBe('Invalid credentials');
+      const error = response.body.error?.message || response.body.error;
+      expect(error).toBe('Invalid credentials');
     });
 
     it('should return tokens for valid credentials', async () => {
@@ -65,70 +67,75 @@ describe('Auth Routes', () => {
       db.run.mockResolvedValue({ affectedRows: 1 });
 
       const response = await request(app)
-        .post('/api/auth/login')
+        .post('/api/v1/auth/login')
         .send({ username: 'test', password: 'TestPassword123' });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('access_token');
-      expect(response.body).toHaveProperty('refresh_token');
-      expect(response.body.token_type).toBe('Bearer');
+      const data = response.body.data || response.body;
+      expect(data).toHaveProperty('access_token');
+      expect(data).toHaveProperty('refresh_token');
+      expect(data.token_type).toBe('Bearer');
     });
   });
 
-  describe('POST /api/auth/register', () => {
+  describe('POST /api/v1/auth/register', () => {
     it('should return 400 if username or password is missing', async () => {
       const response = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({});
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Username and password required');
+      const error = response.body.error?.message || response.body.error;
+      expect(error).toContain('Validation failed');
     });
 
     it('should return 400 for short username', async () => {
       const response = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({ username: 'ab', password: 'TestPassword123!' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Username must be at least 3 characters');
+      const error = response.body.error?.message || response.body.error;
+      expect(error).toContain('Validation failed');
     });
 
     it('should return 400 for weak password', async () => {
       db.queryOne.mockResolvedValue(null);
 
       const response = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({ username: 'testuser', password: 'weak' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toContain('Password must be at least');
+      const error = response.body.error?.message || response.body.error;
+      expect(error).toContain('Validation failed');
     });
   });
 
-  describe('POST /api/auth/refresh', () => {
+  describe('POST /api/v1/auth/refresh', () => {
     it('should return 400 if refresh token is missing', async () => {
       const response = await request(app)
-        .post('/api/auth/refresh')
+        .post('/api/v1/auth/refresh')
         .send({});
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Refresh token required');
+      const error = response.body.error?.message || response.body.error;
+      expect(error).toContain('Validation failed');
     });
 
     it('should return 401 for invalid refresh token', async () => {
       const response = await request(app)
-        .post('/api/auth/refresh')
+        .post('/api/v1/auth/refresh')
         .send({ refresh_token: 'invalid-token' });
 
       expect(response.status).toBe(401);
     });
   });
 
-  describe('GET /api/auth/validate', () => {
+  describe('GET /api/v1/auth/validate', () => {
     it('should return 401 without authorization header', async () => {
       const response = await request(app)
-        .get('/api/auth/validate');
+        .get('/api/v1/auth/validate');
 
       expect(response.status).toBe(401);
     });

@@ -101,7 +101,7 @@ app.use(requestLogger);
 const { markAsV1, legacyResponseAdapter } = require('./middleware/responseAdapter');
 app.use(legacyResponseAdapter);
 
-// API v1 routes (with versioning and new response format)
+// API v1 routes (standardized response format)
 app.use('/api/v1/auth', markAsV1, authRoutes);
 app.use('/api/v1/notes', markAsV1, notesRoutes);
 app.use('/api/v1/tasks', markAsV1, tasksRoutes);
@@ -109,15 +109,6 @@ app.use('/api/v1/profile', markAsV1, profileRoutes);
 app.use('/api/v1/admin', markAsV1, adminRoutes);
 app.use('/api/v1/ai', markAsV1, aiRoutes);
 app.use('/api/v1/upload', markAsV1, uploadRoutes);
-
-// Backward compatibility: /api/* routes use legacy response format
-app.use('/api/auth', authRoutes);
-app.use('/api/notes', notesRoutes);
-app.use('/api/tasks', tasksRoutes);
-app.use('/api/profile', profileRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/upload', uploadRoutes);
 
 // Health check endpoints with standardized response
 const responseHandler = require('./utils/responseHandler');
@@ -153,31 +144,7 @@ app.get('/api/v1/version', markAsV1, (req, res) => {
   }, { message: 'Version information' });
 });
 
-app.get('/api/version', (req, res) => {
-  responseHandler.success(res, {
-    version: packageJson.version,
-    name: packageJson.name,
-    description: packageJson.description
-  });
-});
 
-// Backward compatibility - uses legacy format via adapter
-app.get('/api/health', async (req, res) => {
-  try {
-    const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
-    responseHandler.success(res, {
-      status: 'healthy',
-      database: 'connected',
-      user_count: userCount?.count || 0,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    responseHandler.error(res, 'Service is unhealthy', {
-      statusCode: 503,
-      errorCode: 'SERVICE_UNAVAILABLE'
-    });
-  }
-});
 
 // Serve static files from React frontend build with rate limiting
 const frontendPath = path.join(__dirname, '../../frontend/dist');

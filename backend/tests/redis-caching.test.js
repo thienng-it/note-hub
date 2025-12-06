@@ -61,7 +61,7 @@ describe('Redis Caching', () => {
       mockRedis.set.mockResolvedValue('OK');
 
       const response = await request(app)
-        .get('/api/notes')
+        .get('/api/v1/notes')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -91,7 +91,7 @@ describe('Redis Caching', () => {
       mockRedis.get.mockResolvedValue(cachedNotes); // Cache hit
 
       const response = await request(app)
-        .get('/api/notes')
+        .get('/api/v1/notes')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -118,7 +118,7 @@ describe('Redis Caching', () => {
       mockRedis.del.mockResolvedValue(2);
 
       const response = await request(app)
-        .post('/api/notes')
+        .post('/api/v1/notes')
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           title: 'New Note',
@@ -149,7 +149,7 @@ describe('Redis Caching', () => {
       mockRedis.del.mockResolvedValue(1);
 
       const response = await request(app)
-        .put('/api/notes/1')
+        .put('/api/v1/notes/1')
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           title: 'Updated',
@@ -175,7 +175,7 @@ describe('Redis Caching', () => {
       mockRedis.del.mockResolvedValue(1);
 
       const response = await request(app)
-        .delete('/api/notes/1')
+        .delete('/api/v1/notes/1')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -195,7 +195,7 @@ describe('Redis Caching', () => {
       mockRedis.set.mockResolvedValue('OK');
 
       const response = await request(app)
-        .get('/api/tags')
+        .get('/api/v1/tags')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -215,7 +215,7 @@ describe('Redis Caching', () => {
       mockRedis.get.mockResolvedValue(cachedTags);
 
       const response = await request(app)
-        .get('/api/tags')
+        .get('/api/v1/tags')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -231,7 +231,7 @@ describe('Redis Caching', () => {
       mockRedis.del.mockResolvedValue(1);
 
       const response = await request(app)
-        .post('/api/notes/1/tags')
+        .post('/api/v1/notes/1/tags')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ tag_name: 'new-tag' });
 
@@ -251,7 +251,7 @@ describe('Redis Caching', () => {
       db.query.mockResolvedValue(mockNotes);
 
       const response = await request(app)
-        .get('/api/notes')
+        .get('/api/v1/notes')
         .set('Authorization', `Bearer ${userToken}`);
 
       // Should still return data from database
@@ -269,7 +269,7 @@ describe('Redis Caching', () => {
       db.query.mockResolvedValue(mockNotes);
 
       const response = await request(app)
-        .get('/api/notes')
+        .get('/api/v1/notes')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -297,7 +297,7 @@ describe('Redis Caching', () => {
       db.run.mockResolvedValue({ changes: 1 });
 
       const response = await request(app)
-        .delete('/api/notes/1')
+        .delete('/api/v1/notes/1')
         .set('Authorization', `Bearer ${userToken}`);
 
       // Should still complete successfully
@@ -316,7 +316,7 @@ describe('Redis Caching', () => {
       mockRedis.set.mockResolvedValue('OK');
 
       await request(app)
-        .get('/api/notes')
+        .get('/api/v1/notes')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(mockRedis.set).toHaveBeenCalledWith(
@@ -330,7 +330,7 @@ describe('Redis Caching', () => {
 
       // Tags: 30 minutes
       await request(app)
-        .get('/api/tags')
+        .get('/api/v1/tags')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(mockRedis.set).toHaveBeenCalledWith(

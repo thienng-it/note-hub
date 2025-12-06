@@ -1,7 +1,7 @@
 {
   "name": "notehub-frontend",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "NoteHub Frontend - Built with Vite + React + TypeScript",
   "type": "module",
   "scripts": {

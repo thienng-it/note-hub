@@ -89,7 +89,7 @@ describe('Upload Routes', () => {
   describe('POST /api/upload/image', () => {
     it('should upload a single image successfully', async () => {
       const response = await request(app)
-        .post('/api/upload/image')
+        .post('/api/v1/upload/image')
         .attach('image', testImagePath);
 
       // Upload should succeed
@@ -111,7 +111,7 @@ describe('Upload Routes', () => {
 
     it('should return 400 when no file is uploaded', async () => {
       const response = await request(app)
-        .post('/api/upload/image')
+        .post('/api/v1/upload/image')
         .send({});
 
       expect(response.status).toBe(400);
@@ -125,7 +125,7 @@ describe('Upload Routes', () => {
       fs.writeFileSync(largeFilePath, largeBuffer);
 
       const response = await request(app)
-        .post('/api/upload/image')
+        .post('/api/v1/upload/image')
         .attach('image', largeFilePath);
 
       expect(response.status).toBe(500);
@@ -140,7 +140,7 @@ describe('Upload Routes', () => {
       fs.writeFileSync(textFilePath, 'This is a text file');
 
       const response = await request(app)
-        .post('/api/upload/image')
+        .post('/api/v1/upload/image')
         .attach('image', textFilePath);
 
       expect(response.status).toBe(500);
@@ -160,7 +160,7 @@ describe('Upload Routes', () => {
       fs.writeFileSync(jpegPath, jpegBuffer);
 
       const response = await request(app)
-        .post('/api/upload/image')
+        .post('/api/v1/upload/image')
         .attach('image', jpegPath);
 
       expect(response.status).toBe(200);
@@ -188,7 +188,7 @@ describe('Upload Routes', () => {
       const countBefore = filesBefore.length;
       
       const response = await request(app)
-        .post('/api/upload/images')
+        .post('/api/v1/upload/images')
         .attach('images', testImagePath)
         .attach('images', testImagePath);
 
@@ -211,7 +211,7 @@ describe('Upload Routes', () => {
 
     it('should return 400 when no files are uploaded', async () => {
       const response = await request(app)
-        .post('/api/upload/images')
+        .post('/api/v1/upload/images')
         .send({});
 
       expect(response.status).toBe(400);
@@ -219,7 +219,7 @@ describe('Upload Routes', () => {
     });
 
     it('should enforce maximum of 10 images', async () => {
-      const request_builder = request(app).post('/api/upload/images');
+      const request_builder = request(app).post('/api/v1/upload/images');
       
       // Try to upload 11 images
       for (let i = 0; i < 11; i++) {
@@ -260,7 +260,7 @@ describe('Upload Routes', () => {
 
     it('should return 404 when trying to delete non-existent file', async () => {
       const response = await request(app)
-        .delete('/api/upload/nonexistent-file.png');
+        .delete('/api/v1/upload/nonexistent-file.png');
 
       expect(response.status).toBe(404);
       expect(response.body.error).toBe('File not found');
@@ -268,7 +268,7 @@ describe('Upload Routes', () => {
 
     it('should prevent path traversal attacks', async () => {
       const response = await request(app)
-        .delete('/api/upload/../../etc/passwd');
+        .delete('/api/v1/upload/../../etc/passwd');
 
       // Should return 404 regardless of error message format
       expect(response.status).toBe(404);

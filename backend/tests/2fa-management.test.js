@@ -53,7 +53,7 @@ describe('2FA Management', () => {
       db.run.mockResolvedValue({ changes: 1 });
 
       const response = await request(app)
-        .post('/api/auth/2fa/disable')
+        .post('/api/v1/auth/2fa/disable')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -66,7 +66,7 @@ describe('2FA Management', () => {
 
     it('should return 401 if user not authenticated', async () => {
       const response = await request(app)
-        .post('/api/auth/2fa/disable');
+        .post('/api/v1/auth/2fa/disable');
 
       expect(response.status).toBe(401);
     });
@@ -82,7 +82,7 @@ describe('2FA Management', () => {
       db.queryOne.mockResolvedValue(mockUser);
 
       const response = await request(app)
-        .post('/api/auth/2fa/disable')
+        .post('/api/v1/auth/2fa/disable')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(400);
@@ -103,7 +103,7 @@ describe('2FA Management', () => {
       const consoleSpy = jest.spyOn(console, 'log');
 
       await request(app)
-        .post('/api/auth/2fa/disable')
+        .post('/api/v1/auth/2fa/disable')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -135,7 +135,7 @@ describe('2FA Management', () => {
       db.run.mockResolvedValue({ changes: 1 });
 
       const response = await request(app)
-        .post('/api/admin/users/3/disable-2fa')
+        .post('/api/v1/admin/users/3/disable-2fa')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -156,7 +156,7 @@ describe('2FA Management', () => {
       db.queryOne.mockResolvedValue(mockUser);
 
       const response = await request(app)
-        .post('/api/admin/users/3/disable-2fa')
+        .post('/api/v1/admin/users/3/disable-2fa')
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -175,7 +175,7 @@ describe('2FA Management', () => {
         .mockResolvedValueOnce(null); // Target user not found
 
       const response = await request(app)
-        .post('/api/admin/users/999/disable-2fa')
+        .post('/api/v1/admin/users/999/disable-2fa')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);
@@ -201,7 +201,7 @@ describe('2FA Management', () => {
         .mockResolvedValueOnce(mockTargetUser);
 
       const response = await request(app)
-        .post('/api/admin/users/3/disable-2fa')
+        .post('/api/v1/admin/users/3/disable-2fa')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(400);
@@ -230,7 +230,7 @@ describe('2FA Management', () => {
       const consoleSpy = jest.spyOn(console, 'log');
 
       await request(app)
-        .post('/api/admin/users/3/disable-2fa')
+        .post('/api/v1/admin/users/3/disable-2fa')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -250,7 +250,7 @@ describe('2FA Management', () => {
       db.queryOne.mockResolvedValue(mockAdmin);
 
       const response = await request(app)
-        .post('/api/admin/users/invalid/disable-2fa')
+        .post('/api/v1/admin/users/invalid/disable-2fa')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(400);
@@ -276,7 +276,7 @@ describe('2FA Management', () => {
       const consoleSpy = jest.spyOn(console, 'log');
 
       const response = await request(app)
-        .post('/api/auth/login')
+        .post('/api/v1/auth/login')
         .send({ username: 'testuser', password: 'password123' });
 
       expect(response.status).toBe(200);
@@ -297,7 +297,7 @@ describe('2FA Management', () => {
       db.run.mockResolvedValue({ changes: 1, lastID: 1 });
 
       await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({
           username: 'newuser',
           email: 'new@example.com',
