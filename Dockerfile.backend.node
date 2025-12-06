@@ -12,8 +12,8 @@ COPY backend/src ./src
 COPY scripts ./scripts
 COPY .env ./.env
 
-# Create data directory for SQLite
-RUN mkdir -p /app/data
+# Create data directory for SQLite and uploads directory for file uploads
+RUN mkdir -p /app/data /app/uploads
 
 # Set default environment variables
 ENV NODE_ENV=production

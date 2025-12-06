@@ -52,6 +52,9 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=5000
     ports:
       - "80:80"
     depends_on:
@@ -98,6 +101,7 @@ services:
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
     volumes:
       - notehub-data:/app/data
+      - notehub-uploads:/app/uploads
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
       interval: 30s
@@ -122,6 +126,9 @@ services:
       - production
     env_file:
       - .env
+    environment:
+      - BACKEND_HOST=backend-prod
+      - BACKEND_PORT=5000
     ports:
       - "80:80"
     depends_on:
@@ -176,6 +183,8 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+    volumes:
+      - notehub-uploads:/app/uploads
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
       interval: 30s
@@ -222,6 +231,8 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID in .env file}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET in .env file}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:?Set GOOGLE_REDIRECT_URI in .env file}
+    volumes:
+      - notehub-uploads:/app/uploads
     depends_on:
       mysql:
         condition: service_healthy
@@ -276,6 +287,9 @@ services:
       - mysql
     env_file:
       - .env
+    environment:
+      - BACKEND_HOST=backend-mysql
+      - BACKEND_PORT=5000
     ports:
       - "80:80"
     depends_on:
@@ -296,6 +310,8 @@ networks:
 
 volumes:
   notehub-data:
+    driver: local
+  notehub-uploads:
     driver: local
   mysql-data:
     driver: local
