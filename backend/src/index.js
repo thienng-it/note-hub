@@ -114,18 +114,37 @@ app.use('/api/v1/upload', markAsV1, uploadRoutes);
 const responseHandler = require('./utils/responseHandler');
 const packageJson = require('../package.json');
 
+// Shared health check logic
+async function getHealthStatus() {
+  const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
+  return {
+    status: 'healthy',
+    database: 'connected',
+    services: {
+      cache: cache.isEnabled() ? 'enabled' : 'disabled',
+      search: elasticsearch.isEnabled() ? 'enabled' : 'disabled'
+    },
+    user_count: userCount?.count || 0
+  };
+}
+
+// Backward-compatible health endpoint (without version prefix for Docker healthchecks)
+app.get('/api/health', async (req, res) => {
+  try {
+    const healthStatus = await getHealthStatus();
+    res.status(200).json(healthStatus);
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message
+    });
+  }
+});
+
 app.get('/api/v1/health', markAsV1, async (req, res) => {
   try {
-    const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
-    responseHandler.success(res, {
-      status: 'healthy',
-      database: 'connected',
-      services: {
-        cache: cache.isEnabled() ? 'enabled' : 'disabled',
-        search: elasticsearch.isEnabled() ? 'enabled' : 'disabled'
-      },
-      user_count: userCount?.count || 0
-    }, { message: 'Service is healthy' });
+    const healthStatus = await getHealthStatus();
+    responseHandler.success(res, healthStatus, { message: 'Service is healthy' });
   } catch (error) {
     responseHandler.error(res, 'Service is unhealthy', {
       statusCode: 503,
