@@ -11,7 +11,13 @@ export function Layout() {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Check if we're on tablet (between 768px and 1024px)
+  const isTablet = () => window.innerWidth >= 768 && window.innerWidth < 1024;
+  
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Auto-collapse on tablets, otherwise use saved preference
+    if (isTablet()) return true;
     return localStorage.getItem('sidebarCollapsed') === 'true';
   });
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -20,6 +26,18 @@ export function Layout() {
 
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
+  // Handle resize to adjust sidebar on tablet
+  useEffect(() => {
+    const handleResize = () => {
+      if (isTablet() && !sidebarCollapsed) {
+        setSidebarCollapsed(true);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [sidebarCollapsed]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -54,11 +72,11 @@ export function Layout() {
     }`;
 
   return (
-    <div className="glass-card flex h-screen overflow-hidden">
-      {/* Desktop Sidebar */}
+    <div className="flex h-screen overflow-hidden bg-[var(--bg-primary)]">
+      {/* Desktop & Tablet Sidebar */}
       <aside
         id="sidebar"
-        className={`sidebar ${sidebarCollapsed ? 'w-20' : 'w-72'} glass-card flex-shrink-0 hidden lg:flex flex-col transition-all duration-300`}
+        className={`sidebar ${sidebarCollapsed ? 'w-20' : 'w-72 md:w-64 lg:w-72'} flex-shrink-0 hidden md:flex flex-col transition-all duration-300 border-r border-[var(--border-color)]`}
         role="navigation"
         aria-label="Main navigation"
       >
@@ -170,9 +188,10 @@ export function Layout() {
         )}
       </aside>
 
-      {/* Main Content */}
-        {/* Mobile Header */}
-        <header className="lg:hidden bg-[var(--bg-secondary)] border-b border-[var(--border-color)] px-4 py-3 safe-area-top">
+      {/* Main Content Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Mobile Header - Only on phones */}
+        <header className="md:hidden bg-[var(--bg-secondary)] border-b border-[var(--border-color)] px-4 py-3 safe-area-top flex-shrink-0">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -212,29 +231,30 @@ export function Layout() {
         {/* Page Content */}
         <div
           id="main-content"
-          className="glass-card flex-1 overflow-auto bg-[var(--bg-primary)]"
+          className="flex-1 overflow-auto bg-[var(--bg-primary)]"
           onScroll={handleScroll}
           tabIndex={-1}
         >
           <Outlet />
         </div>
+      </div>
 
-        {/* Back to Top Button */}
-        <button
-          id="backToTop"
-          onClick={scrollToTop}
-          className={`btn-back-to-top ${
-            showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
-          }`}
-          aria-label="Scroll to top"
-        >
-          <i className="glass-i fas fa-arrow-up text-white" aria-hidden="true"></i>
-        </button>
+      {/* Back to Top Button */}
+      <button
+        id="backToTop"
+        onClick={scrollToTop}
+        className={`btn-back-to-top ${
+          showBackToTop ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
+        }`}
+        aria-label="Scroll to top"
+      >
+        <i className="glass-i fas fa-arrow-up text-white" aria-hidden="true"></i>
+      </button>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation - Only on phones */}
       {user && (
         <nav
-          className="mobile-nav lg:hidden safe-area-bottom"
+          className="mobile-nav md:hidden safe-area-bottom"
           role="navigation"
           aria-label="Mobile navigation"
         >

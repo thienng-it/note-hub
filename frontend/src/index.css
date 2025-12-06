@@ -632,6 +632,13 @@ body.dark {
   box-shadow: 4px 0 24px 0 var(--glass-shadow);
 }
 
+/* Tablet: Auto-collapse sidebar on tablets for more content space */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sidebar {
+    /* Slightly more compact padding on tablet */
+  }
+}
+
 /* Note Content (Markdown) */
 .note-content h1,
 .note-content h2,
@@ -733,13 +740,13 @@ body.dark {
    MOBILE NAVIGATION & RESPONSIVE ENHANCEMENTS
    ============================================================ */
 
-/* Mobile Navigation - Hidden by default, shows on mobile */
+/* Mobile Navigation - Hidden by default, shows on phones only */
 .mobile-nav {
   display: none;
 }
 
-/* Mobile-specific styles (tablets and phones) */
-@media (max-width: 1023px) {
+/* Mobile-specific styles (phones only, under 768px) */
+@media (max-width: 767px) {
   .mobile-nav {
     display: flex;
     position: fixed;
@@ -839,18 +846,6 @@ body.dark {
   }
 }
 
-/* Tablet-specific adjustments (768px - 1023px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .mobile-nav-item {
-    font-size: 0.75rem;
-  }
-
-  .mobile-nav-item i,
-  .mobile-nav-item svg {
-    font-size: 1.5rem;
-  }
-}
-
 /* Small phone adjustments (max 375px) */
 @media (max-width: 375px) {
   .mobile-nav-item {
@@ -866,7 +861,7 @@ body.dark {
 /* Back to Top Button */
 .btn-back-to-top {
   position: fixed;
-  bottom: 6rem; /* 96px - above mobile nav on mobile */
+  bottom: 6rem; /* 96px - above mobile nav on phones */
   right: 1rem;
   padding: 0.75rem;
   border-radius: 9999px;
@@ -893,8 +888,8 @@ body.dark {
   transform: scale(0.95);
 }
 
-/* Desktop positioning */
-@media (min-width: 1024px) {
+/* Tablet positioning (no bottom nav) */
+@media (min-width: 768px) {
   .btn-back-to-top {
     bottom: 2rem;
     right: 2rem;
