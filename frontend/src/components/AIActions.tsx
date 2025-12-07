@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { aiApi } from '../api/client';
 import type { AIRewriteStyle, AIStatus } from '../types';
 import { logger } from '../utils/logger';
@@ -17,18 +17,18 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
   const [showResult, setShowResult] = useState(false);
   const [showStyleMenu, setShowStyleMenu] = useState(false);
 
-  const loadAIStatus = async () => {
+  const loadAIStatus = useCallback(async () => {
     try {
       const status = await aiApi.getStatus();
       setAiStatus(status);
     } catch (err) {
       logger.error('Failed to load AI status', err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadAIStatus();
-  }, []);
+  }, [loadAIStatus]);
 
   const handleProofread = async () => {
     if (!text.trim()) {
@@ -125,6 +125,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
         </span>
 
         <button
+          type="button"
           onClick={handleProofread}
           disabled={isLoading}
           className="px-3 py-1.5 text-sm rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -135,6 +136,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
         </button>
 
         <button
+          type="button"
           onClick={handleSummarize}
           disabled={isLoading}
           className="px-3 py-1.5 text-sm rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -146,6 +148,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
 
         <div className="relative">
           <button
+            type="button"
             onClick={() => setShowStyleMenu(!showStyleMenu)}
             disabled={isLoading}
             className="px-3 py-1.5 text-sm rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -159,6 +162,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
           {showStyleMenu && (
             <div className="absolute top-full mt-1 left-0 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-xl py-1 z-[100] min-w-[150px]">
               <button
+                type="button"
                 onClick={() => handleRewrite('professional')}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
               >
@@ -166,6 +170,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
                 Professional
               </button>
               <button
+                type="button"
                 onClick={() => handleRewrite('casual')}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
               >
@@ -173,6 +178,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
                 Casual
               </button>
               <button
+                type="button"
                 onClick={() => handleRewrite('concise')}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
               >
@@ -209,6 +215,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
                 AI Result
               </h3>
               <button
+                type="button"
                 onClick={handleDismiss}
                 className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] transition-colors"
                 title="Close"
@@ -223,6 +230,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
 
             <div className="flex justify-end gap-3">
               <button
+                type="button"
                 onClick={handleDismiss}
                 className="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors"
               >
@@ -230,6 +238,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
               </button>
               {onApply && (
                 <button
+                  type="button"
                   onClick={handleApply}
                   className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                 >
@@ -244,7 +253,14 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
 
       {/* Click outside to close style menu */}
       {showStyleMenu && (
-        <div className="fixed inset-0 z-40" onClick={() => setShowStyleMenu(false)} />
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowStyleMenu(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setShowStyleMenu(false)}
+          role="button"
+          tabIndex={-1}
+          aria-label="Close style menu"
+        />
       )}
     </>
   );

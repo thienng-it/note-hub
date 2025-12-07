@@ -126,6 +126,7 @@ export function ErrorPage() {
             </Link>
           )}
           <button
+            type="button"
             onClick={() => window.history.back()}
             className="inline-flex items-center px-6 py-3 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] rounded-lg hover:opacity-80 transition-colors"
           >
@@ -138,8 +139,8 @@ export function ErrorPage() {
         <div className="glass-card p-6 rounded-xl text-left">
           <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Need Help?</h3>
           <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-            {details.tips.map((tip, index) => (
-              <li key={index} className="flex items-start gap-2">
+            {details.tips.map((tip) => (
+              <li key={tip} className="flex items-start gap-2">
                 <span className="text-blue-600 mt-0.5">•</span>
                 <span>{tip}</span>
               </li>

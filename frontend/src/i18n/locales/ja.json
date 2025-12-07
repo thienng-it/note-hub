@@ -95,7 +95,11 @@
     "deleteConfirm": "このメモを削除してもよろしいですか？",
     "allNotes": "すべてのメモ",
     "favorites": "お気に入り",
-    "pinned": "ピン留め"
+    "pinned": "ピン留め",
+    "archived": "アーカイブ済み",
+    "archivedNotes": "アーカイブされたメモ",
+    "sharedWithMe": "共有されたメモ",
+    "archivedDescription": "アーカイブされたメモがここに表示されます"
   },
   "tasks": {
     "title": "タスク",
@@ -140,7 +144,24 @@
     "newPassword": "新しいパスワード",
     "confirmNewPassword": "新しいパスワードを確認",
     "updatePassword": "パスワードを更新",
-    "updating": "更新中..."
+    "updating": "更新中...",
+    "userId": "ユーザーID",
+    "userIdDescription": "あなたの一意の識別子",
+    "memberSince": "登録日",
+    "memberSinceDescription": "参加した日",
+    "settings": "設定",
+    "themeDescription": "ライトモードとダークモードを切り替え",
+    "passwordDescription": "パスワードを更新",
+    "twoFactorEnabled": "有効 - アカウントは保護されています",
+    "twoFactorDisabled": "セキュリティ層を追加",
+    "setup2FA": "2FAを設定",
+    "securityTips": "セキュリティのヒント",
+    "securityTip1": "アカウントには強力で一意のパスワードを使用してください",
+    "securityTip2": "追加のセキュリティのために二要素認証を有効にしてください",
+    "securityTip3": "ログイン情報を他人と共有しないでください",
+    "securityTip4": "共有または公共のコンピュータを使用する場合はログアウトしてください",
+    "lightMode": "ライトモード",
+    "darkMode": "ダークモード"
   },
   "share": {
     "title": "メモを共有",
@@ -179,6 +200,8 @@
     "en": "英語",
     "de": "ドイツ語",
     "vi": "ベトナム語",
-    "ja": "日本語"
+    "ja": "日本語",
+    "fr": "フランス語",
+    "es": "スペイン語"
   }
 }

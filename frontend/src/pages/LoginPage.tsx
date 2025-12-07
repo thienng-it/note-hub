@@ -169,6 +169,7 @@ export function LoginPage() {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
+                          <title>Hide password icon</title>
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -183,6 +184,7 @@ export function LoginPage() {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
+                          <title>Show password icon</title>
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -224,6 +226,7 @@ export function LoginPage() {
                 />
                 <p id="totp-hint" className="flex items-center gap-2 mt-3 text-sm text-muted-glass">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <title>Information icon</title>
                     <path
                       fillRule="evenodd"
                       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -245,6 +248,7 @@ export function LoginPage() {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <title>Loading spinner</title>
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -289,6 +293,7 @@ export function LoginPage() {
                 className="w-full py-4 mb-5 flex items-center justify-center gap-3 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 transition-colors text-gray-700 font-medium"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <title>Google logo</title>
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -341,6 +346,7 @@ export function LoginPage() {
               className="w-full mt-5 flex items-center justify-center gap-2 text-muted-glass hover:text-gray-600 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <title>Back arrow</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
