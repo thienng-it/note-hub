@@ -349,19 +349,26 @@ class DatabaseReplication {
           // For MySQL, check connection and replica lag
           const connection = await replica.connection.getConnection();
           
-          // Check if replica is running
-          const [status] = await connection.execute('SHOW SLAVE STATUS');
+          // Check if replica is running (use modern REPLICA terminology, fallback to SLAVE for older MySQL)
+          let status;
+          try {
+            [status] = await connection.execute('SHOW REPLICA STATUS');
+          } catch (error) {
+            // Fallback to deprecated SLAVE syntax for MySQL < 8.0.22
+            [status] = await connection.execute('SHOW SLAVE STATUS');
+          }
           
           if (status.length > 0) {
-            const slaveStatus = status[0];
-            const secondsBehindMaster = slaveStatus.Seconds_Behind_Master;
+            const replicaStatus = status[0];
+            // Check both modern and legacy field names for compatibility
+            const secondsBehind = replicaStatus.Seconds_Behind_Source || replicaStatus.Seconds_Behind_Master;
             
             // Consider replica unhealthy if lag is more than 30 seconds
-            if (secondsBehindMaster !== null && secondsBehindMaster <= 30) {
+            if (secondsBehind !== null && secondsBehind <= 30) {
               replica.healthy = true;
               this.replicaHealthStatus.set(replica, true);
             } else {
-              console.warn(`⚠️  Replica ${replica.host}:${replica.port} has high lag: ${secondsBehindMaster}s`);
+              console.warn(`⚠️  Replica ${replica.host}:${replica.port} has high lag: ${secondsBehind}s`);
               replica.healthy = false;
               this.replicaHealthStatus.set(replica, false);
             }

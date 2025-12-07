@@ -2,7 +2,9 @@
 -- This script sets up the primary database for replication
 
 -- Create a replication user for replicas to connect
-CREATE USER IF NOT EXISTS 'replicator'@'%' IDENTIFIED BY 'replicator_password';
+-- Password is set via environment variable: MYSQL_REPLICATION_PASSWORD
+-- Default password is shown here for reference only - CHANGE IN PRODUCTION!
+CREATE USER IF NOT EXISTS 'replicator'@'%' IDENTIFIED BY '${MYSQL_REPLICATION_PASSWORD:-change-this-replication-password}';
 GRANT REPLICATION SLAVE ON *.* TO 'replicator'@'%';
 FLUSH PRIVILEGES;
 

@@ -66,7 +66,7 @@ Create a replication user:
 
 ```sql
 CREATE USER 'replicator'@'%' IDENTIFIED BY 'secure_password';
-GRANT REPLICATION SLAVE ON *.* TO 'replicator'@'%';
+GRANT REPLICATION REPLICA ON *.* TO 'replicator'@'%';
 FLUSH PRIVILEGES;
 ```
 
@@ -94,8 +94,8 @@ CHANGE MASTER TO
     MASTER_PASSWORD='secure_password',
     MASTER_AUTO_POSITION=1;
 
-START SLAVE;
-SHOW SLAVE STATUS\G
+START REPLICA;
+SHOW REPLICA STATUS\G
 ```
 
 #### 3. Configure NoteHub
@@ -129,12 +129,12 @@ Check that replication is working:
 SHOW MASTER STATUS;
 
 -- On each replica
-SHOW SLAVE STATUS\G
+SHOW REPLICA STATUS\G
 ```
 
 Look for:
-- `Slave_IO_Running: Yes`
-- `Slave_SQL_Running: Yes`
+- `Replica_IO_Running: Yes`
+- `Replica_SQL_Running: Yes`
 - `Seconds_Behind_Master: 0` (or low number)
 
 ---
@@ -308,7 +308,7 @@ docker compose -f docker-compose.replication.yml exec backend-mysql-replication 
 
 # Check replication status
 docker compose -f docker-compose.replication.yml exec mysql-primary mysql -u root -p -e "SHOW MASTER STATUS"
-docker compose -f docker-compose.replication.yml exec mysql-replica-1 mysql -u root -p -e "SHOW SLAVE STATUS\G"
+docker compose -f docker-compose.replication.yml exec mysql-replica-1 mysql -u root -p -e "SHOW REPLICA STATUS\G"
 ```
 
 ### SQLite Replication with Litestream
@@ -363,11 +363,11 @@ Response:
 Check replica lag:
 ```sql
 -- On each replica
-SHOW SLAVE STATUS\G
+SHOW REPLICA STATUS\G
 
 -- Key metrics to monitor:
--- - Slave_IO_Running: Should be 'Yes'
--- - Slave_SQL_Running: Should be 'Yes'
+-- - Replica_IO_Running: Should be 'Yes'
+-- - Replica_SQL_Running: Should be 'Yes'
 -- - Seconds_Behind_Master: Should be low (< 30 seconds)
 -- - Last_Error: Should be empty
 ```
@@ -386,7 +386,7 @@ SHOW SLAVE STATUS\G
 
 #### Replica Connection Failure
 
-**Symptom**: `Slave_IO_Running: No`
+**Symptom**: `Replica_IO_Running: No`
 
 **Solutions**:
 1. Verify network connectivity
