@@ -12,27 +12,37 @@
 const databaseReplication = require('../src/config/databaseReplication');
 
 // Mock better-sqlite3
+const mockSQLiteConnection = {
+  prepare: jest.fn().mockReturnValue({
+    all: jest.fn().mockReturnValue([{ id: 1, name: 'test' }]),
+    get: jest.fn().mockReturnValue({ id: 1, name: 'test' })
+  }),
+  pragma: jest.fn(),
+  close: jest.fn()
+};
+
 jest.mock('better-sqlite3', () => {
-  return jest.fn().mockImplementation(() => ({
-    prepare: jest.fn().mockReturnValue({
-      all: jest.fn().mockReturnValue([{ id: 1, name: 'test' }]),
-      get: jest.fn().mockReturnValue({ id: 1, name: 'test' })
-    }),
-    pragma: jest.fn(),
-    close: jest.fn()
-  }));
+  return jest.fn().mockImplementation(() => mockSQLiteConnection);
 });
 
 // Mock mysql2/promise
+const mockMySQLPool = {
+  execute: jest.fn().mockResolvedValue([[{ id: 1, name: 'test' }]]),
+  getConnection: jest.fn().mockResolvedValue({
+    execute: jest.fn().mockResolvedValue([[]]),
+    release: jest.fn()
+  }),
+  end: jest.fn()
+};
+
 jest.mock('mysql2/promise', () => ({
-  createPool: jest.fn().mockResolvedValue({
-    execute: jest.fn().mockResolvedValue([[{ id: 1, name: 'test' }]]),
-    getConnection: jest.fn().mockResolvedValue({
-      execute: jest.fn().mockResolvedValue([[]]),
-      release: jest.fn()
-    }),
-    end: jest.fn()
-  })
+  createPool: jest.fn().mockResolvedValue(mockMySQLPool)
+}));
+
+// Mock fs module - must be defined before jest.mock
+jest.mock('fs', () => ({
+  existsSync: jest.fn().mockReturnValue(true),
+  mkdirSync: jest.fn()
 }));
 
 describe('DatabaseReplication', () => {
@@ -59,10 +69,20 @@ describe('DatabaseReplication', () => {
     // Clear environment variables
     delete process.env.DB_REPLICATION_ENABLED;
     delete process.env.MYSQL_REPLICA_HOSTS;
+    delete process.env.MYSQL_REPLICA_PORTS;
+    delete process.env.MYSQL_REPLICA_USER;
+    delete process.env.MYSQL_REPLICA_PASSWORD;
     delete process.env.SQLITE_REPLICA_PATHS;
     
-    // Clear all mocks
-    jest.clearAllMocks();
+    // Reset mocks but keep implementations
+    const fs = require('fs');
+    fs.existsSync.mockReturnValue(true);
+    mockSQLiteConnection.prepare.mockReturnValue({
+      all: jest.fn().mockReturnValue([{ id: 1, name: 'test' }]),
+      get: jest.fn().mockReturnValue({ id: 1, name: 'test' })
+    });
+    mockSQLiteConnection.close.mockClear();
+    mockMySQLPool.end.mockClear();
   });
 
   afterEach(async () => {
@@ -79,10 +99,6 @@ describe('DatabaseReplication', () => {
     it('should enable replication when DB_REPLICATION_ENABLED is true', async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
-      
-      // Mock fs.existsSync to return true
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       
       await databaseReplication.initialize(mockPrimary, true);
       
@@ -104,9 +120,6 @@ describe('DatabaseReplication', () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db,/tmp/replica2.db';
       
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      
       await databaseReplication.initialize(mockPrimary, true);
       
       expect(databaseReplication.replicas.length).toBe(2);
@@ -118,8 +131,7 @@ describe('DatabaseReplication', () => {
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db,/tmp/missing.db';
       
       const fs = require('fs');
-      const existsSyncSpy = jest.spyOn(fs, 'existsSync');
-      existsSyncSpy.mockImplementation((path) => {
+      fs.existsSync.mockImplementation((path) => {
         return path === '/tmp/replica1.db';
       });
       
@@ -131,9 +143,6 @@ describe('DatabaseReplication', () => {
     it('should open SQLite replicas in read-only mode', async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
-      
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       
       const Database = require('better-sqlite3');
       
@@ -194,13 +203,13 @@ describe('DatabaseReplication', () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db,/tmp/replica2.db';
       
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      
       await databaseReplication.initialize(mockPrimary, true);
     });
 
     it('should route read queries to replicas', async () => {
+      // Initialize first
+      await databaseReplication.initialize(mockPrimary, true);
+      
       const result = await databaseReplication.query('SELECT * FROM users', []);
       
       expect(result).toBeDefined();
@@ -208,6 +217,9 @@ describe('DatabaseReplication', () => {
     });
 
     it('should route write queries to primary', async () => {
+      // Initialize first
+      await databaseReplication.initialize(mockPrimary, true);
+      
       const result = await databaseReplication.run('INSERT INTO users VALUES (?)', ['test']);
       
       expect(result).toHaveProperty('insertId');
@@ -215,6 +227,9 @@ describe('DatabaseReplication', () => {
     });
 
     it('should fallback to primary if no replicas available', async () => {
+      // Initialize first
+      await databaseReplication.initialize(mockPrimary, true);
+      
       // Mark all replicas as unhealthy
       databaseReplication.replicas.forEach(replica => {
         replica.healthy = false;
@@ -231,9 +246,6 @@ describe('DatabaseReplication', () => {
     beforeEach(async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db,/tmp/replica2.db,/tmp/replica3.db';
-      
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       
       await databaseReplication.initialize(mockPrimary, true);
     });
@@ -267,9 +279,6 @@ describe('DatabaseReplication', () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
       
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      
       await databaseReplication.initialize(mockPrimary, true);
     });
 
@@ -302,9 +311,6 @@ describe('DatabaseReplication', () => {
     beforeEach(async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
-      
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       
       await databaseReplication.initialize(mockPrimary, true);
     });
@@ -347,9 +353,6 @@ describe('DatabaseReplication', () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db,/tmp/replica2.db';
       
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      
       await databaseReplication.initialize(mockPrimary, true);
       
       const status = databaseReplication.getStatus();
@@ -363,9 +366,6 @@ describe('DatabaseReplication', () => {
     it('should include replica details in status', async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
-      
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       
       await databaseReplication.initialize(mockPrimary, true);
       
@@ -382,12 +382,11 @@ describe('DatabaseReplication', () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
       
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-      
       await databaseReplication.initialize(mockPrimary, true);
       
-      const closeSpy = jest.spyOn(databaseReplication.replicas[0].connection, 'close');
+      // Get reference to close function before closing
+      const replica = databaseReplication.replicas[0];
+      const closeSpy = jest.spyOn(replica.connection, 'close');
       
       await databaseReplication.close();
       
@@ -399,9 +398,6 @@ describe('DatabaseReplication', () => {
     it('should clear health check interval', async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
-      
-      const fs = require('fs');
-      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       
       await databaseReplication.initialize(mockPrimary, true);
       

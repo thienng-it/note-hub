@@ -13,6 +13,7 @@ jest.mock('../src/config/database', () => ({
   queryOne: jest.fn(),
   run: jest.fn(),
   isSQLite: true
+  getReplicationStatus: jest.fn(() => ({ enabled: false, message: 'Replication is disabled' })),
 }));
 
 const db = require('../src/config/database');
