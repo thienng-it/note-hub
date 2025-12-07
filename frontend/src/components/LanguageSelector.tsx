@@ -47,7 +47,7 @@ export function LanguageSelector() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef} onKeyDown={handleKeyDown}>
+    <div className="relative" ref={dropdownRef} onKeyDown={handleKeyDown} role="button" tabIndex={-1}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -57,6 +57,7 @@ export function LanguageSelector() {
         aria-haspopup="menu"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <title>Language icon</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -66,6 +67,7 @@ export function LanguageSelector() {
         </svg>
         <span className="hidden sm:inline">{currentLanguage.name}</span>
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <title>Dropdown arrow</title>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
@@ -81,6 +83,7 @@ export function LanguageSelector() {
             {languages.map((language) => (
               <button
                 key={language.code}
+                type="button"
                 onClick={() => changeLanguage(language.code)}
                 className={`w-full px-4 py-2 text-left text-sm flex items-center gap-3 hover:bg-[var(--bg-secondary)] transition-colors ${
                   i18n.language === language.code
