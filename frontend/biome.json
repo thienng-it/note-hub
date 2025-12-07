@@ -17,7 +17,8 @@
         "noStaticElementInteractions": "warn",
         "useKeyWithClickEvents": "warn",
         "noSvgWithoutTitle": "warn",
-        "noLabelWithoutControl": "warn"
+        "noLabelWithoutControl": "warn",
+        "useSemanticElements": "warn"
       },
       "suspicious": {
         "noArrayIndexKey": "warn"
