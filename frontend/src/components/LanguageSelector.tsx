@@ -47,7 +47,13 @@ export function LanguageSelector() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef} onKeyDown={handleKeyDown} role="button" tabIndex={-1}>
+    <div
+      className="relative"
+      ref={dropdownRef}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={-1}
+    >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}

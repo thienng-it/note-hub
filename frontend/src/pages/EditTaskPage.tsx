@@ -47,7 +47,7 @@ export function EditTaskPage() {
     if (isEdit && id) {
       fetchTask();
     }
-  }, [id, isEdit]);
+  }, [id, isEdit, fetchTask]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

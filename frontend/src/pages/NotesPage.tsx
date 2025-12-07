@@ -305,7 +305,8 @@ export function NotesPage() {
               : 'text-[var(--text-secondary)]'
           }`}
         >
-          <i className="glass-i fas fa-archive mr-2"></i>{t('notes.archived')}
+          <i className="glass-i fas fa-archive mr-2"></i>
+          {t('notes.archived')}
         </Link>
         <Link
           to="/?view=shared"

@@ -48,8 +48,12 @@ export function ProfilePage() {
           {user.created_at && (
             <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
               <div>
-                <span className="font-medium text-[var(--text-primary)]">{t('profile.memberSince')}</span>
-                <p className="text-sm text-[var(--text-muted)]">{t('profile.memberSinceDescription')}</p>
+                <span className="font-medium text-[var(--text-primary)]">
+                  {t('profile.memberSince')}
+                </span>
+                <p className="text-sm text-[var(--text-muted)]">
+                  {t('profile.memberSinceDescription')}
+                </p>
               </div>
               <span className="text-[var(--text-secondary)]">
                 {new Date(user.created_at).toLocaleDateString('en-US', {
@@ -91,7 +95,9 @@ export function ProfilePage() {
           {/* Change Password Link */}
           <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
             <div>
-              <span className="font-medium text-[var(--text-primary)]">{t('auth.login.password')}</span>
+              <span className="font-medium text-[var(--text-primary)]">
+                {t('auth.login.password')}
+              </span>
               <p className="text-sm text-[var(--text-muted)]">{t('profile.passwordDescription')}</p>
             </div>
             <Link
@@ -110,9 +116,7 @@ export function ProfilePage() {
                 {t('profile.enable2FA')}
               </span>
               <p className="text-sm text-[var(--text-muted)]">
-                {user.has_2fa
-                  ? t('profile.twoFactorEnabled')
-                  : t('profile.twoFactorDisabled')}
+                {user.has_2fa ? t('profile.twoFactorEnabled') : t('profile.twoFactorDisabled')}
               </p>
             </div>
             {user.has_2fa ? (

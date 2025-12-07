@@ -31,7 +31,7 @@ export function Setup2FAPage() {
 
   useEffect(() => {
     fetchSetupData();
-  }, []);
+  }, [fetchSetupData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

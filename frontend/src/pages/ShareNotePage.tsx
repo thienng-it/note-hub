@@ -51,7 +51,7 @@ export function ShareNotePage() {
     if (id) {
       fetchNoteAndShares();
     }
-  }, [id]);
+  }, [id, fetchNoteAndShares]);
 
   const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { versionApi } from '../api/client';
@@ -17,7 +17,7 @@ export function Layout() {
   const navigate = useNavigate();
 
   // Check if we're on tablet (between 768px and 1024px)
-  const isTablet = () => window.innerWidth >= 768 && window.innerWidth < 1024;
+  const isTablet = useCallback(() => window.innerWidth >= 768 && window.innerWidth < 1024, []);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Auto-collapse on tablets, otherwise use saved preference
@@ -116,6 +116,7 @@ export function Layout() {
             {/* Collapse button - always visible */}
             {!sidebarCollapsed && (
               <button
+                type="button"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                 className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)]"
                 aria-label="Collapse sidebar"
@@ -130,6 +131,7 @@ export function Layout() {
             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-[var(--border-color)]">
               <LanguageSelector />
               <button
+                type="button"
                 onClick={toggleTheme}
                 className="flex items-center gap-2 p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
                 aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
@@ -138,7 +140,9 @@ export function Layout() {
                   className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'} text-lg`}
                   aria-hidden="true"
                 ></i>
-                <span className="text-sm">{theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}</span>
+                <span className="text-sm">
+                  {theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}
+                </span>
               </button>
             </div>
           )}
@@ -147,6 +151,7 @@ export function Layout() {
           {user && sidebarCollapsed && (
             <div className="flex flex-col items-center gap-2 mt-3">
               <button
+                type="button"
                 onClick={toggleTheme}
                 className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-primary)]"
                 aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
@@ -157,6 +162,7 @@ export function Layout() {
                 ></i>
               </button>
               <button
+                type="button"
                 onClick={() => setSidebarCollapsed(false)}
                 className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)]"
                 aria-label="Expand sidebar"
@@ -248,6 +254,7 @@ export function Layout() {
                   </div>
                 )}
                 <button
+                  type="button"
                   onClick={handleLogout}
                   className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors flex-shrink-0"
                   aria-label="Sign out"
@@ -283,6 +290,7 @@ export function Layout() {
               <div className="flex items-center gap-1">
                 <LanguageSelector />
                 <button
+                  type="button"
                   onClick={toggleTheme}
                   className="p-2.5 rounded-xl hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
                   aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
@@ -300,6 +308,7 @@ export function Layout() {
                   <i className="glass-i fas fa-user-circle" aria-hidden="true"></i>
                 </Link>
                 <button
+                  type="button"
                   onClick={handleLogout}
                   className="p-2.5 rounded-xl text-red-500 hover:bg-red-500/10"
                   aria-label="Sign out"
@@ -324,6 +333,7 @@ export function Layout() {
 
       {/* Back to Top Button */}
       <button
+        type="button"
         id="backToTop"
         onClick={scrollToTop}
         className={`btn-back-to-top ${

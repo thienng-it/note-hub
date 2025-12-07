@@ -35,7 +35,7 @@ export function InvitePage() {
 
   useEffect(() => {
     fetchInvitations();
-  }, []);
+  }, [fetchInvitations]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

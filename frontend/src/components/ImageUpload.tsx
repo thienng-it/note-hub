@@ -102,9 +102,9 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-[var(--text-primary)]">
+        <span className="block text-sm font-medium text-[var(--text-primary)]">
           Images {images.length > 0 && `(${images.length}/${maxImages})`}
-        </label>
+        </span>
         {images.length < maxImages && (
           <button
             type="button"
@@ -145,14 +145,14 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
 
       {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {images.map((imagePath, index) => (
+          {images.map((imagePath) => (
             <div
-              key={index}
+              key={imagePath}
               className="relative group rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--bg-tertiary)]"
             >
               <img
                 src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${imagePath}`}
-                alt={`Upload ${index + 1}`}
+                alt={`Uploaded image: ${imagePath}`}
                 className="w-full h-32 object-cover"
               />
               <button
