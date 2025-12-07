@@ -72,7 +72,8 @@ export function NoteEditPage() {
       if (isNew) {
         note = await notesApi.create(data);
       } else {
-        note = await notesApi.update(parseInt(id!, 10), data);
+        if (!id) throw new Error('Note ID is required');
+        note = await notesApi.update(parseInt(id, 10), data);
       }
 
       navigate(`/notes/${note.id}`);

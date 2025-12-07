@@ -125,7 +125,8 @@ export function ErrorPage() {
               Login
             </Link>
           )}
-          <button type="button"
+          <button
+            type="button"
             onClick={() => window.history.back()}
             className="inline-flex items-center px-6 py-3 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] rounded-lg hover:opacity-80 transition-colors"
           >

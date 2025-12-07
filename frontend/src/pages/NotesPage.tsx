@@ -213,6 +213,7 @@ export function NotesPage() {
             {notes.length > 0 && (
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={hideAllNotes}
                   className="btn-secondary-glass text-sm"
                   title="Hide all note contents"
@@ -220,6 +221,7 @@ export function NotesPage() {
                   <i className="glass-i fas fa-eye-slash mr-2"></i>Hide All
                 </button>
                 <button
+                  type="button"
                   onClick={showAllNotes}
                   className="btn-secondary-glass text-sm"
                   title="Show all note contents"
@@ -375,6 +377,7 @@ export function NotesPage() {
                     <i className="fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
                     <span className="text-sm text-[var(--text-muted)]">Content hidden</span>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.preventDefault();
                         toggleHideNote(note.id);
@@ -434,6 +437,7 @@ export function NotesPage() {
                 {/* Quick Actions */}
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
                   <button
+                    type="button"
                     onClick={() => toggleHideNote(note.id)}
                     className={`${hiddenNotes.has(note.id) ? 'text-purple-600 hover:text-purple-800' : 'text-gray-400 hover:text-purple-600'} transition-colors`}
                     title={hiddenNotes.has(note.id) ? 'Show content' : 'Hide content'}
@@ -457,6 +461,7 @@ export function NotesPage() {
                     <i className="glass-i fas fa-share-alt"></i>
                   </Link>
                   <button
+                    type="button"
                     onClick={() => handleToggleFavorite(note)}
                     className={`${note.favorite ? 'text-red-600 hover:text-red-800' : 'text-gray-400 hover:text-red-600'} transition-colors`}
                     title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -493,6 +498,7 @@ export function NotesPage() {
                     </Link>
                   ) : emptyState.action.onClick ? (
                     <button
+                      type="button"
                       onClick={emptyState.action.onClick}
                       className="btn-apple inline-flex items-center px-6 py-3 rounded-lg"
                     >
@@ -516,6 +522,7 @@ export function NotesPage() {
           <div className="flex flex-wrap gap-2">
             {allTags.slice(0, 10).map((tag) => (
               <button
+                type="button"
                 key={tag.id}
                 onClick={() => {
                   setTagFilter(tag.name);

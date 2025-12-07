@@ -235,7 +235,8 @@ export function ShareNotePage() {
                     </p>
                   </div>
                 </div>
-                <button type="button"
+                <button
+                  type="button"
                   onClick={() => handleUnshareClick(user.id, user.username)}
                   className="text-red-600 hover:text-red-800 transition-colors p-2"
                   aria-label={`Remove share for ${user.username}`}

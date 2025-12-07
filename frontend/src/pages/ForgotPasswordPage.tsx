@@ -275,7 +275,8 @@ export function ForgotPasswordPage() {
               </div>
 
               {resetToken && (
-                <button type="button"
+                <button
+                  type="button"
                   onClick={() => navigate(`/reset-password?token=${resetToken}`)}
                   className="btn-primary w-full py-4 rounded-xl font-semibold text-base transition-all duration-200"
                 >

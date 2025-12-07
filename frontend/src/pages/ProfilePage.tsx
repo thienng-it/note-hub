@@ -82,6 +82,7 @@ export function ProfilePage() {
               <p className="text-sm text-[var(--text-muted)]">{t('profile.themeDescription')}</p>
             </div>
             <button
+              type="button"
               onClick={toggleTheme}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] transition-colors"
             >
