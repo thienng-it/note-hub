@@ -406,7 +406,8 @@ export function AdminDashboardPage() {
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           {u.has_2fa && (
-                            <button type="button"
+                            <button
+                              type="button"
                               onClick={() => handleDisable2FA(u.id, u.username)}
                               className="glass-span"
                               title="Disable 2FA for this user"
@@ -435,7 +436,8 @@ export function AdminDashboardPage() {
               </div>
               <div className="flex gap-2">
                 {page > 1 && (
-                  <button type="button"
+                  <button
+                    type="button"
                     onClick={() => setPage(page - 1)}
                     className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
                   >
@@ -448,7 +450,8 @@ export function AdminDashboardPage() {
                   const pageNum = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
                   if (pageNum > totalPages) return null;
                   return (
-                    <button type="button"
+                    <button
+                      type="button"
                       key={pageNum}
                       onClick={() => setPage(pageNum)}
                       className={`px-4 py-2 rounded-lg transition-colors ${
@@ -463,7 +466,8 @@ export function AdminDashboardPage() {
                 })}
 
                 {page < totalPages && (
-                  <button type="button"
+                  <button
+                    type="button"
                     onClick={() => setPage(page + 1)}
                     className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
                   >

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { ConfirmModal } from '../components/Modal';
@@ -31,7 +31,7 @@ export function ShareNotePage() {
   );
   const [isUnsharing, setIsUnsharing] = useState(false);
 
-  const fetchNoteAndShares = async () => {
+  const fetchNoteAndShares = useCallback(async () => {
     try {
       const [noteData, sharesData] = await Promise.all([
         apiClient.get<{ note: Note }>(`/api/v1/notes/${id}`),
@@ -45,7 +45,7 @@ export function ShareNotePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (id) {
@@ -235,7 +235,7 @@ export function ShareNotePage() {
                     </p>
                   </div>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => handleUnshareClick(user.id, user.username)}
                   className="text-red-600 hover:text-red-800 transition-colors p-2"
                   aria-label={`Remove share for ${user.username}`}

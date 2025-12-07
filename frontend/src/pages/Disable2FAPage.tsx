@@ -95,7 +95,7 @@ export function Disable2FAPage() {
           {!showConfirm ? (
             /* Initial View */
             <div className="space-y-4">
-              <button
+              <button type="button"
                 onClick={() => setShowConfirm(true)}
                 className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center"
               >
@@ -122,7 +122,7 @@ export function Disable2FAPage() {
                 </p>
               </div>
               <div className="flex gap-4">
-                <button
+                <button type="button"
                   onClick={handleSubmit}
                   className="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center"
                   disabled={isSubmitting}
@@ -139,7 +139,7 @@ export function Disable2FAPage() {
                     </>
                   )}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setShowConfirm(false)}
                   className="flex-1 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] py-3 px-4 rounded-lg font-medium hover:opacity-80 transition-colors flex items-center justify-center"
                   disabled={isSubmitting}

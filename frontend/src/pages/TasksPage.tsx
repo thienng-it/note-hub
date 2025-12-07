@@ -193,14 +193,16 @@ export function TasksPage() {
         <div className="flex items-center gap-2">
           {tasks.length > 0 && (
             <div className="flex items-center gap-2">
-              <button type="button"
+              <button
+                type="button"
                 onClick={hideAllTasks}
                 className="btn-secondary-glass text-sm"
                 title="Hide all task contents"
               >
                 <i className="glass-i fas fa-eye-slash mr-2"></i>Hide All
               </button>
-              <button type="button"
+              <button
+                type="button"
                 onClick={showAllTasks}
                 className="btn-secondary-glass text-sm"
                 title="Show all task contents"
@@ -209,7 +211,8 @@ export function TasksPage() {
               </button>
             </div>
           )}
-          <button type="button"
+          <button
+            type="button"
             onClick={() => setShowForm(!showForm)}
             className="btn-apple px-4 py-2 rounded-lg font-medium"
           >
@@ -404,7 +407,8 @@ export function TasksPage() {
       {/* Filters */}
       <div className="glass-card flex space-x-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
         {(['all', 'active', 'completed', 'overdue'] as TaskFilterType[]).map((f) => (
-          <button type="button"
+          <button
+            type="button"
             key={f}
             onClick={() => setFilter(f)}
             className={`flex-1 text-center py-2 px-4 rounded-md transition-all capitalize ${
@@ -499,7 +503,8 @@ export function TasksPage() {
               ) : (
                 /* View Mode */
                 <div className="flex items-start gap-4">
-                  <button type="button"
+                  <button
+                    type="button"
                     onClick={() => handleToggleComplete(task)}
                     className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                       task.completed
@@ -534,7 +539,8 @@ export function TasksPage() {
                       <div className="flex items-center py-2 bg-[var(--bg-tertiary)] rounded-lg mb-2 px-3">
                         <i className="fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
                         <span className="text-sm text-[var(--text-muted)]">Content hidden</span>
-                        <button type="button"
+                        <button
+                          type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             toggleHideTask(task.id);
@@ -570,7 +576,8 @@ export function TasksPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => toggleHideTask(task.id)}
                       className={`p-2 rounded-lg transition-colors ${hiddenTasks.has(task.id) ? 'text-purple-600 hover:bg-purple-500/10' : 'text-gray-400 hover:bg-[var(--bg-tertiary)] hover:text-purple-600'}`}
                       title={hiddenTasks.has(task.id) ? 'Show content' : 'Hide content'}
@@ -579,14 +586,16 @@ export function TasksPage() {
                         className={`glass-i fas ${hiddenTasks.has(task.id) ? 'fa-eye' : 'fa-eye-slash'}`}
                       ></i>
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => setEditingTask(task)}
                       className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-blue-600 transition-colors"
                       title="Edit"
                     >
                       <i className="glass-i fas fa-edit"></i>
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => handleDeleteTask(task)}
                       className="p-2 rounded-lg hover:bg-red-500/10 text-red-600 transition-colors"
                       title="Delete"
@@ -606,7 +615,8 @@ export function TasksPage() {
           <p className="text-[var(--text-secondary)] mb-6">
             {filter === 'all' ? 'Create your first task to get started' : `No ${filter} tasks`}
           </p>
-          <button type="button"
+          <button
+            type="button"
             onClick={() => setShowForm(true)}
             className="btn-primary inline-flex items-center px-6 py-3 rounded-lg"
           >

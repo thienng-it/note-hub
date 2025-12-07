@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 
@@ -24,7 +24,7 @@ export function EditTaskPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(isEdit);
 
-  const fetchTask = async () => {
+  const fetchTask = useCallback(async () => {
     try {
       const data = await apiClient.get<{ task: TaskFormData & { due_date?: string } }>(
         `/api/v1/tasks/${id}`,
@@ -41,7 +41,7 @@ export function EditTaskPage() {
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (isEdit && id) {
