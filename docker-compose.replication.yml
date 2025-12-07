@@ -1,0 +1,303 @@
+# =============================================================================
+# Docker Compose for NoteHub - Database Replication Setup
+# =============================================================================
+#
+# This file demonstrates database replication configuration for NoteHub.
+# It includes examples for both MySQL replication and SQLite replication.
+#
+# IMPORTANT: This is an example configuration for testing and development.
+# For production, use a managed database service with built-in replication
+# (e.g., AWS RDS, Google Cloud SQL, Azure Database) or set up replication
+# according to your infrastructure requirements.
+#
+# Usage:
+#   1. Copy .env.example to .env and configure replication settings
+#   2. Start with MySQL replication:
+#      docker compose -f docker-compose.replication.yml --profile mysql-replication up -d
+#   3. Start with SQLite replication (using Litestream):
+#      docker compose -f docker-compose.replication.yml --profile sqlite-replication up -d
+#
+# Services:
+#   - mysql-primary: Primary MySQL server (writes + reads)
+#   - mysql-replica-1: First MySQL replica (reads only)
+#   - mysql-replica-2: Second MySQL replica (reads only)
+#   - litestream: Continuous SQLite replication to S3 or local storage
+#
+# =============================================================================
+
+services:
+  # ==========================================================================
+  # MySQL Primary Database
+  # ==========================================================================
+  mysql-primary:
+    image: mysql:8.0
+    container_name: notehub-mysql-primary
+    restart: unless-stopped
+    profiles:
+      - mysql-replication
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env file}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
+      - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
+    command: >
+      --server-id=1
+      --log-bin=mysql-bin
+      --binlog-format=ROW
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+      --binlog-do-db=notehub
+    volumes:
+      - mysql-primary-data:/var/lib/mysql
+      - ./docker/mysql/init-primary.sql:/docker-entrypoint-initdb.d/init-primary.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks:
+      - notehub-network
+
+  # ==========================================================================
+  # MySQL Replica 1
+  # ==========================================================================
+  mysql-replica-1:
+    image: mysql:8.0
+    container_name: notehub-mysql-replica-1
+    restart: unless-stopped
+    profiles:
+      - mysql-replication
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env file}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
+    command: >
+      --server-id=2
+      --log-bin=mysql-bin
+      --binlog-format=ROW
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+      --relay-log=relay-bin
+      --read-only=ON
+      --skip-slave-start
+    volumes:
+      - mysql-replica-1-data:/var/lib/mysql
+      - ./docker/mysql/init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh:ro
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks:
+      - notehub-network
+
+  # ==========================================================================
+  # MySQL Replica 2
+  # ==========================================================================
+  mysql-replica-2:
+    image: mysql:8.0
+    container_name: notehub-mysql-replica-2
+    restart: unless-stopped
+    profiles:
+      - mysql-replication
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env file}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
+    command: >
+      --server-id=3
+      --log-bin=mysql-bin
+      --binlog-format=ROW
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+      --relay-log=relay-bin
+      --read-only=ON
+      --skip-slave-start
+    volumes:
+      - mysql-replica-2-data:/var/lib/mysql
+      - ./docker/mysql/init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh:ro
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks:
+      - notehub-network
+
+  # ==========================================================================
+  # Backend with MySQL Replication
+  # ==========================================================================
+  backend-mysql-replication:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+    container_name: notehub-backend-mysql-replication
+    restart: unless-stopped
+    profiles:
+      - mysql-replication
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
+      - PORT=5000
+      - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+      
+      # Primary MySQL connection
+      - MYSQL_HOST=mysql-primary
+      - MYSQL_PORT=3306
+      - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
+      
+      # Enable replication
+      - DB_REPLICATION_ENABLED=true
+      - MYSQL_REPLICA_HOSTS=mysql-replica-1,mysql-replica-2
+      - MYSQL_REPLICA_PORTS=3306,3306
+      - MYSQL_REPLICA_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
+      - MYSQL_REPLICA_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
+    volumes:
+      - notehub-uploads:/app/uploads
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+      mysql-replica-1:
+        condition: service_healthy
+      mysql-replica-2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - notehub-network
+
+  # ==========================================================================
+  # Frontend with MySQL Replication Backend
+  # ==========================================================================
+  frontend-mysql-replication:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        - VITE_API_URL=
+    container_name: notehub-frontend-mysql-replication
+    restart: unless-stopped
+    profiles:
+      - mysql-replication
+    env_file:
+      - .env
+    environment:
+      - BACKEND_HOST=backend-mysql-replication
+      - BACKEND_PORT=5000
+    ports:
+      - "80:80"
+    depends_on:
+      backend-mysql-replication:
+        condition: service_healthy
+    networks:
+      - notehub-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ==========================================================================
+  # Litestream for SQLite Replication
+  # ==========================================================================
+  # Litestream continuously backs up SQLite to S3 or local storage
+  # See: https://litestream.io/
+  litestream:
+    image: litestream/litestream:latest
+    container_name: notehub-litestream
+    restart: unless-stopped
+    profiles:
+      - sqlite-replication
+    env_file:
+      - .env
+    environment:
+      # Configure Litestream destination (S3, local, etc.)
+      - LITESTREAM_ACCESS_KEY_ID=${LITESTREAM_ACCESS_KEY_ID:-}
+      - LITESTREAM_SECRET_ACCESS_KEY=${LITESTREAM_SECRET_ACCESS_KEY:-}
+      - LITESTREAM_S3_BUCKET=${LITESTREAM_S3_BUCKET:-}
+      - LITESTREAM_S3_REGION=${LITESTREAM_S3_REGION:-us-east-1}
+    volumes:
+      - notehub-data:/data
+      - ./docker/litestream/litestream.yml:/etc/litestream.yml:ro
+    command: replicate
+    networks:
+      - notehub-network
+
+  # ==========================================================================
+  # Backend with SQLite Replication (using Litestream)
+  # ==========================================================================
+  backend-sqlite-replication:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+    container_name: notehub-backend-sqlite-replication
+    restart: unless-stopped
+    profiles:
+      - sqlite-replication
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
+      - PORT=5000
+      - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+      
+      # SQLite configuration
+      - NOTES_DB_PATH=/app/data/notes.db
+      
+      # Enable SQLite replication (replicas created by Litestream)
+      - DB_REPLICATION_ENABLED=true
+      - SQLITE_REPLICA_PATHS=/app/data/notes-replica1.db,/app/data/notes-replica2.db
+    volumes:
+      - notehub-data:/app/data
+      - notehub-uploads:/app/uploads
+    depends_on:
+      - litestream
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - notehub-network
+
+networks:
+  notehub-network:
+    driver: bridge
+
+volumes:
+  notehub-data:
+    driver: local
+  notehub-uploads:
+    driver: local
+  mysql-primary-data:
+    driver: local
+  mysql-replica-1-data:
+    driver: local
+  mysql-replica-2-data:
+    driver: local

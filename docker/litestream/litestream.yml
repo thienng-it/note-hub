@@ -1,0 +1,44 @@
+# Litestream Configuration for SQLite Replication
+# https://litestream.io/reference/config/
+
+# Access key and secret key can be set via environment variables:
+# - LITESTREAM_ACCESS_KEY_ID
+# - LITESTREAM_SECRET_ACCESS_KEY
+
+dbs:
+  # Primary SQLite database
+  - path: /data/notes.db
+    
+    # Replicate to local replicas (for read scaling)
+    replicas:
+      # Local replica 1
+      - type: file
+        path: /data/notes-replica1.db
+        sync-interval: 1s
+        
+      # Local replica 2
+      - type: file
+        path: /data/notes-replica2.db
+        sync-interval: 1s
+      
+      # Optional: Replicate to S3 for backup
+      # Uncomment and configure the following to enable S3 replication
+      # - type: s3
+      #   bucket: ${LITESTREAM_S3_BUCKET}
+      #   path: notehub/notes.db
+      #   region: ${LITESTREAM_S3_REGION}
+      #   # Access key and secret are read from environment variables
+      #   sync-interval: 10s
+      
+      # Optional: Replicate to Azure Blob Storage
+      # - type: abs
+      #   bucket: ${LITESTREAM_ABS_BUCKET}
+      #   path: notehub/notes.db
+      #   account-name: ${LITESTREAM_ABS_ACCOUNT_NAME}
+      #   account-key: ${LITESTREAM_ABS_ACCOUNT_KEY}
+      
+      # Optional: Replicate to Google Cloud Storage
+      # - type: gcs
+      #   bucket: ${LITESTREAM_GCS_BUCKET}
+      #   path: notehub/notes.db
+      #   # GCS credentials should be provided via GOOGLE_APPLICATION_CREDENTIALS env var

@@ -1,19 +1,23 @@
 /**
  * Database configuration and connection management.
  * Supports both SQLite (default) and MySQL.
+ * Supports read replicas for improved performance and high availability.
  */
 const path = require('path');
 const fs = require('fs');
+const replication = require('./databaseReplication');
 
 class Database {
   constructor() {
     this.db = null;
     this.isSQLite = true;
+    this.replication = replication;
   }
 
   /**
    * Initialize database connection based on environment variables.
    * SQLite is used by default; MySQL is used when MYSQL_HOST is set.
+   * Optionally initializes read replicas if configured.
    */
   async connect() {
     const dbPath = process.env.NOTES_DB_PATH;
@@ -25,17 +29,26 @@ class Database {
       const resolvedPath = path.isAbsolute(dbPath) 
         ? dbPath 
         : path.resolve(process.cwd(), dbPath);
-      return this.connectSQLite(resolvedPath);
+      await this.connectSQLite(resolvedPath);
+      // Initialize SQLite replication if enabled
+      await this.replication.initialize(this.db, true);
+      return this.db;
     }
 
     // MySQL if MYSQL_HOST is set
     if (mysqlHost) {
-      return this.connectMySQL();
+      await this.connectMySQL();
+      // Initialize MySQL replication if enabled
+      await this.replication.initialize(this.db, false);
+      return this.db;
     }
 
     // Default to SQLite in project root's data folder
     const defaultPath = path.resolve(process.cwd(), 'data', 'notes.db');
-    return this.connectSQLite(defaultPath);
+    await this.connectSQLite(defaultPath);
+    // Initialize SQLite replication if enabled
+    await this.replication.initialize(this.db, true);
+    return this.db;
   }
 
   /**
@@ -696,8 +709,15 @@ class Database {
 
   /**
    * Execute a query with parameters.
+   * Routes read queries to replicas if replication is enabled.
    */
   async query(sql, params = []) {
+    // Use replication for SELECT queries if enabled
+    if (this.replication.isEnabled() && sql.trim().toUpperCase().startsWith('SELECT')) {
+      return this.replication.query(sql, params);
+    }
+    
+    // Otherwise use primary connection
     if (this.isSQLite) {
       return this.db.prepare(sql).all(...params);
     }
@@ -707,8 +727,15 @@ class Database {
 
   /**
    * Execute a single query and return one row.
+   * Routes read queries to replicas if replication is enabled.
    */
   async queryOne(sql, params = []) {
+    // Use replication for SELECT queries if enabled
+    if (this.replication.isEnabled() && sql.trim().toUpperCase().startsWith('SELECT')) {
+      return this.replication.queryOne(sql, params);
+    }
+    
+    // Otherwise use primary connection
     if (this.isSQLite) {
       return this.db.prepare(sql).get(...params);
     }
@@ -729,9 +756,19 @@ class Database {
   }
 
   /**
-   * Close the database connection.
+   * Get replication status.
+   */
+  getReplicationStatus() {
+    return this.replication.getStatus();
+  }
+
+  /**
+   * Close the database connection and all replicas.
    */
   async close() {
+    // Close replication connections first
+    await this.replication.close();
+    
     if (this.db) {
       if (this.isSQLite) {
         this.db.close();
