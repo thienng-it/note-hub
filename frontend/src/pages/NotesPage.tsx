@@ -1,10 +1,12 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { notesApi } from '../api/client';
 import type { Note, NoteViewType, Tag } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
 export function NotesPage() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [notes, setNotes] = useState<Note[]>([]);
   const [allTags, setAllTags] = useState<Tag[]>([]);
@@ -141,13 +143,13 @@ export function NotesPage() {
   const getViewTitle = () => {
     switch (view) {
       case 'favorites':
-        return 'Favorite Notes';
+        return t('notes.favorites');
       case 'archived':
-        return 'Archived Notes';
+        return t('notes.archivedNotes');
       case 'shared':
-        return 'Shared With Me';
+        return t('notes.sharedWithMe');
       default:
-        return 'All Notes';
+        return t('notes.allNotes');
     }
   };
 
@@ -176,9 +178,9 @@ export function NotesPage() {
       case 'archived':
         return {
           icon: 'fa-archive',
-          title: 'No archived notes',
-          description: 'Archived notes will appear here',
-          action: { label: 'View All Notes', to: '/' },
+          title: t('notes.noNotes'),
+          description: t('notes.archivedDescription'),
+          action: { label: t('notes.allNotes'), to: '/' },
         };
       case 'shared':
         return {
@@ -303,7 +305,7 @@ export function NotesPage() {
               : 'text-[var(--text-secondary)]'
           }`}
         >
-          <i className="glass-i fas fa-archive mr-2"></i>Archived
+          <i className="glass-i fas fa-archive mr-2"></i>{t('notes.archived')}
         </Link>
         <Link
           to="/?view=shared"
@@ -348,7 +350,7 @@ export function NotesPage() {
                   </span>
                 )}
                 {note.archived && (
-                  <span className="text-gray-500" title="Archived">
+                  <span className="text-gray-500" title={t('notes.archived')}>
                     <i className="glass-i fas fa-archive"></i>
                   </span>
                 )}

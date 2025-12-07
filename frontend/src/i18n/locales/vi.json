@@ -95,7 +95,11 @@
     "deleteConfirm": "Bạn có chắc chắn muốn xóa ghi chú này không?",
     "allNotes": "Tất cả ghi chú",
     "favorites": "Yêu thích",
-    "pinned": "Đã ghim"
+    "pinned": "Đã ghim",
+    "archived": "Đã lưu trữ",
+    "archivedNotes": "Ghi chú đã lưu trữ",
+    "sharedWithMe": "Được chia sẻ với tôi",
+    "archivedDescription": "Ghi chú đã lưu trữ sẽ xuất hiện ở đây"
   },
   "tasks": {
     "title": "Nhiệm vụ",
@@ -140,7 +144,24 @@
     "newPassword": "Mật khẩu mới",
     "confirmNewPassword": "Xác nhận mật khẩu mới",
     "updatePassword": "Cập nhật mật khẩu",
-    "updating": "Đang cập nhật..."
+    "updating": "Đang cập nhật...",
+    "userId": "ID người dùng",
+    "userIdDescription": "Mã định danh duy nhất của bạn",
+    "memberSince": "Thành viên từ",
+    "memberSinceDescription": "Khi bạn tham gia",
+    "settings": "Cài đặt",
+    "themeDescription": "Chuyển đổi giữa chế độ sáng và tối",
+    "passwordDescription": "Cập nhật mật khẩu của bạn",
+    "twoFactorEnabled": "Đã bật - Tài khoản của bạn được bảo vệ",
+    "twoFactorDisabled": "Thêm một lớp bảo mật bổ sung",
+    "setup2FA": "Thiết lập 2FA",
+    "securityTips": "Mẹo bảo mật",
+    "securityTip1": "Sử dụng mật khẩu mạnh và duy nhất cho tài khoản của bạn",
+    "securityTip2": "Bật xác thực hai yếu tố để tăng cường bảo mật",
+    "securityTip3": "Không bao giờ chia sẻ thông tin đăng nhập của bạn với người khác",
+    "securityTip4": "Đăng xuất khi sử dụng máy tính dùng chung hoặc công cộng",
+    "lightMode": "Chế độ sáng",
+    "darkMode": "Chế độ tối"
   },
   "share": {
     "title": "Chia sẻ ghi chú",
@@ -179,6 +200,8 @@
     "en": "Tiếng Anh",
     "de": "Tiếng Đức",
     "vi": "Tiếng Việt",
-    "ja": "Tiếng Nhật"
+    "ja": "Tiếng Nhật",
+    "fr": "Tiếng Pháp",
+    "es": "Tiếng Tây Ban Nha"
   }
 }

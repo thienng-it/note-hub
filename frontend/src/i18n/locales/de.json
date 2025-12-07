@@ -95,7 +95,11 @@
     "deleteConfirm": "Möchten Sie diese Notiz wirklich löschen?",
     "allNotes": "Alle Notizen",
     "favorites": "Favoriten",
-    "pinned": "Angeheftet"
+    "pinned": "Angeheftet",
+    "archived": "Archiviert",
+    "archivedNotes": "Archivierte Notizen",
+    "sharedWithMe": "Mit mir geteilt",
+    "archivedDescription": "Archivierte Notizen erscheinen hier"
   },
   "tasks": {
     "title": "Aufgaben",
@@ -140,7 +144,24 @@
     "newPassword": "Neues Passwort",
     "confirmNewPassword": "Neues Passwort bestätigen",
     "updatePassword": "Passwort aktualisieren",
-    "updating": "Wird aktualisiert..."
+    "updating": "Wird aktualisiert...",
+    "userId": "Benutzer-ID",
+    "userIdDescription": "Ihre eindeutige Kennung",
+    "memberSince": "Mitglied seit",
+    "memberSinceDescription": "Wann Sie beigetreten sind",
+    "settings": "Einstellungen",
+    "themeDescription": "Zwischen hellem und dunklem Modus wechseln",
+    "passwordDescription": "Passwort aktualisieren",
+    "twoFactorEnabled": "Aktiviert - Ihr Konto ist geschützt",
+    "twoFactorDisabled": "Fügen Sie eine zusätzliche Sicherheitsebene hinzu",
+    "setup2FA": "2FA einrichten",
+    "securityTips": "Sicherheitstipps",
+    "securityTip1": "Verwenden Sie ein starkes, einzigartiges Passwort für Ihr Konto",
+    "securityTip2": "Aktivieren Sie die Zwei-Faktor-Authentifizierung für zusätzliche Sicherheit",
+    "securityTip3": "Teilen Sie Ihre Anmeldedaten niemals mit anderen",
+    "securityTip4": "Melden Sie sich ab, wenn Sie gemeinsam genutzte oder öffentliche Computer verwenden",
+    "lightMode": "Heller Modus",
+    "darkMode": "Dunkler Modus"
   },
   "share": {
     "title": "Notiz teilen",
@@ -179,6 +200,8 @@
     "en": "Englisch",
     "de": "Deutsch",
     "vi": "Vietnamesisch",
-    "ja": "Japanisch"
+    "ja": "Japanisch",
+    "fr": "Französisch",
+    "es": "Spanisch"
   }
 }

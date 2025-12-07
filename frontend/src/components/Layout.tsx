@@ -138,7 +138,7 @@ export function Layout() {
                   className={`fas fa-${theme === 'dark' ? 'sun text-yellow-400' : 'moon text-blue-500'} text-lg`}
                   aria-hidden="true"
                 ></i>
-                <span className="text-sm">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                <span className="text-sm">{theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}</span>
               </button>
             </div>
           )}
@@ -192,7 +192,7 @@ export function Layout() {
                 className={linkClass(isActive('/', 'archived'), sidebarCollapsed)}
               >
                 <i className="glass-i fas fa-archive w-5 text-center" aria-hidden="true"></i>
-                {!sidebarCollapsed && <span>Archived</span>}
+                {!sidebarCollapsed && <span>{t('notes.archived')}</span>}
               </Link>
               <Link
                 to="/?view=shared"
@@ -202,7 +202,7 @@ export function Layout() {
                   className="glass-i fas fa-share-alt w-5 text-center text-green-500"
                   aria-hidden="true"
                 ></i>
-                {!sidebarCollapsed && <span>Shared With Me</span>}
+                {!sidebarCollapsed && <span>{t('notes.sharedWithMe')}</span>}
               </Link>
 
               <div className="pt-2">

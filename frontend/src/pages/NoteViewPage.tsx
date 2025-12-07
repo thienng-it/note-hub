@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
@@ -8,6 +9,7 @@ import type { Note } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
 export function NoteViewPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [note, setNote] = useState<Note | null>(null);
@@ -158,7 +160,7 @@ export function NoteViewPage() {
                   </span>
                 )}
                 {note.archived && (
-                  <span className="text-gray-500" title="Archived">
+                  <span className="text-gray-500" title={t('notes.archived')}>
                     <i className="glass-i fas fa-archive"></i>
                   </span>
                 )}

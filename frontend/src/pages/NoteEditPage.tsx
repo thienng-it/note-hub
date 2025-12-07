@@ -1,4 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
@@ -9,6 +10,7 @@ import type { Note } from '../types';
 import { type NoteTemplate, noteTemplates } from '../utils/templates';
 
 export function NoteEditPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isNew = !id;
@@ -326,7 +328,7 @@ export function NoteEditPage() {
               />
               <span className="text-[var(--text-primary)]">
                 <i className="glass-i fas fa-archive text-gray-500 mr-1"></i>
-                Archived
+                {t('notes.archived')}
               </span>
             </label>
           </div>

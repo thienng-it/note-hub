@@ -6,6 +6,8 @@ const languages = [
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
   { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
 ];
 
 export function LanguageSelector() {
