@@ -4,7 +4,11 @@
 
 This document summarizes the investigation and verification of the Drone CI user interface implementation for the NoteHub project. Drone CI comes with a complete, production-ready web UI that provides a modern interface for managing CI/CD pipelines.
 
-> **⚠️ CRITICAL for Custom Domains**: If you're using a custom domain, you **MUST** set `DRONE_ROUTER_RULE=Host(\`your-domain.com\`)` in `.env.drone` (replacing `your-domain.com` with your actual domain) or you'll get a 404 error. See [Troubleshooting 404 Error](#-404-not-found-error-custom-domain) for details.
+> **⚠️ CRITICAL for Custom Domains**: 
+> 1. **Port Issue**: Drone uses port **8443** for HTTPS (not 443). Access via `https://your-domain.com:8443/` or change port mapping to use standard ports.
+> 2. **Router Rule**: You **MUST** set `DRONE_ROUTER_RULE=Host(\`your-domain.com\`)` in `.env.drone`.
+> 
+> See [Troubleshooting 404 Error](#-404-not-found-error-custom-domain) for complete solutions.
 
 ## Investigation Findings
 
@@ -173,9 +177,25 @@ http://localhost:8080
 ```
 
 ### Production (HTTPS with custom domain)
+
+**⚠️ Important**: Drone uses non-standard ports by default to avoid conflicts with other services.
+
+**Option 1: Access with port number (Default Configuration)**
+```
+https://drone.yourdomain.com:8443
+```
+
+**Option 2: Standard ports (Requires port mapping change)**
 ```
 https://drone.yourdomain.com
 ```
+To use standard ports, modify `docker-compose.drone.yml`:
+```yaml
+ports:
+  - "80:80"    # Instead of "8080:80"
+  - "443:443"  # Instead of "8443:443"
+```
+⚠️ Only use this if ports 80/443 are available (not used by other services).
 
 ### Production (HTTPS with IP)
 ```
@@ -315,7 +335,36 @@ Drone CI is **completely independent** from NoteHub. There is no direct integrat
 
 **Problem**: Accessing `https://drone-ci-notehub.duckdns.org/` returns 404 even though all containers are running.
 
-**Cause**: Missing `DRONE_ROUTER_RULE` configuration for custom domain.
+**Common Causes**:
+
+#### 1. Port Mismatch (Most Common)
+
+By default, Drone CI uses **port 8443 for HTTPS**, not the standard port 443. When you access `https://your-domain.com/`, browsers connect to port 443 by default.
+
+**Solutions** (choose one):
+
+**Option A: Access with correct port (Quick Test)**
+```bash
+# Access Drone with port 8443
+https://drone-ci-notehub.duckdns.org:8443/
+```
+
+**Option B: Use standard ports (Production Recommended)**
+
+Modify `docker-compose.drone.yml` to use standard ports:
+```yaml
+drone-traefik:
+  ports:
+    - "80:80"    # Change from "8080:80"
+    - "443:443"  # Change from "8443:443"
+```
+
+⚠️ **Warning**: This requires that ports 80 and 443 are not already in use by other services (like NoteHub). If NoteHub is running on the same server using ports 80/443, you must either:
+- Run Drone on a different server
+- Use a different port (keep 8080/8443) and access with the port number
+- Set up an external reverse proxy (nginx/Caddy) to route based on domain
+
+#### 2. Missing DRONE_ROUTER_RULE Configuration
 
 **Solution**: Set the `DRONE_ROUTER_RULE` environment variable in `.env.drone`:
 
@@ -343,11 +392,18 @@ docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
 
 **Verification**:
 ```bash
-# Check Traefik is using the correct rule
+# Check which port Traefik is listening on
+docker ps | grep drone-traefik
+# Look for: 0.0.0.0:8080->80/tcp, 0.0.0.0:8443->443/tcp
+
+# Check Traefik is using the correct routing rule
 docker logs drone-traefik 2>&1 | grep -i "drone-ci-notehub.duckdns.org"
 
-# Test access
-curl -I https://drone-ci-notehub.duckdns.org
+# Test access with correct port
+curl -I https://drone-ci-notehub.duckdns.org:8443/
+
+# Check if port 443 is available (if you want to switch to standard ports)
+sudo netstat -tulpn | grep :443
 ```
 
 ### UI Not Loading
