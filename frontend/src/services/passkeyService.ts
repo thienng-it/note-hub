@@ -31,6 +31,20 @@ interface Credential {
   last_used_at: string | null;
 }
 
+interface PasskeyTokens {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    has_2fa: boolean;
+    auth_method: string;
+  };
+}
+
 class PasskeyService {
   /**
    * Check if passkey authentication is available.
@@ -98,7 +112,7 @@ class PasskeyService {
    */
   async authenticate(
     username?: string,
-  ): Promise<{ success: boolean; tokens?: Record<string, unknown>; error?: string }> {
+  ): Promise<{ success: boolean; tokens?: PasskeyTokens; error?: string }> {
     try {
       // Get authentication options from server
       const { options, challengeKey } = await apiClient.post<AuthenticationOptions>(
@@ -115,7 +129,7 @@ class PasskeyService {
         challengeKey,
       });
 
-      return { success: true, tokens: result as Record<string, unknown> };
+      return { success: true, tokens: result as PasskeyTokens };
     } catch (error: unknown) {
       console.error('Passkey authentication error:', error);
       const err = error as { error?: string; message?: string };

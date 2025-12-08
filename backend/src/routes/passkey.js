@@ -9,7 +9,8 @@ const AuthService = require('../services/authService');
 const { jwtRequired } = require('../middleware/auth');
 const responseHandler = require('../utils/responseHandler');
 
-// In-memory challenge storage (use Redis in production for multi-instance deployments)
+// TODO: Move to Redis in production for multi-instance deployments
+// In-memory challenge storage (suitable for single-instance development only)
 const challengeStore = new Map();
 
 /**

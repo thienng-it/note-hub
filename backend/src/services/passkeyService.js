@@ -110,9 +110,10 @@ class PasskeyService {
 
     // If username provided, get only their credentials
     if (username) {
+      const trimmedUsername = username.trim();
       const user = await db.queryOne(
         `SELECT id FROM users WHERE LOWER(TRIM(username)) = LOWER(?) OR LOWER(TRIM(email)) = LOWER(?)`,
-        [username.trim(), username.trim()]
+        [trimmedUsername, trimmedUsername]
       );
 
       if (user) {
