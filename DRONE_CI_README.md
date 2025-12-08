@@ -156,7 +156,7 @@ Deploy on any cloud provider:
 echo "DRONE_DOMAIN=drone.yourdomain.com" >> .env.drone
 echo "DRONE_ACME_EMAIL=admin@yourdomain.com" >> .env.drone
 echo "DRONE_SERVER_PROTO=https" >> .env.drone
-echo "DRONE_ROUTER_RULE=Host(\`drone.yourdomain.com\`)" >> .env.drone
+echo 'DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)' >> .env.drone
 sed -i 's/DRONE_SERVER_HOST=.*/DRONE_SERVER_HOST=drone.yourdomain.com/' .env.drone
 
 # 2. Deploy/restart Drone CI
