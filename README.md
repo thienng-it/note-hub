@@ -457,6 +457,7 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 | [Drone CI Setup](docs/guides/DRONE_CI_SETUP.md)               | Detailed Drone CI setup guide |
 | [Environment Configuration](docs/guides/ENVIRONMENT_CONFIGURATION.md) | .env setup and management |
 | [Logging Configuration](docs/guides/LOGGING_CONFIGURATION.md) | Structured logging setup       |
+| **[Graylog Setup](GRAYLOG_SETUP.md)** | **Centralized log aggregation and search** |
 | **[Database Replication](docs/guides/DATABASE_REPLICATION.md)** | **Read replicas for MySQL & SQLite** |
 | [Caching & Search Setup](docs/guides/CACHING_AND_SEARCH.md)   | Redis & Elasticsearch setup    |
 | [Google OAuth Setup](docs/guides/GOOGLE_SSO_SETUP.md)         | Configure Google Single Sign-On|

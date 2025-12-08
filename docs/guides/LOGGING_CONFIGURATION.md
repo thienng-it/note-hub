@@ -248,10 +248,45 @@ Use the console to view logs in real-time during development.
 1. **Docker logs**: `docker compose logs`
 2. **File logs**: Analyze `/var/log/notehub/app.log`
 3. **Log aggregation**: Send JSON logs to services like:
+   - **Graylog** (recommended - see [Graylog Setup Guide](../../GRAYLOG_SETUP.md))
    - ELK Stack (Elasticsearch, Logstash, Kibana)
    - Splunk
    - Datadog
    - CloudWatch
+
+#### Graylog Integration (Recommended)
+
+NoteHub includes built-in support for Graylog, a powerful open-source log aggregation platform.
+
+**Quick Setup:**
+
+1. Deploy Graylog stack (see [GRAYLOG_SETUP.md](../../GRAYLOG_SETUP.md)):
+   ```bash
+   docker compose --env-file .env.graylog -f docker-compose.graylog.yml up -d
+   ```
+
+2. Enable Graylog in NoteHub's `.env`:
+   ```bash
+   GRAYLOG_ENABLED=true
+   GRAYLOG_HOST=localhost
+   GRAYLOG_PORT=12201
+   GRAYLOG_PROTOCOL=udp
+   GRAYLOG_FACILITY=notehub-backend
+   ```
+
+3. Restart NoteHub backend:
+   ```bash
+   docker compose restart backend
+   ```
+
+**Benefits:**
+- Real-time log streaming and search
+- Powerful filtering and aggregation
+- Custom dashboards and alerts
+- Runs on the same VPS (port 9000)
+- No external dependencies or costs
+
+For complete setup instructions, see [Graylog Setup Guide](../../GRAYLOG_SETUP.md).
 
 ### Example: Viewing errors only
 ```bash
