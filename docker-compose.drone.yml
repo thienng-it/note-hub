@@ -197,6 +197,7 @@ services:
       - .env.drone
     environment:
       - POSTGRES_USER=${DRONE_POSTGRES_USER:-drone}
+      - POSTGRES_PASSWORD=${DRONE_POSTGRES_PASSWORD}
       - POSTGRES_DB=${DRONE_POSTGRES_DB:-drone}
     volumes:
       - drone-postgres-data:/var/lib/postgresql/data
