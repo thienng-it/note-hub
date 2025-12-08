@@ -175,7 +175,8 @@ services:
       - .env.drone
     environment:
       # Runner Configuration
-      - DRONE_RPC_PROTO=${DRONE_SERVER_PROTO:-http}
+      # Internal communication always uses HTTP, regardless of external DRONE_SERVER_PROTO
+      - DRONE_RPC_PROTO=http
       - DRONE_RPC_HOST=drone-server
       
       # Runner Capacity

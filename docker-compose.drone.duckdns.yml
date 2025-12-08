@@ -138,7 +138,8 @@ services:
     env_file:
       - .env.drone
     environment:
-      - DRONE_RPC_PROTO=${DRONE_SERVER_PROTO:-http}
+      # Internal communication always uses HTTP, regardless of external DRONE_SERVER_PROTO
+      - DRONE_RPC_PROTO=http
       - DRONE_RPC_HOST=drone-server
       - DRONE_RUNNER_CAPACITY=${DRONE_RUNNER_CAPACITY:-2}
       - DRONE_RUNNER_NAME=${DRONE_RUNNER_NAME:-docker-runner}
