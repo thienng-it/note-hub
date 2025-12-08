@@ -73,7 +73,7 @@ services:
   # OpenSearch - Log Storage and Search Engine
   # ==========================================================================
   graylog-opensearch:
-    image: opensearchproject/opensearch:2.11.0
+    image: opensearchproject/opensearch:2.11.1
     container_name: graylog-opensearch
     restart: unless-stopped
     environment:

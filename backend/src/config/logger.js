@@ -7,6 +7,7 @@
  */
 const winston = require('winston');
 const WinstonGraylog2 = require('winston-graylog2');
+const os = require('node:os');
 
 // Get log configuration from environment
 const LOG_LEVEL =
@@ -95,7 +96,7 @@ if (process.env.GRAYLOG_ENABLED === 'true') {
       handleExceptions: true,
       graylog: {
         servers: [{ host: graylogHost, port: graylogPort }],
-        hostname: process.env.HOSTNAME || require('node:os').hostname(),
+        hostname: process.env.HOSTNAME || os.hostname(),
         facility: graylogFacility,
         bufferSize: 1400,
       },
