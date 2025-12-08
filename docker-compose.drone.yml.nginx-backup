@@ -1,5 +1,5 @@
 # =============================================================================
-# Docker Compose for Drone CI - Continuous Integration Platform with Traefik
+# Docker Compose for Drone CI - Continuous Integration Platform
 # =============================================================================
 #
 # IMPORTANT: Drone CI is COMPLETELY INDEPENDENT
@@ -11,8 +11,8 @@
 # - Can be started, stopped, moved, or removed independently
 #
 # When deployed on the same server as NoteHub:
-#   - NoteHub uses port 80 (Traefik + frontend)
-#   - Drone uses port 8080 (Traefik proxy) - NO CONFLICTS
+#   - NoteHub uses port 80 (nginx + frontend)
+#   - Drone uses port 8080 (nginx proxy) - NO CONFLICTS
 #   - Separate networks: notehub-network vs drone-network
 #   - Separate configurations: .env vs .env.drone
 #   - Separate data volumes: completely isolated
@@ -36,7 +36,7 @@
 #   Note: This is SEPARATE from any other GitHub OAuth apps you may have
 #
 # Services:
-#   - drone-traefik: Traefik reverse proxy (port 8080)
+#   - drone-nginx: nginx reverse proxy (port 8080)
 #   - drone-server: Drone CI server with web UI (internal)
 #   - drone-runner: Docker-based pipeline runner (internal)
 #   - drone-db: PostgreSQL database for Drone (internal port 5432)
@@ -46,45 +46,33 @@
 #   - NoteHub UI:  http://your-server (port 80)
 #
 # Architecture:
-#   Both Drone and NoteHub use Traefik as reverse proxy for consistency.
-#   - NoteHub: Traefik (port 80) → frontend + backend
-#   - Drone CI: Traefik (port 8080) → drone-server
+#   Both Drone and NoteHub use nginx as reverse proxy for consistency.
+#   - NoteHub: nginx (port 80) → frontend + backend
+#   - Drone CI: nginx (port 8080) → drone-server
 #   This provides consistent architecture, SSL termination, caching, and compression.
 #
 # =============================================================================
 
 services:
   # ==========================================================================
-  # Traefik - Reverse Proxy for Drone CI
+  # nginx - Reverse Proxy for Drone CI
   # ==========================================================================
-  drone-traefik:
-    image: traefik:v2.11
-    container_name: drone-traefik
+  drone-nginx:
+    image: nginx:alpine
+    container_name: drone-nginx
     restart: unless-stopped
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=drone-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--ping=true"
     ports:
       # External port 8080 to avoid conflict with NoteHub (port 80)
       - "8080:80"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/traefik/drone-dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./docker/nginx-drone.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       drone-server:
         condition: service_healthy
     networks:
       - drone-network
     healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -122,7 +110,7 @@ services:
       # Optional: Logs
       - DRONE_LOGS_DEBUG=${DRONE_LOGS_DEBUG:-false}
       - DRONE_LOGS_TRACE=${DRONE_LOGS_TRACE:-false}
-    # No exposed ports - accessed via Traefik reverse proxy
+    # No exposed ports - accessed via nginx reverse proxy
     volumes:
       - drone-data:/data
     depends_on:
@@ -136,17 +124,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-    labels:
-      # Enable Traefik for this service
-      - "traefik.enable=true"
-      
-      # Route all traffic to drone-server
-      - "traefik.http.routers.drone-server.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.drone-server.entrypoints=web"
-      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
-      
-      # Apply middlewares for compression, security, and body size
-      - "traefik.http.routers.drone-server.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
 
   # ==========================================================================
   # Drone Runner - Docker-based Pipeline Executor

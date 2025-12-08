@@ -1,0 +1,28 @@
+# =============================================================================
+# Traefik Dynamic Configuration for Drone CI
+# =============================================================================
+# This configuration defines middlewares specific to Drone CI
+# =============================================================================
+
+http:
+  middlewares:
+    # Compression middleware
+    compression-drone:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
+        minResponseBodyBytes: 1024
+
+    # Security headers middleware for Drone
+    security-headers-drone:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        customFrameOptionsValue: "SAMEORIGIN"
+
+    # Body size limit for Drone artifacts
+    body-size-drone:
+      buffering:
+        maxRequestBodyBytes: 104857600  # 100MB for build artifacts

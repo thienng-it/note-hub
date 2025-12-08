@@ -1,5 +1,5 @@
 # =============================================================================
-# Docker Compose for NoteHub - Full Stack Deployment with Traefik
+# Docker Compose for NoteHub - Full Stack Deployment
 # =============================================================================
 #
 # Deploy NoteHub on any VPS (Hetzner, DigitalOcean, etc.)
@@ -28,8 +28,7 @@
 #   docker compose exec backend-mysql node scripts/seed_db.js
 #
 # Services:
-#   - traefik: Reverse proxy and load balancer (port 80)
-#   - frontend: React SPA served by static file server (internal)
+#   - frontend: React SPA served by nginx (port 80)
 #   - backend: Node.js/Express API (internal port 5000)
 #   - mysql: MySQL 8.0 database (optional, internal port 3306)
 #
@@ -37,84 +36,38 @@
 #   - NODE_ENV=development: Local SQLite, seeding allowed
 #   - NODE_ENV=production: Cloud DB URL, seeding blocked
 #
-# Migration from nginx to Traefik:
-#   - Traefik handles all routing, SSL termination, and compression
-#   - Services use Docker labels for automatic configuration
-#   - Dynamic configuration updates without container restarts
-#   - Better support for microservices and load balancing
-#
 # =============================================================================
 
 services:
   # ==========================================================================
-  # Traefik - Reverse Proxy and Load Balancer
-  # ==========================================================================
-  traefik:
-    image: traefik:v2.11
-    container_name: notehub-traefik
-    restart: unless-stopped
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=notehub-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--ping=true"
-    ports:
-      - "80:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
-    networks:
-      - notehub-network
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-  # ==========================================================================
-  # Frontend - React SPA (Development)
+  # Frontend - React SPA with nginx (Development)
   # ==========================================================================
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend.traefik
+      dockerfile: Dockerfile.frontend
       args:
         - VITE_API_URL=
     container_name: notehub-frontend
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=5000
+    ports:
+      - "80:80"
     depends_on:
       backend:
-        condition: service_healthy
-      traefik:
         condition: service_healthy
     networks:
       - notehub-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 5s
-    labels:
-      # Enable Traefik for this service
-      - "traefik.enable=true"
-      
-      # Frontend routing - serve static files
-      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.routers.frontend.priority=1"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
-      
-      # Apply security headers middleware
-      - "traefik.http.routers.frontend.middlewares=security-headers@file,compression@file"
 
   # ==========================================================================
   # Backend - Node.js/Express API (Development - SQLite)
@@ -157,69 +110,14 @@ services:
       start_period: 20s
     networks:
       - notehub-network
-    labels:
-      # Enable Traefik for this service
-      - "traefik.enable=true"
-      
-      # API routing - proxy /api/* to backend
-      - "traefik.http.routers.backend-api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-api.entrypoints=web"
-      - "traefik.http.routers.backend-api.priority=10"
-      - "traefik.http.services.backend-api.loadbalancer.server.port=5000"
-      
-      # Uploads routing - proxy /uploads/* to backend
-      - "traefik.http.routers.backend-uploads.rule=PathPrefix(`/uploads`)"
-      - "traefik.http.routers.backend-uploads.entrypoints=web"
-      - "traefik.http.routers.backend-uploads.priority=10"
-      - "traefik.http.services.backend-uploads.loadbalancer.server.port=5000"
-      
-      # Health check routing
-      - "traefik.http.routers.backend-health.rule=Path(`/health`)"
-      - "traefik.http.routers.backend-health.entrypoints=web"
-      - "traefik.http.routers.backend-health.priority=10"
-      - "traefik.http.services.backend-health.loadbalancer.server.port=5000"
 
   # ==========================================================================
-  # Traefik - Reverse Proxy (Production)
-  # ==========================================================================
-  traefik-prod:
-    image: traefik:v2.11
-    container_name: notehub-traefik-prod
-    restart: unless-stopped
-    profiles:
-      - production
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=notehub-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--ping=true"
-    ports:
-      - "80:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
-    networks:
-      - notehub-network
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-
-  # ==========================================================================
-  # Frontend - React SPA (Production)
+  # Frontend - React SPA with nginx (Production)
   # ==========================================================================
   frontend-prod:
     build:
       context: .
-      dockerfile: Dockerfile.frontend.traefik
+      dockerfile: Dockerfile.frontend
       args:
         - VITE_API_URL=${VITE_API_URL:-}
     container_name: notehub-frontend-prod
@@ -228,26 +126,22 @@ services:
       - production
     env_file:
       - .env
+    environment:
+      - BACKEND_HOST=backend-prod
+      - BACKEND_PORT=5000
+    ports:
+      - "80:80"
     depends_on:
       backend-prod:
-        condition: service_healthy
-      traefik-prod:
         condition: service_healthy
     networks:
       - notehub-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 5s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend-prod.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend-prod.entrypoints=web"
-      - "traefik.http.routers.frontend-prod.priority=1"
-      - "traefik.http.services.frontend-prod.loadbalancer.server.port=80"
-      - "traefik.http.routers.frontend-prod.middlewares=security-headers@file,compression@file"
 
   # ==========================================================================
   # Backend - Node.js/Express API (Production - Cloud DB)
@@ -299,54 +193,6 @@ services:
       start_period: 30s
     networks:
       - notehub-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend-prod-api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-prod-api.entrypoints=web"
-      - "traefik.http.routers.backend-prod-api.priority=10"
-      - "traefik.http.services.backend-prod-api.loadbalancer.server.port=5000"
-      - "traefik.http.routers.backend-prod-uploads.rule=PathPrefix(`/uploads`)"
-      - "traefik.http.routers.backend-prod-uploads.entrypoints=web"
-      - "traefik.http.routers.backend-prod-uploads.priority=10"
-      - "traefik.http.services.backend-prod-uploads.loadbalancer.server.port=5000"
-      - "traefik.http.routers.backend-prod-health.rule=Path(`/health`)"
-      - "traefik.http.routers.backend-prod-health.entrypoints=web"
-      - "traefik.http.routers.backend-prod-health.priority=10"
-      - "traefik.http.services.backend-prod-health.loadbalancer.server.port=5000"
-
-  # ==========================================================================
-  # Traefik - Reverse Proxy (MySQL Profile)
-  # ==========================================================================
-  traefik-mysql:
-    image: traefik:v2.11
-    container_name: notehub-traefik-mysql
-    restart: unless-stopped
-    profiles:
-      - mysql
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=notehub-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--ping=true"
-    ports:
-      - "80:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
-    networks:
-      - notehub-network
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
 
   # ==========================================================================
   # Backend with MySQL - Node.js/Express API (use --profile mysql)
@@ -398,20 +244,6 @@ services:
       start_period: 30s
     networks:
       - notehub-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend-mysql-api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-mysql-api.entrypoints=web"
-      - "traefik.http.routers.backend-mysql-api.priority=10"
-      - "traefik.http.services.backend-mysql-api.loadbalancer.server.port=5000"
-      - "traefik.http.routers.backend-mysql-uploads.rule=PathPrefix(`/uploads`)"
-      - "traefik.http.routers.backend-mysql-uploads.entrypoints=web"
-      - "traefik.http.routers.backend-mysql-uploads.priority=10"
-      - "traefik.http.services.backend-mysql-uploads.loadbalancer.server.port=5000"
-      - "traefik.http.routers.backend-mysql-health.rule=Path(`/health`)"
-      - "traefik.http.routers.backend-mysql-health.entrypoints=web"
-      - "traefik.http.routers.backend-mysql-health.priority=10"
-      - "traefik.http.services.backend-mysql-health.loadbalancer.server.port=5000"
 
   # ==========================================================================
   # MySQL Database (use --profile mysql)
@@ -446,7 +278,7 @@ services:
   frontend-mysql:
     build:
       context: .
-      dockerfile: Dockerfile.frontend.traefik
+      dockerfile: Dockerfile.frontend
       args:
         - VITE_API_URL=
     container_name: notehub-frontend-mysql
@@ -455,26 +287,22 @@ services:
       - mysql
     env_file:
       - .env
+    environment:
+      - BACKEND_HOST=backend-mysql
+      - BACKEND_PORT=5000
+    ports:
+      - "80:80"
     depends_on:
       backend-mysql:
-        condition: service_healthy
-      traefik-mysql:
         condition: service_healthy
     networks:
       - notehub-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 5s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend-mysql.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend-mysql.entrypoints=web"
-      - "traefik.http.routers.frontend-mysql.priority=1"
-      - "traefik.http.services.frontend-mysql.loadbalancer.server.port=80"
-      - "traefik.http.routers.frontend-mysql.middlewares=security-headers@file,compression@file"
 
 networks:
   notehub-network:

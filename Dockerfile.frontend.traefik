@@ -1,0 +1,55 @@
+# =============================================================================
+# NoteHub Frontend Dockerfile (Traefik Version)
+# Build React app and serve with a lightweight static file server
+# =============================================================================
+# Instead of using nginx, this uses a simple Node.js static file server
+# with Traefik handling all routing, compression, and SSL termination.
+# This simplifies the container and follows the Traefik best practices.
+# =============================================================================
+
+# Stage 1: Build the React app
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY frontend/package*.json ./
+
+# Install dependencies
+RUN npm i
+
+# Copy source code
+COPY frontend/ ./
+
+# Build the app
+ARG VITE_API_URL=""
+ENV VITE_API_URL=$VITE_API_URL
+RUN npm run build
+
+# Stage 2: Serve with lightweight static server
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install serve package for static file serving
+RUN npm install -g serve
+
+# Copy built app from builder stage
+COPY --from=builder /app/dist /app/dist
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
+# Expose port 80
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+# Start the static file server
+# --single: Serve index.html for all routes (SPA mode)
+# --listen 80: Listen on port 80
+CMD ["serve", "-s", "dist", "--listen", "80"]

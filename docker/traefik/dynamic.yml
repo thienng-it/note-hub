@@ -1,0 +1,38 @@
+# =============================================================================
+# Traefik Dynamic Configuration
+# =============================================================================
+# This configuration defines middlewares and other dynamic settings
+# that are not service-specific.
+# =============================================================================
+
+http:
+  middlewares:
+    # Compression middleware
+    compression:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
+        minResponseBodyBytes: 1024
+
+    # Security headers middleware
+    security-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        customFrameOptionsValue: "SAMEORIGIN"
+
+    # CORS headers for API (if needed)
+    cors-headers:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        accessControlAllowOriginList:
+          - "*"
+        accessControlMaxAge: 100
+        addVaryHeader: true
