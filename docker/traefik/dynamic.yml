@@ -14,7 +14,7 @@ http:
           - text/event-stream
         minResponseBodyBytes: 1024
 
-    # Security headers middleware
+    # Security headers middleware (with HTTPS enhancements)
     security-headers:
       headers:
         frameDeny: true
@@ -22,6 +22,19 @@ http:
         browserXssFilter: true
         referrerPolicy: "strict-origin-when-cross-origin"
         customFrameOptionsValue: "SAMEORIGIN"
+        # Force HTTPS with HSTS (HTTP Strict Transport Security)
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        # Additional security headers for HTTPS
+        forceSTSHeader: true
+        contentSecurityPolicy: "upgrade-insecure-requests"
+
+    # HTTP to HTTPS redirect middleware
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
 
     # CORS headers for API (if needed)
     cors-headers:

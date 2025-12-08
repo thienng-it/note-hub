@@ -55,7 +55,7 @@
 
 services:
   # ==========================================================================
-  # Traefik - Reverse Proxy for Drone CI
+  # Traefik - Reverse Proxy for Drone CI with SSL/HTTPS
   # ==========================================================================
   drone-traefik:
     image: traefik:v2.11
@@ -69,15 +69,26 @@ services:
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--ping=true"
     ports:
-      # External port 8080 to avoid conflict with NoteHub (port 80)
+      # External port 8080 for HTTP and 8443 for HTTPS to avoid conflict with NoteHub (ports 80/443)
       - "8080:80"
+      - "8443:443"
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/drone-dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./letsencrypt-drone:/letsencrypt
     depends_on:
       drone-server:
         condition: service_healthy
@@ -140,9 +151,11 @@ services:
       # Enable Traefik for this service
       - "traefik.enable=true"
       
-      # Route all traffic to drone-server
+      # Route all traffic to drone-server (HTTPS)
       - "traefik.http.routers.drone-server.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.drone-server.entrypoints=web"
+      - "traefik.http.routers.drone-server.entrypoints=websecure"
+      - "traefik.http.routers.drone-server.tls=true"
+      - "traefik.http.routers.drone-server.tls.certresolver=letsencrypt"
       - "traefik.http.services.drone-server.loadbalancer.server.port=80"
       
       # Apply middlewares for compression, security, and body size

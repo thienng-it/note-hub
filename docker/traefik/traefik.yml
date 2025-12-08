@@ -21,10 +21,22 @@ global:
 entryPoints:
   web:
     address: ":80"
+    # Redirect HTTP to HTTPS
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  
+  websecure:
+    address: ":443"
     # Enable compression for all entry points
     http:
       middlewares:
         - compression@file
+      tls:
+        certResolver: letsencrypt
 
 # API and dashboard
 api:
@@ -53,6 +65,20 @@ accessLog:
     defaultMode: keep
     headers:
       defaultMode: keep
+
+# Certificate resolver for Let's Encrypt
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      # Email address for Let's Encrypt notifications
+      email: ${ACME_EMAIL:-admin@example.com}
+      # Storage location for certificates
+      storage: /letsencrypt/acme.json
+      # Use TLS challenge for certificate validation
+      tlsChallenge: {}
+      # Optional: Use HTTP challenge (useful for development/testing)
+      # httpChallenge:
+      #   entryPoint: web
 
 # Health check endpoint
 ping:
