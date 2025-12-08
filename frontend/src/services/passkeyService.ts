@@ -99,7 +99,7 @@ class PasskeyService {
       return { success: true };
     } catch (error: unknown) {
       console.error('Passkey registration error:', error);
-      
+
       // Handle specific WebAuthn errors
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
@@ -111,7 +111,8 @@ class PasskeyService {
         if (error.name === 'NotSupportedError') {
           return {
             success: false,
-            error: 'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
+            error:
+              'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
           };
         }
         if (error.name === 'InvalidStateError') {
@@ -161,7 +162,7 @@ class PasskeyService {
       return { success: true, tokens: result as PasskeyTokens };
     } catch (error: unknown) {
       console.error('Passkey authentication error:', error);
-      
+
       // Handle specific WebAuthn errors
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
@@ -173,13 +174,15 @@ class PasskeyService {
         if (error.name === 'NotSupportedError') {
           return {
             success: false,
-            error: 'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
+            error:
+              'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
           };
         }
         if (error.name === 'SecurityError') {
           return {
             success: false,
-            error: 'Security error occurred. Please ensure you are using a secure connection (HTTPS).',
+            error:
+              'Security error occurred. Please ensure you are using a secure connection (HTTPS).',
           };
         }
         if (error.name === 'AbortError') {
@@ -191,7 +194,8 @@ class PasskeyService {
         if (error.name === 'InvalidStateError') {
           return {
             success: false,
-            error: 'No matching passkey found. Please check your credentials or sign in with password.',
+            error:
+              'No matching passkey found. Please check your credentials or sign in with password.',
           };
         }
       }
