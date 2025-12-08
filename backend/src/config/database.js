@@ -262,6 +262,24 @@ class Database {
       CREATE INDEX IF NOT EXISTS ix_refresh_tokens_user ON refresh_tokens(user_id);
       CREATE INDEX IF NOT EXISTS ix_refresh_tokens_hash ON refresh_tokens(token_hash);
       CREATE INDEX IF NOT EXISTS ix_refresh_tokens_expires ON refresh_tokens(expires_at);
+
+      -- WebAuthn credentials table for passkey authentication
+      CREATE TABLE IF NOT EXISTS webauthn_credentials (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        credential_id TEXT UNIQUE NOT NULL,
+        public_key TEXT NOT NULL,
+        counter INTEGER NOT NULL DEFAULT 0,
+        transports TEXT,
+        device_name TEXT,
+        aaguid TEXT,
+        last_used_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS ix_webauthn_user ON webauthn_credentials(user_id);
+      CREATE INDEX IF NOT EXISTS ix_webauthn_credential ON webauthn_credentials(credential_id);
     `;
 
     // Execute each statement separately for SQLite
@@ -450,6 +468,24 @@ class Database {
         INDEX ix_refresh_tokens_expires (expires_at),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
+
+      -- WebAuthn credentials table for passkey authentication
+      CREATE TABLE IF NOT EXISTS webauthn_credentials (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        credential_id VARCHAR(512) UNIQUE NOT NULL,
+        public_key TEXT NOT NULL,
+        counter INT NOT NULL DEFAULT 0,
+        transports TEXT,
+        device_name VARCHAR(255),
+        aaguid VARCHAR(36),
+        last_used_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX ix_webauthn_user (user_id),
+        INDEX ix_webauthn_credential (credential_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
     `;
 
     // Execute each statement separately for MySQL
@@ -537,6 +573,7 @@ class Database {
       fixTimestampColumns('password_reset_tokens', 'password_reset_tokens');
       fixTimestampColumns('invitations', 'invitations');
       fixTimestampColumns('refresh_tokens', 'refresh_tokens');
+      fixTimestampColumns('webauthn_credentials', 'webauthn_credentials');
 
       // Add images column to notes and tasks tables if missing
       addImagesColumn('notes', 'notes');

@@ -40,6 +40,9 @@ export const setStoredAuth = (accessToken: string, refreshToken: string, user: U
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 
+// Alias for compatibility
+export const storeAuthData = setStoredAuth;
+
 export const clearStoredAuth = (): void => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);

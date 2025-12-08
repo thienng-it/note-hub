@@ -29,6 +29,7 @@ const elasticsearch = require('./config/elasticsearch');
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const passkeyRoutes = require('./routes/passkey');
 const notesRoutes = require('./routes/notes');
 const tasksRoutes = require('./routes/tasks');
 const profileRoutes = require('./routes/profile');
@@ -103,6 +104,7 @@ app.use(legacyResponseAdapter);
 
 // API v1 routes (standardized response format)
 app.use('/api/v1/auth', markAsV1, authRoutes);
+app.use('/api/v1/auth/passkey', markAsV1, passkeyRoutes);
 app.use('/api/v1/notes', markAsV1, notesRoutes);
 app.use('/api/v1/tasks', markAsV1, tasksRoutes);
 app.use('/api/v1/profile', markAsV1, profileRoutes);
