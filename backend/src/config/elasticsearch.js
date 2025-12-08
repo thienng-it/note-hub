@@ -19,7 +19,7 @@ class ElasticsearchService {
   async connect() {
     // Check if Elasticsearch is configured
     const esNode = process.env.ELASTICSEARCH_NODE;
-    
+
     if (!esNode) {
       console.log('⚠️  Elasticsearch not configured - full-text search disabled');
       this.enabled = false;
@@ -31,21 +31,21 @@ class ElasticsearchService {
       const clientConfig = {
         node: esNode,
         requestTimeout: 30000,
-        maxRetries: 3
+        maxRetries: 3,
       };
 
       // Add authentication if provided
       if (process.env.ELASTICSEARCH_USERNAME && process.env.ELASTICSEARCH_PASSWORD) {
         clientConfig.auth = {
           username: process.env.ELASTICSEARCH_USERNAME,
-          password: process.env.ELASTICSEARCH_PASSWORD
+          password: process.env.ELASTICSEARCH_PASSWORD,
         };
       }
 
       // Add API key if provided (takes precedence over basic auth)
       if (process.env.ELASTICSEARCH_API_KEY) {
         clientConfig.auth = {
-          apiKey: process.env.ELASTICSEARCH_API_KEY
+          apiKey: process.env.ELASTICSEARCH_API_KEY,
         };
       }
 
@@ -54,12 +54,11 @@ class ElasticsearchService {
       // Test connection
       await this.client.ping();
       this.enabled = true;
-      
+
       console.log(`🔍 Connected to Elasticsearch: ${esNode}`);
 
       // Initialize index
       await this.initializeIndex();
-
     } catch (error) {
       console.error('⚠️  Elasticsearch connection failed:', error.message);
       console.log('⚠️  Continuing without full-text search - basic search still available');
@@ -77,7 +76,7 @@ class ElasticsearchService {
     try {
       // Check if index exists
       const exists = await this.client.indices.exists({
-        index: this.indexName
+        index: this.indexName,
       });
 
       if (!exists) {
@@ -88,17 +87,18 @@ class ElasticsearchService {
             settings: {
               number_of_shards: 1,
               // Set replicas to 0 for single-node development, 1+ for production
-              number_of_replicas: process.env.NODE_ENV === 'production' 
-                ? ELASTICSEARCH.REPLICAS_PROD 
-                : ELASTICSEARCH.REPLICAS_DEV,
+              number_of_replicas:
+                process.env.NODE_ENV === 'production'
+                  ? ELASTICSEARCH.REPLICAS_PROD
+                  : ELASTICSEARCH.REPLICAS_DEV,
               analysis: {
                 analyzer: {
                   note_analyzer: {
                     type: 'standard',
-                    stopwords: '_english_'
-                  }
-                }
-              }
+                    stopwords: '_english_',
+                  },
+                },
+              },
             },
             mappings: {
               properties: {
@@ -107,12 +107,12 @@ class ElasticsearchService {
                   type: 'text',
                   analyzer: 'note_analyzer',
                   fields: {
-                    keyword: { type: 'keyword' }
-                  }
+                    keyword: { type: 'keyword' },
+                  },
                 },
                 body: {
                   type: 'text',
-                  analyzer: 'note_analyzer'
+                  analyzer: 'note_analyzer',
                 },
                 owner_id: { type: 'integer' },
                 tags: { type: 'keyword' },
@@ -120,12 +120,12 @@ class ElasticsearchService {
                 archived: { type: 'boolean' },
                 favorite: { type: 'boolean' },
                 created_at: { type: 'date' },
-                updated_at: { type: 'date' }
-              }
-            }
-          }
+                updated_at: { type: 'date' },
+              },
+            },
+          },
         });
-        
+
         console.log(`✅ Created Elasticsearch index: ${this.indexName}`);
       }
     } catch (error) {
@@ -153,11 +153,11 @@ class ElasticsearchService {
           archived: note.archived || false,
           favorite: note.favorite || false,
           created_at: note.created_at,
-          updated_at: note.updated_at
+          updated_at: note.updated_at,
         },
-        refresh: ELASTICSEARCH.REFRESH_STRATEGY
+        refresh: ELASTICSEARCH.REFRESH_STRATEGY,
       });
-      
+
       return true;
     } catch (error) {
       console.error(`Elasticsearch index error for note ${note.id}:`, error.message);
@@ -174,9 +174,9 @@ class ElasticsearchService {
     try {
       await this.client.delete({
         index: this.indexName,
-        id: noteId.toString()
+        id: noteId.toString(),
       });
-      
+
       return true;
     } catch (error) {
       // Ignore not found errors
@@ -194,33 +194,24 @@ class ElasticsearchService {
     if (!this.enabled || !this.client) return null;
 
     try {
-      const {
-        archived = false,
-        favorite = null,
-        tags = null,
-        limit = 20,
-        offset = 0
-      } = options;
+      const { archived = false, favorite = null, tags = null, limit = 20, offset = 0 } = options;
 
       // Build search query
-      const must = [
-        { term: { owner_id: userId } },
-        { term: { archived } }
-      ];
+      const must = [{ term: { owner_id: userId } }, { term: { archived } }];
 
       if (query && query.length >= SEARCH_MIN_LENGTH) {
         // Sanitize query to prevent Elasticsearch query injection
         // Escape special characters used in Elasticsearch query syntax
         const sanitizedQuery = query.replace(/[+\-=&|><!(){}[\]^"~*?:\\/]/g, '\\$&');
-        
+
         must.push({
           multi_match: {
             query: sanitizedQuery,
             fields: ['title^2', 'body'], // Title is 2x more important
             type: 'best_fields',
             operator: 'or',
-            fuzziness: 'AUTO'
-          }
+            fuzziness: 'AUTO',
+          },
         });
       }
 
@@ -236,27 +227,36 @@ class ElasticsearchService {
         index: this.indexName,
         body: {
           query: {
-            bool: { must }
+            bool: { must },
           },
           sort: [
             { pinned: { order: 'desc' } },
             { _score: { order: 'desc' } },
-            { updated_at: { order: 'desc' } }
+            { updated_at: { order: 'desc' } },
           ],
           from: offset,
           size: limit,
-          _source: ['id', 'title', 'owner_id', 'tags', 'pinned', 'archived', 'favorite', 'created_at', 'updated_at']
-        }
+          _source: [
+            'id',
+            'title',
+            'owner_id',
+            'tags',
+            'pinned',
+            'archived',
+            'favorite',
+            'created_at',
+            'updated_at',
+          ],
+        },
       });
 
       return {
         total: response.hits.total.value,
-        notes: response.hits.hits.map(hit => ({
+        notes: response.hits.hits.map((hit) => ({
           ...hit._source,
-          score: hit._score
-        }))
+          score: hit._score,
+        })),
       };
-
     } catch (error) {
       console.error('Elasticsearch search error:', error.message);
       return null;
@@ -270,7 +270,7 @@ class ElasticsearchService {
     if (!this.enabled || !this.client || notes.length === 0) return false;
 
     try {
-      const body = notes.flatMap(note => [
+      const body = notes.flatMap((note) => [
         { index: { _index: this.indexName, _id: note.id.toString() } },
         {
           id: note.id,
@@ -282,13 +282,13 @@ class ElasticsearchService {
           archived: note.archived || false,
           favorite: note.favorite || false,
           created_at: note.created_at,
-          updated_at: note.updated_at
-        }
+          updated_at: note.updated_at,
+        },
       ]);
 
       await this.client.bulk({
         body,
-        refresh: ELASTICSEARCH.BULK_REFRESH_STRATEGY
+        refresh: ELASTICSEARCH.BULK_REFRESH_STRATEGY,
       });
 
       return true;

@@ -8,66 +8,77 @@ const jwtService = require('../services/jwtService');
 const googleOAuthService = require('../services/googleOAuthService');
 const { jwtRequired } = require('../middleware/auth');
 const responseHandler = require('../utils/responseHandler');
-const { validateRequiredFields, sanitizeStrings, validateEmail, validateLength } = require('../middleware/validation');
+const {
+  validateRequiredFields,
+  sanitizeStrings,
+  validateEmail,
+  validateLength,
+} = require('../middleware/validation');
 const db = require('../config/database');
 const { authenticator } = require('otplib');
 const QRCode = require('qrcode');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 
 /**
  * POST /api/auth/login - User login
  */
-router.post('/login', 
-  sanitizeStrings(['username', 'password']),
-  async (req, res) => {
-    try {
-      const { username, password, totp_code } = req.body;
+router.post('/login', sanitizeStrings(['username', 'password']), async (req, res) => {
+  try {
+    const { username, password, totp_code } = req.body;
 
-      if (!username || !password) {
-        return responseHandler.validationError(res, {
-          missingFields: ['username', 'password'],
-          message: 'Username/email and password required'
-        });
+    if (!username || !password) {
+      return responseHandler.validationError(res, {
+        missingFields: ['username', 'password'],
+        message: 'Username/email and password required',
+      });
+    }
+
+    const user = await AuthService.authenticateUser(username, password);
+
+    if (!user) {
+      return responseHandler.unauthorized(res, 'Invalid credentials');
+    }
+
+    // Check 2FA if enabled
+    if (user.totp_secret && !totp_code) {
+      return responseHandler.error(res, '2FA code required', {
+        statusCode: 401,
+        errorCode: 'REQUIRES_2FA',
+        details: { requires_2fa: true },
+      });
+    }
+
+    if (user.totp_secret) {
+      const isValidTotp = authenticator.verify({ token: totp_code, secret: user.totp_secret });
+      if (!isValidTotp) {
+        return responseHandler.unauthorized(res, 'Invalid 2FA code');
       }
+    }
 
-      const user = await AuthService.authenticateUser(username, password);
+    // Generate tokens with rotation
+    const accessToken = jwtService.generateToken(user.id);
+    const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(user.id);
 
-      if (!user) {
-        return responseHandler.unauthorized(res, 'Invalid credentials');
-      }
+    // Store refresh token in database
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    const deviceInfo = req.headers['user-agent'] || null;
+    const ipAddress = req.ip || req.connection.remoteAddress || null;
 
-      // Check 2FA if enabled
-      if (user.totp_secret && !totp_code) {
-        return responseHandler.error(res, '2FA code required', {
-          statusCode: 401,
-          errorCode: 'REQUIRES_2FA',
-          details: { requires_2fa: true }
-        });
-      }
+    await jwtService.storeRefreshToken(
+      user.id,
+      tokenId,
+      expiresAt.toISOString(),
+      deviceInfo,
+      ipAddress,
+    );
 
-      if (user.totp_secret) {
-        const isValidTotp = authenticator.verify({ token: totp_code, secret: user.totp_secret });
-        if (!isValidTotp) {
-          return responseHandler.unauthorized(res, 'Invalid 2FA code');
-        }
-      }
+    // Update last login
+    await AuthService.updateLastLogin(user.id);
 
-      // Generate tokens with rotation
-      const accessToken = jwtService.generateToken(user.id);
-      const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(user.id);
-
-      // Store refresh token in database
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7);
-      const deviceInfo = req.headers['user-agent'] || null;
-      const ipAddress = req.ip || req.connection.remoteAddress || null;
-      
-      await jwtService.storeRefreshToken(user.id, tokenId, expiresAt.toISOString(), deviceInfo, ipAddress);
-
-      // Update last login
-      await AuthService.updateLastLogin(user.id);
-
-      return responseHandler.success(res, {
+    return responseHandler.success(
+      res,
+      {
         access_token: accessToken,
         refresh_token: refreshToken,
         token_type: 'Bearer',
@@ -76,23 +87,25 @@ router.post('/login',
           id: user.id,
           username: user.username,
           email: user.email,
-          has_2fa: !!user.totp_secret
-        }
-      }, { message: 'Login successful' });
-    } catch (error) {
-      console.error('Login error:', error);
-      return responseHandler.error(res, 'Internal server error', {
-        statusCode: 500,
-        errorCode: 'LOGIN_ERROR'
-      });
-    }
+          has_2fa: !!user.totp_secret,
+        },
+      },
+      { message: 'Login successful' },
+    );
+  } catch (error) {
+    console.error('Login error:', error);
+    return responseHandler.error(res, 'Internal server error', {
+      statusCode: 500,
+      errorCode: 'LOGIN_ERROR',
+    });
   }
-);
+});
 
 /**
  * POST /api/auth/register - User registration
  */
-router.post('/register', 
+router.post(
+  '/register',
   sanitizeStrings(['username', 'password', 'email']),
   validateRequiredFields(['username', 'password']),
   validateLength('username', { min: 3, max: 50 }),
@@ -105,72 +118,77 @@ router.post('/register',
 
       if (!result.success) {
         return responseHandler.validationError(res, {
-          message: result.error
+          message: result.error,
         });
       }
 
-      return responseHandler.created(res, {
-        user: result.user
-      }, 'Registration successful');
+      return responseHandler.created(
+        res,
+        {
+          user: result.user,
+        },
+        'Registration successful',
+      );
     } catch (error) {
       console.error('Registration error:', error);
       return responseHandler.error(res, 'Internal server error', {
         statusCode: 500,
-        errorCode: 'REGISTRATION_ERROR'
+        errorCode: 'REGISTRATION_ERROR',
       });
     }
-  }
+  },
 );
 
 /**
  * POST /api/auth/refresh - Refresh access token with rotation
  */
-router.post('/refresh', 
-  validateRequiredFields(['refresh_token']),
-  async (req, res) => {
-    const { refresh_token } = req.body;
-    const deviceInfo = req.headers['user-agent'] || null;
-    const ipAddress = req.ip || req.connection.remoteAddress || null;
+router.post('/refresh', validateRequiredFields(['refresh_token']), async (req, res) => {
+  const { refresh_token } = req.body;
+  const deviceInfo = req.headers['user-agent'] || null;
+  const ipAddress = req.ip || req.connection.remoteAddress || null;
 
-    const result = await jwtService.refreshAccessToken(refresh_token, deviceInfo, ipAddress);
+  const result = await jwtService.refreshAccessToken(refresh_token, deviceInfo, ipAddress);
 
-    if (!result.success) {
-      return responseHandler.unauthorized(res, result.error);
-    }
-
-    const response = {
-      access_token: result.accessToken,
-      token_type: 'Bearer',
-      expires_in: 86400 // 24 hours
-    };
-
-    // Include new refresh token if rotation occurred
-    if (result.rotated && result.refreshToken) {
-      response.refresh_token = result.refreshToken;
-    }
-
-    return responseHandler.success(res, response, { 
-      message: 'Token refreshed successfully' 
-    });
+  if (!result.success) {
+    return responseHandler.unauthorized(res, result.error);
   }
-);
+
+  const response = {
+    access_token: result.accessToken,
+    token_type: 'Bearer',
+    expires_in: 86400, // 24 hours
+  };
+
+  // Include new refresh token if rotation occurred
+  if (result.rotated && result.refreshToken) {
+    response.refresh_token = result.refreshToken;
+  }
+
+  return responseHandler.success(res, response, {
+    message: 'Token refreshed successfully',
+  });
+});
 
 /**
  * GET /api/auth/validate - Validate JWT token and return user info
  */
 router.get('/validate', jwtRequired, (req, res) => {
-  return responseHandler.success(res, {
-    valid: true,
-    user: {
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
-      bio: req.user.bio,
-      theme: req.user.theme,
-      has_2fa: !!req.user.totp_secret,
-      created_at: req.user.created_at
-    }
-  }, { message: 'Token is valid' });
+  return responseHandler.success(
+    res,
+    {
+      valid: true,
+      user: {
+        id: req.user.id,
+        username: req.user.username,
+        email: req.user.email,
+        bio: req.user.bio,
+        theme: req.user.theme,
+        has_2fa: !!req.user.totp_secret,
+        created_at: req.user.created_at,
+      },
+    },
+    { message: 'Token is valid' },
+  );
 });
 
 /**
@@ -184,10 +202,7 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(400).json({ error: 'Username required' });
     }
 
-    const user = await db.queryOne(
-      `SELECT * FROM users WHERE username = ?`,
-      [username]
-    );
+    const user = await db.queryOne(`SELECT * FROM users WHERE username = ?`, [username]);
 
     if (!user) {
       // Don't reveal if user exists
@@ -206,7 +221,7 @@ router.post('/forgot-password', async (req, res) => {
 
     res.json({
       message: 'Reset token generated',
-      token // Only for development - remove in production
+      token, // Only for development - remove in production
     });
   } catch (error) {
     console.error('Forgot password error:', error);
@@ -269,12 +284,12 @@ router.get('/2fa/setup', jwtRequired, async (req, res) => {
   try {
     const secret = authenticator.generateSecret();
     const otpauth = authenticator.keyuri(req.user.username, 'NoteHub', secret);
-    
+
     const qrCodeDataUrl = await QRCode.toDataURL(otpauth);
 
     res.json({
       secret,
-      qr_code: qrCodeDataUrl.split(',')[1] // Remove data:image/png;base64, prefix
+      qr_code: qrCodeDataUrl.split(',')[1], // Remove data:image/png;base64, prefix
     });
   } catch (error) {
     console.error('2FA setup error:', error);
@@ -298,14 +313,11 @@ router.post('/2fa/enable', jwtRequired, async (req, res) => {
       return res.status(400).json({ error: 'Invalid verification code' });
     }
 
-    await db.run(
-      `UPDATE users SET totp_secret = ? WHERE id = ?`,
-      [secret, req.userId]
-    );
+    await db.run(`UPDATE users SET totp_secret = ? WHERE id = ?`, [secret, req.userId]);
 
-    res.json({ 
+    res.json({
       message: '2FA enabled successfully',
-      has_2fa: true
+      has_2fa: true,
     });
   } catch (error) {
     console.error('2FA enable error:', error);
@@ -325,18 +337,15 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
     }
 
     // Disable 2FA without requiring OTP code
-    await db.run(
-      `UPDATE users SET totp_secret = NULL WHERE id = ?`,
-      [req.userId]
-    );
+    await db.run(`UPDATE users SET totp_secret = NULL WHERE id = ?`, [req.userId]);
 
     // Log security event
     // TODO: Consider using a proper logging framework (winston, pino) in production
     console.log(`[SECURITY] 2FA disabled by user ID: ${req.userId}`);
 
-    res.json({ 
+    res.json({
       message: '2FA disabled successfully',
-      has_2fa: false
+      has_2fa: false,
     });
   } catch (error) {
     console.error('2FA disable error:', error);
@@ -347,7 +356,7 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
 /**
  * GET /api/auth/google - Get Google OAuth URL
  */
-router.get('/google', (req, res) => {
+router.get('/google', (_req, res) => {
   try {
     if (!googleOAuthService.isEnabled()) {
       return res.status(503).json({ error: 'Google OAuth not configured' });
@@ -382,7 +391,7 @@ router.post('/google/callback', async (req, res) => {
     if (code) {
       const tokens = await googleOAuthService.getTokens(code);
       googleUser = await googleOAuthService.getUserInfo(tokens.access_token);
-    } 
+    }
     // Method 2: Using ID token (for frontend flow)
     else if (id_token) {
       googleUser = await googleOAuthService.verifyIdToken(id_token);
@@ -397,21 +406,15 @@ router.post('/google/callback', async (req, res) => {
     }
 
     // Check if user exists by email
-    let user = await db.queryOne(
-      `SELECT * FROM users WHERE email = ?`,
-      [googleUser.email]
-    );
+    let user = await db.queryOne(`SELECT * FROM users WHERE email = ?`, [googleUser.email]);
 
     if (!user) {
       // Create new user with Google account
       // Generate username from email
       let username = googleUser.email.split('@')[0];
-      
+
       // Check if username exists, add random suffix if needed
-      const existingUser = await db.queryOne(
-        `SELECT id FROM users WHERE username = ?`,
-        [username]
-      );
+      const existingUser = await db.queryOne(`SELECT id FROM users WHERE username = ?`, [username]);
 
       if (existingUser) {
         username = `${username}_${crypto.randomBytes(4).toString('hex')}`;
@@ -424,13 +427,10 @@ router.post('/google/callback', async (req, res) => {
 
       const result = await db.run(
         `INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)`,
-        [username, passwordHash, googleUser.email]
+        [username, passwordHash, googleUser.email],
       );
 
-      user = await db.queryOne(
-        `SELECT * FROM users WHERE id = ?`,
-        [result.insertId]
-      );
+      user = await db.queryOne(`SELECT * FROM users WHERE id = ?`, [result.insertId]);
 
       console.log(`[AUTH] New user created via Google OAuth: ${username} (${googleUser.email})`);
     } else {
@@ -446,8 +446,14 @@ router.post('/google/callback', async (req, res) => {
     expiresAt.setDate(expiresAt.getDate() + 7);
     const deviceInfo = req.headers['user-agent'] || null;
     const ipAddress = req.ip || req.connection.remoteAddress || null;
-    
-    await jwtService.storeRefreshToken(user.id, tokenId, expiresAt.toISOString(), deviceInfo, ipAddress);
+
+    await jwtService.storeRefreshToken(
+      user.id,
+      tokenId,
+      expiresAt.toISOString(),
+      deviceInfo,
+      ipAddress,
+    );
 
     // Update last login
     await AuthService.updateLastLogin(user.id);
@@ -462,8 +468,8 @@ router.post('/google/callback', async (req, res) => {
         username: user.username,
         email: user.email,
         has_2fa: !!user.totp_secret,
-        auth_method: 'google'
-      }
+        auth_method: 'google',
+      },
     });
   } catch (error) {
     console.error('Google OAuth callback error:', error);
@@ -474,9 +480,9 @@ router.post('/google/callback', async (req, res) => {
 /**
  * GET /api/auth/google/status - Check if Google OAuth is configured
  */
-router.get('/google/status', (req, res) => {
+router.get('/google/status', (_req, res) => {
   res.json({
-    enabled: googleOAuthService.isEnabled()
+    enabled: googleOAuthService.isEnabled(),
   });
 });
 
@@ -486,28 +492,28 @@ router.get('/google/status', (req, res) => {
 router.post('/logout', jwtRequired, async (req, res) => {
   try {
     const { refresh_token } = req.body;
-    
+
     if (refresh_token) {
       // Decode to get token ID
       const jwt = require('jsonwebtoken');
       try {
         const decoded = jwt.decode(refresh_token);
-        if (decoded && decoded.jti) {
+        if (decoded?.jti) {
           await jwtService.revokeRefreshToken(decoded.jti);
         }
-      } catch (error) {
+      } catch (_error) {
         // Invalid token, ignore
       }
     }
 
-    return responseHandler.success(res, { 
-      message: 'Logged out successfully' 
+    return responseHandler.success(res, {
+      message: 'Logged out successfully',
     });
   } catch (error) {
     console.error('Logout error:', error);
     return responseHandler.error(res, 'Internal server error', {
       statusCode: 500,
-      errorCode: 'LOGOUT_ERROR'
+      errorCode: 'LOGOUT_ERROR',
     });
   }
 });
@@ -519,14 +525,14 @@ router.post('/logout-all', jwtRequired, async (req, res) => {
   try {
     await jwtService.revokeAllUserTokens(req.userId);
 
-    return responseHandler.success(res, { 
-      message: 'Logged out from all devices successfully' 
+    return responseHandler.success(res, {
+      message: 'Logged out from all devices successfully',
     });
   } catch (error) {
     console.error('Logout all error:', error);
     return responseHandler.error(res, 'Internal server error', {
       statusCode: 500,
-      errorCode: 'LOGOUT_ALL_ERROR'
+      errorCode: 'LOGOUT_ALL_ERROR',
     });
   }
 });
@@ -541,18 +547,18 @@ router.get('/sessions', jwtRequired, async (req, res) => {
     if (!result.success) {
       return responseHandler.error(res, 'Failed to retrieve sessions', {
         statusCode: 500,
-        errorCode: 'SESSIONS_ERROR'
+        errorCode: 'SESSIONS_ERROR',
       });
     }
 
     return responseHandler.success(res, {
-      sessions: result.tokens
+      sessions: result.tokens,
     });
   } catch (error) {
     console.error('Get sessions error:', error);
     return responseHandler.error(res, 'Internal server error', {
       statusCode: 500,
-      errorCode: 'SESSIONS_ERROR'
+      errorCode: 'SESSIONS_ERROR',
     });
   }
 });

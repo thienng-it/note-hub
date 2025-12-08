@@ -11,7 +11,7 @@ const logger = require('../config/logger');
  */
 function requestLogger(req, res, next) {
   const startTime = Date.now();
-  
+
   // Skip logging for health check in production (too noisy)
   if (req.path === '/api/health' && process.env.NODE_ENV === 'production') {
     return next();
@@ -27,7 +27,7 @@ function requestLogger(req, res, next) {
       duration: `${duration}ms`,
       ip: req.ip || req.socket?.remoteAddress,
       userAgent: req.get('user-agent'),
-      requestId: res.locals.requestId
+      requestId: res.locals.requestId,
     };
 
     // Log at appropriate level based on status code
@@ -44,5 +44,5 @@ function requestLogger(req, res, next) {
 }
 
 module.exports = {
-  requestLogger
+  requestLogger,
 };

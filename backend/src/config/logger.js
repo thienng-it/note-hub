@@ -7,8 +7,10 @@
 const winston = require('winston');
 
 // Get log configuration from environment
-const LOG_LEVEL = process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'error' : 'info');
-const LOG_FORMAT = process.env.LOG_FORMAT || (process.env.NODE_ENV === 'production' ? 'json' : 'simple');
+const LOG_LEVEL =
+  process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'error' : 'info');
+const LOG_FORMAT =
+  process.env.LOG_FORMAT || (process.env.NODE_ENV === 'production' ? 'json' : 'simple');
 
 // Define custom log formats
 const simpleFormat = winston.format.printf(({ level, message, timestamp, ...meta }) => {
@@ -28,7 +30,7 @@ switch (LOG_FORMAT) {
     logFormat = winston.format.combine(
       winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
       winston.format.errors({ stack: true }),
-      winston.format.json()
+      winston.format.json(),
     );
     break;
   case 'detailed':
@@ -36,16 +38,15 @@ switch (LOG_FORMAT) {
       winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
       winston.format.errors({ stack: true }),
       winston.format.colorize(),
-      detailedFormat
+      detailedFormat,
     );
     break;
-  case 'simple':
   default:
     logFormat = winston.format.combine(
       winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
       winston.format.errors({ stack: true }),
       winston.format.colorize(),
-      simpleFormat
+      simpleFormat,
     );
     break;
 }
@@ -58,21 +59,23 @@ const logger = winston.createLogger({
     // Console output
     new winston.transports.Console({
       handleExceptions: true,
-      handleRejections: true
-    })
+      handleRejections: true,
+    }),
   ],
-  exitOnError: false
+  exitOnError: false,
 });
 
 // Optional: Add file transport for production
 if (process.env.NODE_ENV === 'production' && process.env.LOG_FILE_PATH) {
-  logger.add(new winston.transports.File({
-    filename: process.env.LOG_FILE_PATH,
-    maxsize: 10485760, // 10MB
-    maxFiles: 5,
-    handleExceptions: true,
-    handleRejections: true
-  }));
+  logger.add(
+    new winston.transports.File({
+      filename: process.env.LOG_FILE_PATH,
+      maxsize: 10485760, // 10MB
+      maxFiles: 5,
+      handleExceptions: true,
+      handleRejections: true,
+    }),
+  );
 }
 
 // Create convenience methods for common logging patterns
@@ -81,7 +84,7 @@ logger.api = (method, path, statusCode, duration) => {
     method,
     path,
     statusCode,
-    duration: `${duration}ms`
+    duration: `${duration}ms`,
   });
 };
 
@@ -89,7 +92,7 @@ logger.db = (operation, table, duration) => {
   logger.debug('DB Operation', {
     operation,
     table,
-    duration: duration ? `${duration}ms` : undefined
+    duration: duration ? `${duration}ms` : undefined,
   });
 };
 
@@ -97,21 +100,21 @@ logger.auth = (event, userId, details) => {
   logger.info('Auth Event', {
     event,
     userId,
-    ...details
+    ...details,
   });
 };
 
 logger.security = (event, details) => {
   logger.warn('Security Event', {
     event,
-    ...details
+    ...details,
   });
 };
 
 // Attach configuration to logger instance for easy access
 logger.config = {
   level: LOG_LEVEL,
-  format: LOG_FORMAT
+  format: LOG_FORMAT,
 };
 
 // Export logger

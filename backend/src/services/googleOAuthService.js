@@ -28,11 +28,7 @@ class GoogleOAuthService {
     }
 
     try {
-      this.oauth2Client = new google.auth.OAuth2(
-        clientId,
-        clientSecret,
-        redirectUri
-      );
+      this.oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 
       this.enabled = true;
       console.log('🔐 Google OAuth configured - SSO enabled');
@@ -52,13 +48,13 @@ class GoogleOAuthService {
 
     const scopes = [
       'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/userinfo.email'
+      'https://www.googleapis.com/auth/userinfo.email',
     ];
 
     return this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: scopes,
-      prompt: 'consent'
+      prompt: 'consent',
     });
   }
 
@@ -86,8 +82,8 @@ class GoogleOAuthService {
     try {
       const response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
         headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       return {
@@ -95,7 +91,7 @@ class GoogleOAuthService {
         email: response.data.email,
         name: response.data.name,
         picture: response.data.picture,
-        verified_email: response.data.verified_email
+        verified_email: response.data.verified_email,
       };
     } catch (error) {
       console.error('Error getting user info:', error.message);
@@ -114,7 +110,7 @@ class GoogleOAuthService {
     try {
       const ticket = await this.oauth2Client.verifyIdToken({
         idToken,
-        audience: process.env.GOOGLE_CLIENT_ID
+        audience: process.env.GOOGLE_CLIENT_ID,
       });
 
       const payload = ticket.getPayload();
@@ -123,7 +119,7 @@ class GoogleOAuthService {
         email: payload.email,
         name: payload.name,
         picture: payload.picture,
-        verified_email: payload.email_verified
+        verified_email: payload.email_verified,
       };
     } catch (error) {
       console.error('Error verifying ID token:', error.message);

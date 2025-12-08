@@ -12,12 +12,12 @@ const { jwtRequired } = require('../middleware/auth');
 router.get('/', jwtRequired, async (req, res) => {
   try {
     const { filter = 'all' } = req.query;
-    
+
     const tasks = await TaskService.getTasksForUser(req.userId, filter);
     const counts = await TaskService.getTaskCounts(req.userId);
 
     res.json({
-      tasks: tasks.map(task => ({
+      tasks: tasks.map((task) => ({
         id: task.id,
         title: task.title,
         description: task.description,
@@ -26,9 +26,9 @@ router.get('/', jwtRequired, async (req, res) => {
         priority: task.priority,
         due_date: task.due_date,
         created_at: task.created_at,
-        is_overdue: task.isOverdue
+        is_overdue: task.isOverdue,
       })),
-      counts
+      counts,
     });
   } catch (error) {
     console.error('List tasks error:', error);
@@ -58,8 +58,8 @@ router.get('/:id', jwtRequired, async (req, res) => {
         priority: task.priority,
         due_date: task.due_date,
         created_at: task.created_at,
-        is_overdue: TaskService.isOverdue(task)
-      }
+        is_overdue: TaskService.isOverdue(task),
+      },
     });
   } catch (error) {
     console.error('Get task error:', error);
@@ -84,7 +84,7 @@ router.post('/', jwtRequired, async (req, res) => {
       description,
       due_date,
       priority,
-      images
+      images,
     );
 
     res.status(201).json({
@@ -96,8 +96,8 @@ router.post('/', jwtRequired, async (req, res) => {
         completed: !!task.completed,
         priority: task.priority,
         due_date: task.due_date,
-        created_at: task.created_at
-      }
+        created_at: task.created_at,
+      },
     });
   } catch (error) {
     console.error('Create task error:', error);
@@ -129,7 +129,7 @@ async function updateTask(req, res) {
       due_date,
       priority,
       completed,
-      images
+      images,
     );
 
     res.json({
@@ -141,8 +141,8 @@ async function updateTask(req, res) {
         completed: !!updatedTask.completed,
         priority: updatedTask.priority,
         due_date: updatedTask.due_date,
-        is_overdue: TaskService.isOverdue(updatedTask)
-      }
+        is_overdue: TaskService.isOverdue(updatedTask),
+      },
     });
   } catch (error) {
     console.error('Update task error:', error);
@@ -166,7 +166,7 @@ router.post('/:id/toggle', jwtRequired, async (req, res) => {
 
     res.json({
       completed: !!updatedTask.completed,
-      message: updatedTask.completed ? 'Task completed' : 'Task marked as active'
+      message: updatedTask.completed ? 'Task completed' : 'Task marked as active',
     });
   } catch (error) {
     console.error('Toggle task error:', error);

@@ -13,12 +13,12 @@ const db = require('../config/database');
 router.get('/', jwtRequired, async (req, res) => {
   try {
     const { view = 'all', q = '', tag = '' } = req.query;
-    
+
     const notes = await NoteService.getNotesForUser(req.userId, view, q, tag);
     const tags = await NoteService.getTagsForUser(req.userId);
 
     res.json({
-      notes: notes.map(note => ({
+      notes: notes.map((note) => ({
         id: note.id,
         title: note.title,
         body: note.body,
@@ -29,9 +29,9 @@ router.get('/', jwtRequired, async (req, res) => {
         archived: !!note.archived,
         created_at: note.created_at,
         updated_at: note.updated_at,
-        tags: note.tags
+        tags: note.tags,
       })),
-      tags
+      tags,
     });
   } catch (error) {
     console.error('List notes error:', error);
@@ -68,8 +68,8 @@ router.get('/:id', jwtRequired, async (req, res) => {
         created_at: note.created_at,
         updated_at: note.updated_at,
         tags: note.tags,
-        can_edit: canEdit
-      }
+        can_edit: canEdit,
+      },
     });
   } catch (error) {
     console.error('Get note error:', error);
@@ -82,7 +82,15 @@ router.get('/:id', jwtRequired, async (req, res) => {
  */
 router.post('/', jwtRequired, async (req, res) => {
   try {
-    const { title, body = '', tags = '', images = [], pinned = false, favorite = false, archived = false } = req.body;
+    const {
+      title,
+      body = '',
+      tags = '',
+      images = [],
+      pinned = false,
+      favorite = false,
+      archived = false,
+    } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: 'Title is required' });
@@ -96,7 +104,7 @@ router.post('/', jwtRequired, async (req, res) => {
       pinned,
       favorite,
       archived,
-      images
+      images,
     );
 
     res.status(201).json({
@@ -109,8 +117,8 @@ router.post('/', jwtRequired, async (req, res) => {
         favorite: !!note.favorite,
         archived: !!note.archived,
         created_at: note.created_at,
-        tags: note.tags
-      }
+        tags: note.tags,
+      },
     });
   } catch (error) {
     console.error('Create note error:', error);
@@ -151,7 +159,7 @@ async function updateNote(req, res) {
       pinned,
       favorite,
       archived,
-      images
+      images,
     );
 
     res.json({
@@ -166,8 +174,8 @@ async function updateNote(req, res) {
         archived: !!updatedNote.archived,
         created_at: updatedNote.created_at,
         updated_at: updatedNote.updated_at,
-        tags: updatedNote.tags
-      }
+        tags: updatedNote.tags,
+      },
     });
   } catch (error) {
     console.error('Update note error:', error);
@@ -216,11 +224,17 @@ router.post('/:id/toggle-pin', jwtRequired, async (req, res) => {
       return res.status(403).json({ error: 'Only the note owner can pin/unpin' });
     }
 
-    const updatedNote = await NoteService.updateNote(noteId, undefined, undefined, undefined, !note.pinned);
+    const updatedNote = await NoteService.updateNote(
+      noteId,
+      undefined,
+      undefined,
+      undefined,
+      !note.pinned,
+    );
 
     res.json({
       pinned: !!updatedNote.pinned,
-      message: updatedNote.pinned ? 'Note pinned' : 'Note unpinned'
+      message: updatedNote.pinned ? 'Note pinned' : 'Note unpinned',
     });
   } catch (error) {
     console.error('Toggle pin error:', error);
@@ -244,11 +258,18 @@ router.post('/:id/toggle-favorite', jwtRequired, async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    const updatedNote = await NoteService.updateNote(noteId, undefined, undefined, undefined, undefined, !note.favorite);
+    const updatedNote = await NoteService.updateNote(
+      noteId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      !note.favorite,
+    );
 
     res.json({
       favorite: !!updatedNote.favorite,
-      message: updatedNote.favorite ? 'Note favorited' : 'Note unfavorited'
+      message: updatedNote.favorite ? 'Note favorited' : 'Note unfavorited',
     });
   } catch (error) {
     console.error('Toggle favorite error:', error);
@@ -272,11 +293,19 @@ router.post('/:id/toggle-archive', jwtRequired, async (req, res) => {
       return res.status(403).json({ error: 'Only the note owner can archive' });
     }
 
-    const updatedNote = await NoteService.updateNote(noteId, undefined, undefined, undefined, undefined, undefined, !note.archived);
+    const updatedNote = await NoteService.updateNote(
+      noteId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      !note.archived,
+    );
 
     res.json({
       archived: !!updatedNote.archived,
-      message: updatedNote.archived ? 'Note archived' : 'Note unarchived'
+      message: updatedNote.archived ? 'Note archived' : 'Note unarchived',
     });
   } catch (error) {
     console.error('Toggle archive error:', error);
@@ -300,12 +329,15 @@ router.get('/:id/shares', jwtRequired, async (req, res) => {
       return res.status(403).json({ error: 'Only the note owner can view shares' });
     }
 
-    const shares = await db.query(`
+    const shares = await db.query(
+      `
       SELECT sn.*, u.username, u.email
       FROM share_notes sn
       JOIN users u ON sn.shared_with_id = u.id
       WHERE sn.note_id = ?
-    `, [noteId]);
+    `,
+      [noteId],
+    );
 
     res.json({ shares });
   } catch (error) {
@@ -344,7 +376,7 @@ router.post('/:id/share', jwtRequired, async (req, res) => {
 
     res.json({
       message: `Note shared with ${username}`,
-      shared_with: result.sharedWith
+      shared_with: result.sharedWith,
     });
   } catch (error) {
     console.error('Share note error:', error);

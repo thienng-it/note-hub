@@ -1,6 +1,6 @@
 /**
  * Database Seed Script
- * 
+ *
  * Creates default admin and demo users with sample data.
  * Run with: npm run seed
  */
@@ -12,7 +12,7 @@ const bcrypt = require('bcryptjs');
 async function seed() {
   try {
     console.log('🌱 Starting database seed...');
-    
+
     await db.connect();
     await db.initSchema();
 
@@ -30,10 +30,12 @@ async function seed() {
     // Create admin user
     const existingAdmin = await db.queryOne(`SELECT id FROM users WHERE username = ?`, ['admin']);
     if (!existingAdmin) {
-      await db.run(
-        `INSERT INTO users (username, password_hash, email, bio) VALUES (?, ?, ?, ?)`,
-        ['admin', adminHash, 'admin@notehub.local', 'NoteHub Administrator']
-      );
+      await db.run(`INSERT INTO users (username, password_hash, email, bio) VALUES (?, ?, ?, ?)`, [
+        'admin',
+        adminHash,
+        'admin@notehub.local',
+        'NoteHub Administrator',
+      ]);
       console.log('✅ Created admin user');
     } else {
       console.log('ℹ️  Admin user already exists');
@@ -45,7 +47,7 @@ async function seed() {
     if (!existingDemo) {
       const result = await db.run(
         `INSERT INTO users (username, password_hash, email, bio) VALUES (?, ?, ?, ?)`,
-        ['demo', demoHash, 'demo@notehub.local', 'Demo user account for testing']
+        ['demo', demoHash, 'demo@notehub.local', 'Demo user account for testing'],
       );
       demoUserId = result.insertId;
       console.log('✅ Created demo user');
@@ -91,7 +93,7 @@ console.log(greeting);
 Get started by creating your first note! 🚀`,
         pinned: true,
         favorite: true,
-        tags: ['important', 'ideas']
+        tags: ['important', 'ideas'],
       },
       {
         title: 'Meeting Notes Template',
@@ -116,7 +118,7 @@ Get started by creating your first note! 🚀`,
 
 ## Next Steps
 [Summary of next steps]`,
-        tags: ['work', 'todo']
+        tags: ['work', 'todo'],
       },
       {
         title: 'Quick Ideas',
@@ -128,31 +130,37 @@ Get started by creating your first note! 🚀`,
 - Read more books
 - Travel to a new place`,
         favorite: true,
-        tags: ['personal', 'ideas']
-      }
+        tags: ['personal', 'ideas'],
+      },
     ];
 
     for (const noteData of sampleNotes) {
-      const existing = await db.queryOne(
-        `SELECT id FROM notes WHERE title = ? AND owner_id = ?`,
-        [noteData.title, demoUserId]
-      );
-      
+      const existing = await db.queryOne(`SELECT id FROM notes WHERE title = ? AND owner_id = ?`, [
+        noteData.title,
+        demoUserId,
+      ]);
+
       if (!existing) {
         const result = await db.run(
           `INSERT INTO notes (title, body, pinned, favorite, owner_id) VALUES (?, ?, ?, ?, ?)`,
-          [noteData.title, noteData.body, noteData.pinned ? 1 : 0, noteData.favorite ? 1 : 0, demoUserId]
+          [
+            noteData.title,
+            noteData.body,
+            noteData.pinned ? 1 : 0,
+            noteData.favorite ? 1 : 0,
+            demoUserId,
+          ],
         );
-        
+
         // Add tags
         if (noteData.tags) {
           for (const tagName of noteData.tags) {
             const tag = await db.queryOne(`SELECT id FROM tags WHERE name = ?`, [tagName]);
             if (tag) {
-              await db.run(
-                `INSERT OR IGNORE INTO note_tag (note_id, tag_id) VALUES (?, ?)`,
-                [result.insertId, tag.id]
-              );
+              await db.run(`INSERT OR IGNORE INTO note_tag (note_id, tag_id) VALUES (?, ?)`, [
+                result.insertId,
+                tag.id,
+              ]);
             }
           }
         }
@@ -166,28 +174,28 @@ Get started by creating your first note! 🚀`,
         title: 'Review project requirements',
         description: 'Go through the project documentation and note down key requirements.',
         priority: 'high',
-        due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString() // 2 days from now
+        due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
       },
       {
         title: 'Set up development environment',
         description: 'Install necessary tools and configure the development environment.',
         priority: 'medium',
-        completed: true
+        completed: true,
       },
       {
         title: 'Write documentation',
         description: 'Create comprehensive documentation for the project.',
         priority: 'low',
-        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
-      }
+        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+      },
     ];
 
     for (const taskData of sampleTasks) {
-      const existing = await db.queryOne(
-        `SELECT id FROM tasks WHERE title = ? AND owner_id = ?`,
-        [taskData.title, demoUserId]
-      );
-      
+      const existing = await db.queryOne(`SELECT id FROM tasks WHERE title = ? AND owner_id = ?`, [
+        taskData.title,
+        demoUserId,
+      ]);
+
       if (!existing) {
         await db.run(
           `INSERT INTO tasks (title, description, priority, completed, due_date, owner_id) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -197,8 +205,8 @@ Get started by creating your first note! 🚀`,
             taskData.priority,
             taskData.completed ? 1 : 0,
             taskData.due_date || null,
-            demoUserId
-          ]
+            demoUserId,
+          ],
         );
       }
     }

@@ -5,8 +5,8 @@
  * Supports both SQLite (default) and MySQL databases.
  * Uses Sequelize ORM for database operations.
  */
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 // Load .env from project root
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
@@ -44,34 +44,38 @@ const PORT = process.env.PORT || 5000;
 const API_VERSION = '/api/v1';
 
 // Security middleware with CSP configured for SPA
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"]
-    }
-  },
-  crossOriginEmbedderPolicy: false
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  }),
+);
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || '*',
+    credentials: true,
+  }),
+);
 
 // Rate limiting for API routes
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: { error: 'Too many requests, please try again later' }
+  message: { error: 'Too many requests, please try again later' },
 });
 app.use('/api/', apiLimiter);
 
@@ -79,7 +83,7 @@ app.use('/api/', apiLimiter);
 const staticLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500, // Higher limit for static assets
-  message: { error: 'Too many requests' }
+  message: { error: 'Too many requests' },
 });
 
 // Body parsing
@@ -123,37 +127,39 @@ const packageJson = require('../package.json');
 async function getHealthStatus() {
   const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
   const replicationStatus = db.getReplicationStatus();
-  
+
   return {
     status: 'healthy',
     database: 'connected',
     services: {
       cache: cache.isEnabled() ? 'enabled' : 'disabled',
       search: elasticsearch.isEnabled() ? 'enabled' : 'disabled',
-      replication: replicationStatus.enabled ? 'enabled' : 'disabled'
+      replication: replicationStatus.enabled ? 'enabled' : 'disabled',
     },
-    replication: replicationStatus.enabled ? {
-      replicas: replicationStatus.replicaCount,
-      healthy: replicationStatus.healthyReplicas
-    } : undefined,
-    user_count: userCount?.count || 0
+    replication: replicationStatus.enabled
+      ? {
+          replicas: replicationStatus.replicaCount,
+          healthy: replicationStatus.healthyReplicas,
+        }
+      : undefined,
+    user_count: userCount?.count || 0,
   };
 }
 
 // Backward-compatible health endpoint (without version prefix for Docker healthchecks)
-app.get('/api/health', async (req, res) => {
+app.get('/api/health', async (_req, res) => {
   try {
     const healthStatus = await getHealthStatus();
     res.status(200).json(healthStatus);
   } catch (error) {
     res.status(503).json({
       status: 'unhealthy',
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-app.get(`${API_VERSION}/health`, markAsV1, async (req, res) => {
+app.get(`${API_VERSION}/health`, markAsV1, async (_req, res) => {
   try {
     const healthStatus = await getHealthStatus();
     responseHandler.success(res, healthStatus, { message: 'Service is healthy' });
@@ -161,21 +167,23 @@ app.get(`${API_VERSION}/health`, markAsV1, async (req, res) => {
     responseHandler.error(res, 'Service is unhealthy', {
       statusCode: 503,
       errorCode: 'SERVICE_UNAVAILABLE',
-      details: { error: error.message }
+      details: { error: error.message },
     });
   }
 });
 
 // Version endpoint
-app.get(`${API_VERSION}/version`, markAsV1, (req, res) => {
-  responseHandler.success(res, {
-    version: packageJson.version,
-    name: packageJson.name,
-    description: packageJson.description
-  }, { message: 'Version information' });
+app.get(`${API_VERSION}/version`, markAsV1, (_req, res) => {
+  responseHandler.success(
+    res,
+    {
+      version: packageJson.version,
+      name: packageJson.name,
+      description: packageJson.description,
+    },
+    { message: 'Version information' },
+  );
 });
-
-
 
 // Serve static files from React frontend build with rate limiting
 const frontendPath = path.join(__dirname, '../../frontend/dist');
@@ -192,24 +200,24 @@ if (fs.existsSync(frontendPath)) {
 }
 
 // 404 handler for API routes
-app.use('/api/*', (req, res) => {
+app.use('/api/*', (_req, res) => {
   responseHandler.notFound(res, 'Endpoint');
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   logger.error('Server error:', {
     error: err.message,
     stack: err.stack,
     path: req.path,
     method: req.method,
-    requestId: res.locals.requestId
+    requestId: res.locals.requestId,
   });
-  
+
   responseHandler.error(res, 'Internal server error', {
     statusCode: 500,
     errorCode: 'INTERNAL_ERROR',
-    details: process.env.NODE_ENV === 'development' ? { message: err.message } : undefined
+    details: process.env.NODE_ENV === 'development' ? { message: err.message } : undefined,
   });
 });
 
@@ -232,7 +240,9 @@ async function start() {
 
     // Log passkey challenge storage mode
     const { isUsingRedis } = require('./services/challengeStorage');
-    const challengeStorage = isUsingRedis() ? 'Redis (production-ready)' : 'In-memory (single-instance only)';
+    const challengeStorage = isUsingRedis()
+      ? 'Redis (production-ready)'
+      : 'In-memory (single-instance only)';
     logger.info('🔐 Passkey challenge storage', { mode: challengeStorage });
 
     app.listen(PORT, () => {
@@ -245,13 +255,13 @@ async function start() {
         passkeyStorage: challengeStorage,
         environment: process.env.NODE_ENV || 'development',
         logLevel: logger.config.level,
-        logFormat: logger.config.format
+        logFormat: logger.config.format,
       });
     });
   } catch (error) {
     logger.error('Failed to start server', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
     process.exit(1);
   }

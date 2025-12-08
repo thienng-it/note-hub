@@ -37,9 +37,9 @@ class TaskService {
     const tasks = await db.query(sql, params);
 
     // Add computed properties
-    return tasks.map(task => ({
+    return tasks.map((task) => ({
       ...task,
-      isOverdue: this.isOverdue(task)
+      isOverdue: TaskService.isOverdue(task),
     }));
   }
 
@@ -47,23 +47,22 @@ class TaskService {
    * Get task counts for a user.
    */
   static async getTaskCounts(userId) {
-    const total = await db.queryOne(
-      `SELECT COUNT(*) as count FROM tasks WHERE owner_id = ?`,
-      [userId]
-    );
+    const total = await db.queryOne(`SELECT COUNT(*) as count FROM tasks WHERE owner_id = ?`, [
+      userId,
+    ]);
     const completed = await db.queryOne(
       `SELECT COUNT(*) as count FROM tasks WHERE owner_id = ? AND completed = 1`,
-      [userId]
+      [userId],
     );
     const active = await db.queryOne(
       `SELECT COUNT(*) as count FROM tasks WHERE owner_id = ? AND completed = 0`,
-      [userId]
+      [userId],
     );
 
     return {
       total: total?.count || 0,
       completed: completed?.count || 0,
-      active: active?.count || 0
+      active: active?.count || 0,
     };
   }
 
@@ -71,25 +70,35 @@ class TaskService {
    * Check if a user has access to a task.
    */
   static async checkTaskAccess(taskId, userId) {
-    const task = await db.queryOne(
-      `SELECT * FROM tasks WHERE id = ? AND owner_id = ?`,
-      [taskId, userId]
-    );
+    const task = await db.queryOne(`SELECT * FROM tasks WHERE id = ? AND owner_id = ?`, [
+      taskId,
+      userId,
+    ]);
     return task;
   }
 
   /**
    * Create a new task.
    */
-  static async createTask(userId, title, description = null, dueDate = null, priority = 'medium', images = []) {
+  static async createTask(
+    userId,
+    title,
+    description = null,
+    dueDate = null,
+    priority = 'medium',
+    images = [],
+  ) {
     const imagesJson = Array.isArray(images) ? JSON.stringify(images) : null;
-    
-    const result = await db.run(`
+
+    const result = await db.run(
+      `
       INSERT INTO tasks (title, description, images, due_date, priority, owner_id)
       VALUES (?, ?, ?, ?, ?, ?)
-    `, [title, description, imagesJson, dueDate, priority, userId]);
+    `,
+      [title, description, imagesJson, dueDate, priority, userId],
+    );
 
-    return this.getTaskById(result.insertId);
+    return TaskService.getTaskById(result.insertId);
   }
 
   /**
@@ -129,17 +138,20 @@ class TaskService {
       await db.run(`UPDATE tasks SET ${updates.join(', ')} WHERE id = ?`, params);
     }
 
-    return this.getTaskById(taskId);
+    return TaskService.getTaskById(taskId);
   }
 
   /**
    * Toggle task completion status.
    */
   static async toggleTask(taskId) {
-    await db.run(`
+    await db.run(
+      `
       UPDATE tasks SET completed = NOT completed WHERE id = ?
-    `, [taskId]);
-    return this.getTaskById(taskId);
+    `,
+      [taskId],
+    );
+    return TaskService.getTaskById(taskId);
   }
 
   /**
@@ -155,7 +167,7 @@ class TaskService {
   static async getTaskById(taskId) {
     const task = await db.queryOne(`SELECT * FROM tasks WHERE id = ?`, [taskId]);
     if (task) {
-      task.isOverdue = this.isOverdue(task);
+      task.isOverdue = TaskService.isOverdue(task);
     }
     return task;
   }

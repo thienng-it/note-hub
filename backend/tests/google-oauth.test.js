@@ -9,12 +9,14 @@ jest.mock('googleapis', () => ({
   google: {
     auth: {
       OAuth2: jest.fn().mockImplementation(() => ({
-        generateAuthUrl: jest.fn().mockReturnValue('https://accounts.google.com/o/oauth2/auth?client_id=test'),
+        generateAuthUrl: jest
+          .fn()
+          .mockReturnValue('https://accounts.google.com/o/oauth2/auth?client_id=test'),
         getToken: jest.fn().mockResolvedValue({
           tokens: {
             access_token: 'mock-access-token',
-            refresh_token: 'mock-refresh-token'
-          }
+            refresh_token: 'mock-refresh-token',
+          },
         }),
         setCredentials: jest.fn(),
       })),
@@ -28,11 +30,11 @@ jest.mock('googleapis', () => ({
             name: 'Test User',
             given_name: 'Test',
             family_name: 'User',
-          }
-        })
-      }
-    })
-  }
+          },
+        }),
+      },
+    }),
+  },
 }));
 
 // Mock the database
@@ -68,8 +70,7 @@ describe('Google OAuth', () => {
 
   describe('GET /api/auth/google/status', () => {
     it('should return configured status when OAuth is set up', async () => {
-      const response = await request(app)
-        .get('/api/v1/auth/google/status');
+      const response = await request(app).get('/api/v1/auth/google/status');
 
       expect(response.status).toBe(200);
       expect(response.body.configured).toBe(true);
@@ -83,8 +84,7 @@ describe('Google OAuth', () => {
       jest.resetModules();
       const freshApp = require('../src/index');
 
-      const response = await request(freshApp)
-        .get('/api/v1/auth/google/status');
+      const response = await request(freshApp).get('/api/v1/auth/google/status');
 
       expect(response.body.configured).toBe(false);
 
@@ -95,8 +95,7 @@ describe('Google OAuth', () => {
 
   describe('GET /api/auth/google', () => {
     it('should return Google OAuth authorization URL', async () => {
-      const response = await request(app)
-        .get('/api/v1/auth/google');
+      const response = await request(app).get('/api/v1/auth/google');
 
       expect(response.status).toBe(200);
       expect(response.body.authUrl).toBeDefined();
@@ -110,8 +109,7 @@ describe('Google OAuth', () => {
       jest.resetModules();
       const freshApp = require('../src/index');
 
-      const response = await request(freshApp)
-        .get('/api/v1/auth/google');
+      const response = await request(freshApp).get('/api/v1/auth/google');
 
       expect(response.status).toBe(503);
       expect(response.body.error).toBe('Google OAuth not configured');
@@ -125,12 +123,13 @@ describe('Google OAuth', () => {
       db.queryOne.mockResolvedValue(null); // User doesn't exist
       db.run.mockResolvedValue({ changes: 1, lastID: 1 });
       db.queryOne.mockResolvedValueOnce(null); // First check
-      db.queryOne.mockResolvedValueOnce({ // Return new user
+      db.queryOne.mockResolvedValueOnce({
+        // Return new user
         id: 1,
         username: 'test',
         email: 'test@gmail.com',
         is_admin: false,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       });
 
       const response = await request(app)
@@ -149,7 +148,7 @@ describe('Google OAuth', () => {
         username: 'existinguser',
         email: 'test@gmail.com',
         is_admin: false,
-        created_at: '2024-01-01T00:00:00Z'
+        created_at: '2024-01-01T00:00:00Z',
       };
 
       db.queryOne.mockResolvedValue(existingUser);
@@ -167,14 +166,14 @@ describe('Google OAuth', () => {
     it('should reject unverified Google emails', async () => {
       const { google } = require('googleapis');
       const mockOAuth2 = google.oauth2();
-      
+
       // Mock unverified email
       mockOAuth2.userinfo.get.mockResolvedValueOnce({
         data: {
           email: 'test@gmail.com',
           verified_email: false,
-          name: 'Test User'
-        }
+          name: 'Test User',
+        },
       });
 
       const response = await request(app)
@@ -186,9 +185,7 @@ describe('Google OAuth', () => {
     });
 
     it('should return 400 if authorization code missing', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/google/callback')
-        .send({});
+      const response = await request(app).post('/api/v1/auth/google/callback').send({});
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Authorization code required');
@@ -197,14 +194,12 @@ describe('Google OAuth', () => {
     it('should generate unique username from email', async () => {
       db.queryOne.mockResolvedValue(null);
       db.run.mockResolvedValue({ changes: 1, lastID: 1 });
-      db.queryOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 1,
-          username: 'test',
-          email: 'test@gmail.com',
-          is_admin: false
-        });
+      db.queryOne.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 1,
+        username: 'test',
+        email: 'test@gmail.com',
+        is_admin: false,
+      });
 
       const response = await request(app)
         .post('/api/v1/auth/google/callback')
@@ -216,8 +211,8 @@ describe('Google OAuth', () => {
         expect.arrayContaining([
           expect.stringMatching(/test/),
           'test@gmail.com',
-          expect.any(String) // password hash
-        ])
+          expect.any(String), // password hash
+        ]),
       );
     });
 
@@ -225,7 +220,7 @@ describe('Google OAuth', () => {
       const { google } = require('googleapis');
       const OAuth2 = google.auth.OAuth2;
       const mockClient = new OAuth2();
-      
+
       mockClient.getToken.mockRejectedValueOnce(new Error('Invalid authorization code'));
 
       const response = await request(app)
@@ -240,23 +235,16 @@ describe('Google OAuth', () => {
 
       db.queryOne.mockResolvedValue(null);
       db.run.mockResolvedValue({ changes: 1, lastID: 1 });
-      db.queryOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 1,
-          username: 'test',
-          email: 'test@gmail.com'
-        });
+      db.queryOne.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 1,
+        username: 'test',
+        email: 'test@gmail.com',
+      });
 
-      await request(app)
-        .post('/api/v1/auth/google/callback')
-        .send({ code: 'mock-auth-code' });
+      await request(app).post('/api/v1/auth/google/callback').send({ code: 'mock-auth-code' });
 
       // Should hash a random password with 14 rounds
-      expect(bcryptHashSpy).toHaveBeenCalledWith(
-        expect.any(String),
-        14
-      );
+      expect(bcryptHashSpy).toHaveBeenCalledWith(expect.any(String), 14);
 
       bcryptHashSpy.mockRestore();
     });
@@ -268,20 +256,16 @@ describe('Google OAuth', () => {
         id: 1,
         username: 'testuser',
         email: 'test@gmail.com',
-        is_admin: false
+        is_admin: false,
       };
 
       db.queryOne.mockResolvedValue(existingUser);
 
       const consoleSpy = jest.spyOn(console, 'log');
 
-      await request(app)
-        .post('/api/v1/auth/google/callback')
-        .send({ code: 'mock-auth-code' });
+      await request(app).post('/api/v1/auth/google/callback').send({ code: 'mock-auth-code' });
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Google OAuth login')
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Google OAuth login'));
 
       consoleSpy.mockRestore();
     });
@@ -289,22 +273,18 @@ describe('Google OAuth', () => {
     it('should log new user creation from OAuth', async () => {
       db.queryOne.mockResolvedValue(null);
       db.run.mockResolvedValue({ changes: 1, lastID: 1 });
-      db.queryOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 1,
-          username: 'test',
-          email: 'test@gmail.com'
-        });
+      db.queryOne.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 1,
+        username: 'test',
+        email: 'test@gmail.com',
+      });
 
       const consoleSpy = jest.spyOn(console, 'log');
 
-      await request(app)
-        .post('/api/v1/auth/google/callback')
-        .send({ code: 'mock-auth-code' });
+      await request(app).post('/api/v1/auth/google/callback').send({ code: 'mock-auth-code' });
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('New user created via Google OAuth')
+        expect.stringContaining('New user created via Google OAuth'),
       );
 
       consoleSpy.mockRestore();

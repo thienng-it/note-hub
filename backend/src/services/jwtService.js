@@ -2,12 +2,13 @@
  * JWT Service for token generation and validation with refresh token rotation.
  */
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const db = require('../config/database');
 
 class JWTService {
   constructor() {
-    this.secretKey = process.env.JWT_SECRET || process.env.SECRET_KEY || 'dev-secret-key-change-in-production';
+    this.secretKey =
+      process.env.JWT_SECRET || process.env.SECRET_KEY || 'dev-secret-key-change-in-production';
     this.accessTokenExpiry = '24h'; // Extended from 1h for better UX
     this.refreshTokenExpiry = '7d';
   }
@@ -21,17 +22,15 @@ class JWTService {
 
   /**
    * Generate an access token for a user.
-   * 
+   *
    * Security: Token is cryptographically signed with HMAC-SHA256,
    * preventing forgery or impersonation. User ID is embedded in the
    * payload and verified on each request.
    */
   generateToken(userId) {
-    return jwt.sign(
-      { user_id: userId, type: 'access' },
-      this.secretKey,
-      { expiresIn: this.accessTokenExpiry }
-    );
+    return jwt.sign({ user_id: userId, type: 'access' }, this.secretKey, {
+      expiresIn: this.accessTokenExpiry,
+    });
   }
 
   /**
@@ -40,11 +39,9 @@ class JWTService {
    */
   generateRefreshToken(userId, tokenId = null) {
     const jti = tokenId || crypto.randomBytes(16).toString('hex');
-    const token = jwt.sign(
-      { user_id: userId, type: 'refresh', jti },
-      this.secretKey,
-      { expiresIn: this.refreshTokenExpiry }
-    );
+    const token = jwt.sign({ user_id: userId, type: 'refresh', jti }, this.secretKey, {
+      expiresIn: this.refreshTokenExpiry,
+    });
     return { token, tokenId: jti };
   }
 
@@ -58,28 +55,40 @@ class JWTService {
   /**
    * Store a refresh token in the database.
    */
-  async storeRefreshToken(userId, tokenId, expiresAt, deviceInfo = null, ipAddress = null, parentTokenHash = null) {
+  async storeRefreshToken(
+    userId,
+    tokenId,
+    expiresAt,
+    deviceInfo = null,
+    ipAddress = null,
+    parentTokenHash = null,
+  ) {
     try {
       const tokenHash = this.hashToken(tokenId);
       const now = this.getCurrentTimestamp();
       // Check if refresh_tokens table exists (for backward compatibility with tests/old DBs)
-      const result = await db.run(
-        `INSERT INTO refresh_tokens (user_id, token_hash, device_info, ip_address, expires_at, parent_token_hash, last_used_at) 
+      const result = await db
+        .run(
+          `INSERT INTO refresh_tokens (user_id, token_hash, device_info, ip_address, expires_at, parent_token_hash, last_used_at) 
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [userId, tokenHash, deviceInfo, ipAddress, expiresAt, parentTokenHash, now]
-      ).catch(err => {
-        // Silently fail if table doesn't exist (graceful degradation for tests/old DBs)
-        if (err.message && (err.message.includes('no such table') || err.message.includes('refresh_tokens'))) {
-          console.warn('[JWT] Refresh tokens table not available - token rotation disabled');
-          return { success: false, silent: true };
-        }
-        throw err;
-      });
-      
-      if (result && result.silent) {
+          [userId, tokenHash, deviceInfo, ipAddress, expiresAt, parentTokenHash, now],
+        )
+        .catch((err) => {
+          // Silently fail if table doesn't exist (graceful degradation for tests/old DBs)
+          if (
+            err.message &&
+            (err.message.includes('no such table') || err.message.includes('refresh_tokens'))
+          ) {
+            console.warn('[JWT] Refresh tokens table not available - token rotation disabled');
+            return { success: false, silent: true };
+          }
+          throw err;
+        });
+
+      if (result?.silent) {
         return result;
       }
-      
+
       return { success: true };
     } catch (error) {
       console.error('[JWT] Failed to store refresh token:', error);
@@ -130,19 +139,25 @@ class JWTService {
         console.log('[JWT] Legacy refresh token detected, upgrading to rotation');
         const newAccessToken = this.generateToken(userId);
         const { token: newRefreshToken, tokenId: newTokenId } = this.generateRefreshToken(userId);
-        
+
         // Calculate expiry
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7);
 
         // Store new refresh token
-        await this.storeRefreshToken(userId, newTokenId, expiresAt.toISOString(), deviceInfo, ipAddress);
+        await this.storeRefreshToken(
+          userId,
+          newTokenId,
+          expiresAt.toISOString(),
+          deviceInfo,
+          ipAddress,
+        );
 
-        return { 
-          success: true, 
+        return {
+          success: true,
           accessToken: newAccessToken,
           refreshToken: newRefreshToken,
-          rotated: true
+          rotated: true,
         };
       }
 
@@ -152,17 +167,20 @@ class JWTService {
       try {
         storedToken = await db.queryOne(
           `SELECT * FROM refresh_tokens WHERE token_hash = ? AND user_id = ?`,
-          [tokenHash, userId]
+          [tokenHash, userId],
         );
       } catch (error) {
         // Table doesn't exist - graceful degradation, allow refresh without rotation
-        if (error.message && (error.message.includes('no such table') || error.message.includes('refresh_tokens'))) {
+        if (
+          error.message &&
+          (error.message.includes('no such table') || error.message.includes('refresh_tokens'))
+        ) {
           console.warn('[JWT] Refresh tokens table not available - using legacy mode');
           const newAccessToken = this.generateToken(userId);
-          return { 
-            success: true, 
+          return {
+            success: true,
             accessToken: newAccessToken,
-            rotated: false
+            rotated: false,
           };
         }
         throw error;
@@ -195,26 +213,33 @@ class JWTService {
 
       // Revoke the old refresh token
       const revokedAt = this.getCurrentTimestamp();
-      await db.run(
-        `UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE token_hash = ?`,
-        [revokedAt, tokenHash]
-      );
+      await db.run(`UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE token_hash = ?`, [
+        revokedAt,
+        tokenHash,
+      ]);
 
       // Store the new refresh token with parent tracking
-      await this.storeRefreshToken(userId, newTokenId, newExpiresAt.toISOString(), deviceInfo, ipAddress, tokenHash);
+      await this.storeRefreshToken(
+        userId,
+        newTokenId,
+        newExpiresAt.toISOString(),
+        deviceInfo,
+        ipAddress,
+        tokenHash,
+      );
 
       // Update last_used_at for the old token
       const lastUsedAt = this.getCurrentTimestamp();
-      await db.run(
-        `UPDATE refresh_tokens SET last_used_at = ? WHERE token_hash = ?`,
-        [lastUsedAt, tokenHash]
-      );
+      await db.run(`UPDATE refresh_tokens SET last_used_at = ? WHERE token_hash = ?`, [
+        lastUsedAt,
+        tokenHash,
+      ]);
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        rotated: true
+        rotated: true,
       };
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
@@ -232,10 +257,10 @@ class JWTService {
     try {
       const tokenHash = this.hashToken(tokenId);
       const revokedAt = this.getCurrentTimestamp();
-      await db.run(
-        `UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE token_hash = ?`,
-        [revokedAt, tokenHash]
-      );
+      await db.run(`UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE token_hash = ?`, [
+        revokedAt,
+        tokenHash,
+      ]);
       return { success: true };
     } catch (error) {
       console.error('[JWT] Failed to revoke token:', error);
@@ -251,7 +276,7 @@ class JWTService {
       const revokedAt = this.getCurrentTimestamp();
       await db.run(
         `UPDATE refresh_tokens SET revoked = 1, revoked_at = ? WHERE user_id = ? AND revoked = 0`,
-        [revokedAt, userId]
+        [revokedAt, userId],
       );
       return { success: true };
     } catch (error) {
@@ -266,10 +291,7 @@ class JWTService {
   async cleanupExpiredTokens() {
     try {
       const now = this.getCurrentTimestamp();
-      const result = await db.run(
-        `DELETE FROM refresh_tokens WHERE expires_at < ?`,
-        [now]
-      );
+      const result = await db.run(`DELETE FROM refresh_tokens WHERE expires_at < ?`, [now]);
       return { success: true, deleted: result.affectedRows };
     } catch (error) {
       console.error('[JWT] Failed to cleanup expired tokens:', error);
@@ -288,7 +310,7 @@ class JWTService {
          FROM refresh_tokens 
          WHERE user_id = ? AND revoked = 0 AND expires_at > ?
          ORDER BY last_used_at DESC`,
-        [userId, now]
+        [userId, now],
       );
       return { success: true, tokens };
     } catch (error) {

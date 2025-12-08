@@ -18,7 +18,7 @@ class PasskeyService {
     const rpID = process.env.WEBAUTHN_RP_ID || 'localhost';
     const rpName = process.env.WEBAUTHN_RP_NAME || 'NoteHub';
     const origin = process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000';
-    
+
     return { rpID, rpName, origin };
   }
 
@@ -35,12 +35,12 @@ class PasskeyService {
    * Generate registration options for a user to register a new passkey.
    */
   static async generateRegistrationOptions(userId, username) {
-    const { rpName, rpID } = this.getRelyingPartyConfig();
+    const { rpName, rpID } = PasskeyService.getRelyingPartyConfig();
 
     // Get user's existing credentials to exclude them
     const existingCredentials = await db.query(
       `SELECT credential_id FROM webauthn_credentials WHERE user_id = ?`,
-      [userId]
+      [userId],
     );
 
     const options = await generateRegistrationOptions({
@@ -49,7 +49,7 @@ class PasskeyService {
       userID: userId.toString(),
       userName: username,
       attestationType: 'none',
-      excludeCredentials: existingCredentials.map(cred => ({
+      excludeCredentials: existingCredentials.map((cred) => ({
         id: Buffer.from(cred.credential_id, 'base64'),
         type: 'public-key',
       })),
@@ -67,7 +67,7 @@ class PasskeyService {
    * Verify registration response and store the credential.
    */
   static async verifyRegistration(userId, response, expectedChallenge, deviceName = null) {
-    const { rpID, origin } = this.getRelyingPartyConfig();
+    const { rpID, origin } = PasskeyService.getRelyingPartyConfig();
 
     const verification = await verifyRegistrationResponse({
       response,
@@ -94,7 +94,7 @@ class PasskeyService {
         counter,
         deviceName,
         aaguid,
-      ]
+      ],
     );
 
     return { success: true };
@@ -104,7 +104,7 @@ class PasskeyService {
    * Generate authentication options for passkey login.
    */
   static async generateAuthenticationOptions(username = null) {
-    const { rpID } = this.getRelyingPartyConfig();
+    const { rpID } = PasskeyService.getRelyingPartyConfig();
 
     let allowCredentials = [];
 
@@ -113,15 +113,15 @@ class PasskeyService {
       const trimmedUsername = username.trim();
       const user = await db.queryOne(
         `SELECT id FROM users WHERE LOWER(TRIM(username)) = LOWER(?) OR LOWER(TRIM(email)) = LOWER(?)`,
-        [trimmedUsername, trimmedUsername]
+        [trimmedUsername, trimmedUsername],
       );
 
       if (user) {
         const credentials = await db.query(
           `SELECT credential_id FROM webauthn_credentials WHERE user_id = ?`,
-          [user.id]
+          [user.id],
         );
-        allowCredentials = credentials.map(cred => ({
+        allowCredentials = credentials.map((cred) => ({
           id: Buffer.from(cred.credential_id, 'base64'),
           type: 'public-key',
         }));
@@ -141,13 +141,13 @@ class PasskeyService {
    * Verify authentication response and return user if successful.
    */
   static async verifyAuthentication(response, expectedChallenge) {
-    const { rpID, origin } = this.getRelyingPartyConfig();
+    const { rpID, origin } = PasskeyService.getRelyingPartyConfig();
 
     // Find the credential
     const credentialIdBase64 = Buffer.from(response.id, 'base64').toString('base64');
     const credential = await db.queryOne(
       `SELECT * FROM webauthn_credentials WHERE credential_id = ?`,
-      [credentialIdBase64]
+      [credentialIdBase64],
     );
 
     if (!credential) {
@@ -155,10 +155,7 @@ class PasskeyService {
     }
 
     // Get the user
-    const user = await db.queryOne(
-      `SELECT * FROM users WHERE id = ?`,
-      [credential.user_id]
-    );
+    const user = await db.queryOne(`SELECT * FROM users WHERE id = ?`, [credential.user_id]);
 
     if (!user) {
       return { success: false, error: 'User not found' };
@@ -185,7 +182,7 @@ class PasskeyService {
       `UPDATE webauthn_credentials 
        SET counter = ?, last_used_at = CURRENT_TIMESTAMP 
        WHERE id = ?`,
-      [verification.authenticationInfo.newCounter, credential.id]
+      [verification.authenticationInfo.newCounter, credential.id],
     );
 
     return { success: true, user };
@@ -200,7 +197,7 @@ class PasskeyService {
        FROM webauthn_credentials 
        WHERE user_id = ?
        ORDER BY created_at DESC`,
-      [userId]
+      [userId],
     );
     return credentials;
   }
@@ -209,10 +206,10 @@ class PasskeyService {
    * Delete a credential.
    */
   static async deleteCredential(userId, credentialId) {
-    const result = await db.run(
-      `DELETE FROM webauthn_credentials WHERE id = ? AND user_id = ?`,
-      [credentialId, userId]
-    );
+    const result = await db.run(`DELETE FROM webauthn_credentials WHERE id = ? AND user_id = ?`, [
+      credentialId,
+      userId,
+    ]);
 
     return result.affectedRows > 0 || result.changes > 0;
   }
@@ -225,7 +222,7 @@ class PasskeyService {
       `UPDATE webauthn_credentials 
        SET device_name = ? 
        WHERE id = ? AND user_id = ?`,
-      [deviceName, credentialId, userId]
+      [deviceName, credentialId, userId],
     );
 
     return result.affectedRows > 0 || result.changes > 0;

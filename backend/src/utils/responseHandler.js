@@ -1,6 +1,6 @@
 /**
  * Standardized Response Handler
- * 
+ *
  * Provides consistent response format across all API endpoints.
  * Includes metadata for debugging, pagination, and API versioning.
  */
@@ -15,11 +15,7 @@
  * @param {Object} options.meta - Optional metadata (pagination, etc.)
  */
 function success(res, data, options = {}) {
-  const {
-    statusCode = 200,
-    message = 'Success',
-    meta = {}
-  } = options;
+  const { statusCode = 200, message = 'Success', meta = {} } = options;
 
   const response = {
     success: true,
@@ -28,8 +24,8 @@ function success(res, data, options = {}) {
     meta: {
       timestamp: new Date().toISOString(),
       version: 'v1',
-      ...meta
-    }
+      ...meta,
+    },
   };
 
   // Add request ID if available
@@ -50,23 +46,19 @@ function success(res, data, options = {}) {
  * @param {Object} options.details - Additional error details
  */
 function error(res, message, options = {}) {
-  const {
-    statusCode = 500,
-    errorCode = 'INTERNAL_ERROR',
-    details = null
-  } = options;
+  const { statusCode = 500, errorCode = 'INTERNAL_ERROR', details = null } = options;
 
   const response = {
     success: false,
     error: {
       message,
       code: errorCode,
-      ...(details && { details })
+      ...(details && { details }),
     },
     meta: {
       timestamp: new Date().toISOString(),
-      version: 'v1'
-    }
+      version: 'v1',
+    },
   };
 
   // Add request ID if available
@@ -86,7 +78,7 @@ function validationError(res, errors) {
   return error(res, 'Validation failed', {
     statusCode: 400,
     errorCode: 'VALIDATION_ERROR',
-    details: errors
+    details: errors,
   });
 }
 
@@ -98,7 +90,7 @@ function validationError(res, errors) {
 function notFound(res, resource = 'Resource') {
   return error(res, `${resource} not found`, {
     statusCode: 404,
-    errorCode: 'NOT_FOUND'
+    errorCode: 'NOT_FOUND',
   });
 }
 
@@ -110,7 +102,7 @@ function notFound(res, resource = 'Resource') {
 function unauthorized(res, message = 'Unauthorized') {
   return error(res, message, {
     statusCode: 401,
-    errorCode: 'UNAUTHORIZED'
+    errorCode: 'UNAUTHORIZED',
   });
 }
 
@@ -122,7 +114,7 @@ function unauthorized(res, message = 'Unauthorized') {
 function forbidden(res, message = 'Forbidden') {
   return error(res, message, {
     statusCode: 403,
-    errorCode: 'FORBIDDEN'
+    errorCode: 'FORBIDDEN',
   });
 }
 
@@ -135,7 +127,7 @@ function forbidden(res, message = 'Forbidden') {
 function created(res, data, message = 'Resource created successfully') {
   return success(res, data, {
     statusCode: 201,
-    message
+    message,
   });
 }
 
@@ -168,9 +160,9 @@ function paginated(res, data, pagination) {
         total,
         totalPages,
         hasNext: page < totalPages,
-        hasPrev: page > 1
-      }
-    }
+        hasPrev: page > 1,
+      },
+    },
   });
 }
 
@@ -183,5 +175,5 @@ module.exports = {
   forbidden,
   created,
   noContent,
-  paginated
+  paginated,
 };

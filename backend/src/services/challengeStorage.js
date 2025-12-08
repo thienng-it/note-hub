@@ -18,23 +18,25 @@ const memoryStore = new Map();
  */
 async function storeChallenge(key, challenge, expirationMs = 5 * 60 * 1000) {
   const expirationSeconds = Math.floor(expirationMs / 1000);
-  
+
   // Try Redis first
   if (cache.isEnabled()) {
     try {
       const success = await cache.set(`challenge:${key}`, challenge, expirationSeconds);
       return success;
     } catch (error) {
-      logger.warn('Redis challenge storage error, falling back to memory', { error: error.message });
+      logger.warn('Redis challenge storage error, falling back to memory', {
+        error: error.message,
+      });
     }
   }
-  
+
   // Fall back to in-memory storage
   memoryStore.set(key, {
     challenge,
     expires: Date.now() + expirationMs,
   });
-  
+
   // Clean up expired challenges periodically
   setTimeout(() => {
     const entry = memoryStore.get(key);
@@ -42,7 +44,7 @@ async function storeChallenge(key, challenge, expirationMs = 5 * 60 * 1000) {
       memoryStore.delete(key);
     }
   }, expirationMs);
-  
+
   return true;
 }
 
@@ -62,17 +64,19 @@ async function getAndRemoveChallenge(key) {
         return challenge;
       }
     } catch (error) {
-      logger.warn('Redis challenge retrieval error, falling back to memory', { error: error.message });
+      logger.warn('Redis challenge retrieval error, falling back to memory', {
+        error: error.message,
+      });
     }
   }
-  
+
   // Fall back to in-memory storage
   const entry = memoryStore.get(key);
   memoryStore.delete(key);
-  
+
   if (!entry) return null;
   if (entry.expires < Date.now()) return null;
-  
+
   return entry.challenge;
 }
 

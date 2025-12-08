@@ -11,7 +11,7 @@ const axios = require('axios');
 const AI_PROVIDERS = {
   OPENAI: 'openai',
   GEMINI: 'gemini',
-  OLLAMA: 'ollama'
+  OLLAMA: 'ollama',
 };
 
 /**
@@ -25,7 +25,7 @@ function getAIConfig() {
     geminiApiKey: process.env.GEMINI_API_KEY || null,
     geminiModel: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
     ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
-    ollamaModel: process.env.OLLAMA_MODEL || 'llama3.2'
+    ollamaModel: process.env.OLLAMA_MODEL || 'llama3.2',
   };
 }
 
@@ -35,19 +35,19 @@ function getAIConfig() {
 function isAIEnabled() {
   const config = getAIConfig();
   const { provider, openaiApiKey, geminiApiKey } = config;
-  
+
   if (!provider) {
     return false;
   }
-  
+
   if (provider === AI_PROVIDERS.OPENAI && !openaiApiKey) {
     return false;
   }
-  
+
   if (provider === AI_PROVIDERS.GEMINI && !geminiApiKey) {
     return false;
   }
-  
+
   return true;
 }
 
@@ -56,7 +56,7 @@ function isAIEnabled() {
  */
 async function callOpenAI(systemPrompt, userContent) {
   const config = getAIConfig();
-  
+
   try {
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
@@ -64,23 +64,25 @@ async function callOpenAI(systemPrompt, userContent) {
         model: config.openaiModel,
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent }
+          { role: 'user', content: userContent },
         ],
         temperature: 0.7,
-        max_tokens: 2000
+        max_tokens: 2000,
       },
       {
         headers: {
-          'Authorization': `Bearer ${config.openaiApiKey}`,
-          'Content-Type': 'application/json'
-        }
-      }
+          Authorization: `Bearer ${config.openaiApiKey}`,
+          'Content-Type': 'application/json',
+        },
+      },
     );
-    
+
     return response.data.choices[0].message.content;
   } catch (error) {
     console.error('OpenAI API error:', error.response?.data || error.message);
-    throw new Error('Failed to process with OpenAI: ' + (error.response?.data?.error?.message || error.message));
+    throw new Error(
+      `Failed to process with OpenAI: ${error.response?.data?.error?.message || error.message}`,
+    );
   }
 }
 
@@ -89,31 +91,35 @@ async function callOpenAI(systemPrompt, userContent) {
  */
 async function callGemini(systemPrompt, userContent) {
   const config = getAIConfig();
-  
+
   try {
     const prompt = `${systemPrompt}\n\n${userContent}`;
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/${config.geminiModel}:generateContent?key=${config.geminiApiKey}`,
       {
-        contents: [{
-          parts: [{ text: prompt }]
-        }],
+        contents: [
+          {
+            parts: [{ text: prompt }],
+          },
+        ],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 2000
-        }
+          maxOutputTokens: 2000,
+        },
       },
       {
         headers: {
-          'Content-Type': 'application/json'
-        }
-      }
+          'Content-Type': 'application/json',
+        },
+      },
     );
-    
+
     return response.data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error('Gemini API error:', error.response?.data || error.message);
-    throw new Error('Failed to process with Gemini: ' + (error.response?.data?.error?.message || error.message));
+    throw new Error(
+      `Failed to process with Gemini: ${error.response?.data?.error?.message || error.message}`,
+    );
   }
 }
 
@@ -122,7 +128,7 @@ async function callGemini(systemPrompt, userContent) {
  */
 async function callOllama(systemPrompt, userContent) {
   const config = getAIConfig();
-  
+
   try {
     const response = await axios.post(
       `${config.ollamaUrl}/api/generate`,
@@ -132,20 +138,20 @@ async function callOllama(systemPrompt, userContent) {
         stream: false,
         options: {
           temperature: 0.7,
-          num_predict: 2000
-        }
+          num_predict: 2000,
+        },
       },
       {
         headers: {
-          'Content-Type': 'application/json'
-        }
-      }
+          'Content-Type': 'application/json',
+        },
+      },
     );
-    
+
     return response.data.response;
   } catch (error) {
     console.error('Ollama API error:', error.response?.data || error.message);
-    throw new Error('Failed to process with Ollama: ' + (error.message || 'Unknown error'));
+    throw new Error(`Failed to process with Ollama: ${error.message || 'Unknown error'}`);
   }
 }
 
@@ -154,7 +160,7 @@ async function callOllama(systemPrompt, userContent) {
  */
 async function callAI(systemPrompt, userContent) {
   const config = getAIConfig();
-  
+
   switch (config.provider) {
     case AI_PROVIDERS.OPENAI:
       return await callOpenAI(systemPrompt, userContent);
@@ -174,9 +180,9 @@ async function proofreadText(text) {
   if (!isAIEnabled()) {
     throw new Error('AI features are not enabled. Please configure an AI provider.');
   }
-  
+
   const systemPrompt = `You are a professional proofreader. Your task is to correct grammar, spelling, and punctuation errors in the provided text while maintaining the original meaning and tone. Return ONLY the corrected text without any additional commentary or explanations.`;
-  
+
   return await callAI(systemPrompt, text);
 }
 
@@ -187,9 +193,9 @@ async function summarizeText(text) {
   if (!isAIEnabled()) {
     throw new Error('AI features are not enabled. Please configure an AI provider.');
   }
-  
+
   const systemPrompt = `You are a professional summarizer. Create a clear, concise summary of the provided text that captures the main points and key ideas. Return ONLY the summary without any additional commentary or explanations.`;
-  
+
   return await callAI(systemPrompt, text);
 }
 
@@ -200,7 +206,7 @@ async function rewriteText(text, style = 'professional') {
   if (!isAIEnabled()) {
     throw new Error('AI features are not enabled. Please configure an AI provider.');
   }
-  
+
   let styleInstruction = '';
   switch (style) {
     case 'professional':
@@ -215,9 +221,9 @@ async function rewriteText(text, style = 'professional') {
     default:
       styleInstruction = 'to improve clarity and readability';
   }
-  
+
   const systemPrompt = `You are a professional writer. Rewrite the provided text ${styleInstruction}. Return ONLY the rewritten text without any additional commentary or explanations.`;
-  
+
   return await callAI(systemPrompt, text);
 }
 
@@ -227,7 +233,7 @@ async function rewriteText(text, style = 'professional') {
 function getAIStatus() {
   const config = getAIConfig();
   const enabled = isAIEnabled();
-  
+
   return {
     enabled,
     provider: config.provider,
@@ -236,22 +242,22 @@ function getAIStatus() {
         id: AI_PROVIDERS.OPENAI,
         name: 'OpenAI',
         configured: !!config.openaiApiKey,
-        model: config.openaiModel
+        model: config.openaiModel,
       },
       {
         id: AI_PROVIDERS.GEMINI,
         name: 'Google Gemini',
         configured: !!config.geminiApiKey,
-        model: config.geminiModel
+        model: config.geminiModel,
       },
       {
         id: AI_PROVIDERS.OLLAMA,
         name: 'Ollama (Local)',
         configured: true, // Ollama doesn't require API key
         url: config.ollamaUrl,
-        model: config.ollamaModel
-      }
-    ]
+        model: config.ollamaModel,
+      },
+    ],
   };
 }
 
@@ -261,5 +267,5 @@ module.exports = {
   proofreadText,
   summarizeText,
   rewriteText,
-  getAIStatus
+  getAIStatus,
 };

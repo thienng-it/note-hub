@@ -9,7 +9,7 @@ const { jwtRequired } = require('../middleware/auth');
 /**
  * GET /api/ai/status - Get AI status and configuration
  */
-router.get('/status', jwtRequired, async (req, res) => {
+router.get('/status', jwtRequired, async (_req, res) => {
   try {
     const status = AIService.getAIStatus();
     res.json(status);
@@ -25,15 +25,15 @@ router.get('/status', jwtRequired, async (req, res) => {
 router.post('/proofread', jwtRequired, async (req, res) => {
   try {
     const { text } = req.body;
-    
+
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Text is required' });
     }
-    
+
     if (text.length > 10000) {
       return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
     }
-    
+
     const result = await AIService.proofreadText(text);
     res.json({ result });
   } catch (error) {
@@ -48,15 +48,15 @@ router.post('/proofread', jwtRequired, async (req, res) => {
 router.post('/summarize', jwtRequired, async (req, res) => {
   try {
     const { text } = req.body;
-    
+
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Text is required' });
     }
-    
+
     if (text.length > 10000) {
       return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
     }
-    
+
     const result = await AIService.summarizeText(text);
     res.json({ result });
   } catch (error) {
@@ -71,20 +71,22 @@ router.post('/summarize', jwtRequired, async (req, res) => {
 router.post('/rewrite', jwtRequired, async (req, res) => {
   try {
     const { text, style = 'professional' } = req.body;
-    
+
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Text is required' });
     }
-    
+
     if (text.length > 10000) {
       return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
     }
-    
+
     const validStyles = ['professional', 'casual', 'concise'];
     if (!validStyles.includes(style)) {
-      return res.status(400).json({ error: 'Invalid style. Must be one of: professional, casual, concise' });
+      return res
+        .status(400)
+        .json({ error: 'Invalid style. Must be one of: professional, casual, concise' });
     }
-    
+
     const result = await AIService.rewriteText(text, style);
     res.json({ result });
   } catch (error) {

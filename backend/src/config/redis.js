@@ -19,7 +19,7 @@ class RedisCache {
     // Check if Redis is configured
     const redisUrl = process.env.REDIS_URL;
     const redisHost = process.env.REDIS_HOST;
-    
+
     if (!redisUrl && !redisHost) {
       console.log('⚠️  Redis not configured - caching disabled');
       this.enabled = false;
@@ -36,7 +36,7 @@ class RedisCache {
       if (redisUrl) {
         this.client = new Redis(redisUrl, {
           maxRetriesPerRequest: REDIS.MAX_RETRIES,
-          retryStrategy
+          retryStrategy,
         });
       } else {
         this.client = new Redis({
@@ -45,17 +45,17 @@ class RedisCache {
           password: process.env.REDIS_PASSWORD || undefined,
           db: parseInt(process.env.REDIS_DB || '0', 10),
           maxRetriesPerRequest: REDIS.MAX_RETRIES,
-          retryStrategy
+          retryStrategy,
         });
       }
 
       // Test connection
       await this.client.ping();
       this.enabled = true;
-      
+
       const host = redisHost || (redisUrl ? 'URL' : 'localhost');
       console.log(`🔴 Connected to Redis: ${host}`);
-      
+
       // Handle connection errors gracefully
       this.client.on('error', (err) => {
         console.error('Redis error:', err.message);
@@ -70,7 +70,6 @@ class RedisCache {
         console.log('✅ Redis ready');
         this.enabled = true;
       });
-
     } catch (error) {
       console.error('⚠️  Redis connection failed:', error.message);
       console.log('⚠️  Continuing without cache - performance may be slower');
@@ -84,7 +83,7 @@ class RedisCache {
    */
   async get(key) {
     if (!this.enabled || !this.client) return null;
-    
+
     try {
       const value = await this.client.get(key);
       return value ? JSON.parse(value) : null;
@@ -99,7 +98,7 @@ class RedisCache {
    */
   async set(key, value, ttl = 3600) {
     if (!this.enabled || !this.client) return false;
-    
+
     try {
       await this.client.setex(key, ttl, JSON.stringify(value));
       return true;
@@ -114,7 +113,7 @@ class RedisCache {
    */
   async del(key) {
     if (!this.enabled || !this.client) return false;
-    
+
     try {
       await this.client.del(key);
       return true;
@@ -130,36 +129,40 @@ class RedisCache {
    */
   async delPattern(pattern) {
     if (!this.enabled || !this.client) return false;
-    
+
     try {
       let cursor = '0';
-      let deletedCount = 0;
+      let _deletedCount = 0;
       let iterations = 0;
       const maxIterations = 1000; // Prevent infinite loops
-      
+
       do {
         // Use SCAN instead of KEYS to avoid blocking
         const [nextCursor, keys] = await this.client.scan(
           cursor,
-          'MATCH', pattern,
-          'COUNT', REDIS.SCAN_COUNT
+          'MATCH',
+          pattern,
+          'COUNT',
+          REDIS.SCAN_COUNT,
         );
-        
+
         cursor = nextCursor;
         iterations++;
-        
+
         if (keys.length > 0) {
           await this.client.del(...keys);
-          deletedCount += keys.length;
+          _deletedCount += keys.length;
         }
 
         // Safety check to prevent infinite loops
         if (iterations >= maxIterations) {
-          console.warn(`Cache delPattern reached max iterations (${maxIterations}) for pattern ${pattern}`);
+          console.warn(
+            `Cache delPattern reached max iterations (${maxIterations}) for pattern ${pattern}`,
+          );
           break;
         }
       } while (cursor !== '0');
-      
+
       return true;
     } catch (error) {
       console.error(`Cache delPattern error for pattern ${pattern}:`, error.message);

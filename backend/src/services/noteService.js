@@ -18,7 +18,7 @@ class NoteService {
   static async getNotesForUser(userId, viewType = 'all', searchQuery = '', tagFilter = '') {
     // Generate cache key
     const cacheKey = `notes:user:${userId}:${viewType}:${searchQuery}:${tagFilter}`;
-    
+
     // Try cache first
     const cached = await cache.get(cacheKey);
     if (cached) {
@@ -30,12 +30,12 @@ class NoteService {
       const esResults = await elasticsearch.searchNotes(userId, searchQuery, {
         archived: viewType === 'archived',
         favorite: viewType === 'favorites' ? true : null,
-        tags: tagFilter ? [tagFilter] : null
+        tags: tagFilter ? [tagFilter] : null,
       });
 
-      if (esResults && esResults.notes) {
+      if (esResults?.notes) {
         // Fetch full note details from database (ES only stores indexed fields)
-        const noteIds = esResults.notes.map(n => n.id);
+        const noteIds = esResults.notes.map((n) => n.id);
         if (noteIds.length === 0) {
           await cache.set(cacheKey, [], CACHE_TTL.NOTES_SEARCH);
           return [];
@@ -44,8 +44,8 @@ class NoteService {
         // Validate noteIds are integers to prevent SQL injection
         // Convert to integers and validate (ES might return strings)
         const validNoteIds = noteIds
-          .map(id => typeof id === 'string' ? parseInt(id, 10) : id)
-          .filter(id => Number.isInteger(id) && id > 0 && !isNaN(id));
+          .map((id) => (typeof id === 'string' ? parseInt(id, 10) : id))
+          .filter((id) => Number.isInteger(id) && id > 0 && !Number.isNaN(id));
         if (validNoteIds.length === 0) {
           await cache.set(cacheKey, [], CACHE_TTL.NOTES_SEARCH);
           return [];
@@ -65,21 +65,21 @@ class NoteService {
         `;
 
         const notes = await db.query(sql, validNoteIds);
-        
+
         // Sort notes to match ES order (preserving relevance ranking)
         notes.sort((a, b) => {
           const indexA = validNoteIds.indexOf(a.id);
           const indexB = validNoteIds.indexOf(b.id);
           return indexA - indexB;
         });
-        const parsedNotes = notes.map(note => ({
+        const parsedNotes = notes.map((note) => ({
           ...note,
           tags: note.tag_names
             ? note.tag_names.split(',').map((name, i) => ({
                 id: note.tag_ids.split(',')[i],
-                name
+                name,
               }))
-            : []
+            : [],
         }));
 
         await cache.set(cacheKey, parsedNotes, CACHE_TTL.NOTES_SEARCH);
@@ -89,7 +89,7 @@ class NoteService {
 
     // Fall back to SQL query
     let sql, params;
-    
+
     // Special handling for 'shared' view - use INNER JOIN to only get shared notes
     if (viewType === 'shared') {
       sql = `
@@ -125,7 +125,6 @@ class NoteService {
         case 'archived':
           sql += ` AND n.archived = 1`;
           break;
-        case 'all':
         default:
           sql += ` AND n.archived = 0`;
           break;
@@ -150,14 +149,14 @@ class NoteService {
     const notes = await db.query(sql, params);
 
     // Parse tags from concatenated strings
-    const parsedNotes = notes.map(note => ({
+    const parsedNotes = notes.map((note) => ({
       ...note,
       tags: note.tag_names
         ? note.tag_names.split(',').map((name, i) => ({
             id: note.tag_ids.split(',')[i],
-            name
+            name,
           }))
-        : []
+        : [],
     }));
 
     // Cache results
@@ -172,7 +171,7 @@ class NoteService {
    */
   static async getTagsForUser(userId) {
     const cacheKey = `tags:user:${userId}`;
-    
+
     // Try cache first
     const cached = await cache.get(cacheKey);
     if (cached) {
@@ -180,7 +179,8 @@ class NoteService {
     }
 
     // Query database
-    const tags = await db.query(`
+    const tags = await db.query(
+      `
       SELECT DISTINCT t.*, COUNT(nt.note_id) as note_count
       FROM tags t
       INNER JOIN note_tag nt ON t.id = nt.tag_id
@@ -188,7 +188,9 @@ class NoteService {
       WHERE n.owner_id = ?
       GROUP BY t.id
       ORDER BY t.name
-    `, [userId]);
+    `,
+      [userId],
+    );
 
     // Cache results
     await cache.set(cacheKey, tags, CACHE_TTL.TAGS);
@@ -200,7 +202,8 @@ class NoteService {
    * Check if a user has access to a note.
    */
   static async checkNoteAccess(noteId, userId) {
-    const note = await db.queryOne(`
+    const note = await db.queryOne(
+      `
       SELECT n.*, 
         GROUP_CONCAT(t.name) as tag_names,
         GROUP_CONCAT(t.id) as tag_ids
@@ -209,7 +212,9 @@ class NoteService {
       LEFT JOIN tags t ON nt.tag_id = t.id
       WHERE n.id = ?
       GROUP BY n.id
-    `, [noteId]);
+    `,
+      [noteId],
+    );
 
     if (!note) {
       return { note: null, hasAccess: false, canEdit: false };
@@ -219,7 +224,7 @@ class NoteService {
     note.tags = note.tag_names
       ? note.tag_names.split(',').map((name, i) => ({
           id: note.tag_ids.split(',')[i],
-          name
+          name,
         }))
       : [];
 
@@ -229,9 +234,12 @@ class NoteService {
     }
 
     // Check for share access
-    const share = await db.queryOne(`
+    const share = await db.queryOne(
+      `
       SELECT * FROM share_notes WHERE note_id = ? AND shared_with_id = ?
-    `, [noteId, userId]);
+    `,
+      [noteId, userId],
+    );
 
     if (share) {
       return { note, hasAccess: true, canEdit: !!share.can_edit };
@@ -244,23 +252,35 @@ class NoteService {
    * Create a new note.
    * Invalidates cache and indexes in Elasticsearch.
    */
-  static async createNote(userId, title, body = '', tags = '', pinned = false, favorite = false, archived = false, images = []) {
+  static async createNote(
+    userId,
+    title,
+    body = '',
+    tags = '',
+    pinned = false,
+    favorite = false,
+    archived = false,
+    images = [],
+  ) {
     const imagesJson = Array.isArray(images) ? JSON.stringify(images) : null;
-    
-    const result = await db.run(`
+
+    const result = await db.run(
+      `
       INSERT INTO notes (title, body, images, pinned, favorite, archived, owner_id)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [title, body, imagesJson, pinned ? 1 : 0, favorite ? 1 : 0, archived ? 1 : 0, userId]);
+    `,
+      [title, body, imagesJson, pinned ? 1 : 0, favorite ? 1 : 0, archived ? 1 : 0, userId],
+    );
 
     const noteId = result.insertId;
 
     // Process tags
     if (tags) {
-      await this.updateNoteTags(noteId, tags);
+      await NoteService.updateNoteTags(noteId, tags);
     }
 
     // Get the complete note
-    const note = await this.getNoteById(noteId);
+    const note = await NoteService.getNoteById(noteId);
 
     // Invalidate user's notes and tags cache
     await cache.delPattern(`notes:user:${userId}:*`);
@@ -270,7 +290,7 @@ class NoteService {
     if (note) {
       await elasticsearch.indexNote({
         ...note,
-        tags: note.tags ? note.tags.map(t => t.name) : []
+        tags: note.tags ? note.tags.map((t) => t.name) : [],
       });
     }
 
@@ -317,11 +337,11 @@ class NoteService {
 
     // Update tags if provided
     if (tags !== undefined) {
-      await this.updateNoteTags(noteId, tags);
+      await NoteService.updateNoteTags(noteId, tags);
     }
 
     // Get the updated note
-    const note = await this.getNoteById(noteId);
+    const note = await NoteService.getNoteById(noteId);
 
     if (note) {
       // Invalidate user's notes and tags cache
@@ -331,7 +351,7 @@ class NoteService {
       // Update in Elasticsearch
       await elasticsearch.indexNote({
         ...note,
-        tags: note.tags ? note.tags.map(t => t.name) : []
+        tags: note.tags ? note.tags.map((t) => t.name) : [],
       });
     }
 
@@ -348,20 +368,23 @@ class NoteService {
     // Parse and add new tags
     const tagNames = tagsString
       .split(',')
-      .map(t => t.trim().toLowerCase())
-      .filter(t => t.length > 0);
+      .map((t) => t.trim().toLowerCase())
+      .filter((t) => t.length > 0);
 
     for (const tagName of tagNames) {
       // Get or create tag
       let tag = await db.queryOne(`SELECT * FROM tags WHERE name = ?`, [tagName]);
-      
+
       if (!tag) {
         const result = await db.run(`INSERT INTO tags (name) VALUES (?)`, [tagName]);
         tag = { id: result.insertId, name: tagName };
       }
 
       // Link tag to note
-      await db.run(`INSERT OR IGNORE INTO note_tag (note_id, tag_id) VALUES (?, ?)`, [noteId, tag.id]);
+      await db.run(`INSERT OR IGNORE INTO note_tag (note_id, tag_id) VALUES (?, ?)`, [
+        noteId,
+        tag.id,
+      ]);
     }
 
     // Cleanup orphaned tags
@@ -374,7 +397,8 @@ class NoteService {
    * Get a note by ID.
    */
   static async getNoteById(noteId) {
-    const note = await db.queryOne(`
+    const note = await db.queryOne(
+      `
       SELECT n.*, 
         GROUP_CONCAT(t.name) as tag_names,
         GROUP_CONCAT(t.id) as tag_ids
@@ -383,14 +407,16 @@ class NoteService {
       LEFT JOIN tags t ON nt.tag_id = t.id
       WHERE n.id = ?
       GROUP BY n.id
-    `, [noteId]);
+    `,
+      [noteId],
+    );
 
     if (!note) return null;
 
     note.tags = note.tag_names
       ? note.tag_names.split(',').map((name, i) => ({
           id: note.tag_ids.split(',')[i],
-          name
+          name,
         }))
       : [];
 
@@ -415,7 +441,7 @@ class NoteService {
 
     // Delete shares first
     await db.run(`DELETE FROM share_notes WHERE note_id = ?`, [noteId]);
-    
+
     // Delete note (cascades to note_tag)
     await db.run(`DELETE FROM notes WHERE id = ?`, [noteId]);
 
@@ -435,10 +461,9 @@ class NoteService {
    * Share a note with another user.
    */
   static async shareNote(noteId, ownerId, sharedWithUsername, canEdit = false) {
-    const sharedWithUser = await db.queryOne(
-      `SELECT * FROM users WHERE username = ?`,
-      [sharedWithUsername]
-    );
+    const sharedWithUser = await db.queryOne(`SELECT * FROM users WHERE username = ?`, [
+      sharedWithUsername,
+    ]);
 
     if (!sharedWithUser) {
       return { success: false, error: 'User not found' };
@@ -449,18 +474,24 @@ class NoteService {
     }
 
     // Check if already shared
-    const existingShare = await db.queryOne(`
+    const existingShare = await db.queryOne(
+      `
       SELECT * FROM share_notes WHERE note_id = ? AND shared_with_id = ?
-    `, [noteId, sharedWithUser.id]);
+    `,
+      [noteId, sharedWithUser.id],
+    );
 
     if (existingShare) {
       return { success: false, error: 'Note is already shared with this user' };
     }
 
-    await db.run(`
+    await db.run(
+      `
       INSERT INTO share_notes (note_id, shared_by_id, shared_with_id, can_edit)
       VALUES (?, ?, ?, ?)
-    `, [noteId, ownerId, sharedWithUser.id, canEdit ? 1 : 0]);
+    `,
+      [noteId, ownerId, sharedWithUser.id, canEdit ? 1 : 0],
+    );
 
     // Invalidate the recipient's notes cache so they see the shared note
     await cache.delPattern(`notes:user:${sharedWithUser.id}:*`);
@@ -475,13 +506,13 @@ class NoteService {
     // First get the share to know which user's cache to invalidate
     const share = await db.queryOne(
       `SELECT shared_with_id FROM share_notes WHERE id = ? AND note_id = ?`,
-      [shareId, noteId]
+      [shareId, noteId],
     );
 
     await db.run(`DELETE FROM share_notes WHERE id = ? AND note_id = ?`, [shareId, noteId]);
 
     // Invalidate the recipient's notes cache so the note disappears from their shared view
-    if (share && share.shared_with_id) {
+    if (share?.shared_with_id) {
       await cache.delPattern(`notes:user:${share.shared_with_id}:*`);
     }
   }
@@ -492,7 +523,7 @@ class NoteService {
   static getExcerpt(body, length = 150) {
     if (!body) return '';
     const plainText = sanitizeHtml(body, { allowedTags: [], allowedAttributes: {} });
-    return plainText.length > length ? plainText.substring(0, length) + '...' : plainText;
+    return plainText.length > length ? `${plainText.substring(0, length)}...` : plainText;
   }
 
   /**
@@ -500,24 +531,52 @@ class NoteService {
    */
   static renderMarkdown(body) {
     if (!body) return '';
-    
+
     const html = marked(body);
-    
+
     // Sanitize HTML
     return sanitizeHtml(html, {
       allowedTags: [
-        'p', 'br', 'strong', 'em', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'ul', 'ol', 'li', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
-        'a', 'hr', 'div', 'span', 'img', 'del', 'ins', 'sub', 'sup'
+        'p',
+        'br',
+        'strong',
+        'em',
+        'code',
+        'pre',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'ul',
+        'ol',
+        'li',
+        'blockquote',
+        'table',
+        'thead',
+        'tbody',
+        'tr',
+        'th',
+        'td',
+        'a',
+        'hr',
+        'div',
+        'span',
+        'img',
+        'del',
+        'ins',
+        'sub',
+        'sup',
       ],
       allowedAttributes: {
-        'a': ['href', 'title', 'target', 'rel'],
-        'img': ['src', 'alt', 'title', 'width', 'height'],
-        'code': ['class'],
-        'pre': ['class'],
-        'div': ['class'],
-        'span': ['class']
-      }
+        a: ['href', 'title', 'target', 'rel'],
+        img: ['src', 'alt', 'title', 'width', 'height'],
+        code: ['class'],
+        pre: ['class'],
+        div: ['class'],
+        span: ['class'],
+      },
     });
   }
 }

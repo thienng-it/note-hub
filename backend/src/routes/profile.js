@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const { jwtRequired } = require('../middleware/auth');
 const db = require('../config/database');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 
 /**
  * GET /api/profile - Get current user's profile
@@ -13,25 +13,24 @@ const crypto = require('crypto');
 router.get('/', jwtRequired, async (req, res) => {
   try {
     // Get user stats
-    const totalNotes = await db.queryOne(
-      `SELECT COUNT(*) as count FROM notes WHERE owner_id = ?`,
-      [req.userId]
-    );
+    const totalNotes = await db.queryOne(`SELECT COUNT(*) as count FROM notes WHERE owner_id = ?`, [
+      req.userId,
+    ]);
     const favoriteNotes = await db.queryOne(
       `SELECT COUNT(*) as count FROM notes WHERE owner_id = ? AND favorite = 1`,
-      [req.userId]
+      [req.userId],
     );
     const archivedNotes = await db.queryOne(
       `SELECT COUNT(*) as count FROM notes WHERE owner_id = ? AND archived = 1`,
-      [req.userId]
+      [req.userId],
     );
     const sharedNotesCount = await db.queryOne(
       `SELECT COUNT(*) as count FROM share_notes WHERE shared_by_id = ?`,
-      [req.userId]
+      [req.userId],
     );
     const notesSharedWithMe = await db.queryOne(
       `SELECT COUNT(*) as count FROM share_notes WHERE shared_with_id = ?`,
-      [req.userId]
+      [req.userId],
     );
     const totalTags = await db.queryOne(
       `SELECT COUNT(DISTINCT t.id) as count 
@@ -39,17 +38,18 @@ router.get('/', jwtRequired, async (req, res) => {
        INNER JOIN note_tag nt ON t.id = nt.tag_id 
        INNER JOIN notes n ON nt.note_id = n.id 
        WHERE n.owner_id = ?`,
-      [req.userId]
+      [req.userId],
     );
 
     // Get recent notes
     const recentNotes = await db.query(
       `SELECT id, title, updated_at FROM notes WHERE owner_id = ? ORDER BY updated_at DESC LIMIT 5`,
-      [req.userId]
+      [req.userId],
     );
 
     // Get notes shared with user
-    const sharedWithMe = await db.query(`
+    const sharedWithMe = await db.query(
+      `
       SELECT n.id, n.title, u.username as shared_by, sn.created_at
       FROM notes n
       JOIN share_notes sn ON n.id = sn.note_id
@@ -57,7 +57,9 @@ router.get('/', jwtRequired, async (req, res) => {
       WHERE sn.shared_with_id = ?
       ORDER BY sn.created_at DESC
       LIMIT 5
-    `, [req.userId]);
+    `,
+      [req.userId],
+    );
 
     res.json({
       user: {
@@ -68,7 +70,7 @@ router.get('/', jwtRequired, async (req, res) => {
         theme: req.user.theme,
         has_2fa: !!req.user.totp_secret,
         created_at: req.user.created_at,
-        last_login: req.user.last_login
+        last_login: req.user.last_login,
       },
       stats: {
         total_notes: totalNotes?.count || 0,
@@ -76,10 +78,10 @@ router.get('/', jwtRequired, async (req, res) => {
         archived_notes: archivedNotes?.count || 0,
         shared_notes: sharedNotesCount?.count || 0,
         notes_shared_with_me: notesSharedWithMe?.count || 0,
-        total_tags: totalTags?.count || 0
+        total_tags: totalTags?.count || 0,
       },
       recent_notes: recentNotes,
-      shared_with_me: sharedWithMe
+      shared_with_me: sharedWithMe,
     });
   } catch (error) {
     console.error('Get profile error:', error);
@@ -98,7 +100,7 @@ router.put('/', jwtRequired, async (req, res) => {
     if (username && username !== req.user.username) {
       const existingUser = await db.queryOne(
         `SELECT id FROM users WHERE username = ? AND id != ?`,
-        [username, req.userId]
+        [username, req.userId],
       );
       if (existingUser) {
         return res.status(400).json({ error: 'Username already exists' });
@@ -132,7 +134,7 @@ router.put('/', jwtRequired, async (req, res) => {
 
     const updatedUser = await db.queryOne(
       `SELECT id, username, email, bio, theme, totp_secret, created_at FROM users WHERE id = ?`,
-      [req.userId]
+      [req.userId],
     );
 
     res.json({
@@ -144,8 +146,8 @@ router.put('/', jwtRequired, async (req, res) => {
         bio: updatedUser.bio,
         theme: updatedUser.theme,
         has_2fa: !!updatedUser.totp_secret,
-        created_at: updatedUser.created_at
-      }
+        created_at: updatedUser.created_at,
+      },
     });
   } catch (error) {
     console.error('Update profile error:', error);
@@ -159,11 +161,8 @@ router.put('/', jwtRequired, async (req, res) => {
 router.post('/toggle-theme', jwtRequired, async (req, res) => {
   try {
     const newTheme = req.user.theme === 'light' ? 'dark' : 'light';
-    
-    await db.run(
-      `UPDATE users SET theme = ? WHERE id = ?`,
-      [newTheme, req.userId]
-    );
+
+    await db.run(`UPDATE users SET theme = ? WHERE id = ?`, [newTheme, req.userId]);
 
     res.json({ theme: newTheme });
   } catch (error) {
@@ -177,13 +176,16 @@ router.post('/toggle-theme', jwtRequired, async (req, res) => {
  */
 router.get('/invitations', jwtRequired, async (req, res) => {
   try {
-    const invitations = await db.query(`
+    const invitations = await db.query(
+      `
       SELECT i.*, u.username as used_by_username
       FROM invitations i
       LEFT JOIN users u ON i.used_by_id = u.id
       WHERE i.inviter_id = ?
       ORDER BY i.created_at DESC
-    `, [req.userId]);
+    `,
+      [req.userId],
+    );
 
     res.json({ invitations });
   } catch (error) {
@@ -201,19 +203,21 @@ router.post('/invitations', jwtRequired, async (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    const result = await db.run(`
+    const result = await db.run(
+      `
       INSERT INTO invitations (token, inviter_id, email, message, expires_at)
       VALUES (?, ?, ?, ?, ?)
-    `, [token, req.userId, email || null, message || null, expiresAt.toISOString()]);
-
-    const invitation = await db.queryOne(
-      `SELECT * FROM invitations WHERE id = ?`,
-      [result.insertId]
+    `,
+      [token, req.userId, email || null, message || null, expiresAt.toISOString()],
     );
+
+    const invitation = await db.queryOne(`SELECT * FROM invitations WHERE id = ?`, [
+      result.insertId,
+    ]);
 
     res.status(201).json({
       invitation,
-      invite_url: `${req.protocol}://${req.get('host')}/register?token=${token}`
+      invite_url: `${req.protocol}://${req.get('host')}/register?token=${token}`,
     });
   } catch (error) {
     console.error('Create invitation error:', error);
@@ -227,32 +231,30 @@ router.post('/invitations', jwtRequired, async (req, res) => {
 router.get('/:id', jwtRequired, async (req, res) => {
   try {
     const userId = parseInt(req.params.id, 10);
-    
-    const user = await db.queryOne(
-      `SELECT id, username, bio, created_at FROM users WHERE id = ?`,
-      [userId]
-    );
+
+    const user = await db.queryOne(`SELECT id, username, bio, created_at FROM users WHERE id = ?`, [
+      userId,
+    ]);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const totalNotes = await db.queryOne(
-      `SELECT COUNT(*) as count FROM notes WHERE owner_id = ?`,
-      [userId]
-    );
+    const totalNotes = await db.queryOne(`SELECT COUNT(*) as count FROM notes WHERE owner_id = ?`, [
+      userId,
+    ]);
 
     res.json({
       user: {
         id: user.id,
         username: user.username,
         bio: user.bio,
-        created_at: user.created_at
+        created_at: user.created_at,
       },
       stats: {
-        total_notes: totalNotes?.count || 0
+        total_notes: totalNotes?.count || 0,
       },
-      is_own_profile: userId === req.userId
+      is_own_profile: userId === req.userId,
     });
   } catch (error) {
     console.error('Get user profile error:', error);

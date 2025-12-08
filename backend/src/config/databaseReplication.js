@@ -1,10 +1,10 @@
 /**
  * Database Replication Configuration and Management
- * 
+ *
  * Supports read replicas for improved performance and high availability:
  * - MySQL: Primary-replica replication with automatic failover
  * - SQLite: Backup/replication using file-based approach or Litestream
- * 
+ *
  * Features:
  * - Read/write query routing
  * - Load balancing across read replicas
@@ -12,8 +12,8 @@
  * - Replica lag monitoring
  */
 
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 class DatabaseReplication {
   constructor() {
@@ -27,16 +27,16 @@ class DatabaseReplication {
 
   /**
    * Initialize replication based on environment configuration
-   * 
+   *
    * Environment variables:
    * - DB_REPLICATION_ENABLED: Enable/disable replication (default: false)
-   * 
+   *
    * For MySQL:
    * - MYSQL_REPLICA_HOSTS: Comma-separated list of replica hosts
    * - MYSQL_REPLICA_PORTS: Comma-separated list of replica ports (optional)
    * - MYSQL_REPLICA_USER: User for replica connections (default: same as primary)
    * - MYSQL_REPLICA_PASSWORD: Password for replicas (default: same as primary)
-   * 
+   *
    * For SQLite:
    * - SQLITE_REPLICA_PATHS: Comma-separated list of replica database paths
    */
@@ -62,7 +62,7 @@ class DatabaseReplication {
       if (this.replicas.length > 0) {
         this.enabled = true;
         console.log(`✅ Database replication initialized with ${this.replicas.length} replica(s)`);
-        
+
         // Start health check monitoring
         this.startHealthChecks();
       } else {
@@ -87,7 +87,7 @@ class DatabaseReplication {
     }
 
     const Database = require('better-sqlite3');
-    const paths = replicaPaths.split(',').map(p => p.trim());
+    const paths = replicaPaths.split(',').map((p) => p.trim());
 
     for (const replicaPath of paths) {
       try {
@@ -104,14 +104,14 @@ class DatabaseReplication {
         // Open replica in read-only mode
         const replica = new Database(resolvedPath, { readonly: true });
         replica.pragma('query_only = ON');
-        
+
         this.replicas.push({
           connection: replica,
           path: resolvedPath,
           type: 'sqlite',
-          healthy: true
+          healthy: true,
         });
-        
+
         console.log(`   ✓ Connected to SQLite replica: ${resolvedPath}`);
       } catch (error) {
         console.error(`   ✗ Failed to connect to replica ${replicaPath}:`, error.message);
@@ -130,8 +130,8 @@ class DatabaseReplication {
     }
 
     const mysql = require('mysql2/promise');
-    const hosts = replicaHosts.split(',').map(h => h.trim());
-    const ports = (process.env.MYSQL_REPLICA_PORTS || '').split(',').map(p => p.trim());
+    const hosts = replicaHosts.split(',').map((h) => h.trim());
+    const ports = (process.env.MYSQL_REPLICA_PORTS || '').split(',').map((p) => p.trim());
     const user = process.env.MYSQL_REPLICA_USER || process.env.MYSQL_USER || 'root';
     const password = process.env.MYSQL_REPLICA_PASSWORD || process.env.MYSQL_PASSWORD || '';
     const database = process.env.MYSQL_DATABASE || 'notehub';
@@ -149,11 +149,12 @@ class DatabaseReplication {
           database,
           waitForConnections: true,
           connectionLimit: 5, // Fewer connections per replica
-          queueLimit: 0
+          queueLimit: 0,
         };
 
         // Disable SSL for local/Docker connections
-        const sslDisabled = process.env.MYSQL_SSL_DISABLED === 'true' ||
+        const sslDisabled =
+          process.env.MYSQL_SSL_DISABLED === 'true' ||
           host === 'localhost' ||
           host === '127.0.0.1' ||
           host.startsWith('mysql-replica') ||
@@ -166,7 +167,7 @@ class DatabaseReplication {
         }
 
         const pool = await mysql.createPool(config);
-        
+
         // Test connection
         const connection = await pool.getConnection();
         connection.release();
@@ -176,7 +177,7 @@ class DatabaseReplication {
           host,
           port,
           type: 'mysql',
-          healthy: true
+          healthy: true,
         });
 
         console.log(`   ✓ Connected to MySQL replica: ${host}:${port}`);
@@ -211,7 +212,10 @@ class DatabaseReplication {
         return rows;
       }
     } catch (error) {
-      console.error(`⚠️  Replica query failed (${replica.host || replica.path}), falling back to primary:`, error.message);
+      console.error(
+        `⚠️  Replica query failed (${replica.host || replica.path}), falling back to primary:`,
+        error.message,
+      );
       // Mark replica as unhealthy
       this.replicaHealthStatus.set(replica, false);
       // Fallback to primary
@@ -244,7 +248,10 @@ class DatabaseReplication {
         return rows[0];
       }
     } catch (error) {
-      console.error(`⚠️  Replica query failed (${replica.host || replica.path}), falling back to primary:`, error.message);
+      console.error(
+        `⚠️  Replica query failed (${replica.host || replica.path}), falling back to primary:`,
+        error.message,
+      );
       // Mark replica as unhealthy
       this.replicaHealthStatus.set(replica, false);
       // Fallback to primary
@@ -298,7 +305,7 @@ class DatabaseReplication {
       return null;
     }
 
-    const startIndex = this.currentReplicaIndex;
+    const _startIndex = this.currentReplicaIndex;
     let attempts = 0;
 
     while (attempts < this.replicas.length) {
@@ -318,7 +325,7 @@ class DatabaseReplication {
    * Check if any healthy replicas are available
    */
   hasHealthyReplicas() {
-    return this.replicas.some(r => r.healthy && this.replicaHealthStatus.get(r) !== false);
+    return this.replicas.some((r) => r.healthy && this.replicaHealthStatus.get(r) !== false);
   }
 
   /**
@@ -348,27 +355,30 @@ class DatabaseReplication {
         } else {
           // For MySQL, check connection and replica lag
           const connection = await replica.connection.getConnection();
-          
+
           // Check if replica is running (use modern REPLICA terminology, fallback to SLAVE for older MySQL)
           let status;
           try {
             [status] = await connection.execute('SHOW REPLICA STATUS');
-          } catch (error) {
+          } catch (_error) {
             // Fallback to deprecated SLAVE syntax for MySQL < 8.0.22
             [status] = await connection.execute('SHOW SLAVE STATUS');
           }
-          
+
           if (status.length > 0) {
             const replicaStatus = status[0];
             // Check both modern and legacy field names for compatibility
-            const secondsBehind = replicaStatus.Seconds_Behind_Source || replicaStatus.Seconds_Behind_Master;
-            
+            const secondsBehind =
+              replicaStatus.Seconds_Behind_Source || replicaStatus.Seconds_Behind_Master;
+
             // Consider replica unhealthy if lag is more than 30 seconds
             if (secondsBehind !== null && secondsBehind <= 30) {
               replica.healthy = true;
               this.replicaHealthStatus.set(replica, true);
             } else {
-              console.warn(`⚠️  Replica ${replica.host}:${replica.port} has high lag: ${secondsBehind}s`);
+              console.warn(
+                `⚠️  Replica ${replica.host}:${replica.port} has high lag: ${secondsBehind}s`,
+              );
               replica.healthy = false;
               this.replicaHealthStatus.set(replica, false);
             }
@@ -377,11 +387,14 @@ class DatabaseReplication {
             replica.healthy = true;
             this.replicaHealthStatus.set(replica, true);
           }
-          
+
           connection.release();
         }
       } catch (error) {
-        console.error(`⚠️  Health check failed for replica ${replica.host || replica.path}:`, error.message);
+        console.error(
+          `⚠️  Health check failed for replica ${replica.host || replica.path}:`,
+          error.message,
+        );
         replica.healthy = false;
         this.replicaHealthStatus.set(replica, false);
       }
@@ -395,19 +408,19 @@ class DatabaseReplication {
     if (!this.enabled) {
       return {
         enabled: false,
-        message: 'Replication is disabled'
+        message: 'Replication is disabled',
       };
     }
 
     return {
       enabled: true,
       replicaCount: this.replicas.length,
-      healthyReplicas: this.replicas.filter(r => r.healthy).length,
-      replicas: this.replicas.map(r => ({
+      healthyReplicas: this.replicas.filter((r) => r.healthy).length,
+      replicas: this.replicas.map((r) => ({
         type: r.type,
         location: r.host ? `${r.host}:${r.port}` : r.path,
-        healthy: r.healthy
-      }))
+        healthy: r.healthy,
+      })),
     };
   }
 

@@ -12,28 +12,28 @@ jest.mock('../src/config/database', () => ({
   queryOne: jest.fn(),
   run: jest.fn(),
   isSQLite: true,
-  getReplicationStatus: jest.fn(() => ({ enabled: false, message: 'Replication is disabled' }))
+  getReplicationStatus: jest.fn(() => ({ enabled: false, message: 'Replication is disabled' })),
 }));
 
 // Mock Redis
 jest.mock('../src/config/redis', () => ({
   connect: jest.fn(),
   isEnabled: jest.fn(() => false),
-  close: jest.fn()
+  close: jest.fn(),
 }));
 
 // Mock Elasticsearch
 jest.mock('../src/config/elasticsearch', () => ({
   connect: jest.fn(),
   isEnabled: jest.fn(() => false),
-  close: jest.fn()
+  close: jest.fn(),
 }));
 
 // Mock Sequelize models
 jest.mock('../src/models', () => ({
   initializeSequelize: jest.fn(),
   syncDatabase: jest.fn(),
-  closeDatabase: jest.fn()
+  closeDatabase: jest.fn(),
 }));
 
 const db = require('../src/config/database');
@@ -54,8 +54,7 @@ describe('Health Check Endpoints', () => {
     it('should return 200 with health status when database is healthy', async () => {
       db.queryOne.mockResolvedValue({ count: 5 });
 
-      const response = await request(app)
-        .get('/api/health');
+      const response = await request(app).get('/api/health');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
@@ -64,17 +63,16 @@ describe('Health Check Endpoints', () => {
         services: {
           cache: 'disabled',
           search: 'disabled',
-          replication: 'disabled'
+          replication: 'disabled',
         },
-        user_count: 5
+        user_count: 5,
       });
     });
 
     it('should return 503 when database is unhealthy', async () => {
       db.queryOne.mockRejectedValue(new Error('Database connection failed'));
 
-      const response = await request(app)
-        .get('/api/health');
+      const response = await request(app).get('/api/health');
 
       expect(response.status).toBe(503);
       expect(response.body.status).toBe('unhealthy');
@@ -86,8 +84,7 @@ describe('Health Check Endpoints', () => {
     it('should return 200 with standardized v1 response format', async () => {
       db.queryOne.mockResolvedValue({ count: 10 });
 
-      const response = await request(app)
-        .get('/api/v1/health');
+      const response = await request(app).get('/api/v1/health');
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -98,9 +95,9 @@ describe('Health Check Endpoints', () => {
         services: {
           cache: 'disabled',
           search: 'disabled',
-          replication: 'disabled'
+          replication: 'disabled',
         },
-        user_count: 10
+        user_count: 10,
       });
       expect(response.body.meta).toHaveProperty('timestamp');
       expect(response.body.meta).toHaveProperty('version', 'v1');
@@ -110,8 +107,7 @@ describe('Health Check Endpoints', () => {
     it('should return 503 with standardized error format when unhealthy', async () => {
       db.queryOne.mockRejectedValue(new Error('Database error'));
 
-      const response = await request(app)
-        .get('/api/v1/health');
+      const response = await request(app).get('/api/v1/health');
 
       expect(response.status).toBe(503);
       expect(response.body.success).toBe(false);

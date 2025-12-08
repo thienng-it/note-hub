@@ -8,13 +8,13 @@ const jwtService = require('../services/jwtService');
 const AuthService = require('../services/authService');
 const { jwtRequired } = require('../middleware/auth');
 const responseHandler = require('../utils/responseHandler');
-const { storeChallenge, getAndRemoveChallenge, isUsingRedis } = require('../services/challengeStorage');
+const { storeChallenge, getAndRemoveChallenge } = require('../services/challengeStorage');
 const logger = require('../config/logger');
 
 /**
  * GET /api/auth/passkey/status - Check if passkey authentication is enabled
  */
-router.get('/status', (req, res) => {
+router.get('/status', (_req, res) => {
   return responseHandler.success(res, {
     enabled: PasskeyService.isEnabled(),
   });
@@ -33,10 +33,7 @@ router.post('/register-options', jwtRequired, async (req, res) => {
       });
     }
 
-    const options = await PasskeyService.generateRegistrationOptions(
-      req.userId,
-      req.user.username
-    );
+    const options = await PasskeyService.generateRegistrationOptions(req.userId, req.user.username);
 
     // Store challenge for verification
     const challengeKey = `reg_${req.userId}_${Date.now()}`;
@@ -47,7 +44,10 @@ router.post('/register-options', jwtRequired, async (req, res) => {
       challengeKey,
     });
   } catch (error) {
-    logger.error('Passkey registration options error', { error: error.message, stack: error.stack });
+    logger.error('Passkey registration options error', {
+      error: error.message,
+      stack: error.stack,
+    });
     return responseHandler.error(res, 'Failed to generate registration options', {
       statusCode: 500,
       errorCode: 'REGISTRATION_OPTIONS_ERROR',
@@ -82,7 +82,7 @@ router.post('/register-verify', jwtRequired, async (req, res) => {
       req.userId,
       response,
       expectedChallenge,
-      deviceName
+      deviceName,
     );
 
     if (!result.success) {
@@ -99,7 +99,10 @@ router.post('/register-verify', jwtRequired, async (req, res) => {
       message: 'Passkey registered successfully',
     });
   } catch (error) {
-    logger.error('Passkey registration verification error', { error: error.message, stack: error.stack });
+    logger.error('Passkey registration verification error', {
+      error: error.message,
+      stack: error.stack,
+    });
     return responseHandler.error(res, 'Registration verification failed', {
       statusCode: 500,
       errorCode: 'REGISTRATION_VERIFICATION_ERROR',
@@ -133,7 +136,10 @@ router.post('/login-options', async (req, res) => {
       challengeKey,
     });
   } catch (error) {
-    logger.error('Passkey authentication options error', { error: error.message, stack: error.stack });
+    logger.error('Passkey authentication options error', {
+      error: error.message,
+      stack: error.stack,
+    });
     return responseHandler.error(res, 'Failed to generate authentication options', {
       statusCode: 500,
       errorCode: 'AUTHENTICATION_OPTIONS_ERROR',
@@ -185,7 +191,13 @@ router.post('/login-verify', async (req, res) => {
     const deviceInfo = req.headers['user-agent'] || null;
     const ipAddress = req.ip || req.connection.remoteAddress || null;
 
-    await jwtService.storeRefreshToken(user.id, tokenId, expiresAt.toISOString(), deviceInfo, ipAddress);
+    await jwtService.storeRefreshToken(
+      user.id,
+      tokenId,
+      expiresAt.toISOString(),
+      deviceInfo,
+      ipAddress,
+    );
 
     // Update last login
     await AuthService.updateLastLogin(user.id);
@@ -193,21 +205,28 @@ router.post('/login-verify', async (req, res) => {
     // Log security event
     logger.auth('Passkey login', user.id, { username: user.username, method: 'passkey' });
 
-    return responseHandler.success(res, {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      token_type: 'Bearer',
-      expires_in: 86400, // 24 hours
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        has_2fa: !!user.totp_secret,
-        auth_method: 'passkey',
+    return responseHandler.success(
+      res,
+      {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        token_type: 'Bearer',
+        expires_in: 86400, // 24 hours
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          has_2fa: !!user.totp_secret,
+          auth_method: 'passkey',
+        },
       },
-    }, { message: 'Login successful' });
+      { message: 'Login successful' },
+    );
   } catch (error) {
-    logger.error('Passkey authentication verification error', { error: error.message, stack: error.stack });
+    logger.error('Passkey authentication verification error', {
+      error: error.message,
+      stack: error.stack,
+    });
     return responseHandler.error(res, 'Authentication verification failed', {
       statusCode: 500,
       errorCode: 'AUTHENTICATION_VERIFICATION_ERROR',
@@ -237,8 +256,8 @@ router.get('/credentials', jwtRequired, async (req, res) => {
 router.delete('/credentials/:id', jwtRequired, async (req, res) => {
   try {
     const credentialId = parseInt(req.params.id, 10);
-    
-    if (isNaN(credentialId)) {
+
+    if (Number.isNaN(credentialId)) {
       return responseHandler.validationError(res, {
         message: 'Invalid credential ID',
       });
@@ -276,7 +295,7 @@ router.patch('/credentials/:id', jwtRequired, async (req, res) => {
     const credentialId = parseInt(req.params.id, 10);
     const { deviceName } = req.body;
 
-    if (isNaN(credentialId)) {
+    if (Number.isNaN(credentialId)) {
       return responseHandler.validationError(res, {
         message: 'Invalid credential ID',
       });

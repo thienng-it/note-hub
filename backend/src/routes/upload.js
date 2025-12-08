@@ -5,8 +5,8 @@ const express = require('express');
 const router = express.Router();
 const { jwtRequired } = require('../middleware/auth');
 const { upload } = require('../middleware/upload');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 /**
  * POST /api/upload/image - Upload an image
@@ -19,13 +19,13 @@ router.post('/image', jwtRequired, upload.single('image'), async (req, res) => {
 
     // Return the file path relative to the uploads directory
     const filePath = `/uploads/${req.file.filename}`;
-    
+
     res.json({
       success: true,
       path: filePath,
       filename: req.file.filename,
       size: req.file.size,
-      mimetype: req.file.mimetype
+      mimetype: req.file.mimetype,
     });
   } catch (error) {
     console.error('Upload error:', error);
@@ -42,16 +42,16 @@ router.post('/images', jwtRequired, upload.array('images', 10), async (req, res)
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const files = req.files.map(file => ({
+    const files = req.files.map((file) => ({
       path: `/uploads/${file.filename}`,
       filename: file.filename,
       size: file.size,
-      mimetype: file.mimetype
+      mimetype: file.mimetype,
     }));
-    
+
     res.json({
       success: true,
-      files
+      files,
     });
   } catch (error) {
     console.error('Upload error:', error);
@@ -66,7 +66,7 @@ router.delete('/:filename', jwtRequired, async (req, res) => {
   try {
     const filename = req.params.filename;
     const filePath = path.join(__dirname, '../../uploads', filename);
-    
+
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: 'File not found' });
@@ -74,7 +74,7 @@ router.delete('/:filename', jwtRequired, async (req, res) => {
 
     // Delete the file
     fs.unlinkSync(filePath);
-    
+
     res.json({ success: true, message: 'File deleted successfully' });
   } catch (error) {
     console.error('Delete error:', error);

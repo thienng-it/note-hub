@@ -33,9 +33,7 @@ describe('Auth Routes', () => {
 
   describe('POST /api/v1/auth/login', () => {
     it('should return 400 if username or password is missing', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({});
+      const response = await request(app).post('/api/v1/auth/login').send({});
 
       expect(response.status).toBe(400);
       const error = response.body.error?.message || response.body.error;
@@ -57,13 +55,13 @@ describe('Auth Routes', () => {
     it('should return tokens for valid credentials', async () => {
       const bcrypt = require('bcryptjs');
       const hash = await bcrypt.hash('TestPassword123', 12);
-      
+
       db.queryOne.mockResolvedValue({
         id: 1,
         username: 'test',
         email: 'test@example.com',
         password_hash: hash,
-        totp_secret: null
+        totp_secret: null,
       });
       db.run.mockResolvedValue({ affectedRows: 1 });
 
@@ -81,9 +79,7 @@ describe('Auth Routes', () => {
 
   describe('POST /api/v1/auth/register', () => {
     it('should return 400 if username or password is missing', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/register')
-        .send({});
+      const response = await request(app).post('/api/v1/auth/register').send({});
 
       expect(response.status).toBe(400);
       const error = response.body.error?.message || response.body.error;
@@ -115,9 +111,7 @@ describe('Auth Routes', () => {
 
   describe('POST /api/v1/auth/refresh', () => {
     it('should return 400 if refresh token is missing', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/refresh')
-        .send({});
+      const response = await request(app).post('/api/v1/auth/refresh').send({});
 
       expect(response.status).toBe(400);
       const error = response.body.error?.message || response.body.error;
@@ -135,8 +129,7 @@ describe('Auth Routes', () => {
 
   describe('GET /api/v1/auth/validate', () => {
     it('should return 401 without authorization header', async () => {
-      const response = await request(app)
-        .get('/api/v1/auth/validate');
+      const response = await request(app).get('/api/v1/auth/validate');
 
       expect(response.status).toBe(401);
     });

@@ -27,20 +27,20 @@ let authToken;
 beforeAll(async () => {
   // Import app after mocking
   app = require('../src/index');
-  
+
   // Generate auth token for tests
   authToken = jwtService.generateToken(1);
 });
 
 beforeEach(() => {
   jest.clearAllMocks();
-  
+
   // Mock user query for auth middleware
   db.queryOne.mockResolvedValue({
     id: 1,
     username: 'test_user',
     email: 'test@example.com',
-    totp_secret: null
+    totp_secret: null,
   });
 });
 
@@ -50,7 +50,7 @@ describe('AI API Endpoints', () => {
       const response = await request(app)
         .get('/api/v1/ai/status')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('enabled');
       expect(response.body).toHaveProperty('provider');
@@ -59,19 +59,16 @@ describe('AI API Endpoints', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .get('/api/v1/ai/status');
-      
+      const response = await request(app).get('/api/v1/ai/status');
+
       expect(response.status).toBe(401);
     });
   });
 
   describe('POST /api/ai/proofread', () => {
     it('should require authentication', async () => {
-      const response = await request(app)
-        .post('/api/v1/ai/proofread')
-        .send({ text: 'Some text' });
-      
+      const response = await request(app).post('/api/v1/ai/proofread').send({ text: 'Some text' });
+
       expect(response.status).toBe(401);
     });
 
@@ -80,7 +77,7 @@ describe('AI API Endpoints', () => {
         .post('/api/v1/ai/proofread')
         .set('Authorization', `Bearer ${authToken}`)
         .send({});
-      
+
       expect(response.status).toBe(400);
       expect(response.body.error).toContain('Text is required');
     });
@@ -91,7 +88,7 @@ describe('AI API Endpoints', () => {
         .post('/api/v1/ai/proofread')
         .set('Authorization', `Bearer ${authToken}`)
         .send({ text: longText });
-      
+
       expect(response.status).toBe(400);
       expect(response.body.error).toContain('too long');
     });
@@ -101,13 +98,13 @@ describe('AI API Endpoints', () => {
       const statusResponse = await request(app)
         .get('/api/v1/ai/status')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       if (!statusResponse.body.enabled) {
         const response = await request(app)
           .post('/api/v1/ai/proofread')
           .set('Authorization', `Bearer ${authToken}`)
           .send({ text: 'Some text to proofread' });
-        
+
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('not enabled');
       }
@@ -116,10 +113,8 @@ describe('AI API Endpoints', () => {
 
   describe('POST /api/ai/summarize', () => {
     it('should require authentication', async () => {
-      const response = await request(app)
-        .post('/api/v1/ai/summarize')
-        .send({ text: 'Some text' });
-      
+      const response = await request(app).post('/api/v1/ai/summarize').send({ text: 'Some text' });
+
       expect(response.status).toBe(401);
     });
 
@@ -128,7 +123,7 @@ describe('AI API Endpoints', () => {
         .post('/api/v1/ai/summarize')
         .set('Authorization', `Bearer ${authToken}`)
         .send({});
-      
+
       expect(response.status).toBe(400);
       expect(response.body.error).toContain('Text is required');
     });
@@ -139,7 +134,7 @@ describe('AI API Endpoints', () => {
         .post('/api/v1/ai/summarize')
         .set('Authorization', `Bearer ${authToken}`)
         .send({ text: longText });
-      
+
       expect(response.status).toBe(400);
       expect(response.body.error).toContain('too long');
     });
@@ -147,10 +142,8 @@ describe('AI API Endpoints', () => {
 
   describe('POST /api/ai/rewrite', () => {
     it('should require authentication', async () => {
-      const response = await request(app)
-        .post('/api/v1/ai/rewrite')
-        .send({ text: 'Some text' });
-      
+      const response = await request(app).post('/api/v1/ai/rewrite').send({ text: 'Some text' });
+
       expect(response.status).toBe(401);
     });
 
@@ -159,7 +152,7 @@ describe('AI API Endpoints', () => {
         .post('/api/v1/ai/rewrite')
         .set('Authorization', `Bearer ${authToken}`)
         .send({});
-      
+
       expect(response.status).toBe(400);
       expect(response.body.error).toContain('Text is required');
     });
@@ -169,20 +162,20 @@ describe('AI API Endpoints', () => {
         .post('/api/v1/ai/rewrite')
         .set('Authorization', `Bearer ${authToken}`)
         .send({ text: 'Some text', style: 'invalid_style' });
-      
+
       expect(response.status).toBe(400);
       expect(response.body.error).toContain('Invalid style');
     });
 
     it('should accept valid styles', async () => {
       const validStyles = ['professional', 'casual', 'concise'];
-      
+
       for (const style of validStyles) {
         const response = await request(app)
           .post('/api/v1/ai/rewrite')
           .set('Authorization', `Bearer ${authToken}`)
           .send({ text: 'Some text', style });
-        
+
         // Will be 500 if AI not configured, but shouldn't be 400 (validation error)
         expect([200, 500]).toContain(response.status);
       }
@@ -193,7 +186,7 @@ describe('AI API Endpoints', () => {
         .post('/api/v1/ai/rewrite')
         .set('Authorization', `Bearer ${authToken}`)
         .send({ text: 'Some text' });
-      
+
       // Will be 500 if AI not configured, but shouldn't be 400 (validation error)
       expect([200, 500]).toContain(response.status);
     });

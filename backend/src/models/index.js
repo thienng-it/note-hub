@@ -3,8 +3,8 @@
  * Provides a consistent interface for database operations across SQLite and MySQL.
  */
 const { Sequelize, DataTypes, Op } = require('sequelize');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 let sequelize = null;
 
@@ -23,15 +23,16 @@ async function initializeSequelize() {
       dialectOptions: {
         ssl: {
           require: true,
-          rejectUnauthorized: false
-        }
-      }
+          rejectUnauthorized: false,
+        },
+      },
     });
     console.log('🌐 Connected to cloud database via DATABASE_URL');
   }
   // MySQL if MYSQL_HOST is set and no NOTES_DB_PATH
   else if (mysqlHost && !dbPath) {
-    const sslDisabled = process.env.MYSQL_SSL_DISABLED === 'true' ||
+    const sslDisabled =
+      process.env.MYSQL_SSL_DISABLED === 'true' ||
       mysqlHost === 'localhost' ||
       mysqlHost === '127.0.0.1' ||
       mysqlHost === 'mysql' ||
@@ -47,27 +48,31 @@ async function initializeSequelize() {
       password: process.env.MYSQL_PASSWORD || '',
       database: process.env.MYSQL_DATABASE || 'notehub',
       logging: process.env.NODE_ENV === 'development' ? console.log : false,
-      dialectOptions: sslDisabled ? {} : {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      },
+      dialectOptions: sslDisabled
+        ? {}
+        : {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          },
       pool: {
         max: 10,
         min: 0,
         acquire: 30000,
-        idle: 10000
-      }
+        idle: 10000,
+      },
     });
     console.log(`🐬 Connected to MySQL: ${mysqlHost}`);
   }
   // Default: SQLite
   else {
-    const resolvedPath = dbPath 
-      ? (path.isAbsolute(dbPath) ? dbPath : path.resolve(process.cwd(), dbPath))
+    const resolvedPath = dbPath
+      ? path.isAbsolute(dbPath)
+        ? dbPath
+        : path.resolve(process.cwd(), dbPath)
       : path.resolve(process.cwd(), 'data', 'notes.db');
-    
+
     // Ensure directory exists
     const dir = path.dirname(resolvedPath);
     if (!fs.existsSync(dir)) {
@@ -77,7 +82,7 @@ async function initializeSequelize() {
     sequelize = new Sequelize({
       dialect: 'sqlite',
       storage: resolvedPath,
-      logging: process.env.NODE_ENV === 'development' ? console.log : false
+      logging: process.env.NODE_ENV === 'development' ? console.log : false,
     });
     console.log(`📦 Connected to SQLite: ${resolvedPath}`);
   }
@@ -97,347 +102,365 @@ async function initializeSequelize() {
  */
 function defineModels() {
   // User Model
-  const User = sequelize.define('User', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const User = sequelize.define(
+    'User',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      username: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+        unique: true,
+        validate: {
+          len: [3, 64],
+        },
+      },
+      password_hash: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      bio: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      theme: {
+        type: DataTypes.STRING(20),
+        defaultValue: 'light',
+      },
+      totp_secret: {
+        type: DataTypes.STRING(32),
+        allowNull: true,
+      },
+      last_login: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
-    username: {
-      type: DataTypes.STRING(64),
-      allowNull: false,
-      unique: true,
-      validate: {
-        len: [3, 64]
-      }
+    {
+      tableName: 'users',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['username'] }, { fields: ['email'] }],
     },
-    password_hash: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-      validate: {
-        isEmail: true
-      }
-    },
-    bio: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    theme: {
-      type: DataTypes.STRING(20),
-      defaultValue: 'light'
-    },
-    totp_secret: {
-      type: DataTypes.STRING(32),
-      allowNull: true
-    },
-    last_login: {
-      type: DataTypes.DATE,
-      allowNull: true
-    }
-  }, {
-    tableName: 'users',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      { fields: ['username'] },
-      { fields: ['email'] }
-    ]
-  });
+  );
 
   // Tag Model
-  const Tag = sequelize.define('Tag', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const Tag = sequelize.define(
+    'Tag',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+        unique: true,
+      },
+      color: {
+        type: DataTypes.STRING(7),
+        defaultValue: '#3B82F6',
+      },
     },
-    name: {
-      type: DataTypes.STRING(64),
-      allowNull: false,
-      unique: true
+    {
+      tableName: 'tags',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['name'] }],
     },
-    color: {
-      type: DataTypes.STRING(7),
-      defaultValue: '#3B82F6'
-    }
-  }, {
-    tableName: 'tags',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      { fields: ['name'] }
-    ]
-  });
+  );
 
   // Note Model
-  const Note = sequelize.define('Note', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const Note = sequelize.define(
+    'Note',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      title: {
+        type: DataTypes.STRING(200),
+        allowNull: false,
+        defaultValue: 'Untitled',
+      },
+      body: {
+        type: DataTypes.TEXT,
+        defaultValue: '',
+      },
+      images: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null,
+        comment: 'JSON array of image paths',
+      },
+      pinned: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      archived: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      favorite: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      owner_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
     },
-    title: {
-      type: DataTypes.STRING(200),
-      allowNull: false,
-      defaultValue: 'Untitled'
+    {
+      tableName: 'notes',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['owner_id'] }, { fields: ['archived'] }],
     },
-    body: {
-      type: DataTypes.TEXT,
-      defaultValue: ''
-    },
-    images: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: null,
-      comment: 'JSON array of image paths'
-    },
-    pinned: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    archived: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    favorite: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    owner_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
-    }
-  }, {
-    tableName: 'notes',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      { fields: ['owner_id'] },
-      { fields: ['archived'] }
-    ]
-  });
+  );
 
   // Task Model
-  const Task = sequelize.define('Task', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const Task = sequelize.define(
+    'Task',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      title: {
+        type: DataTypes.STRING(200),
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      images: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null,
+        comment: 'JSON array of image paths',
+      },
+      completed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      due_date: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      priority: {
+        type: DataTypes.STRING(20),
+        defaultValue: 'medium',
+        validate: {
+          isIn: [['low', 'medium', 'high']],
+        },
+      },
+      owner_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
     },
-    title: {
-      type: DataTypes.STRING(200),
-      allowNull: false
+    {
+      tableName: 'tasks',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['owner_id'] }],
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    images: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: null,
-      comment: 'JSON array of image paths'
-    },
-    completed: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    due_date: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    priority: {
-      type: DataTypes.STRING(20),
-      defaultValue: 'medium',
-      validate: {
-        isIn: [['low', 'medium', 'high']]
-      }
-    },
-    owner_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
-    }
-  }, {
-    tableName: 'tasks',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      { fields: ['owner_id'] }
-    ]
-  });
+  );
 
   // ShareNote Model (junction table for note sharing)
-  const ShareNote = sequelize.define('ShareNote', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const ShareNote = sequelize.define(
+    'ShareNote',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      note_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'notes',
+          key: 'id',
+        },
+      },
+      shared_by_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      shared_with_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      can_edit: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
-    note_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'notes',
-        key: 'id'
-      }
+    {
+      tableName: 'share_notes',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-    shared_by_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
-    },
-    shared_with_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
-    },
-    can_edit: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
-  }, {
-    tableName: 'share_notes',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-  });
+  );
 
   // PasswordResetToken Model
-  const PasswordResetToken = sequelize.define('PasswordResetToken', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const PasswordResetToken = sequelize.define(
+    'PasswordResetToken',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      token: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+        unique: true,
+      },
+      expires_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      used: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
+    {
+      tableName: 'password_reset_tokens',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['token'] }],
     },
-    token: {
-      type: DataTypes.STRING(64),
-      allowNull: false,
-      unique: true
-    },
-    expires_at: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    used: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
-  }, {
-    tableName: 'password_reset_tokens',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      { fields: ['token'] }
-    ]
-  });
+  );
 
   // Invitation Model
-  const Invitation = sequelize.define('Invitation', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+  const Invitation = sequelize.define(
+    'Invitation',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      token: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+        unique: true,
+      },
+      inviter_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      email: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      message: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      used: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      used_by_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      expires_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     },
-    token: {
-      type: DataTypes.STRING(64),
-      allowNull: false,
-      unique: true
+    {
+      tableName: 'invitations',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['token'] }],
     },
-    inviter_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
-    },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    message: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    used: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    used_by_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
-    },
-    expires_at: {
-      type: DataTypes.DATE,
-      allowNull: false
-    }
-  }, {
-    tableName: 'invitations',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      { fields: ['token'] }
-    ]
-  });
+  );
 
   // NoteTag junction table for many-to-many relationship
-  const NoteTag = sequelize.define('NoteTag', {
-    note_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      references: {
-        model: 'notes',
-        key: 'id'
-      }
+  const NoteTag = sequelize.define(
+    'NoteTag',
+    {
+      note_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        references: {
+          model: 'notes',
+          key: 'id',
+        },
+      },
+      tag_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        references: {
+          model: 'tags',
+          key: 'id',
+        },
+      },
     },
-    tag_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      references: {
-        model: 'tags',
-        key: 'id'
-      }
-    }
-  }, {
-    tableName: 'note_tag',
-    timestamps: false
-  });
+    {
+      tableName: 'note_tag',
+      timestamps: false,
+    },
+  );
 
   // Define associations
   User.hasMany(Note, { foreignKey: 'owner_id', as: 'notes' });
@@ -478,7 +501,7 @@ async function syncDatabase(options = {}) {
   if (!sequelize) {
     throw new Error('Sequelize not initialized. Call initializeSequelize first.');
   }
-  
+
   await sequelize.sync(options);
   console.log('✅ Database schema synchronized');
 }
@@ -506,5 +529,5 @@ module.exports = {
   syncDatabase,
   getSequelize,
   closeDatabase,
-  Op
+  Op,
 };

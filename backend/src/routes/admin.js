@@ -35,11 +35,15 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
 
     // Get stats
     const totalUsers = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
-    const usersWith2FA = await db.queryOne(`SELECT COUNT(*) as count FROM users WHERE totp_secret IS NOT NULL`);
-    const usersWithEmail = await db.queryOne(`SELECT COUNT(*) as count FROM users WHERE email IS NOT NULL`);
+    const usersWith2FA = await db.queryOne(
+      `SELECT COUNT(*) as count FROM users WHERE totp_secret IS NOT NULL`,
+    );
+    const usersWithEmail = await db.queryOne(
+      `SELECT COUNT(*) as count FROM users WHERE email IS NOT NULL`,
+    );
 
     res.json({
-      users: users.map(u => ({
+      users: users.map((u) => ({
         id: u.id,
         username: u.username,
         email: u.email,
@@ -47,19 +51,19 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
         theme: u.theme,
         has_2fa: !!u.totp_secret,
         created_at: u.created_at,
-        last_login: u.last_login
+        last_login: u.last_login,
       })),
       pagination: {
         page: parseInt(page, 10),
         per_page: parseInt(per_page, 10),
         total_count: totalCount?.count || 0,
-        total_pages: Math.ceil((totalCount?.count || 0) / parseInt(per_page, 10))
+        total_pages: Math.ceil((totalCount?.count || 0) / parseInt(per_page, 10)),
       },
       stats: {
         total_users: totalUsers?.count || 0,
         users_with_2fa: usersWith2FA?.count || 0,
-        users_with_email: usersWithEmail?.count || 0
-      }
+        users_with_email: usersWithEmail?.count || 0,
+      },
     });
   } catch (error) {
     console.error('Admin list users error:', error);
@@ -79,10 +83,9 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     }
 
     // Check if user exists
-    const user = await db.queryOne(
-      `SELECT id, username, totp_secret FROM users WHERE id = ?`,
-      [userId]
-    );
+    const user = await db.queryOne(`SELECT id, username, totp_secret FROM users WHERE id = ?`, [
+      userId,
+    ]);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -93,22 +96,19 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     }
 
     // Disable 2FA
-    await db.run(
-      `UPDATE users SET totp_secret = NULL WHERE id = ?`,
-      [userId]
-    );
+    await db.run(`UPDATE users SET totp_secret = NULL WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
     // TODO: Consider using a proper logging framework (winston, pino) in production
     console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
 
-    res.json({ 
+    res.json({
       message: `2FA disabled successfully for user ${user.username}`,
       user: {
         id: user.id,
         username: user.username,
-        has_2fa: false
-      }
+        has_2fa: false,
+      },
     });
   } catch (error) {
     console.error('Admin disable 2FA error:', error);
@@ -119,7 +119,7 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
 /**
  * GET /api/admin/health - Health check endpoint
  */
-router.get('/health', async (req, res) => {
+router.get('/health', async (_req, res) => {
   try {
     // Check database connectivity
     const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
@@ -131,18 +131,18 @@ router.get('/health', async (req, res) => {
       database: {
         type: db.isSQLite ? 'SQLite' : 'MySQL',
         connection: 'OK',
-        path: db.isSQLite ? dbPath : `${process.env.MYSQL_HOST}:${process.env.MYSQL_PORT || 3306}`
+        path: db.isSQLite ? dbPath : `${process.env.MYSQL_HOST}:${process.env.MYSQL_PORT || 3306}`,
       },
       stats: {
-        total_users: userCount?.count || 0
-      }
+        total_users: userCount?.count || 0,
+      },
     });
   } catch (error) {
     console.error('Health check error:', error);
     res.status(503).json({
       status: 'unhealthy',
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });

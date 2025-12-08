@@ -33,7 +33,7 @@ describe('2FA Management', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    
+
     // Generate test tokens
     const jwt = require('jsonwebtoken');
     userToken = jwt.sign({ userId: 1, username: 'testuser' }, process.env.JWT_SECRET);
@@ -47,7 +47,7 @@ describe('2FA Management', () => {
         username: 'testuser',
         email: 'test@example.com',
         totp_secret: 'JBSWY3DPEHPK3PXP',
-        has_2fa: true
+        has_2fa: true,
       };
 
       db.queryOne.mockResolvedValue(mockUser);
@@ -61,13 +61,12 @@ describe('2FA Management', () => {
       expect(response.body.message).toBe('Two-factor authentication disabled');
       expect(db.run).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE users SET totp_secret = NULL'),
-        [1]
+        [1],
       );
     });
 
     it('should return 401 if user not authenticated', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/2fa/disable');
+      const response = await request(app).post('/api/v1/auth/2fa/disable');
 
       expect(response.status).toBe(401);
     });
@@ -77,7 +76,7 @@ describe('2FA Management', () => {
         id: 1,
         username: 'testuser',
         totp_secret: null,
-        has_2fa: false
+        has_2fa: false,
       };
 
       db.queryOne.mockResolvedValue(mockUser);
@@ -95,7 +94,7 @@ describe('2FA Management', () => {
         id: 1,
         username: 'testuser',
         totp_secret: 'JBSWY3DPEHPK3PXP',
-        has_2fa: true
+        has_2fa: true,
       };
 
       db.queryOne.mockResolvedValue(mockUser);
@@ -108,7 +107,7 @@ describe('2FA Management', () => {
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[SECURITY] 2FA disabled by user ID: 1')
+        expect.stringContaining('[SECURITY] 2FA disabled by user ID: 1'),
       );
 
       consoleSpy.mockRestore();
@@ -120,14 +119,14 @@ describe('2FA Management', () => {
       const mockAdmin = {
         id: 2,
         username: 'admin',
-        is_admin: true
+        is_admin: true,
       };
 
       const mockTargetUser = {
         id: 3,
         username: 'targetuser',
         totp_secret: 'JBSWY3DPEHPK3PXP',
-        has_2fa: true
+        has_2fa: true,
       };
 
       db.queryOne
@@ -143,7 +142,7 @@ describe('2FA Management', () => {
       expect(response.body.message).toBe('2FA disabled for user');
       expect(db.run).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE users SET totp_secret = NULL'),
-        [3]
+        [3],
       );
     });
 
@@ -151,7 +150,7 @@ describe('2FA Management', () => {
       const mockUser = {
         id: 1,
         username: 'testuser',
-        is_admin: false
+        is_admin: false,
       };
 
       db.queryOne.mockResolvedValue(mockUser);
@@ -168,7 +167,7 @@ describe('2FA Management', () => {
       const mockAdmin = {
         id: 2,
         username: 'admin',
-        is_admin: true
+        is_admin: true,
       };
 
       db.queryOne
@@ -187,19 +186,17 @@ describe('2FA Management', () => {
       const mockAdmin = {
         id: 2,
         username: 'admin',
-        is_admin: true
+        is_admin: true,
       };
 
       const mockTargetUser = {
         id: 3,
         username: 'targetuser',
         totp_secret: null,
-        has_2fa: false
+        has_2fa: false,
       };
 
-      db.queryOne
-        .mockResolvedValueOnce(mockAdmin)
-        .mockResolvedValueOnce(mockTargetUser);
+      db.queryOne.mockResolvedValueOnce(mockAdmin).mockResolvedValueOnce(mockTargetUser);
 
       const response = await request(app)
         .post('/api/v1/admin/users/3/disable-2fa')
@@ -213,19 +210,17 @@ describe('2FA Management', () => {
       const mockAdmin = {
         id: 2,
         username: 'admin',
-        is_admin: true
+        is_admin: true,
       };
 
       const mockTargetUser = {
         id: 3,
         username: 'targetuser',
         totp_secret: 'SECRET',
-        has_2fa: true
+        has_2fa: true,
       };
 
-      db.queryOne
-        .mockResolvedValueOnce(mockAdmin)
-        .mockResolvedValueOnce(mockTargetUser);
+      db.queryOne.mockResolvedValueOnce(mockAdmin).mockResolvedValueOnce(mockTargetUser);
       db.run.mockResolvedValue({ changes: 1 });
 
       const consoleSpy = jest.spyOn(console, 'log');
@@ -235,7 +230,7 @@ describe('2FA Management', () => {
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[SECURITY AUDIT] Admin ID: 2 disabled 2FA for user ID: 3')
+        expect.stringContaining('[SECURITY AUDIT] Admin ID: 2 disabled 2FA for user ID: 3'),
       );
 
       consoleSpy.mockRestore();
@@ -245,7 +240,7 @@ describe('2FA Management', () => {
       const mockAdmin = {
         id: 2,
         username: 'admin',
-        is_admin: true
+        is_admin: true,
       };
 
       db.queryOne.mockResolvedValue(mockAdmin);
@@ -262,13 +257,13 @@ describe('2FA Management', () => {
   describe('Password Hash Upgrade Flow', () => {
     it('should detect and upgrade old password hash on login', async () => {
       const oldPasswordHash = await bcrypt.hash('password123', 12); // Old: 12 rounds
-      
+
       const mockUser = {
         id: 1,
         username: 'testuser',
         password_hash: oldPasswordHash,
         totp_secret: null,
-        is_admin: false
+        is_admin: false,
       };
 
       db.queryOne.mockResolvedValue(mockUser);
@@ -285,7 +280,7 @@ describe('2FA Management', () => {
 
       // Should upgrade hash
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[SECURITY] Upgrading password hash for user ID: 1')
+        expect.stringContaining('[SECURITY] Upgrading password hash for user ID: 1'),
       );
 
       consoleSpy.mockRestore();
@@ -297,13 +292,11 @@ describe('2FA Management', () => {
       db.queryOne.mockResolvedValue(null);
       db.run.mockResolvedValue({ changes: 1, lastID: 1 });
 
-      await request(app)
-        .post('/api/v1/auth/register')
-        .send({
-          username: 'newuser',
-          email: 'new@example.com',
-          password: 'password123'
-        });
+      await request(app).post('/api/v1/auth/register').send({
+        username: 'newuser',
+        email: 'new@example.com',
+        password: 'password123',
+      });
 
       expect(bcryptHashSpy).toHaveBeenCalledWith('password123', 14);
 

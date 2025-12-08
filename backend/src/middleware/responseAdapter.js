@@ -1,6 +1,6 @@
 /**
  * Response Adapter Middleware
- * 
+ *
  * Adapts standardized v1 responses back to legacy format for backward compatibility.
  * This allows the same route handlers to work for both /api/ and /api/v1/ routes.
  */
@@ -8,7 +8,7 @@
 /**
  * Middleware to detect if request is to a v1 endpoint
  */
-function markAsV1(req, res, next) {
+function markAsV1(_req, res, next) {
   res.locals.isV1 = true;
   next();
 }
@@ -16,17 +16,17 @@ function markAsV1(req, res, next) {
 /**
  * Intercept res.json to adapt responses for legacy endpoints
  */
-function legacyResponseAdapter(req, res, next) {
+function legacyResponseAdapter(_req, res, next) {
   // Store original json method
   const originalJson = res.json.bind(res);
-  
+
   // Override json method
-  res.json = function(data) {
+  res.json = (data) => {
     // If this is a v1 endpoint, use standard format
     if (res.locals.isV1) {
       return originalJson(data);
     }
-    
+
     // For legacy endpoints, convert from v1 format back to legacy format
     if (data && typeof data === 'object') {
       // If it's already in v1 standardized format, extract the legacy format
@@ -37,19 +37,19 @@ function legacyResponseAdapter(req, res, next) {
         } else {
           // Error response - return { error: message } format
           let errorMessage = data.error?.message || 'Error';
-          
+
           // For validation errors, extract the more specific message from details if available
           if (data.error?.code === 'VALIDATION_ERROR' && data.error?.details) {
             const details = data.error.details;
-            
+
             // Handle missing fields
             if (details.missingFields) {
               const fields = details.missingFields;
-              
+
               // Check if a custom message was provided that's more specific than the default
-              const hasCustomMessage = details.message && 
-                !details.message.startsWith('Missing required fields:');
-              
+              const hasCustomMessage =
+                details.message && !details.message.startsWith('Missing required fields:');
+
               if (hasCustomMessage) {
                 // Use the provided custom message
                 errorMessage = details.message;
@@ -86,27 +86,27 @@ function legacyResponseAdapter(req, res, next) {
               errorMessage = details.message;
             }
           }
-          
+
           const legacyError = { error: errorMessage };
-          
+
           // Preserve special fields for auth errors
           if (data.error?.details?.requires_2fa) {
             legacyError.requires_2fa = true;
           }
-          
+
           return originalJson(legacyError);
         }
       }
     }
-    
+
     // Pass through if not in v1 format
     return originalJson(data);
   };
-  
+
   next();
 }
 
 module.exports = {
   markAsV1,
-  legacyResponseAdapter
+  legacyResponseAdapter,
 };

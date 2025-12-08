@@ -35,7 +35,7 @@ const jwtRequired = async (req, res, next) => {
   // Get user from database
   const user = await db.queryOne(
     `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users WHERE id = ?`,
-    [result.userId]
+    [result.userId],
   );
 
   if (!user) {
@@ -52,7 +52,7 @@ const jwtRequired = async (req, res, next) => {
 /**
  * Optional JWT middleware - doesn't require auth but adds user if present.
  */
-const jwtOptional = async (req, res, next) => {
+const jwtOptional = async (req, _res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
@@ -70,7 +70,7 @@ const jwtOptional = async (req, res, next) => {
   if (result.valid) {
     const user = await db.queryOne(
       `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users WHERE id = ?`,
-      [result.userId]
+      [result.userId],
     );
     if (user) {
       req.user = user;
@@ -94,5 +94,5 @@ const adminRequired = async (req, res, next) => {
 module.exports = {
   jwtRequired,
   jwtOptional,
-  adminRequired
+  adminRequired,
 };
