@@ -208,7 +208,9 @@ services:
       - .env.drone
     environment:
       - POSTGRES_USER=${DRONE_POSTGRES_USER:-drone}
-      - POSTGRES_PASSWORD=${DRONE_POSTGRES_PASSWORD}
+      # CRITICAL: DRONE_POSTGRES_PASSWORD must be set in .env.drone
+      # Running PostgreSQL without a password is a security risk
+      - POSTGRES_PASSWORD=${DRONE_POSTGRES_PASSWORD:?DRONE_POSTGRES_PASSWORD must be set in .env.drone}
       - POSTGRES_DB=${DRONE_POSTGRES_DB:-drone}
     volumes:
       - drone-postgres-data:/var/lib/postgresql/data
