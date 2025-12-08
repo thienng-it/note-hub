@@ -55,8 +55,9 @@ services:
     container_name: graylog-mongodb
     restart: unless-stopped
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${GRAYLOG_MONGODB_USER:-graylog}
+      - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=${GRAYLOG_MONGODB_PASSWORD:?Set GRAYLOG_MONGODB_PASSWORD in .env.graylog}
+      - MONGO_INITDB_DATABASE=graylog
     volumes:
       - graylog-mongodb-data:/data/db
     networks:
@@ -144,7 +145,7 @@ services:
       - GRAYLOG_HTTP_PUBLISH_URI=${GRAYLOG_HTTP_EXTERNAL_URI:-http://localhost:9000/}
       
       # MongoDB Configuration
-      - GRAYLOG_MONGODB_URI=mongodb://${GRAYLOG_MONGODB_USER:-graylog}:${GRAYLOG_MONGODB_PASSWORD}@graylog-mongodb:27017/graylog
+      - GRAYLOG_MONGODB_URI=mongodb://admin:${GRAYLOG_MONGODB_PASSWORD}@graylog-mongodb:27017/graylog?authSource=admin
       
       # OpenSearch Configuration
       - GRAYLOG_ELASTICSEARCH_HOSTS=http://graylog-opensearch:9200
