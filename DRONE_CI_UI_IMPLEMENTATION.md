@@ -133,7 +133,7 @@ DRONE_ROUTER_RULE=
 DRONE_SERVER_HOST=drone-ci-notehub.duckdns.org
 DRONE_SERVER_PROTO=https
 DRONE_DOMAIN=drone-ci-notehub.duckdns.org
-ACME_EMAIL=admin@example.com
+ACME_EMAIL=your-email@example.com
 
 # ⚠️ MOST IMPORTANT: This prevents 404 errors
 DRONE_ROUTER_RULE=Host(`drone-ci-notehub.duckdns.org`)
@@ -332,7 +332,8 @@ ACME_EMAIL=your-email@example.com
 
 **Important**: 
 - The backticks (`) are literal characters in the DRONE_ROUTER_RULE value
-- Without this rule, Traefik uses the default `PathPrefix('/')` which doesn't match your domain
+- Without this rule, Traefik uses the default `PathPrefix('/')` which matches all paths on any domain, potentially causing routing conflicts when multiple services use Traefik on the same server
+- With a custom domain, you need the `Host()` matcher to ensure requests are only routed when the Host header matches your specific domain
 - After updating `.env.drone`, restart the services:
 
 ```bash
