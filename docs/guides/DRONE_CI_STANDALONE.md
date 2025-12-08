@@ -378,7 +378,7 @@ Edit `docker-compose.drone.yml`:
 ```yaml
 drone-traefik:
   ports:
-    - "9000:80"   # Use port 9000 instead
+    - "9000:80"   # Use ports 9000/9443 instead of default 8080/8443
     - "9443:443"  # HTTPS port
 ```
 

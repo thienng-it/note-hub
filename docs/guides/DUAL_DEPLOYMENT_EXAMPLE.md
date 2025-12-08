@@ -138,12 +138,12 @@ docker stats
 |---------|--------------|---------------|---------|
 | notehub-nginx | 80 | 80 | notehub-network |
 | notehub-backend | 5000 | internal | notehub-network |
-| drone-traefik | 80/443 | 8080/8443 | drone-network |
+| drone-traefik | 80 (HTTP), 443 (HTTPS) | 8080, 8443 | drone-network |
 | drone-server | 80 | internal | drone-network |
 | drone-runner | - | internal | drone-network |
 | drone-db | 5432 | internal | drone-network |
 
-**Architecture**: Both applications use nginx as a reverse proxy for consistency and production-readiness.
+**Architecture**: NoteHub uses nginx as a reverse proxy, while Drone CI uses Traefik for consistency with modern deployment patterns and automatic SSL certificate management.
 
 ## Managing Both Services
 
