@@ -79,6 +79,7 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
   - **SSL/HTTPS enabled by default** with automatic Let's Encrypt certificates
   - HTTP to HTTPS redirect with HSTS security headers
   - Modern dashboard and monitoring
+  - ⚠️ **Using a custom domain?** See [TROUBLESHOOTING_SSL.md](TROUBLESHOOTING_SSL.md) to fix certificate warnings
 
 ### Performance Enhancements (December 2024)
 - ⚡ **10x Faster Queries** - Redis caching reduces note list operations from 80ms to 8ms
@@ -447,6 +448,8 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 | Document                                                       | Description                    |
 | -------------------------------------------------------------- | ------------------------------ |
 | [Hetzner Deployment](docs/guides/HETZNER_DEPLOYMENT.md)        | Deploy to Hetzner VPS          |
+| **[Custom Domain SSL Setup](docs/guides/CUSTOM_DOMAIN_SSL_SETUP.md)** | **Fix "not secure" certificate warnings** |
+| [SSL/HTTPS Setup](docs/guides/SSL_HTTPS_SETUP.md)             | SSL certificate configuration  |
 | **[Drone CI README](DRONE_CI_README.md)** | **Quick start for independent Drone CI** |
 | **[Drone CI Standalone](docs/guides/DRONE_CI_STANDALONE.md)** | **Complete independence documentation** |
 | [Drone CI Setup](docs/guides/DRONE_CI_SETUP.md)               | Detailed Drone CI setup guide |

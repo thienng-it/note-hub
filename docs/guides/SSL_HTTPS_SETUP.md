@@ -8,6 +8,12 @@ This guide explains how SSL/HTTPS works in NoteHub and how to configure it for d
 
 NoteHub uses Traefik reverse proxy with Let's Encrypt to provide automatic SSL certificate management. All HTTP traffic is automatically redirected to HTTPS, and certificates are obtained and renewed automatically.
 
+## ⚠️ Using a Custom Domain?
+
+**If you're accessing NoteHub via a custom domain** (like `note-hub.duckdns.org`, `app.yourdomain.com`, etc.) and seeing certificate warnings, please see the **[Custom Domain SSL Setup Guide](CUSTOM_DOMAIN_SSL_SETUP.md)** for the proper configuration.
+
+The default configuration works for localhost but requires additional setup for custom domains to ensure Let's Encrypt issues certificates correctly.
+
 ## Table of Contents
 
 1. [How It Works](#how-it-works)
