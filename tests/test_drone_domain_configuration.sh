@@ -253,7 +253,7 @@ if [ "$TEST_DOMAIN" != "drone.example.com" ]; then
     # Test 29: Check if Host rule includes the domain
     if [ -f docker-compose.drone.override.yml ]; then
         run_test "Override file contains correct domain" \
-            "grep -q \"Host(\\\`$TEST_DOMAIN\\\`)\" docker-compose.drone.override.yml"
+            "grep -q 'Host(\`'$TEST_DOMAIN'\`)' docker-compose.drone.override.yml"
     else
         echo -e "${YELLOW}⊘${NC} Test $((TESTS_RUN + 1)): docker-compose.drone.override.yml not found (expected for fresh setup)"
         TESTS_RUN=$((TESTS_RUN + 1))

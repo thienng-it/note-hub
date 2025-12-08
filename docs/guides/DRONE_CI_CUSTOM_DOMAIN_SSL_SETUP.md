@@ -723,6 +723,6 @@ DRONE_TRACE=false
 
 ---
 
-**Last Updated**: December 8, 2024  
+**Last Updated**: December 2025  
 **Tested With**: Traefik v2.11, Drone 2.x  
 **Certificate Authority**: Let's Encrypt (ACME v2)

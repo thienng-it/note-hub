@@ -570,6 +570,6 @@ If you're still experiencing issues:
 
 ---
 
-**Last Updated**: December 8, 2024  
+**Last Updated**: December 2025  
 **Traefik Version**: v2.11  
 **Let's Encrypt**: ACME v2 (HTTP-01 Challenge)
