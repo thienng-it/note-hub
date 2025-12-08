@@ -37,7 +37,7 @@ entryPoints:
           to: websecure
           scheme: https
           permanent: true
-  
+
   websecure:
     address: ":443"
     # Enable compression for HTTPS traffic
@@ -81,11 +81,11 @@ certificatesResolvers:
       email: ${ACME_EMAIL:-admin@example.com}
       # Storage location for certificates
       storage: /letsencrypt/acme.json
-      # Use TLS challenge for certificate validation
-      tlsChallenge: {}
-      # Optional: Use HTTP challenge (useful for development/testing)
-      # httpChallenge:
-      #   entryPoint: web
+      # Use HTTP challenge (more reliable than TLS challenge)
+      httpChallenge:
+        entryPoint: web
+      # Alternative: TLS challenge (can fail with port conflicts)
+      # tlsChallenge: {}
 
 # Health check endpoint
 ping:

@@ -1,6 +1,24 @@
 # Troubleshooting Drone CI SSL/HTTPS with Custom Domains
 
-> **Quick Fix**: If you're seeing "not secure" warnings when accessing Drone CI via a custom domain, you need to apply the domain configuration.
+> **Quick Fix**: If you're seeing "not secure" warnings or certificate issuance errors when accessing Drone CI via a custom domain, you need to apply the domain configuration.
+
+## Known Issues & Fixes
+
+### Issue: TLS-ALPN-01 Challenge Failures
+
+**Error Message:**
+```
+error: 403 :: urn:ietf:params:acme:error:unauthorized :: Incorrect validation certificate for tls-alpn-01 challenge
+```
+
+**Solution:**
+This has been fixed in the latest version. The Drone CI configuration now uses HTTP-01 challenge instead of TLS-ALPN-01, which is more reliable and avoids conflicts with other services. If you're still experiencing this:
+
+1. Pull the latest configuration: `git pull`
+2. Restart Drone CI: `docker compose -f docker-compose.drone.yml down && docker compose -f docker-compose.drone.yml up -d`
+3. Remove old certificates if needed: `sudo rm -f letsencrypt-drone/acme.json`
+
+The HTTP-01 challenge uses port 80 for validation, which is more reliable than the TLS-ALPN-01 challenge on port 443.
 
 ## Quick Fix (3 Commands)
 
@@ -151,6 +169,54 @@ echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.your
 ```
 
 ## Common Issues and Solutions
+
+### Issue 0: TLS-ALPN-01 Challenge Validation Errors
+
+**Symptoms:**
+- Error in Traefik logs: "Incorrect validation certificate for tls-alpn-01 challenge"
+- Error code 403 from ACME (Let's Encrypt)
+- Certificate validation fails during issuance
+
+**Root Cause:**
+The TLS-ALPN-01 challenge can fail when:
+- Multiple Traefik instances are running on the same server
+- Port 443 has conflicts or routing issues
+- Docker networking interferes with TLS validation
+
+**Solution:**
+
+This issue has been fixed in the current version by switching to HTTP-01 challenge. To apply the fix:
+
+1. **Pull latest configuration**:
+   ```bash
+   cd /path/to/note-hub
+   git pull origin main
+   ```
+
+2. **Remove old certificates**:
+   ```bash
+   # Stop Traefik
+   docker compose -f docker-compose.drone.yml stop drone-traefik
+   
+   # Remove certificate file to force re-issuance
+   sudo rm -f letsencrypt-drone/acme.json
+   ```
+
+3. **Restart with updated configuration**:
+   ```bash
+   docker compose -f docker-compose.drone.yml up -d
+   ```
+
+4. **Monitor certificate issuance**:
+   ```bash
+   docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i "certificate\|acme"
+   ```
+
+**Why HTTP-01 is Better:**
+- Uses port 80 for validation (more reliable)
+- No conflicts with TLS on port 443
+- Recommended by Let's Encrypt for most use cases
+- Works better with multiple services
 
 ### Issue 1: Certificate Not Issued
 
