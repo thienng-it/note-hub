@@ -4,6 +4,8 @@
 
 This document summarizes the investigation and verification of the Drone CI user interface implementation for the NoteHub project. Drone CI comes with a complete, production-ready web UI that provides a modern interface for managing CI/CD pipelines.
 
+> **⚠️ CRITICAL for Custom Domains**: If you're using a custom domain (e.g., `drone-ci-notehub.duckdns.org`), you **MUST** set `DRONE_ROUTER_RULE=Host(\`your-domain.com\`)` in `.env.drone` or you'll get a 404 error. See [Troubleshooting 404 Error](#-404-not-found-error-custom-domain) for details.
+
 ## Investigation Findings
 
 ### UI Components
@@ -109,6 +111,7 @@ When clicking "Continue", users are redirected to GitHub's OAuth page to authent
 
 The following environment variables affect the UI:
 
+#### For Local Development (HTTP)
 ```bash
 # Server hostname (displayed in UI)
 DRONE_SERVER_HOST=localhost:8080
@@ -119,7 +122,28 @@ DRONE_SERVER_PROTO=http
 # GitHub OAuth (required for login)
 DRONE_GITHUB_CLIENT_ID=your-client-id
 DRONE_GITHUB_CLIENT_SECRET=your-client-secret
+
+# Router rule (use default for localhost)
+DRONE_ROUTER_RULE=
 ```
+
+#### For Production with Custom Domain (HTTPS)
+```bash
+# ⚠️ CRITICAL: All these must be set for custom domains
+DRONE_SERVER_HOST=drone-ci-notehub.duckdns.org
+DRONE_SERVER_PROTO=https
+DRONE_DOMAIN=drone-ci-notehub.duckdns.org
+ACME_EMAIL=admin@example.com
+
+# ⚠️ MOST IMPORTANT: This prevents 404 errors
+DRONE_ROUTER_RULE=Host(`drone-ci-notehub.duckdns.org`)
+
+# GitHub OAuth (required for login)
+DRONE_GITHUB_CLIENT_ID=your-client-id
+DRONE_GITHUB_CLIENT_SECRET=your-client-secret
+```
+
+> **Note**: The backticks (`) in `DRONE_ROUTER_RULE` are literal characters, not shell command substitution.
 
 ### Traefik Configuration
 
@@ -286,6 +310,44 @@ Drone CI is **completely independent** from NoteHub. There is no direct integrat
 5. Regular updates of Drone image
 
 ## Troubleshooting UI Issues
+
+### ❌ 404 Not Found Error (Custom Domain)
+
+**Problem**: Accessing `https://drone-ci-notehub.duckdns.org/` returns 404 even though all containers are running.
+
+**Cause**: Missing `DRONE_ROUTER_RULE` configuration for custom domain.
+
+**Solution**: Set the `DRONE_ROUTER_RULE` environment variable in `.env.drone`:
+
+```bash
+# Add this line to .env.drone
+DRONE_ROUTER_RULE=Host(`drone-ci-notehub.duckdns.org`)
+
+# Also ensure these are set correctly:
+DRONE_SERVER_HOST=drone-ci-notehub.duckdns.org
+DRONE_SERVER_PROTO=https
+DRONE_DOMAIN=drone-ci-notehub.duckdns.org
+ACME_EMAIL=your-email@example.com
+```
+
+**Important**: 
+- The backticks (`) are literal characters in the DRONE_ROUTER_RULE value
+- Without this rule, Traefik uses the default `PathPrefix('/')` which doesn't match your domain
+- After updating `.env.drone`, restart the services:
+
+```bash
+docker compose --env-file .env.drone -f docker-compose.drone.yml down
+docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+```
+
+**Verification**:
+```bash
+# Check Traefik is using the correct rule
+docker logs drone-traefik 2>&1 | grep -i "drone-ci-notehub.duckdns.org"
+
+# Test access
+curl -I https://drone-ci-notehub.duckdns.org
+```
 
 ### UI Not Loading
 1. Check services are running:
