@@ -182,13 +182,13 @@ No changes needed! The default configuration continues to work for localhost dev
 
 The override file updates router rules for:
 - `frontend` (development profile)
-- `backend` (development profile)
+- `backend` (development profile - includes API, uploads, and health routers)
 - `frontend-prod` (production profile)
-- `backend-prod` (production profile)
+- `backend-prod` (production profile - includes API, uploads, and health routers)
 - `frontend-mysql` (MySQL profile)
-- `backend-mysql` (MySQL profile)
+- `backend-mysql` (MySQL profile - includes API, uploads, and health routers)
 
-Total: **12 router configurations** updated across 6 services.
+The override file includes Host() matchers for all routers across these 6 services. Each backend service has multiple routers (API, uploads, health), resulting in comprehensive domain coverage across all deployment profiles.
 
 ### Backward Compatibility
 

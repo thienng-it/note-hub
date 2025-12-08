@@ -178,12 +178,20 @@ Let's Encrypt has rate limits (50 certificates per domain per week). If you hit 
 1. **Wait 7 days** for the rate limit to reset, OR
 2. **Use staging environment** for testing:
 
-Edit `docker-compose.yml`, find the Traefik command section and add:
+Create a `docker-compose.staging.yml` override file with:
 ```yaml
-- "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+services:
+  traefik:
+    command:
+      - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
 ```
 
-**Note**: Staging certificates are not trusted by browsers (for testing only).
+Then deploy with:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.staging.yml up -d
+```
+
+**Note**: Staging certificates are not trusted by browsers (for testing only). Remove the staging override file for production use.
 
 ### Wrong Certificate Issued
 

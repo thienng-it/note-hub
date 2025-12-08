@@ -82,13 +82,17 @@ test_domain_compose_syntax() {
     
     cd "$PROJECT_DIR"
     # Test with main compose file + domain override (as it would be used)
-    # Set all required env vars for validation
-    if DOMAIN=test.example.com \
-       NOTES_ADMIN_PASSWORD=testpass123 \
-       SECRET_KEY=test-secret-key \
-       MYSQL_ROOT_PASSWORD=testroot \
+    # Generate random test credentials (not for production use)
+    local test_domain="test-$(date +%s).example.com"
+    local test_pass="test-$(openssl rand -hex 8)"
+    local test_secret="test-$(openssl rand -hex 16)"
+    
+    if DOMAIN="$test_domain" \
+       NOTES_ADMIN_PASSWORD="$test_pass" \
+       SECRET_KEY="$test_secret" \
+       MYSQL_ROOT_PASSWORD="$test_pass" \
        MYSQL_USER=testuser \
-       MYSQL_PASSWORD=testpass \
+       MYSQL_PASSWORD="$test_pass" \
        MYSQL_DATABASE=testdb \
        docker compose -f docker-compose.yml -f docker-compose.domain.yml config > /dev/null 2>&1; then
         print_success "docker-compose.domain.yml syntax is valid (with base file)"
@@ -152,8 +156,13 @@ test_host_rules() {
     local count=$(grep -c 'Host(`${DOMAIN}`)' "$PROJECT_DIR/docker-compose.domain.yml" || echo "0")
     print_info "Found $count Host rule configurations"
     
-    if [ "$count" -lt 5 ]; then
-        print_warning "Expected at least 5 Host rule configurations (frontend, backend, prod, mysql)"
+    # Expected minimum: frontend (1) + backend (3 routers) + prod (4 routers) + mysql (4 routers) = 12+
+    # Using a flexible threshold to account for potential changes
+    local min_expected=10
+    if [ "$count" -lt "$min_expected" ]; then
+        print_warning "Found $count Host rules, expected at least $min_expected (may need update if services changed)"
+    else
+        print_success "Host rule count ($count) meets expectations"
     fi
 }
 
