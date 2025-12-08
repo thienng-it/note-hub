@@ -510,6 +510,7 @@ if (isRedisEnabled) {
    - Run linter frequently: `npm run lint`
    - Test changes locally
    - Update types/interfaces as needed
+   - update/add translation keys as we support i18n
 
 3. **Before Committing:**
    - Run full linting: `npm run lint`
