@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
@@ -8,6 +9,7 @@ import type { Note } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
 export function NoteViewPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [note, setNote] = useState<Note | null>(null);
@@ -158,7 +160,7 @@ export function NoteViewPage() {
                   </span>
                 )}
                 {note.archived && (
-                  <span className="text-gray-500" title="Archived">
+                  <span className="text-gray-500" title={t('notes.archived')}>
                     <i className="glass-i fas fa-archive"></i>
                   </span>
                 )}
@@ -218,6 +220,7 @@ export function NoteViewPage() {
                   <i className="glass-i fas fa-share-alt"></i>
                 </Link>
                 <button
+                  type="button"
                   onClick={handleTogglePin}
                   className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${
                     note.pinned ? 'text-yellow-500' : 'text-[var(--text-muted)]'
@@ -227,6 +230,7 @@ export function NoteViewPage() {
                   <i className="glass-i fas fa-thumbtack"></i>
                 </button>
                 <button
+                  type="button"
                   onClick={handleToggleFavorite}
                   className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${
                     note.favorite ? 'text-red-500' : 'text-[var(--text-muted)]'
@@ -236,6 +240,7 @@ export function NoteViewPage() {
                   <i className="glass-i fas fa-heart"></i>
                 </button>
                 <button
+                  type="button"
                   onClick={handleToggleArchive}
                   className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${
                     note.archived ? 'text-gray-500' : 'text-[var(--text-muted)]'
@@ -245,6 +250,7 @@ export function NoteViewPage() {
                   <i className="glass-i fas fa-archive"></i>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowDeleteConfirm(true)}
                   className="p-2 rounded-lg hover:bg-red-500/10 text-red-600 transition-colors"
                   title="Delete"
@@ -259,6 +265,7 @@ export function NoteViewPage() {
         {/* Hide/Show Content Toggle */}
         <div className="px-6 py-3 border-b border-[var(--border-color)] flex items-center justify-between">
           <button
+            type="button"
             onClick={toggleHideContent}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
               isContentHidden
@@ -290,6 +297,7 @@ export function NoteViewPage() {
               This note's content is hidden for privacy. Click the button above to reveal it.
             </p>
             <button
+              type="button"
               onClick={toggleHideContent}
               className="px-6 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors"
             >
@@ -327,12 +335,14 @@ export function NoteViewPage() {
             </p>
             <div className="flex justify-end gap-3">
               <button
+                type="button"
                 onClick={() => setShowDeleteConfirm(false)}
                 className="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleDelete}
                 className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
               >

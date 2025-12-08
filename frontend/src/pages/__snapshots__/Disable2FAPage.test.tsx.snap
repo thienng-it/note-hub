@@ -86,6 +86,7 @@ exports[`Disable2FAPage > matches snapshot 1`] = `
         >
           <button
             class="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center"
+            type="button"
           >
             <i
               aria-hidden="true"

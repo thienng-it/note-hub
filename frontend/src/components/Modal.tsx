@@ -41,6 +41,10 @@ export function Modal({ isOpen, onClose, title, children, showCloseButton = true
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={handleBackdropClick}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="button"
+      tabIndex={-1}
+      aria-label="Modal backdrop"
     >
       <div
         ref={modalRef}
@@ -51,6 +55,7 @@ export function Modal({ isOpen, onClose, title, children, showCloseButton = true
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">{title}</h2>
           {showCloseButton && (
             <button
+              type="button"
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)]"
               aria-label="Close modal"
@@ -131,6 +136,7 @@ export function ConfirmModal({
         {/* Actions */}
         <div className="flex gap-3">
           <button
+            type="button"
             onClick={onClose}
             disabled={isLoading}
             className="flex-1 px-4 py-3 rounded-lg bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:opacity-80 transition-colors disabled:opacity-50"
@@ -138,6 +144,7 @@ export function ConfirmModal({
             {cancelText}
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             disabled={isLoading}
             className={`flex-1 px-4 py-3 rounded-lg transition-colors disabled:opacity-50 ${style.button}`}

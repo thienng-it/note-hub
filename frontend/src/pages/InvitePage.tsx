@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { apiClient } from '../api/client';
 
 interface Invitation {
@@ -21,7 +21,7 @@ export function InvitePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchInvitations = async () => {
+  const fetchInvitations = useCallback(async () => {
     try {
       const data = await apiClient.get<{ invitations: Invitation[] }>('/api/v1/invitations');
       setInvitations(data.invitations || []);
@@ -31,11 +31,11 @@ export function InvitePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchInvitations();
-  }, []);
+  }, [fetchInvitations]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,17 +183,22 @@ export function InvitePage() {
           </h3>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-green-700 dark:text-green-300 mb-2">
+              <label
+                htmlFor="invite-url-input"
+                className="block text-sm font-medium text-green-700 dark:text-green-300 mb-2"
+              >
                 Invitation Link:
               </label>
               <div className="flex items-center gap-2">
                 <input
+                  id="invite-url-input"
                   type="text"
                   value={inviteUrl}
                   readOnly
                   className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded-lg text-[var(--text-primary)] font-mono text-sm"
                 />
                 <button
+                  type="button"
                   onClick={() => copyToClipboard(inviteUrl)}
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
@@ -274,6 +279,7 @@ export function InvitePage() {
                 {!invitation.used && (
                   <div className="ml-4">
                     <button
+                      type="button"
                       onClick={() =>
                         copyToClipboard(
                           `${window.location.origin}/register?token=${invitation.token}`,

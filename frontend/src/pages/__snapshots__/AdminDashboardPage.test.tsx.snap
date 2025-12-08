@@ -318,6 +318,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                 <button
                   class="glass-span"
                   title="Disable 2FA for this user"
+                  type="button"
                 >
                   <i
                     aria-hidden="true"

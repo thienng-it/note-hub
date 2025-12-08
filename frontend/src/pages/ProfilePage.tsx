@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
@@ -37,8 +39,8 @@ export function ProfilePage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
             <div>
-              <span className="font-medium text-[var(--text-primary)]">User ID</span>
-              <p className="text-sm text-[var(--text-muted)]">Your unique identifier</p>
+              <span className="font-medium text-[var(--text-primary)]">{t('profile.userId')}</span>
+              <p className="text-sm text-[var(--text-muted)]">{t('profile.userIdDescription')}</p>
             </div>
             <span className="text-[var(--text-secondary)] font-mono">{user.id}</span>
           </div>
@@ -46,8 +48,12 @@ export function ProfilePage() {
           {user.created_at && (
             <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
               <div>
-                <span className="font-medium text-[var(--text-primary)]">Member Since</span>
-                <p className="text-sm text-[var(--text-muted)]">When you joined</p>
+                <span className="font-medium text-[var(--text-primary)]">
+                  {t('profile.memberSince')}
+                </span>
+                <p className="text-sm text-[var(--text-muted)]">
+                  {t('profile.memberSinceDescription')}
+                </p>
               </div>
               <span className="text-[var(--text-secondary)]">
                 {new Date(user.created_at).toLocaleDateString('en-US', {
@@ -65,17 +71,18 @@ export function ProfilePage() {
       <div className="glass-card p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="glass-i fas fa-cog mr-2"></i>
-          Settings
+          {t('profile.settings')}
         </h3>
 
         <div className="space-y-4">
           {/* Theme Toggle */}
           <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
             <div>
-              <span className="font-medium text-[var(--text-primary)]">Theme</span>
-              <p className="text-sm text-[var(--text-muted)]">Switch between light and dark mode</p>
+              <span className="font-medium text-[var(--text-primary)]">{t('profile.theme')}</span>
+              <p className="text-sm text-[var(--text-muted)]">{t('profile.themeDescription')}</p>
             </div>
             <button
+              type="button"
               onClick={toggleTheme}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] transition-colors"
             >
@@ -89,15 +96,17 @@ export function ProfilePage() {
           {/* Change Password Link */}
           <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
             <div>
-              <span className="font-medium text-[var(--text-primary)]">Password</span>
-              <p className="text-sm text-[var(--text-muted)]">Update your password</p>
+              <span className="font-medium text-[var(--text-primary)]">
+                {t('auth.login.password')}
+              </span>
+              <p className="text-sm text-[var(--text-muted)]">{t('profile.passwordDescription')}</p>
             </div>
             <Link
               to="/profile/change-password"
               className="btn-apple px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center"
             >
               <i className="glass-i fas fa-key mr-2"></i>
-              Change Password
+              {t('profile.changePassword')}
             </Link>
           </div>
 
@@ -105,12 +114,10 @@ export function ProfilePage() {
           <div className="flex items-center justify-between py-3">
             <div>
               <span className="font-medium text-[var(--text-primary)]">
-                Two-Factor Authentication
+                {t('profile.enable2FA')}
               </span>
               <p className="text-sm text-[var(--text-muted)]">
-                {user.has_2fa
-                  ? 'Enabled - Your account is protected'
-                  : 'Add an extra layer of security'}
+                {user.has_2fa ? t('profile.twoFactorEnabled') : t('profile.twoFactorDisabled')}
               </p>
             </div>
             {user.has_2fa ? (
@@ -119,7 +126,7 @@ export function ProfilePage() {
                 className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors inline-flex items-center"
               >
                 <i className="glass-i fas fa-shield-alt mr-2"></i>
-                Disable 2FA
+                {t('profile.disable2FA')}
               </Link>
             ) : (
               <Link
@@ -127,7 +134,7 @@ export function ProfilePage() {
                 className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center"
               >
                 <i className="glass-i fas fa-shield-alt mr-2"></i>
-                Setup 2FA
+                {t('profile.setup2FA')}
               </Link>
             )}
           </div>
@@ -138,25 +145,25 @@ export function ProfilePage() {
       <div className="glass-card p-6 rounded-xl">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="glass-i fas fa-shield-alt mr-2 text-green-600"></i>
-          Security Tips
+          {t('profile.securityTips')}
         </h3>
 
         <ul className="space-y-3 text-[var(--text-secondary)]">
           <li className="flex items-start gap-3">
             <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>Use a strong, unique password for your account</span>
+            <span>{t('profile.securityTip1')}</span>
           </li>
           <li className="flex items-start gap-3">
             <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>Enable two-factor authentication for extra security</span>
+            <span>{t('profile.securityTip2')}</span>
           </li>
           <li className="flex items-start gap-3">
             <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>Never share your login credentials with others</span>
+            <span>{t('profile.securityTip3')}</span>
           </li>
           <li className="flex items-start gap-3">
             <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>Log out when using shared or public computers</span>
+            <span>{t('profile.securityTip4')}</span>
           </li>
         </ul>
       </div>

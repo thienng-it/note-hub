@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -14,7 +14,7 @@ export function Setup2FAPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchSetupData = async () => {
+  const fetchSetupData = useCallback(async () => {
     try {
       const data = await apiClient.get<{ qr_code: string; secret: string }>(
         '/api/v1/auth/2fa/setup',
@@ -27,11 +27,11 @@ export function Setup2FAPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchSetupData();
-  }, []);
+  }, [fetchSetupData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
