@@ -75,13 +75,14 @@ frontend:
     - "80:80"
 
 # Drone CI (docker-compose.drone.yml)
-# nginx proxies to drone-server
-drone-nginx:
+# Traefik proxies to drone-server
+drone-traefik:
   ports:
-    - "8080:80"  # External 8080 maps to internal 80
+    - "8080:80"   # External 8080 maps to internal 80
+    - "8443:443"  # External 8443 maps to internal 443
 
 drone-server:
-  # No exposed ports - accessed via nginx
+  # No exposed ports - accessed via Traefik
 ```
 
 ### Environment Variables
