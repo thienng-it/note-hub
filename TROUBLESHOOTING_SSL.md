@@ -58,7 +58,7 @@ See the **[Custom Domain SSL Setup Guide](docs/guides/CUSTOM_DOMAIN_SSL_SETUP.md
 Traefik routers were only configured for the HTTPS entrypoint (`websecure`). When HTTP requests came in, Traefik's global HTTP->HTTPS redirect didn't preserve the routing rules properly, causing API requests to be routed to the frontend's catch-all route instead of the backend.
 
 ### Solution
-This issue has been fixed in commit 812975f. All docker-compose files now include both HTTP and HTTPS routers for proper routing during the redirect process.
+This issue has been fixed in commit 812975fae9e6f500247a9930e4158d960bcb28ca. All docker-compose files now include both HTTP and HTTPS routers for proper routing during the redirect process.
 
 **To apply the fix:**
 
