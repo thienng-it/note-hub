@@ -200,7 +200,7 @@ These networks are **completely isolated**:
 docker network inspect drone-network
 
 # Shows only Drone CI containers:
-# - drone-nginx
+# - drone-traefik
 # - drone-server
 # - drone-runner
 # - drone-db
@@ -376,9 +376,10 @@ Drone CI uses port **8080 by default**, but this is **completely configurable**:
 Edit `docker-compose.drone.yml`:
 
 ```yaml
-drone-nginx:
+drone-traefik:
   ports:
-    - "9000:80"  # Use port 9000 instead
+    - "9000:80"   # Use port 9000 instead
+    - "9443:443"  # HTTPS port
 ```
 
 Update `.env.drone`:
@@ -400,14 +401,16 @@ You can even run **multiple Drone CI instances** independently:
 
 ```yaml
 # drone-ci-team1/docker-compose.yml
-drone-nginx:
+drone-traefik:
   ports:
     - "8080:80"
+    - "8443:443"
 
 # drone-ci-team2/docker-compose.yml
-drone-nginx:
+drone-traefik:
   ports:
     - "8081:80"
+    - "8444:443"
 ```
 
 Each with its own:

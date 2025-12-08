@@ -94,10 +94,10 @@ else
     print_fail "setup-drone.sh is missing"
 fi
 
-if [ -f "docker/nginx-drone.conf" ]; then
-    print_pass "nginx-drone.conf exists"
+if [ -f "docker/traefik/drone-dynamic.yml" ]; then
+    print_pass "drone-dynamic.yml exists"
 else
-    print_fail "nginx-drone.conf is missing"
+    print_fail "drone-dynamic.yml is missing"
 fi
 
 # Test 2: Check docker-compose syntax
@@ -146,7 +146,7 @@ TESTS_RUN=$((TESTS_RUN + 1))
 print_test "Checking service definitions"
 
 # Check each required service explicitly
-required_services=("drone-nginx" "drone-server" "drone-runner" "drone-db")
+required_services=("drone-traefik" "drone-server" "drone-runner" "drone-db")
 all_services_present=true
 
 for service in "${required_services[@]}"; do

@@ -309,9 +309,10 @@ docker run --rm -v drone-data:/data -v $(pwd):/backup \
 
 Edit `docker-compose.drone.yml`:
 ```yaml
-drone-nginx:
+drone-traefik:
   ports:
     - "9000:80"  # Change to any available port
+    - "9443:443" # HTTPS port
 ```
 
 Update `.env.drone`:
