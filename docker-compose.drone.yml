@@ -26,7 +26,15 @@
 #   1. Copy .env.drone.example to .env.drone:  cp .env.drone.example .env.drone
 #   2. Edit .env.drone with your GitHub OAuth credentials (see below)
 #   3. Generate a shared secret: openssl rand -hex 16
-#   4. Run docker compose: docker compose -f docker-compose.drone.yml up -d
+#   4. For custom domain: Set DRONE_ROUTER_RULE=Host(`your-domain`) in .env.drone
+#   5. Run docker compose: docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+#
+# ⚠️  IMPORTANT for Custom Domains:
+#   If using a custom domain (production), you MUST set DRONE_ROUTER_RULE in .env.drone:
+#   DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)
+#   
+#   Without this, Traefik will generate certificates for ANY domain that accesses
+#   your server, causing certificate conflicts with other services like NoteHub.
 #
 # GitHub OAuth Setup (INDEPENDENT):
 #   1. Go to https://github.com/settings/developers
@@ -142,8 +150,11 @@ services:
       # Enable Traefik for this service
       - "traefik.enable=true"
       
-      # Route all traffic to drone-server (HTTPS)
-      - "traefik.http.routers.drone-server.rule=PathPrefix(`/`)"
+      # Route traffic to drone-server
+      # Set DRONE_ROUTER_RULE in .env.drone to control routing:
+      #   - Host(`domain`) for custom domains (prevents certificate conflicts)
+      #   - PathPrefix(`/`) for localhost/IP access (default)
+      - "traefik.http.routers.drone-server.rule=${DRONE_ROUTER_RULE:-PathPrefix(`/`)}"
       - "traefik.http.routers.drone-server.entrypoints=websecure"
       - "traefik.http.routers.drone-server.tls=true"
       - "traefik.http.routers.drone-server.tls.certresolver=letsencrypt"
@@ -197,6 +208,9 @@ services:
       - .env.drone
     environment:
       - POSTGRES_USER=${DRONE_POSTGRES_USER:-drone}
+      # CRITICAL: DRONE_POSTGRES_PASSWORD must be set in .env.drone
+      # Running PostgreSQL without a password is a security risk
+      - POSTGRES_PASSWORD=${DRONE_POSTGRES_PASSWORD:?DRONE_POSTGRES_PASSWORD must be set in .env.drone}
       - POSTGRES_DB=${DRONE_POSTGRES_DB:-drone}
     volumes:
       - drone-postgres-data:/var/lib/postgresql/data

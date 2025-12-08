@@ -1,22 +1,25 @@
 # =============================================================================
-# Docker Compose Override for Drone CI Custom Domain Configuration
+# Docker Compose Override for Drone CI Custom Domain Configuration (DEPRECATED)
 # =============================================================================
 #
-# This file provides domain-specific configuration for Drone CI deployments
-# using custom domains (e.g., drone.yourdomain.com, ci.yourdomain.com, etc.)
+# ⚠️  DEPRECATED: This file is no longer needed for basic custom domain setup.
+#     Instead, use the DRONE_ROUTER_RULE variable in .env.drone:
+#     DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)
 #
-# IMPORTANT: This file FIXES the "certificate not secure" warning when accessing
-# your Drone CI instance via a custom domain by ensuring Let's Encrypt issues
-# certificates for the correct domain name.
+# This file is now only needed for advanced scenarios like:
+# - Multiple domain names for the same Drone CI instance
+# - Complex routing rules with multiple conditions
 #
-# Usage:
+# For basic custom domain setup (RECOMMENDED):
+#   1. Set DRONE_DOMAIN in .env.drone: DRONE_DOMAIN=drone.yourdomain.com
+#   2. Set DRONE_ROUTER_RULE in .env.drone: DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)
+#   3. Set DRONE_ACME_EMAIL in .env.drone: DRONE_ACME_EMAIL=admin@yourdomain.com
+#   4. Deploy: docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+#
+# For advanced scenarios only:
 #   1. Copy this file: cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
-#   2. Set DRONE_DOMAIN in your .env.drone file: DRONE_DOMAIN=drone.yourdomain.com
-#   3. Set DRONE_ACME_EMAIL in your .env.drone file: DRONE_ACME_EMAIL=admin@yourdomain.com
-#   4. Deploy: docker compose -f docker-compose.drone.yml up -d
-#
-# The override file automatically applies when running docker compose commands.
-# No need to specify -f flags for the override file.
+#   2. Edit the file to customize routing rules
+#   3. Deploy: docker compose --env-file .env.drone -f docker-compose.drone.yml -f docker-compose.drone.override.yml up -d
 #
 # How It Works:
 #   - This file overrides the default router rules in docker-compose.drone.yml

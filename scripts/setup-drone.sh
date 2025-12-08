@@ -189,7 +189,7 @@ echo
 
 if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     print_info "Starting Drone CI..."
-    docker compose -f docker-compose.drone.yml up -d
+    docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
     
     print_success "Drone CI is starting!"
     
@@ -199,7 +199,7 @@ if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     
     # Check status
     print_info "Checking service status..."
-    docker compose -f docker-compose.drone.yml ps
+    docker compose --env-file .env.drone -f docker-compose.drone.yml ps
     
     print_success "\n${GREEN}========================================${NC}"
     print_success "Drone CI Setup Complete!"
@@ -209,16 +209,16 @@ if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     print_info "Or: http://YOUR_SERVER_IP:8080"
     echo ""
     print_info "To view logs:"
-    echo "  docker compose -f docker-compose.drone.yml logs -f"
+    echo "  docker compose --env-file .env.drone -f docker-compose.drone.yml logs -f"
     echo ""
     print_info "To stop Drone CI:"
-    echo "  docker compose -f docker-compose.drone.yml down"
+    echo "  docker compose --env-file .env.drone -f docker-compose.drone.yml down"
     echo ""
     print_info "For more information, see:"
     echo "  docs/guides/DRONE_CI_SETUP.md"
 else
     print_info "Skipping deployment. You can start Drone CI later with:"
-    echo "  docker compose -f docker-compose.drone.yml up -d"
+    echo "  docker compose --env-file .env.drone -f docker-compose.drone.yml up -d"
 fi
 
 print_success "\nSetup script completed!"
