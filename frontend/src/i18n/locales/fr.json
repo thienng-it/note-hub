@@ -17,7 +17,25 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "clear": "Clear",
+    "next": "Next",
+    "previous": "Previous",
+    "processing": "Processing...",
+    "verifying": "Verifying...",
+    "updating": "Updating...",
+    "creating": "Creating...",
+    "resetting": "Resetting...",
+    "hideAll": "Hide All",
+    "showAll": "Show All",
+    "addNote": "Add Note",
+    "notesCount": "notes",
+    "lowPriority": "Low",
+    "mediumPriority": "Medium",
+    "highPriority": "High",
+    "removeImage": "Remove image",
+    "noPasskeys": "No passkeys registered yet",
+    "created": "Created"
   },
   "auth": {
     "login": {
@@ -43,7 +61,8 @@
       "backToLogin": "Retour à la connexion",
       "loginFailed": "Échec de la connexion",
       "unexpectedError": "Une erreur inattendue s'est produite",
-      "googleSignInUnavailable": "La connexion Google est temporairement indisponible. Veuillez réessayer ou vous connecter avec nom d'utilisateur et mot de passe."
+      "googleSignInUnavailable": "La connexion Google est temporairement indisponible. Veuillez réessayer ou vous connecter avec nom d'utilisateur et mot de passe.",
+      "forgotPasswordUsernamePlaceholder": "Enter your username or email"
     },
     "register": {
       "title": "Créez votre compte",
@@ -67,7 +86,10 @@
       "emailPlaceholder": "Entrez votre email",
       "sendResetLink": "Envoyer le lien de réinitialisation",
       "sending": "Envoi en cours...",
-      "backToLogin": "Retour à la connexion"
+      "backToLogin": "Retour à la connexion",
+      "requestNewResetLink": "Request New Reset Link",
+      "goToLogin": "Go to Login",
+      "resetPassword": "Reset Password"
     },
     "logout": "Déconnexion"
   },
@@ -99,7 +121,22 @@
     "archived": "Archivées",
     "archivedNotes": "Notes archivées",
     "sharedWithMe": "Partagées avec moi",
-    "archivedDescription": "Les notes archivées apparaîtront ici"
+    "archivedDescription": "Les notes archivées apparaîtront ici",
+    "noteTitlePlaceholder": "Enter note title",
+    "contentPlaceholderMarkdown": "Write your note here... Markdown is supported!",
+    "tagsPlaceholder": "work, personal, ideas (comma-separated)",
+    "shareNote": "Share Note",
+    "lastUpdated": "Last updated",
+    "readingTime": "Reading time",
+    "filterByTag": "Filter by tag...",
+    "hideAllNotes": "Hide all note contents",
+    "showAllNotes": "Show all note contents",
+    "editTooltip": "Edit",
+    "shareTooltip": "Share",
+    "deleteTooltip": "Delete",
+    "pinTooltip": "Pin",
+    "unpinTooltip": "Unpin",
+    "backToNotes": "Back to Notes"
   },
   "tasks": {
     "title": "Tâches",
@@ -121,7 +158,13 @@
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
     "priorityHigh": "Élevée",
     "priorityMedium": "Moyenne",
-    "priorityLow": "Basse"
+    "priorityLow": "Basse",
+    "taskTitlePlaceholder": "What needs to be done?",
+    "descriptionOptional": "Add more details (optional)",
+    "hideAllTasks": "Hide all task contents",
+    "showAllTasks": "Show all task contents",
+    "editTooltip": "Edit",
+    "deleteTooltip": "Delete"
   },
   "profile": {
     "title": "Profil",
@@ -161,7 +204,17 @@
     "securityTip3": "Ne partagez jamais vos identifiants de connexion avec d'autres",
     "securityTip4": "Déconnectez-vous lorsque vous utilisez des ordinateurs partagés ou publics",
     "lightMode": "Mode clair",
-    "darkMode": "Mode sombre"
+    "darkMode": "Mode sombre",
+    "languageDescription": "Choose your preferred language",
+    "usernamePlaceholder": "Enter username...",
+    "emailPlaceholder": "your.email@example.com",
+    "emailOptional": "Optional: Add your email address for account recovery",
+    "bioOptional": "Optional: Write a short bio (max 500 characters)",
+    "backToProfile": "Back to Profile",
+    "usernameRequired": "Username is required",
+    "currentPasswordPlaceholder": "Enter current password...",
+    "newPasswordPlaceholder": "Enter new password...",
+    "confirmNewPasswordPlaceholder": "Confirm new password..."
   },
   "share": {
     "title": "Partager la note",
@@ -173,7 +226,8 @@
     "addUser": "Ajouter un utilisateur",
     "sharedWith": "Partagé avec",
     "removeAccess": "Retirer l'accès",
-    "noShares": "Cette note n'est partagée avec personne"
+    "noShares": "Cette note n'est partagée avec personne",
+    "removeAccessTooltip": "Remove Share Access"
   },
   "admin": {
     "title": "Tableau de bord administrateur",
@@ -187,7 +241,10 @@
     "disable2FA": "Désactiver 2FA",
     "enable": "Activer",
     "disable": "Désactiver",
-    "confirmDisable2FA": "Êtes-vous sûr de vouloir désactiver 2FA pour cet utilisateur ?"
+    "confirmDisable2FA": "Êtes-vous sûr de vouloir désactiver 2FA pour cet utilisateur ?",
+    "disable2FATooltip": "Disable 2FA for this user",
+    "searchPlaceholder": "Search by username or email...",
+    "backToNotes": "Back to Notes"
   },
   "errors": {
     "notFound": "Page non trouvée",
@@ -203,5 +260,66 @@
     "ja": "Japonais",
     "fr": "Français",
     "es": "Espagnol"
+  },
+  "ai": {
+    "proofread": "Proofread and fix grammar",
+    "summarize": "Create a summary",
+    "rewrite": "Rewrite in different style",
+    "close": "Close",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "professional": "Professional",
+    "casual": "Casual",
+    "concise": "Concise"
+  },
+  "passkey": {
+    "title": "Passkeys",
+    "description": "Passkeys provide a secure way to sign in without passwords",
+    "addPasskey": "Add Passkey",
+    "editName": "Edit name",
+    "removePasskey": "Remove passkey",
+    "noPasskeys": "No passkeys registered yet",
+    "created": "Created"
+  },
+  "setup2fa": {
+    "generateNewQR": "Generate new QR code",
+    "tip": "Tip: After enabling 2FA, you'll need to enter a code from your authenticator app",
+    "verificationCodePlaceholder": "000000"
+  },
+  "invite": {
+    "emailPlaceholder": "user@example.com",
+    "messagePlaceholder": "Add a personal message..."
+  },
+  "layout": {
+    "mainNavigation": "Main navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "primaryNavigation": "Primary navigation",
+    "signOut": "Sign out",
+    "viewProfile": "View profile",
+    "mobileNavigation": "Mobile navigation",
+    "createNewNote": "Create new note",
+    "scrollToTop": "Scroll to top",
+    "switchTheme": "Switch to {theme} mode",
+    "frontendVersion": "Frontend: v{version}",
+    "backendVersion": "Backend: v{version}"
+  },
+  "aria": {
+    "closeModal": "Close modal",
+    "modalBackdrop": "Modal backdrop",
+    "warning": "Warning",
+    "loading": "Loading",
+    "add": "Add",
+    "error": "Error",
+    "success": "Success",
+    "information": "Information",
+    "edit": "Edit",
+    "delete": "Delete",
+    "closeStyleMenu": "Close style menu",
+    "selectLanguage": "Select language",
+    "languageOptions": "Language options",
+    "loginForm": "Login form",
+    "registrationForm": "Registration form",
+    "backToProfile": "Back to Profile"
   }
 }

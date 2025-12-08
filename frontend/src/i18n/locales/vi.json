@@ -17,7 +17,25 @@
     "close": "Đóng",
     "confirm": "Xác nhận",
     "yes": "Có",
-    "no": "Không"
+    "no": "Không",
+    "clear": "Clear",
+    "next": "Next",
+    "previous": "Previous",
+    "processing": "Processing...",
+    "verifying": "Verifying...",
+    "updating": "Updating...",
+    "creating": "Creating...",
+    "resetting": "Resetting...",
+    "hideAll": "Hide All",
+    "showAll": "Show All",
+    "addNote": "Add Note",
+    "notesCount": "notes",
+    "lowPriority": "Low",
+    "mediumPriority": "Medium",
+    "highPriority": "High",
+    "removeImage": "Remove image",
+    "noPasskeys": "No passkeys registered yet",
+    "created": "Created"
   },
   "auth": {
     "login": {
@@ -43,7 +61,8 @@
       "backToLogin": "Quay lại đăng nhập",
       "loginFailed": "Đăng nhập thất bại",
       "unexpectedError": "Đã xảy ra lỗi không mong muốn",
-      "googleSignInUnavailable": "Đăng nhập Google tạm thời không khả dụng. Vui lòng thử lại hoặc đăng nhập bằng tên người dùng và mật khẩu."
+      "googleSignInUnavailable": "Đăng nhập Google tạm thời không khả dụng. Vui lòng thử lại hoặc đăng nhập bằng tên người dùng và mật khẩu.",
+      "forgotPasswordUsernamePlaceholder": "Enter your username or email"
     },
     "register": {
       "title": "Tạo tài khoản của bạn",
@@ -67,7 +86,10 @@
       "emailPlaceholder": "Nhập email của bạn",
       "sendResetLink": "Gửi liên kết đặt lại",
       "sending": "Đang gửi...",
-      "backToLogin": "Quay lại đăng nhập"
+      "backToLogin": "Quay lại đăng nhập",
+      "requestNewResetLink": "Request New Reset Link",
+      "goToLogin": "Go to Login",
+      "resetPassword": "Reset Password"
     },
     "logout": "Đăng xuất"
   },
@@ -99,7 +121,22 @@
     "archived": "Đã lưu trữ",
     "archivedNotes": "Ghi chú đã lưu trữ",
     "sharedWithMe": "Được chia sẻ với tôi",
-    "archivedDescription": "Ghi chú đã lưu trữ sẽ xuất hiện ở đây"
+    "archivedDescription": "Ghi chú đã lưu trữ sẽ xuất hiện ở đây",
+    "noteTitlePlaceholder": "Enter note title",
+    "contentPlaceholderMarkdown": "Write your note here... Markdown is supported!",
+    "tagsPlaceholder": "work, personal, ideas (comma-separated)",
+    "shareNote": "Share Note",
+    "lastUpdated": "Last updated",
+    "readingTime": "Reading time",
+    "filterByTag": "Filter by tag...",
+    "hideAllNotes": "Hide all note contents",
+    "showAllNotes": "Show all note contents",
+    "editTooltip": "Edit",
+    "shareTooltip": "Share",
+    "deleteTooltip": "Delete",
+    "pinTooltip": "Pin",
+    "unpinTooltip": "Unpin",
+    "backToNotes": "Back to Notes"
   },
   "tasks": {
     "title": "Nhiệm vụ",
@@ -121,7 +158,13 @@
     "deleteConfirm": "Bạn có chắc chắn muốn xóa nhiệm vụ này không?",
     "priorityHigh": "Cao",
     "priorityMedium": "Trung bình",
-    "priorityLow": "Thấp"
+    "priorityLow": "Thấp",
+    "taskTitlePlaceholder": "What needs to be done?",
+    "descriptionOptional": "Add more details (optional)",
+    "hideAllTasks": "Hide all task contents",
+    "showAllTasks": "Show all task contents",
+    "editTooltip": "Edit",
+    "deleteTooltip": "Delete"
   },
   "profile": {
     "title": "Hồ sơ",
@@ -161,7 +204,17 @@
     "securityTip3": "Không bao giờ chia sẻ thông tin đăng nhập của bạn với người khác",
     "securityTip4": "Đăng xuất khi sử dụng máy tính dùng chung hoặc công cộng",
     "lightMode": "Chế độ sáng",
-    "darkMode": "Chế độ tối"
+    "darkMode": "Chế độ tối",
+    "languageDescription": "Choose your preferred language",
+    "usernamePlaceholder": "Enter username...",
+    "emailPlaceholder": "your.email@example.com",
+    "emailOptional": "Optional: Add your email address for account recovery",
+    "bioOptional": "Optional: Write a short bio (max 500 characters)",
+    "backToProfile": "Back to Profile",
+    "usernameRequired": "Username is required",
+    "currentPasswordPlaceholder": "Enter current password...",
+    "newPasswordPlaceholder": "Enter new password...",
+    "confirmNewPasswordPlaceholder": "Confirm new password..."
   },
   "share": {
     "title": "Chia sẻ ghi chú",
@@ -173,7 +226,8 @@
     "addUser": "Thêm người dùng",
     "sharedWith": "Đã chia sẻ với",
     "removeAccess": "Xóa quyền truy cập",
-    "noShares": "Ghi chú này chưa được chia sẻ với ai"
+    "noShares": "Ghi chú này chưa được chia sẻ với ai",
+    "removeAccessTooltip": "Remove Share Access"
   },
   "admin": {
     "title": "Bảng điều khiển quản trị",
@@ -187,7 +241,10 @@
     "disable2FA": "Tắt 2FA",
     "enable": "Bật",
     "disable": "Tắt",
-    "confirmDisable2FA": "Bạn có chắc chắn muốn tắt 2FA cho người dùng này không?"
+    "confirmDisable2FA": "Bạn có chắc chắn muốn tắt 2FA cho người dùng này không?",
+    "disable2FATooltip": "Disable 2FA for this user",
+    "searchPlaceholder": "Search by username or email...",
+    "backToNotes": "Back to Notes"
   },
   "errors": {
     "notFound": "Không tìm thấy trang",
@@ -203,5 +260,66 @@
     "ja": "Tiếng Nhật",
     "fr": "Tiếng Pháp",
     "es": "Tiếng Tây Ban Nha"
+  },
+  "ai": {
+    "proofread": "Proofread and fix grammar",
+    "summarize": "Create a summary",
+    "rewrite": "Rewrite in different style",
+    "close": "Close",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "professional": "Professional",
+    "casual": "Casual",
+    "concise": "Concise"
+  },
+  "passkey": {
+    "title": "Passkeys",
+    "description": "Passkeys provide a secure way to sign in without passwords",
+    "addPasskey": "Add Passkey",
+    "editName": "Edit name",
+    "removePasskey": "Remove passkey",
+    "noPasskeys": "No passkeys registered yet",
+    "created": "Created"
+  },
+  "setup2fa": {
+    "generateNewQR": "Generate new QR code",
+    "tip": "Tip: After enabling 2FA, you'll need to enter a code from your authenticator app",
+    "verificationCodePlaceholder": "000000"
+  },
+  "invite": {
+    "emailPlaceholder": "user@example.com",
+    "messagePlaceholder": "Add a personal message..."
+  },
+  "layout": {
+    "mainNavigation": "Main navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "primaryNavigation": "Primary navigation",
+    "signOut": "Sign out",
+    "viewProfile": "View profile",
+    "mobileNavigation": "Mobile navigation",
+    "createNewNote": "Create new note",
+    "scrollToTop": "Scroll to top",
+    "switchTheme": "Switch to {theme} mode",
+    "frontendVersion": "Frontend: v{version}",
+    "backendVersion": "Backend: v{version}"
+  },
+  "aria": {
+    "closeModal": "Close modal",
+    "modalBackdrop": "Modal backdrop",
+    "warning": "Warning",
+    "loading": "Loading",
+    "add": "Add",
+    "error": "Error",
+    "success": "Success",
+    "information": "Information",
+    "edit": "Edit",
+    "delete": "Delete",
+    "closeStyleMenu": "Close style menu",
+    "selectLanguage": "Select language",
+    "languageOptions": "Language options",
+    "loginForm": "Login form",
+    "registrationForm": "Registration form",
+    "backToProfile": "Back to Profile"
   }
 }

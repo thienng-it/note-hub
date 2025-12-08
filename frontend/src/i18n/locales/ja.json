@@ -17,7 +17,25 @@
     "close": "閉じる",
     "confirm": "確認",
     "yes": "はい",
-    "no": "いいえ"
+    "no": "いいえ",
+    "clear": "Clear",
+    "next": "Next",
+    "previous": "Previous",
+    "processing": "Processing...",
+    "verifying": "Verifying...",
+    "updating": "Updating...",
+    "creating": "Creating...",
+    "resetting": "Resetting...",
+    "hideAll": "Hide All",
+    "showAll": "Show All",
+    "addNote": "Add Note",
+    "notesCount": "notes",
+    "lowPriority": "Low",
+    "mediumPriority": "Medium",
+    "highPriority": "High",
+    "removeImage": "Remove image",
+    "noPasskeys": "No passkeys registered yet",
+    "created": "Created"
   },
   "auth": {
     "login": {
@@ -43,7 +61,8 @@
       "backToLogin": "ログインに戻る",
       "loginFailed": "ログインに失敗しました",
       "unexpectedError": "予期しないエラーが発生しました",
-      "googleSignInUnavailable": "Googleサインインは一時的に利用できません。もう一度お試しいただくか、ユーザー名とパスワードでサインインしてください。"
+      "googleSignInUnavailable": "Googleサインインは一時的に利用できません。もう一度お試しいただくか、ユーザー名とパスワードでサインインしてください。",
+      "forgotPasswordUsernamePlaceholder": "Enter your username or email"
     },
     "register": {
       "title": "アカウントを作成",
@@ -67,7 +86,10 @@
       "emailPlaceholder": "メールアドレスを入力してください",
       "sendResetLink": "リセットリンクを送信",
       "sending": "送信中...",
-      "backToLogin": "ログインに戻る"
+      "backToLogin": "ログインに戻る",
+      "requestNewResetLink": "Request New Reset Link",
+      "goToLogin": "Go to Login",
+      "resetPassword": "Reset Password"
     },
     "logout": "ログアウト"
   },
@@ -99,7 +121,22 @@
     "archived": "アーカイブ済み",
     "archivedNotes": "アーカイブされたメモ",
     "sharedWithMe": "共有されたメモ",
-    "archivedDescription": "アーカイブされたメモがここに表示されます"
+    "archivedDescription": "アーカイブされたメモがここに表示されます",
+    "noteTitlePlaceholder": "Enter note title",
+    "contentPlaceholderMarkdown": "Write your note here... Markdown is supported!",
+    "tagsPlaceholder": "work, personal, ideas (comma-separated)",
+    "shareNote": "Share Note",
+    "lastUpdated": "Last updated",
+    "readingTime": "Reading time",
+    "filterByTag": "Filter by tag...",
+    "hideAllNotes": "Hide all note contents",
+    "showAllNotes": "Show all note contents",
+    "editTooltip": "Edit",
+    "shareTooltip": "Share",
+    "deleteTooltip": "Delete",
+    "pinTooltip": "Pin",
+    "unpinTooltip": "Unpin",
+    "backToNotes": "Back to Notes"
   },
   "tasks": {
     "title": "タスク",
@@ -121,7 +158,13 @@
     "deleteConfirm": "このタスクを削除してもよろしいですか？",
     "priorityHigh": "高",
     "priorityMedium": "中",
-    "priorityLow": "低"
+    "priorityLow": "低",
+    "taskTitlePlaceholder": "What needs to be done?",
+    "descriptionOptional": "Add more details (optional)",
+    "hideAllTasks": "Hide all task contents",
+    "showAllTasks": "Show all task contents",
+    "editTooltip": "Edit",
+    "deleteTooltip": "Delete"
   },
   "profile": {
     "title": "プロフィール",
@@ -161,7 +204,17 @@
     "securityTip3": "ログイン情報を他人と共有しないでください",
     "securityTip4": "共有または公共のコンピュータを使用する場合はログアウトしてください",
     "lightMode": "ライトモード",
-    "darkMode": "ダークモード"
+    "darkMode": "ダークモード",
+    "languageDescription": "Choose your preferred language",
+    "usernamePlaceholder": "Enter username...",
+    "emailPlaceholder": "your.email@example.com",
+    "emailOptional": "Optional: Add your email address for account recovery",
+    "bioOptional": "Optional: Write a short bio (max 500 characters)",
+    "backToProfile": "Back to Profile",
+    "usernameRequired": "Username is required",
+    "currentPasswordPlaceholder": "Enter current password...",
+    "newPasswordPlaceholder": "Enter new password...",
+    "confirmNewPasswordPlaceholder": "Confirm new password..."
   },
   "share": {
     "title": "メモを共有",
@@ -173,7 +226,8 @@
     "addUser": "ユーザーを追加",
     "sharedWith": "共有済み",
     "removeAccess": "アクセスを削除",
-    "noShares": "このメモは誰とも共有されていません"
+    "noShares": "このメモは誰とも共有されていません",
+    "removeAccessTooltip": "Remove Share Access"
   },
   "admin": {
     "title": "管理者ダッシュボード",
@@ -187,7 +241,10 @@
     "disable2FA": "2FAを無効化",
     "enable": "有効化",
     "disable": "無効化",
-    "confirmDisable2FA": "このユーザーの2FAを無効にしてもよろしいですか？"
+    "confirmDisable2FA": "このユーザーの2FAを無効にしてもよろしいですか？",
+    "disable2FATooltip": "Disable 2FA for this user",
+    "searchPlaceholder": "Search by username or email...",
+    "backToNotes": "Back to Notes"
   },
   "errors": {
     "notFound": "ページが見つかりません",
@@ -203,5 +260,66 @@
     "ja": "日本語",
     "fr": "フランス語",
     "es": "スペイン語"
+  },
+  "ai": {
+    "proofread": "Proofread and fix grammar",
+    "summarize": "Create a summary",
+    "rewrite": "Rewrite in different style",
+    "close": "Close",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "professional": "Professional",
+    "casual": "Casual",
+    "concise": "Concise"
+  },
+  "passkey": {
+    "title": "Passkeys",
+    "description": "Passkeys provide a secure way to sign in without passwords",
+    "addPasskey": "Add Passkey",
+    "editName": "Edit name",
+    "removePasskey": "Remove passkey",
+    "noPasskeys": "No passkeys registered yet",
+    "created": "Created"
+  },
+  "setup2fa": {
+    "generateNewQR": "Generate new QR code",
+    "tip": "Tip: After enabling 2FA, you'll need to enter a code from your authenticator app",
+    "verificationCodePlaceholder": "000000"
+  },
+  "invite": {
+    "emailPlaceholder": "user@example.com",
+    "messagePlaceholder": "Add a personal message..."
+  },
+  "layout": {
+    "mainNavigation": "Main navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "primaryNavigation": "Primary navigation",
+    "signOut": "Sign out",
+    "viewProfile": "View profile",
+    "mobileNavigation": "Mobile navigation",
+    "createNewNote": "Create new note",
+    "scrollToTop": "Scroll to top",
+    "switchTheme": "Switch to {theme} mode",
+    "frontendVersion": "Frontend: v{version}",
+    "backendVersion": "Backend: v{version}"
+  },
+  "aria": {
+    "closeModal": "Close modal",
+    "modalBackdrop": "Modal backdrop",
+    "warning": "Warning",
+    "loading": "Loading",
+    "add": "Add",
+    "error": "Error",
+    "success": "Success",
+    "information": "Information",
+    "edit": "Edit",
+    "delete": "Delete",
+    "closeStyleMenu": "Close style menu",
+    "selectLanguage": "Select language",
+    "languageOptions": "Language options",
+    "loginForm": "Login form",
+    "registrationForm": "Registration form",
+    "backToProfile": "Back to Profile"
   }
 }
