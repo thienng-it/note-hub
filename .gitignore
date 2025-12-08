@@ -30,6 +30,10 @@ credentials.json
 private/
 secrets/
 
+# SSL/TLS certificates (SENSITIVE - never commit)
+letsencrypt/acme.json
+letsencrypt-drone/acme.json
+
 # API keys and tokens
 .apikey
 .token

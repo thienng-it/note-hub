@@ -1,0 +1,5 @@
+# Let's Encrypt certificate storage directory for Drone CI
+# This .gitkeep file ensures the directory is tracked by Git
+# Traefik will automatically create acme.json file in this directory
+# DO NOT EDIT acme.json MANUALLY - it's managed by Traefik
+# Backup acme.json to preserve your SSL certificates

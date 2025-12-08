@@ -338,28 +338,70 @@ forwardingTimeouts:
 
 ### SSL/HTTPS Setup
 
-To enable HTTPS with automatic Let's Encrypt certificates:
+**SSL/HTTPS is now enabled by default** in all deployment profiles! 🔒
 
-```yaml
-# In docker-compose.yml, add to traefik service:
-command:
-  - "--entrypoints.websecure.address=:443"
-  - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-  - "--certificatesresolvers.myresolver.acme.email=your-email@example.com"
-  - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+Traefik automatically:
+- Listens on both HTTP (port 80) and HTTPS (port 443)
+- Redirects all HTTP traffic to HTTPS
+- Obtains SSL certificates from Let's Encrypt
+- Renews certificates automatically before expiration
 
-ports:
-  - "80:80"
-  - "443:443"
+#### Configuration
 
-volumes:
-  - ./letsencrypt:/letsencrypt
+Set your email for Let's Encrypt notifications in `.env`:
 
-# Update service labels:
-labels:
-  - "traefik.http.routers.frontend.tls=true"
-  - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+```bash
+# .env file
+ACME_EMAIL=your-email@yourdomain.com
 ```
+
+#### Requirements for Production
+
+For Let's Encrypt to issue certificates, your setup must meet these requirements:
+
+1. **Valid Domain**: Your domain must point to your server's public IP
+2. **Open Ports**: Ports 80 and 443 must be accessible from the internet
+3. **Valid Email**: Set `ACME_EMAIL` to receive certificate notifications
+
+#### Development/Localhost
+
+For local development, SSL still works but:
+- Self-signed certificates are used (browsers show warnings)
+- Let's Encrypt cannot validate localhost domains
+- Use `http://localhost` or accept the browser warning for `https://localhost`
+
+#### Certificate Storage
+
+Certificates are stored in:
+- `./letsencrypt/acme.json` - Main NoteHub deployments
+- `./letsencrypt-drone/acme.json` - Drone CI deployment
+
+⚠️ **Important**: 
+- These files are automatically excluded from Git
+- Back them up to preserve your certificates
+- Never edit these files manually
+
+#### Ports
+
+All Traefik services now expose both HTTP and HTTPS:
+- **NoteHub**: HTTP 80 → HTTPS 443
+- **Drone CI**: HTTP 8080 → HTTPS 8443
+
+#### Disabling SSL (Not Recommended)
+
+If you need to disable SSL for testing:
+
+1. Remove HTTPS configuration from Traefik command:
+   - Remove `--entrypoints.websecure.address=:443`
+   - Remove all `--certificatesresolvers.*` lines
+   - Remove `--entrypoints.web.http.redirections.*` lines
+
+2. Remove port 443 mapping:
+   - Change `ports: ["80:80", "443:443"]` to `ports: ["80:80"]`
+
+3. Update service labels to use `web` instead of `websecure`:
+   - Change `entrypoints=websecure` to `entrypoints=web`
+   - Remove `tls=true` and `tls.certresolver=letsencrypt` labels
 
 ### Debugging Tips
 

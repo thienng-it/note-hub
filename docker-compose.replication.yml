@@ -28,7 +28,7 @@
 
 services:
   # ==========================================================================
-  # Traefik - Reverse Proxy (MySQL Replication)
+  # Traefik - Reverse Proxy (MySQL Replication) with SSL/HTTPS
   # ==========================================================================
   traefik-mysql-replication:
     image: traefik:v2.11
@@ -44,14 +44,25 @@ services:
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--ping=true"
     ports:
       - "80:80"
+      - "443:443"
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./letsencrypt:/letsencrypt
     networks:
       - notehub-network
     healthcheck:
@@ -62,7 +73,7 @@ services:
       start_period: 5s
 
   # ==========================================================================
-  # Traefik - Reverse Proxy (SQLite Replication)
+  # Traefik - Reverse Proxy (SQLite Replication) with SSL/HTTPS
   # ==========================================================================
   traefik-sqlite-replication:
     image: traefik:v2.11
@@ -78,14 +89,25 @@ services:
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--ping=true"
     ports:
       - "80:80"
+      - "443:443"
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./letsencrypt:/letsencrypt
     networks:
       - notehub-network
     healthcheck:
@@ -258,16 +280,22 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend-mysql-repl-api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-mysql-repl-api.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-repl-api.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-repl-api.priority=10"
+      - "traefik.http.routers.backend-mysql-repl-api.tls=true"
+      - "traefik.http.routers.backend-mysql-repl-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend-mysql-repl-api.loadbalancer.server.port=5000"
       - "traefik.http.routers.backend-mysql-repl-uploads.rule=PathPrefix(`/uploads`)"
-      - "traefik.http.routers.backend-mysql-repl-uploads.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-repl-uploads.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-repl-uploads.priority=10"
+      - "traefik.http.routers.backend-mysql-repl-uploads.tls=true"
+      - "traefik.http.routers.backend-mysql-repl-uploads.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend-mysql-repl-uploads.loadbalancer.server.port=5000"
       - "traefik.http.routers.backend-mysql-repl-health.rule=Path(`/health`)"
-      - "traefik.http.routers.backend-mysql-repl-health.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-repl-health.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-repl-health.priority=10"
+      - "traefik.http.routers.backend-mysql-repl-health.tls=true"
+      - "traefik.http.routers.backend-mysql-repl-health.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend-mysql-repl-health.loadbalancer.server.port=5000"
 
   # ==========================================================================
@@ -301,8 +329,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend-mysql-repl.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend-mysql-repl.entrypoints=web"
+      - "traefik.http.routers.frontend-mysql-repl.entrypoints=websecure"
       - "traefik.http.routers.frontend-mysql-repl.priority=1"
+      - "traefik.http.routers.frontend-mysql-repl.tls=true"
+      - "traefik.http.routers.frontend-mysql-repl.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend-mysql-repl.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend-mysql-repl.middlewares=security-headers@file,compression@file"
 
@@ -374,16 +404,22 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend-sqlite-repl-api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-sqlite-repl-api.entrypoints=web"
+      - "traefik.http.routers.backend-sqlite-repl-api.entrypoints=websecure"
       - "traefik.http.routers.backend-sqlite-repl-api.priority=10"
+      - "traefik.http.routers.backend-sqlite-repl-api.tls=true"
+      - "traefik.http.routers.backend-sqlite-repl-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend-sqlite-repl-api.loadbalancer.server.port=5000"
       - "traefik.http.routers.backend-sqlite-repl-uploads.rule=PathPrefix(`/uploads`)"
-      - "traefik.http.routers.backend-sqlite-repl-uploads.entrypoints=web"
+      - "traefik.http.routers.backend-sqlite-repl-uploads.entrypoints=websecure"
       - "traefik.http.routers.backend-sqlite-repl-uploads.priority=10"
+      - "traefik.http.routers.backend-sqlite-repl-uploads.tls=true"
+      - "traefik.http.routers.backend-sqlite-repl-uploads.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend-sqlite-repl-uploads.loadbalancer.server.port=5000"
       - "traefik.http.routers.backend-sqlite-repl-health.rule=Path(`/health`)"
-      - "traefik.http.routers.backend-sqlite-repl-health.entrypoints=web"
+      - "traefik.http.routers.backend-sqlite-repl-health.entrypoints=websecure"
       - "traefik.http.routers.backend-sqlite-repl-health.priority=10"
+      - "traefik.http.routers.backend-sqlite-repl-health.tls=true"
+      - "traefik.http.routers.backend-sqlite-repl-health.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend-sqlite-repl-health.loadbalancer.server.port=5000"
 
   # ==========================================================================
@@ -417,8 +453,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend-sqlite-repl.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend-sqlite-repl.entrypoints=web"
+      - "traefik.http.routers.frontend-sqlite-repl.entrypoints=websecure"
       - "traefik.http.routers.frontend-sqlite-repl.priority=1"
+      - "traefik.http.routers.frontend-sqlite-repl.tls=true"
+      - "traefik.http.routers.frontend-sqlite-repl.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend-sqlite-repl.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend-sqlite-repl.middlewares=security-headers@file,compression@file"
 

@@ -76,7 +76,8 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 - 🔄 **Traefik Integration** - Migrated from nginx to Traefik for better container-native routing
   - Automatic service discovery via Docker labels
   - Dynamic configuration without restarts
-  - Built-in Let's Encrypt support for SSL
+  - **SSL/HTTPS enabled by default** with automatic Let's Encrypt certificates
+  - HTTP to HTTPS redirect with HSTS security headers
   - Modern dashboard and monitoring
 
 ### Performance Enhancements (December 2024)
@@ -219,7 +220,8 @@ docker compose up -d
 # Seed the database with sample data
 docker compose exec backend node scripts/seed_db.js
 
-# Access at http://localhost
+# Access at http://localhost (redirects to https://localhost)
+# Note: Browser will show security warning for self-signed cert in dev
 ```
 
 #### Development with MySQL
@@ -234,7 +236,7 @@ docker compose --profile mysql up -d
 # Seed the MySQL database
 docker compose exec backend-mysql node scripts/seed_db.js
 
-# Access at http://localhost
+# Access at http://localhost (redirects to https://localhost)
 ```
 
 #### Production Mode (Cloud Database)
@@ -250,6 +252,7 @@ nano .env
 # SECRET_KEY=<strong-random-key>
 # DATABASE_URL=mysql://user:password@your-cloud-db:3306/notehub
 # NOTES_ADMIN_PASSWORD=<secure-admin-password>
+# ACME_EMAIL=admin@yourdomain.com  # For Let's Encrypt SSL certificates
 
 # Run with production profile
 docker compose --profile production up -d
@@ -257,7 +260,8 @@ docker compose --profile production up -d
 # NOTE: Do NOT run seed script in production!
 # Database should be pre-configured via cloud provider's management console.
 
-# Access at http://localhost (or configure reverse proxy)
+# Access at https://yourdomain.com (automatic SSL via Let's Encrypt)
+# Ensure your domain points to your server and ports 80/443 are open
 ```
 
 **Important**: The seed script is blocked in production mode to prevent accidental data modification. Use your cloud database provider's tools to manage production data.
