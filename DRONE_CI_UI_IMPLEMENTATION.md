@@ -4,7 +4,7 @@
 
 This document summarizes the investigation and verification of the Drone CI user interface implementation for the NoteHub project. Drone CI comes with a complete, production-ready web UI that provides a modern interface for managing CI/CD pipelines.
 
-> **⚠️ CRITICAL for Custom Domains**: If you're using a custom domain (e.g., `drone-ci-notehub.duckdns.org`), you **MUST** set `DRONE_ROUTER_RULE=Host(\`your-domain.com\`)` in `.env.drone` or you'll get a 404 error. See [Troubleshooting 404 Error](#-404-not-found-error-custom-domain) for details.
+> **⚠️ CRITICAL for Custom Domains**: If you're using a custom domain, you **MUST** set `DRONE_ROUTER_RULE=Host(\`your-domain.com\`)` in `.env.drone` (replacing `your-domain.com` with your actual domain) or you'll get a 404 error. See [Troubleshooting 404 Error](#-404-not-found-error-custom-domain) for details.
 
 ## Investigation Findings
 
