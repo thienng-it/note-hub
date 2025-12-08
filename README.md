@@ -66,10 +66,18 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 | **Search**       | Elasticsearch (optional)            |
 | **Authentication** | JWT + Google OAuth 2.0 (optional) |
 | **API**          | RESTful with JWT authentication     |
-| **Deployment**   | Docker + nginx + Hetzner VPS        |
+| **Reverse Proxy** | Traefik v2.11 (automatic routing)   |
+| **Deployment**   | Docker + Traefik + Hetzner VPS      |
 | **CI/CD**        | GitHub Actions + GitHub Pages       |
 
 ## 🚀 Recent Improvements
+
+### Architecture Improvements (December 2024)
+- 🔄 **Traefik Integration** - Migrated from nginx to Traefik for better container-native routing
+  - Automatic service discovery via Docker labels
+  - Dynamic configuration without restarts
+  - Built-in Let's Encrypt support for SSL
+  - Modern dashboard and monitoring
 
 ### Performance Enhancements (December 2024)
 - ⚡ **10x Faster Queries** - Redis caching reduces note list operations from 80ms to 8ms

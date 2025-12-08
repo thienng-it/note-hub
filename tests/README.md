@@ -21,18 +21,30 @@ cd backend
 npm test -- tests/upload.test.js
 ```
 
-### 2. Unit Tests - Nginx Configuration
-**File:** `nginx-config.test.sh`
+### 2. Unit Tests - Traefik Configuration
+**File:** `traefik-config.test.sh`
 
-Tests the nginx configuration template:
+Tests the Traefik reverse proxy configuration:
+- Static and dynamic configuration files
+- Entry points and routing rules
+- Docker provider and labels
+- Middleware definitions (compression, security headers)
+- Service configurations for all profiles
+- YAML syntax validation
+- API, uploads, and health routing labels
+
+**Run:**
+```bash
+./tests/traefik-config.test.sh
+```
+
+### 2a. Legacy Unit Tests - Nginx Configuration
+**File:** `nginx-config.test.sh` *(deprecated - nginx has been replaced by Traefik)*
+
+Tests the nginx configuration template (kept for reference):
 - Template file existence and structure
 - Environment variable placeholders
 - Location blocks for `/api/`, `/uploads/`, `/health`
-- Variable substitution with different values
-- Security headers
-- Gzip compression
-- Static file caching
-- No hardcoded backend references
 
 **Run:**
 ```bash
@@ -73,9 +85,9 @@ Tests the complete Docker Compose setup:
 cd backend
 npm test
 
-# 2. Run nginx configuration tests
+# 2. Run Traefik configuration tests
 cd ..
-./tests/nginx-config.test.sh
+./tests/traefik-config.test.sh
 
 # 3. Run Docker Compose integration tests (requires .env file)
 ./tests/docker-compose-integration.test.sh
@@ -98,25 +110,28 @@ cd ..
 #### Docker Configuration
 - ✅ `docker-compose.yml` syntax validation
 - ✅ Volume definitions (`notehub-uploads`)
+- ✅ Traefik routing and labels
+- ✅ Service dependencies and health checks
 - ✅ Volume mounts on all backend services
 - ✅ Environment variables for frontend services
-- ✅ Nginx template file in frontend image
+- ✅ Traefik configuration files and middlewares
 - ✅ Uploads directory creation in backend image
 
 #### Runtime Behavior
 - ✅ Backend and frontend service health
-- ✅ API accessibility through nginx proxy
+- ✅ API accessibility through Traefik proxy
 - ✅ File upload and retrieval through proxy
 - ✅ Upload persistence across container restarts
-- ✅ Correct nginx configuration generation
-- ✅ Environment variable injection
+- ✅ Correct Traefik routing configuration
+- ✅ Docker label-based service discovery
 
 ### Test Metrics
 
 - **Backend Unit Tests:** 23 test cases
-- **Nginx Config Tests:** 14 test cases
+- **Traefik Config Tests:** 20 test cases
+- **Nginx Config Tests (Legacy):** 14 test cases
 - **Integration Tests:** 20 test cases (when Docker is available)
-- **Total:** 57 test cases
+- **Total:** 77 test cases
 
 ## CI/CD Integration
 
@@ -130,8 +145,8 @@ These tests can be integrated into CI/CD pipelines:
     npm install
     npm test
 
-- name: Run Nginx Config Tests
-  run: ./tests/nginx-config.test.sh
+- name: Run Traefik Config Tests
+  run: ./tests/traefik-config.test.sh
 
 - name: Run Docker Integration Tests
   run: ./tests/docker-compose-integration.test.sh

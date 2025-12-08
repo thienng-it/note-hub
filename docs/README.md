@@ -208,7 +208,8 @@ Optional 2FA support for enhanced security:
 - **Database:** SQLite (dev) / MySQL (prod)
 - **ORM:** Sequelize
 - **Security:** JWT authentication, bcrypt, HTML sanitization
-- **Deployment:** Docker + nginx
+- **Reverse Proxy:** Traefik v2.11
+- **Deployment:** Docker + Traefik
 
 ---
 
