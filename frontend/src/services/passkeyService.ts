@@ -99,6 +99,35 @@ class PasskeyService {
       return { success: true };
     } catch (error: unknown) {
       console.error('Passkey registration error:', error);
+      
+      // Handle specific WebAuthn errors
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          return {
+            success: false,
+            error: 'Registration was cancelled or timed out. Please try again.',
+          };
+        }
+        if (error.name === 'NotSupportedError') {
+          return {
+            success: false,
+            error: 'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
+          };
+        }
+        if (error.name === 'InvalidStateError') {
+          return {
+            success: false,
+            error: 'This passkey is already registered. Please try with a different authenticator.',
+          };
+        }
+        if (error.name === 'AbortError') {
+          return {
+            success: false,
+            error: 'Registration was cancelled. Please try again.',
+          };
+        }
+      }
+
       const err = error as { error?: string; message?: string };
       return {
         success: false,
@@ -132,6 +161,41 @@ class PasskeyService {
       return { success: true, tokens: result as PasskeyTokens };
     } catch (error: unknown) {
       console.error('Passkey authentication error:', error);
+      
+      // Handle specific WebAuthn errors
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          return {
+            success: false,
+            error: 'Authentication was cancelled or timed out. Please try again.',
+          };
+        }
+        if (error.name === 'NotSupportedError') {
+          return {
+            success: false,
+            error: 'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
+          };
+        }
+        if (error.name === 'SecurityError') {
+          return {
+            success: false,
+            error: 'Security error occurred. Please ensure you are using a secure connection (HTTPS).',
+          };
+        }
+        if (error.name === 'AbortError') {
+          return {
+            success: false,
+            error: 'Authentication was cancelled. Please try again.',
+          };
+        }
+        if (error.name === 'InvalidStateError') {
+          return {
+            success: false,
+            error: 'No matching passkey found. Please check your credentials or sign in with password.',
+          };
+        }
+      }
+
       const err = error as { error?: string; message?: string };
       return {
         success: false,

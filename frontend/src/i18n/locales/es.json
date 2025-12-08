@@ -55,6 +55,7 @@
       "verifyAndSignIn": "Verificar e iniciar sesión",
       "orContinueWith": "O continuar con",
       "signInWithGoogle": "Iniciar sesión con Google",
+      "signInWithPasskey": "Iniciar sesión con clave de acceso",
       "forgotPassword": "¿Olvidó su contraseña?",
       "newToNoteHub": "¿Nuevo en NoteHub?",
       "createAccount": "Crear una cuenta",

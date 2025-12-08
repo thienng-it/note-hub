@@ -55,6 +55,7 @@
       "verifyAndSignIn": "Xác minh & Đăng nhập",
       "orContinueWith": "Hoặc tiếp tục với",
       "signInWithGoogle": "Đăng nhập với Google",
+      "signInWithPasskey": "Đăng nhập với Passkey",
       "forgotPassword": "Quên mật khẩu?",
       "newToNoteHub": "Mới đến NoteHub?",
       "createAccount": "Tạo tài khoản",

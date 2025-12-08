@@ -55,6 +55,7 @@
       "verifyAndSignIn": "確認してサインイン",
       "orContinueWith": "または次の方法で続行",
       "signInWithGoogle": "Googleでサインイン",
+      "signInWithPasskey": "パスキーでサインイン",
       "forgotPassword": "パスワードをお忘れですか？",
       "newToNoteHub": "NoteHubは初めてですか？",
       "createAccount": "アカウントを作成",
