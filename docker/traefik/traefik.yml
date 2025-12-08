@@ -1,12 +1,21 @@
 # =============================================================================
-# Traefik Static Configuration
+# Traefik Static Configuration (Reference)
 # =============================================================================
-# This configuration defines the entry points, providers, and global settings
-# for Traefik reverse proxy.
+# NOTE: This file is currently NOT USED by NoteHub deployments.
+# Traefik is configured via command-line flags in docker-compose.yml files.
+# This file is kept as a reference for the static configuration structure.
 #
-# Features:
+# To use this file instead of command-line flags:
+# 1. Mount this file: ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+# 2. Remove command-line configuration flags from docker-compose.yml
+# 3. Restart Traefik services
+#
+# Features demonstrated in this reference:
 # - HTTP entry point on port 80
+# - HTTPS entry point on port 443
+# - HTTP to HTTPS redirect
 # - Docker provider for automatic service discovery
+# - Let's Encrypt certificate resolver
 # - Health check endpoint
 # - Access logs for monitoring
 # - Compression for better performance
@@ -31,12 +40,10 @@ entryPoints:
   
   websecure:
     address: ":443"
-    # Enable compression for all entry points
+    # Enable compression for HTTPS traffic
     http:
       middlewares:
         - compression@file
-      tls:
-        certResolver: letsencrypt
 
 # API and dashboard
 api:

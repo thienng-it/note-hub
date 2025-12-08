@@ -25,16 +25,10 @@ http:
         # Force HTTPS with HSTS (HTTP Strict Transport Security)
         stsSeconds: 31536000
         stsIncludeSubdomains: true
-        stsPreload: true
+        stsPreload: false  # Set to true only if you want to submit to HSTS preload list
         # Additional security headers for HTTPS
         forceSTSHeader: true
         contentSecurityPolicy: "upgrade-insecure-requests"
-
-    # HTTP to HTTPS redirect middleware
-    https-redirect:
-      redirectScheme:
-        scheme: https
-        permanent: true
 
     # CORS headers for API (if needed)
     cors-headers:
