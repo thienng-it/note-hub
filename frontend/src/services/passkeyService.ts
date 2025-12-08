@@ -5,11 +5,9 @@
 import {
   startRegistration,
   startAuthentication,
+  type PublicKeyCredentialCreationOptionsJSON,
+  type PublicKeyCredentialRequestOptionsJSON,
 } from '@simplewebauthn/browser';
-import type {
-  PublicKeyCredentialCreationOptionsJSON,
-  PublicKeyCredentialRequestOptionsJSON,
-} from '@simplewebauthn/types';
 import { apiClient } from '../api/client';
 
 interface PasskeyStatus {
@@ -75,7 +73,7 @@ class PasskeyService {
       );
 
       // Start WebAuthn registration
-      const registrationResponse = await startRegistration(options);
+      const registrationResponse = await startRegistration({ optionsJSON: options });
 
       // Verify registration with server
       await apiClient.post('/api/v1/auth/passkey/register-verify', {
@@ -108,7 +106,7 @@ class PasskeyService {
       );
 
       // Start WebAuthn authentication
-      const authenticationResponse = await startAuthentication(options);
+      const authenticationResponse = await startAuthentication({ optionsJSON: options });
 
       // Verify authentication with server
       const result = await apiClient.post('/api/v1/auth/passkey/login-verify', {

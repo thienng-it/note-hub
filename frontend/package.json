@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/types": "^12.0.0",
     "i18next": "^25.7.1",
     "i18next-browser-languagedetector": "^8.2.0",
     "react": "^19.2.0",

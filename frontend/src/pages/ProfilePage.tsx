@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { PasskeyManager } from '../components/PasskeyManager';
 
 export function ProfilePage() {
   const { t } = useTranslation();
@@ -111,7 +112,7 @@ export function ProfilePage() {
           </div>
 
           {/* 2FA Settings */}
-          <div className="flex items-center justify-between py-3">
+          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
             <div>
               <span className="font-medium text-[var(--text-primary)]">
                 {t('profile.enable2FA')}
@@ -137,6 +138,11 @@ export function ProfilePage() {
                 {t('profile.setup2FA')}
               </Link>
             )}
+          </div>
+
+          {/* Passkey Management */}
+          <div className="py-3">
+            <PasskeyManager />
           </div>
         </div>
       </div>
