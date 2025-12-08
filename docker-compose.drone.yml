@@ -229,6 +229,7 @@ networks:
   # Separate network for Drone CI
   # NoteHub uses 'notehub-network', so no conflicts
   drone-network:
+    name: drone-network
     driver: bridge
 
 volumes:

@@ -180,6 +180,7 @@ services:
 
 networks:
   drone-network:
+    name: drone-network
     driver: bridge
 
 volumes:
