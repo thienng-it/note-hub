@@ -211,6 +211,48 @@ else
   TESTS_PASSED=$((TESTS_PASSED + 1))
 fi
 
+# Test 21: Check backend has HTTP router for API (for SSL/HTTPS support)
+echo "Test 21: Check backend has HTTP router for API..."
+if grep -q "traefik.http.routers.backend-api-http.entrypoints=web" docker-compose.yml; then
+  print_result "Backend has HTTP router for API" 0
+else
+  print_result "Backend has HTTP router for API" 1 "HTTP router not found"
+fi
+
+# Test 22: Check backend has HTTPS router for API
+echo "Test 22: Check backend has HTTPS router for API..."
+if grep -q "traefik.http.routers.backend-api.entrypoints=websecure" docker-compose.yml; then
+  print_result "Backend has HTTPS router for API" 0
+else
+  print_result "Backend has HTTPS router for API" 1 "HTTPS router not found"
+fi
+
+# Test 23: Check frontend has HTTP router (for SSL/HTTPS support)
+echo "Test 23: Check frontend has HTTP router..."
+if grep -q "traefik.http.routers.frontend-http.entrypoints=web" docker-compose.yml; then
+  print_result "Frontend has HTTP router" 0
+else
+  print_result "Frontend has HTTP router" 1 "HTTP router not found"
+fi
+
+# Test 24: Check frontend has HTTPS router
+echo "Test 24: Check frontend has HTTPS router..."
+if grep -q "traefik.http.routers.frontend.entrypoints=websecure" docker-compose.yml; then
+  print_result "Frontend has HTTPS router" 0
+else
+  print_result "Frontend has HTTPS router" 1 "HTTPS router not found"
+fi
+
+# Test 25: Check that backend HTTP router has higher priority than frontend
+echo "Test 25: Check routing priorities (backend > frontend)..."
+backend_priority=$(grep "backend-api-http.priority" docker-compose.yml | head -1 | grep -o "[0-9]\+")
+frontend_priority=$(grep "frontend-http.priority" docker-compose.yml | head -1 | grep -o "[0-9]\+")
+if [ -n "$backend_priority" ] && [ -n "$frontend_priority" ] && [ "$backend_priority" -gt "$frontend_priority" ]; then
+  print_result "Backend has higher priority than frontend" 0
+else
+  print_result "Backend has higher priority than frontend" 1 "Priority mismatch: backend=$backend_priority, frontend=$frontend_priority"
+fi
+
 echo ""
 echo "======================================================================"
 echo "Test Summary"

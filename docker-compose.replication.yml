@@ -246,14 +246,14 @@ services:
       - PORT=5000
       - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
       - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
-      
+
       # Primary MySQL connection
       - MYSQL_HOST=mysql-primary
       - MYSQL_PORT=3306
       - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
-      
+
       # Enable replication
       - DB_REPLICATION_ENABLED=true
       - MYSQL_REPLICA_HOSTS=mysql-replica-1,mysql-replica-2
@@ -279,43 +279,43 @@ services:
       - notehub-network
     labels:
       - "traefik.enable=true"
-      
+
       # API routing (HTTP)
       - "traefik.http.routers.backend-mysql-repl-api-http.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.backend-mysql-repl-api-http.entrypoints=web"
       - "traefik.http.routers.backend-mysql-repl-api-http.priority=10"
-      
+
       # API routing (HTTPS)
       - "traefik.http.routers.backend-mysql-repl-api.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.backend-mysql-repl-api.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-repl-api.priority=10"
       - "traefik.http.routers.backend-mysql-repl-api.tls=true"
       - "traefik.http.routers.backend-mysql-repl-api.tls.certresolver=letsencrypt"
-      
+
       # Uploads routing (HTTP)
       - "traefik.http.routers.backend-mysql-repl-uploads-http.rule=PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend-mysql-repl-uploads-http.entrypoints=web"
       - "traefik.http.routers.backend-mysql-repl-uploads-http.priority=10"
-      
+
       # Uploads routing (HTTPS)
       - "traefik.http.routers.backend-mysql-repl-uploads.rule=PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend-mysql-repl-uploads.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-repl-uploads.priority=10"
       - "traefik.http.routers.backend-mysql-repl-uploads.tls=true"
       - "traefik.http.routers.backend-mysql-repl-uploads.tls.certresolver=letsencrypt"
-      
+
       # Health check routing (HTTP)
       - "traefik.http.routers.backend-mysql-repl-health-http.rule=Path(`/health`)"
       - "traefik.http.routers.backend-mysql-repl-health-http.entrypoints=web"
       - "traefik.http.routers.backend-mysql-repl-health-http.priority=10"
-      
+
       # Health check routing (HTTPS)
       - "traefik.http.routers.backend-mysql-repl-health.rule=Path(`/health`)"
       - "traefik.http.routers.backend-mysql-repl-health.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-repl-health.priority=10"
       - "traefik.http.routers.backend-mysql-repl-health.tls=true"
       - "traefik.http.routers.backend-mysql-repl-health.tls.certresolver=letsencrypt"
-      
+
       # Service configuration
       - "traefik.http.services.backend-mysql-repl.loadbalancer.server.port=5000"
 
@@ -349,13 +349,13 @@ services:
       start_period: 5s
     labels:
       - "traefik.enable=true"
-      
+
       # Frontend routing (HTTP)
       - "traefik.http.routers.frontend-mysql-repl-http.rule=PathPrefix(`/`)"
       - "traefik.http.routers.frontend-mysql-repl-http.entrypoints=web"
       - "traefik.http.routers.frontend-mysql-repl-http.priority=1"
       - "traefik.http.routers.frontend-mysql-repl-http.middlewares=security-headers@file,compression@file"
-      
+
       # Frontend routing (HTTPS)
       - "traefik.http.routers.frontend-mysql-repl.rule=PathPrefix(`/`)"
       - "traefik.http.routers.frontend-mysql-repl.entrypoints=websecure"
@@ -363,7 +363,7 @@ services:
       - "traefik.http.routers.frontend-mysql-repl.tls=true"
       - "traefik.http.routers.frontend-mysql-repl.tls.certresolver=letsencrypt"
       - "traefik.http.routers.frontend-mysql-repl.middlewares=security-headers@file,compression@file"
-      
+
       # Service configuration
       - "traefik.http.services.frontend-mysql-repl.loadbalancer.server.port=80"
 
@@ -412,10 +412,10 @@ services:
       - PORT=5000
       - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
       - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
-      
+
       # SQLite configuration
       - NOTES_DB_PATH=/app/data/notes.db
-      
+
       # Enable SQLite replication (replicas created by Litestream)
       - DB_REPLICATION_ENABLED=true
       - SQLITE_REPLICA_PATHS=/app/data/notes-replica1.db,/app/data/notes-replica2.db
@@ -434,43 +434,43 @@ services:
       - notehub-network
     labels:
       - "traefik.enable=true"
-      
+
       # API routing (HTTP)
       - "traefik.http.routers.backend-sqlite-repl-api-http.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.backend-sqlite-repl-api-http.entrypoints=web"
       - "traefik.http.routers.backend-sqlite-repl-api-http.priority=10"
-      
+
       # API routing (HTTPS)
       - "traefik.http.routers.backend-sqlite-repl-api.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.backend-sqlite-repl-api.entrypoints=websecure"
       - "traefik.http.routers.backend-sqlite-repl-api.priority=10"
       - "traefik.http.routers.backend-sqlite-repl-api.tls=true"
       - "traefik.http.routers.backend-sqlite-repl-api.tls.certresolver=letsencrypt"
-      
+
       # Uploads routing (HTTP)
       - "traefik.http.routers.backend-sqlite-repl-uploads-http.rule=PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend-sqlite-repl-uploads-http.entrypoints=web"
       - "traefik.http.routers.backend-sqlite-repl-uploads-http.priority=10"
-      
+
       # Uploads routing (HTTPS)
       - "traefik.http.routers.backend-sqlite-repl-uploads.rule=PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend-sqlite-repl-uploads.entrypoints=websecure"
       - "traefik.http.routers.backend-sqlite-repl-uploads.priority=10"
       - "traefik.http.routers.backend-sqlite-repl-uploads.tls=true"
       - "traefik.http.routers.backend-sqlite-repl-uploads.tls.certresolver=letsencrypt"
-      
+
       # Health check routing (HTTP)
       - "traefik.http.routers.backend-sqlite-repl-health-http.rule=Path(`/health`)"
       - "traefik.http.routers.backend-sqlite-repl-health-http.entrypoints=web"
       - "traefik.http.routers.backend-sqlite-repl-health-http.priority=10"
-      
+
       # Health check routing (HTTPS)
       - "traefik.http.routers.backend-sqlite-repl-health.rule=Path(`/health`)"
       - "traefik.http.routers.backend-sqlite-repl-health.entrypoints=websecure"
       - "traefik.http.routers.backend-sqlite-repl-health.priority=10"
       - "traefik.http.routers.backend-sqlite-repl-health.tls=true"
       - "traefik.http.routers.backend-sqlite-repl-health.tls.certresolver=letsencrypt"
-      
+
       # Service configuration
       - "traefik.http.services.backend-sqlite-repl.loadbalancer.server.port=5000"
 
@@ -504,13 +504,13 @@ services:
       start_period: 5s
     labels:
       - "traefik.enable=true"
-      
+
       # Frontend routing (HTTP)
       - "traefik.http.routers.frontend-sqlite-repl-http.rule=PathPrefix(`/`)"
       - "traefik.http.routers.frontend-sqlite-repl-http.entrypoints=web"
       - "traefik.http.routers.frontend-sqlite-repl-http.priority=1"
       - "traefik.http.routers.frontend-sqlite-repl-http.middlewares=security-headers@file,compression@file"
-      
+
       # Frontend routing (HTTPS)
       - "traefik.http.routers.frontend-sqlite-repl.rule=PathPrefix(`/`)"
       - "traefik.http.routers.frontend-sqlite-repl.entrypoints=websecure"
@@ -518,7 +518,7 @@ services:
       - "traefik.http.routers.frontend-sqlite-repl.tls=true"
       - "traefik.http.routers.frontend-sqlite-repl.tls.certresolver=letsencrypt"
       - "traefik.http.routers.frontend-sqlite-repl.middlewares=security-headers@file,compression@file"
-      
+
       # Service configuration
       - "traefik.http.services.frontend-sqlite-repl.loadbalancer.server.port=80"
 
