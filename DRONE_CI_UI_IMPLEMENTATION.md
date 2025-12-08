@@ -350,7 +350,7 @@ https://drone-ci-notehub.duckdns.org:8443/
 ```
 Use this for quick testing or if you prefer to keep Drone on non-standard ports.
 
-**Option B: Use standard ports (Production Recommended)**
+**Option B: Use standard ports (Production Recommended for Let's Encrypt)**
 
 Modify `docker-compose.drone.yml` to use standard HTTPS ports:
 ```yaml
@@ -362,10 +362,21 @@ services:
       - "443:443"  # Change from "8443:443"
 ```
 
+**Benefits:**
+- Allows Let's Encrypt HTTP challenge to work automatically for SSL certificate generation
+- No need to specify port in URL (access via standard `https://domain.com/`)
+- Professional production setup
+
 ⚠️ **Warning**: This requires that ports 80 and 443 are not already in use by other services (like NoteHub). If NoteHub is running on the same server using ports 80/443, you must either:
 - Run Drone on a different server
 - Use a different port (keep 8080/8443) and access with the port number
 - Set up an external reverse proxy (nginx/Caddy) to route based on domain
+
+**Note on SSL Certificates with Non-Standard Ports:**
+If you keep ports 8080/8443, Let's Encrypt HTTP challenge may fail because it expects port 80 to be accessible. In this case, you would need to either:
+1. Temporarily open port 80 for certificate issuance
+2. Use DNS challenge instead (requires DNS provider API configuration)
+3. Use a wildcard certificate or existing certificate
 
 #### 2. Missing DRONE_ROUTER_RULE Configuration
 
@@ -409,6 +420,59 @@ curl -I https://drone-ci-notehub.duckdns.org:8443/
 sudo netstat -tulpn | grep :443
 # Or use: sudo lsof -i :443
 ```
+
+### SSL Certificate Not Generated / HTTPS Errors
+
+**Problem**: Let's Encrypt isn't generating certificates, or you get SSL/certificate errors.
+
+**Cause**: Let's Encrypt HTTP challenge requires port 80 to be accessible from the internet at your domain.
+
+**Diagnosis**:
+```bash
+# Check Traefik logs for ACME/certificate errors
+docker logs drone-traefik 2>&1 | grep -i "acme\|certificate\|letsencrypt"
+
+# Check if port 80 is accessible from outside
+curl -I http://drone-ci-notehub.duckdns.org
+```
+
+**Solutions**:
+
+**If using non-standard ports (8080/8443):**
+
+The HTTP challenge won't work because Let's Encrypt tries to access port 80, but your Traefik is on port 8080.
+
+**Option 1: Switch to standard ports (Recommended)**
+```yaml
+# In docker-compose.drone.yml
+drone-traefik:
+  ports:
+    - "80:80"    # Required for Let's Encrypt HTTP challenge
+    - "443:443"  # Standard HTTPS port
+```
+
+**Option 2: Temporarily expose port 80**
+If you only need port 80 for initial certificate issuance:
+1. Stop any service using port 80
+2. Temporarily change Traefik to use port 80
+3. Let certificate generate
+4. Change back to port 8080 (certificate will remain valid)
+
+**Option 3: Use DNS challenge (Advanced)**
+Requires configuring your DNS provider's API in Traefik. Example for Cloudflare:
+```yaml
+# In docker-compose.drone.yml command section
+- "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+- "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare"
+```
+Then set DNS provider credentials in environment variables.
+
+**If using standard ports (80/443):**
+
+Ensure:
+1. DNS points correctly: `nslookup drone-ci-notehub.duckdns.org`
+2. Firewall allows port 80: `sudo ufw status`
+3. No other service using port 80: `sudo lsof -i :80`
 
 ### UI Not Loading
 1. Check services are running:
