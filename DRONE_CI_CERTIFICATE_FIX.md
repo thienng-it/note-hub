@@ -277,6 +277,24 @@ Certificate renewal continues to work automatically:
 - Certificate renewal continues automatically
 - No service interruption needed
 
+## Applying to Other Services
+
+If you experience similar TLS-ALPN-01 challenge failures with the main NoteHub deployment or other services, you can apply the same fix:
+
+1. **Locate the Traefik configuration** in the relevant docker-compose file
+2. **Find the tlschallenge line:**
+   ```yaml
+   - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+   ```
+3. **Replace it with httpchallenge:**
+   ```yaml
+   - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+   - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+   ```
+4. **Restart the service** and remove old certificates to force re-issuance
+
+**Note:** The main NoteHub services (docker-compose.yml) haven't reported this issue, so this fix is currently only applied to Drone CI. Only apply to other services if you encounter certificate issuance failures.
+
 ## Future Improvements
 
 Potential enhancements for future consideration:
@@ -284,6 +302,7 @@ Potential enhancements for future consideration:
 2. Implement alerts for failed renewals
 3. Support for DNS-01 challenge for wildcard certificates
 4. Automated certificate backup to cloud storage
+5. Consider applying HTTP-01 challenge to all services proactively
 
 ## References
 
