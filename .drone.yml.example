@@ -183,17 +183,20 @@ steps:
 # Trigger Configuration
 # =============================================================================
 trigger:
-  # Run on push and pull request
+  # Run on push, pull request, and manual/custom triggers
   event:
     - push
     - pull_request
+    - custom
   
-  # Run on all branches
-  branch:
-    - main
-    - develop
-    - feature/*
-    - bugfix/*
+  # Run on all branches (no restrictions to allow forked repos)
+  # Leave empty or remove to allow all branches
+  # Uncomment to restrict specific branches:
+  # branch:
+  #   - main
+  #   - develop
+  #   - feature/*
+  #   - bugfix/*
 
 # =============================================================================
 # Secrets Configuration
