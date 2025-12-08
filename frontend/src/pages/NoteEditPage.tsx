@@ -223,7 +223,7 @@ export function NoteEditPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter note title"
+              placeholder={t('notes.noteTitlePlaceholder')}
               required
             />
           </div>
@@ -244,7 +244,7 @@ export function NoteEditPage() {
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 className="glass-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="work, personal, ideas (comma-separated)"
+                placeholder={t('notes.tagsPlaceholder')}
               />
             </div>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
@@ -289,7 +289,7 @@ export function NoteEditPage() {
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] font-mono text-sm resize-y"
-                placeholder="Write your note here... Markdown is supported!"
+                placeholder={t('notes.contentPlaceholderMarkdown')}
               />
             )}
           </div>

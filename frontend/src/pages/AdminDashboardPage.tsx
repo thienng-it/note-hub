@@ -136,7 +136,7 @@ export function AdminDashboardPage() {
           </p>
           <Link to="/" className="btn-apple">
             <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
-            <span>Back to Notes</span>
+            <span>{t('admin.backToNotes')}</span>
           </Link>
         </div>
       </div>
@@ -162,7 +162,7 @@ export function AdminDashboardPage() {
             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
           >
             <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
-            <span>Back to Notes</span>
+            <span>{t('admin.backToNotes')}</span>
           </Link>
         </div>
       </div>
@@ -232,14 +232,14 @@ export function AdminDashboardPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by username or email..."
+              placeholder={t('admin.searchPlaceholder')}
               className="glass-input w-full pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex gap-2">
             <button type="submit" className="btn-apple">
               <i className="glass-i fas fa-search" aria-hidden="true"></i>
-              <span>Search</span>
+              <span>{t('common.search')}</span>
             </button>
             {searchQuery && (
               <button
@@ -248,7 +248,7 @@ export function AdminDashboardPage() {
                 className="px-6 py-3 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
               >
                 <i className="glass-i fas fa-times" aria-hidden="true"></i>
-                <span>Clear</span>
+                <span>{t('common.clear')}</span>
               </button>
             )}
           </div>
@@ -410,7 +410,7 @@ export function AdminDashboardPage() {
                               type="button"
                               onClick={() => handleDisable2FA(u.id, u.username)}
                               className="glass-span"
-                              title="Disable 2FA for this user"
+                              title={t('admin.disable2FATooltip')}
                             >
                               <i
                                 className="glass-i fas fa-shield-alt mr-1.5"

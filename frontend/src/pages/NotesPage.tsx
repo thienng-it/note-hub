@@ -209,29 +209,29 @@ export function NotesPage() {
             <span className="text-[var(--text-primary)]">{getViewTitle()}</span>
           </h1>
           <div className="flex items-center space-x-3">
-            <span className="text-sm text-[var(--text-secondary)]">{notes.length} notes</span>
+            <span className="text-sm text-[var(--text-secondary)]">{notes.length} {t('common.notesCount')}</span>
             {notes.length > 0 && (
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={hideAllNotes}
                   className="btn-secondary-glass text-sm"
-                  title="Hide all note contents"
+                  title={t('notes.hideAllNotes')}
                 >
-                  <i className="glass-i fas fa-eye-slash mr-2"></i>Hide All
+                  <i className="glass-i fas fa-eye-slash mr-2"></i>{t('common.hideAll')}
                 </button>
                 <button
                   type="button"
                   onClick={showAllNotes}
                   className="btn-secondary-glass text-sm"
-                  title="Show all note contents"
+                  title={t('notes.showAllNotes')}
                 >
-                  <i className="glass-i fas fa-eye mr-2"></i>Show All
+                  <i className="glass-i fas fa-eye mr-2"></i>{t('common.showAll')}
                 </button>
               </div>
             )}
             <Link to="/notes/new" className="btn-apple">
-              <i className="glass-i fas fa-plus mr-2"></i>Add Note
+              <i className="glass-i fas fa-plus mr-2"></i>{t('common.addNote')}
             </Link>
           </div>
         </div>
@@ -245,7 +245,7 @@ export function NotesPage() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search notes..."
+                  placeholder={t('notes.searchPlaceholder')}
                   className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <i className="glass-i fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
@@ -258,19 +258,19 @@ export function NotesPage() {
                   type="text"
                   value={tagFilter}
                   onChange={(e) => setTagFilter(e.target.value)}
-                  placeholder="Filter by tag..."
+                  placeholder={t('notes.filterByTag')}
                   className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
             <button type="submit" className="btn-apple">
               <i className="glass-i fas fa-search mr-2"></i>
-              <span>Search</span>
+              <span>{t('common.search')}</span>
             </button>
             {(query || tagFilter) && (
               <button type="button" onClick={clearSearch} className="btn-secondary-glass">
                 <i className="glass-i fas fa-times mr-2"></i>
-                <span>Clear</span>
+                <span>{t('common.clear')}</span>
               </button>
             )}
           </form>
@@ -343,12 +343,12 @@ export function NotesPage() {
               {/* Pin and Favorite Icons */}
               <div className="absolute top-3 right-3 flex space-x-2">
                 {note.pinned && (
-                  <span className="text-yellow-500" title="Pinned">
+                  <span className="text-yellow-500" title={t('notes.pinned')}>
                     <i className="glass-i fas fa-thumbtack"></i>
                   </span>
                 )}
                 {note.favorite && (
-                  <span className="text-red-500" title="Favorite">
+                  <span className="text-red-500" title={t('notes.favorite')}>
                     <i className="glass-i fas fa-heart"></i>
                   </span>
                 )}
@@ -420,11 +420,11 @@ export function NotesPage() {
               {/* Footer */}
               <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                 <div className="flex items-center space-x-3">
-                  <span title="Reading time">
+                  <span title={t('notes.readingTime')}>
                     <i className="glass-i fas fa-clock mr-1"></i>
                     {note.reading_time || Math.ceil((note.body?.length || 0) / 1000)}m
                   </span>
-                  <span title="Last updated">
+                  <span title={t('notes.lastUpdated')}>
                     {note.updated_at
                       ? new Date(note.updated_at).toLocaleDateString('en-US', {
                           month: 'short',
@@ -449,14 +449,14 @@ export function NotesPage() {
                   <Link
                     to={`/notes/${note.id}/edit`}
                     className="text-blue-600 hover:text-blue-800 transition-colors"
-                    title="Edit"
+                    title={t('notes.editTooltip')}
                   >
                     <i className="glass-i fas fa-edit"></i>
                   </Link>
                   <Link
                     to={`/notes/${note.id}/share`}
                     className="text-green-600 hover:text-green-800 transition-colors"
-                    title="Share"
+                    title={t('notes.shareTooltip')}
                   >
                     <i className="glass-i fas fa-share-alt"></i>
                   </Link>
