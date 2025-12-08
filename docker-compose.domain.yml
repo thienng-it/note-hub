@@ -27,7 +27,7 @@
 # For Multiple Profiles:
 #   This configuration works with all deployment profiles:
 #   - Development: docker compose up -d
-#   - Production:  docker compose --profile production up -d  
+#   - Production:  docker compose --profile production up -d
 #   - MySQL:       docker compose --profile mysql up -d
 #
 # Troubleshooting:
@@ -44,41 +44,66 @@ services:
   # ==========================================================================
   frontend:
     labels:
-      # Override frontend routing rule to include Host matcher
+      # HTTP router with Host matcher
+      - "traefik.http.routers.frontend-http.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.routers.frontend-http.priority=1"
+      - "traefik.http.routers.frontend-http.middlewares=security-headers@file,compression@file"
+
+      # HTTPS router with Host matcher
       - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
-      # Keep existing configuration
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend.middlewares=security-headers@file,compression@file"
+
+      # Service configuration
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
 
   # ==========================================================================
   # Backend - Add Host rule for custom domain
   # ==========================================================================
   backend:
     labels:
-      # Override backend API routing rule to include Host matcher
+      # API routing (HTTP)
+      - "traefik.http.routers.backend-api-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-api-http.entrypoints=web"
+      - "traefik.http.routers.backend-api-http.priority=10"
+
+      # API routing (HTTPS)
       - "traefik.http.routers.backend-api.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend-api.entrypoints=websecure"
       - "traefik.http.routers.backend-api.priority=10"
       - "traefik.http.routers.backend-api.tls=true"
       - "traefik.http.routers.backend-api.tls.certresolver=letsencrypt"
-      
-      # Override uploads routing rule
+
+      # Uploads routing (HTTP)
+      - "traefik.http.routers.backend-uploads-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-uploads-http.entrypoints=web"
+      - "traefik.http.routers.backend-uploads-http.priority=10"
+
+      # Uploads routing (HTTPS)
       - "traefik.http.routers.backend-uploads.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend-uploads.entrypoints=websecure"
       - "traefik.http.routers.backend-uploads.priority=10"
       - "traefik.http.routers.backend-uploads.tls=true"
       - "traefik.http.routers.backend-uploads.tls.certresolver=letsencrypt"
-      
-      # Override health check routing rule
+
+      # Health check routing (HTTP)
+      - "traefik.http.routers.backend-health-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && Path(`/health`)"
+      - "traefik.http.routers.backend-health-http.entrypoints=web"
+      - "traefik.http.routers.backend-health-http.priority=10"
+
+      # Health check routing (HTTPS)
       - "traefik.http.routers.backend-health.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && Path(`/health`)"
       - "traefik.http.routers.backend-health.entrypoints=websecure"
       - "traefik.http.routers.backend-health.priority=10"
       - "traefik.http.routers.backend-health.tls=true"
       - "traefik.http.routers.backend-health.tls.certresolver=letsencrypt"
+
+      # Service configuration
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
 
   # ==========================================================================
   # Production Frontend - Add Host rule for custom domain
@@ -86,14 +111,22 @@ services:
   frontend-prod:
     profiles: ["production"]
     labels:
-      # Override frontend-prod routing rule to include Host matcher
+      # HTTP router with Host matcher
+      - "traefik.http.routers.frontend-prod-http.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.frontend-prod-http.entrypoints=web"
+      - "traefik.http.routers.frontend-prod-http.priority=1"
+      - "traefik.http.routers.frontend-prod-http.middlewares=security-headers@file,compression@file"
+
+      # HTTPS router with Host matcher
       - "traefik.http.routers.frontend-prod.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
       - "traefik.http.routers.frontend-prod.entrypoints=websecure"
       - "traefik.http.routers.frontend-prod.priority=1"
       - "traefik.http.routers.frontend-prod.tls=true"
       - "traefik.http.routers.frontend-prod.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend-prod.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend-prod.middlewares=security-headers@file,compression@file"
+
+      # Service configuration
+      - "traefik.http.services.frontend-prod.loadbalancer.server.port=80"
 
   # ==========================================================================
   # Production Backend - Add Host rule for custom domain
@@ -101,26 +134,44 @@ services:
   backend-prod:
     profiles: ["production"]
     labels:
-      # Override backend-prod API routing rule to include Host matcher
+      # API routing (HTTP)
+      - "traefik.http.routers.backend-prod-api-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-prod-api-http.entrypoints=web"
+      - "traefik.http.routers.backend-prod-api-http.priority=10"
+
+      # API routing (HTTPS)
       - "traefik.http.routers.backend-prod-api.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend-prod-api.entrypoints=websecure"
       - "traefik.http.routers.backend-prod-api.priority=10"
       - "traefik.http.routers.backend-prod-api.tls=true"
       - "traefik.http.routers.backend-prod-api.tls.certresolver=letsencrypt"
-      
-      # Override uploads routing rule
+
+      # Uploads routing (HTTP)
+      - "traefik.http.routers.backend-prod-uploads-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-prod-uploads-http.entrypoints=web"
+      - "traefik.http.routers.backend-prod-uploads-http.priority=10"
+
+      # Uploads routing (HTTPS)
       - "traefik.http.routers.backend-prod-uploads.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend-prod-uploads.entrypoints=websecure"
       - "traefik.http.routers.backend-prod-uploads.priority=10"
       - "traefik.http.routers.backend-prod-uploads.tls=true"
       - "traefik.http.routers.backend-prod-uploads.tls.certresolver=letsencrypt"
-      
-      # Override health check routing rule
+
+      # Health check routing (HTTP)
+      - "traefik.http.routers.backend-prod-health-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && Path(`/health`)"
+      - "traefik.http.routers.backend-prod-health-http.entrypoints=web"
+      - "traefik.http.routers.backend-prod-health-http.priority=10"
+
+      # Health check routing (HTTPS)
       - "traefik.http.routers.backend-prod-health.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && Path(`/health`)"
       - "traefik.http.routers.backend-prod-health.entrypoints=websecure"
       - "traefik.http.routers.backend-prod-health.priority=10"
       - "traefik.http.routers.backend-prod-health.tls=true"
       - "traefik.http.routers.backend-prod-health.tls.certresolver=letsencrypt"
+
+      # Service configuration
+      - "traefik.http.services.backend-prod.loadbalancer.server.port=5000"
 
   # ==========================================================================
   # MySQL Frontend - Add Host rule for custom domain
@@ -128,14 +179,22 @@ services:
   frontend-mysql:
     profiles: ["mysql"]
     labels:
-      # Override frontend-mysql routing rule to include Host matcher
+      # HTTP router with Host matcher
+      - "traefik.http.routers.frontend-mysql-http.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.frontend-mysql-http.entrypoints=web"
+      - "traefik.http.routers.frontend-mysql-http.priority=1"
+      - "traefik.http.routers.frontend-mysql-http.middlewares=security-headers@file,compression@file"
+
+      # HTTPS router with Host matcher
       - "traefik.http.routers.frontend-mysql.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
       - "traefik.http.routers.frontend-mysql.entrypoints=websecure"
       - "traefik.http.routers.frontend-mysql.priority=1"
       - "traefik.http.routers.frontend-mysql.tls=true"
       - "traefik.http.routers.frontend-mysql.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend-mysql.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend-mysql.middlewares=security-headers@file,compression@file"
+
+      # Service configuration
+      - "traefik.http.services.frontend-mysql.loadbalancer.server.port=80"
 
   # ==========================================================================
   # MySQL Backend - Add Host rule for custom domain
@@ -143,23 +202,41 @@ services:
   backend-mysql:
     profiles: ["mysql"]
     labels:
-      # Override backend-mysql API routing rule to include Host matcher
+      # API routing (HTTP)
+      - "traefik.http.routers.backend-mysql-api-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-mysql-api-http.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-api-http.priority=10"
+
+      # API routing (HTTPS)
       - "traefik.http.routers.backend-mysql-api.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend-mysql-api.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-api.priority=10"
       - "traefik.http.routers.backend-mysql-api.tls=true"
       - "traefik.http.routers.backend-mysql-api.tls.certresolver=letsencrypt"
-      
-      # Override uploads routing rule
+
+      # Uploads routing (HTTP)
+      - "traefik.http.routers.backend-mysql-uploads-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-mysql-uploads-http.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-uploads-http.priority=10"
+
+      # Uploads routing (HTTPS)
       - "traefik.http.routers.backend-mysql-uploads.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend-mysql-uploads.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-uploads.priority=10"
       - "traefik.http.routers.backend-mysql-uploads.tls=true"
       - "traefik.http.routers.backend-mysql-uploads.tls.certresolver=letsencrypt"
-      
-      # Override health check routing rule
+
+      # Health check routing (HTTP)
+      - "traefik.http.routers.backend-mysql-health-http.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && Path(`/health`)"
+      - "traefik.http.routers.backend-mysql-health-http.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-health-http.priority=10"
+
+      # Health check routing (HTTPS)
       - "traefik.http.routers.backend-mysql-health.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && Path(`/health`)"
       - "traefik.http.routers.backend-mysql-health.entrypoints=websecure"
       - "traefik.http.routers.backend-mysql-health.priority=10"
       - "traefik.http.routers.backend-mysql-health.tls=true"
       - "traefik.http.routers.backend-mysql-health.tls.certresolver=letsencrypt"
+
+      # Service configuration
+      - "traefik.http.services.backend-mysql.loadbalancer.server.port=5000"

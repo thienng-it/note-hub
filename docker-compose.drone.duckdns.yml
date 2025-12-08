@@ -91,13 +91,13 @@ services:
       # Database Configuration
       - DRONE_DATABASE_DRIVER=postgres
       - DRONE_DATABASE_DATASOURCE=postgres://${DRONE_POSTGRES_USER:-drone}:${DRONE_POSTGRES_PASSWORD}@drone-db:5432/${DRONE_POSTGRES_DB:-drone}?sslmode=disable
-      
+
       # User Configuration
       - DRONE_USER_CREATE=${DRONE_USER_CREATE:-}
-      
+
       # Optional: Registration Mode
       - DRONE_REGISTRATION_CLOSED=${DRONE_REGISTRATION_CLOSED:-false}
-      
+
       # Optional: Logs
       - DRONE_LOGS_DEBUG=${DRONE_LOGS_DEBUG:-false}
       - DRONE_LOGS_TRACE=${DRONE_LOGS_TRACE:-false}
@@ -117,16 +117,21 @@ services:
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
-      
-      # Route traffic to drone-server
+
+      # HTTP router - Route traffic to drone-server
+      - "traefik.http.routers.drone-server-http.rule=${DRONE_ROUTER_RULE:-PathPrefix(`/`)}"
+      - "traefik.http.routers.drone-server-http.entrypoints=web"
+      - "traefik.http.routers.drone-server-http.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
+
+      # HTTPS router - Route traffic to drone-server
       - "traefik.http.routers.drone-server.rule=${DRONE_ROUTER_RULE:-PathPrefix(`/`)}"
       - "traefik.http.routers.drone-server.entrypoints=websecure"
       - "traefik.http.routers.drone-server.tls=true"
       - "traefik.http.routers.drone-server.tls.certresolver=letsencrypt"
-      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
-      
-      # Apply middlewares
       - "traefik.http.routers.drone-server.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
+
+      # Service configuration
+      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
 
   # ==========================================================================
   # Drone Runner - Docker-based Pipeline Executor

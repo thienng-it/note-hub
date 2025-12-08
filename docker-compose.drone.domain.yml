@@ -67,12 +67,17 @@ services:
   # ==========================================================================
   drone-server:
     labels:
-      # Override drone-server routing rule to include Host matcher
+      # HTTP router with Host matcher
+      - "traefik.http.routers.drone-server-http.rule=Host(`${DRONE_DOMAIN}`)"
+      - "traefik.http.routers.drone-server-http.entrypoints=web"
+      - "traefik.http.routers.drone-server-http.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
+
+      # HTTPS router with Host matcher
       - "traefik.http.routers.drone-server.rule=Host(`${DRONE_DOMAIN}`)"
-      # Keep existing configuration
       - "traefik.http.routers.drone-server.entrypoints=websecure"
       - "traefik.http.routers.drone-server.tls=true"
       - "traefik.http.routers.drone-server.tls.certresolver=letsencrypt"
-      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
-      # Apply middlewares for compression, security, and body size
       - "traefik.http.routers.drone-server.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
+
+      # Service configuration
+      - "traefik.http.services.drone-server.loadbalancer.server.port=80"

@@ -3,7 +3,7 @@
 # =============================================================================
 #
 # IMPORTANT: Drone CI is COMPLETELY INDEPENDENT
-# 
+#
 # This is a standalone application that:
 # - Does NOT depend on NoteHub or any other application
 # - Can be deployed on the same server, different server, or alone
@@ -32,7 +32,7 @@
 # ⚠️  IMPORTANT for Custom Domains:
 #   If using a custom domain (production), you MUST set DRONE_ROUTER_RULE in .env.drone:
 #   DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)
-#   
+#
 #   Without this, Traefik will generate certificates for ANY domain that accesses
 #   your server, causing certificate conflicts with other services like NoteHub.
 #
@@ -123,13 +123,13 @@ services:
       # Database Configuration
       - DRONE_DATABASE_DRIVER=postgres
       - DRONE_DATABASE_DATASOURCE=postgres://${DRONE_POSTGRES_USER:-drone}:${DRONE_POSTGRES_PASSWORD}@drone-db:5432/${DRONE_POSTGRES_DB:-drone}?sslmode=disable
-      
+
       # User Configuration
       - DRONE_USER_CREATE=${DRONE_USER_CREATE:-}
-      
+
       # Optional: Registration Mode
       - DRONE_REGISTRATION_CLOSED=${DRONE_REGISTRATION_CLOSED:-false}
-      
+
       # Optional: Logs
       - DRONE_LOGS_DEBUG=${DRONE_LOGS_DEBUG:-false}
       - DRONE_LOGS_TRACE=${DRONE_LOGS_TRACE:-false}
@@ -150,19 +150,24 @@ services:
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
-      
-      # Route traffic to drone-server
+
+      # HTTP router - Route traffic to drone-server
       # Set DRONE_ROUTER_RULE in .env.drone to control routing:
       #   - Host(`domain`) for custom domains (prevents certificate conflicts)
       #   - PathPrefix(`/`) for localhost/IP access (default)
+      - "traefik.http.routers.drone-server-http.rule=${DRONE_ROUTER_RULE:-PathPrefix(`/`)}"
+      - "traefik.http.routers.drone-server-http.entrypoints=web"
+      - "traefik.http.routers.drone-server-http.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
+
+      # HTTPS router - Route traffic to drone-server
       - "traefik.http.routers.drone-server.rule=${DRONE_ROUTER_RULE:-PathPrefix(`/`)}"
       - "traefik.http.routers.drone-server.entrypoints=websecure"
       - "traefik.http.routers.drone-server.tls=true"
       - "traefik.http.routers.drone-server.tls.certresolver=letsencrypt"
-      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
-      
-      # Apply middlewares for compression, security, and body size
       - "traefik.http.routers.drone-server.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
+
+      # Service configuration
+      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
 
   # ==========================================================================
   # Drone Runner - Docker-based Pipeline Executor
@@ -178,14 +183,14 @@ services:
       # Internal communication always uses HTTP, regardless of external DRONE_SERVER_PROTO
       - DRONE_RPC_PROTO=http
       - DRONE_RPC_HOST=drone-server
-      
+
       # Runner Capacity
       - DRONE_RUNNER_CAPACITY=${DRONE_RUNNER_CAPACITY:-2}
       - DRONE_RUNNER_NAME=${DRONE_RUNNER_NAME:-docker-runner}
-      
+
       # Docker Configuration
       - DRONE_RUNNER_NETWORKS=drone-network
-      
+
       # Optional: Logs
       - DRONE_DEBUG=${DRONE_DEBUG:-false}
       - DRONE_TRACE=${DRONE_TRACE:-false}
