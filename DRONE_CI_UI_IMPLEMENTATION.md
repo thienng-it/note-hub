@@ -341,22 +341,25 @@ Drone CI is **completely independent** from NoteHub. There is no direct integrat
 
 By default, Drone CI uses **port 8443 for HTTPS**, not the standard port 443. When you access `https://your-domain.com/`, browsers connect to port 443 by default.
 
-**Solutions** (choose one):
+**Solutions**:
 
 **Option A: Access with correct port (Quick Test)**
 ```bash
-# Access Drone with port 8443
+# Access Drone with port 8443 in the URL
 https://drone-ci-notehub.duckdns.org:8443/
 ```
+Use this for quick testing or if you prefer to keep Drone on non-standard ports.
 
 **Option B: Use standard ports (Production Recommended)**
 
-Modify `docker-compose.drone.yml` to use standard ports:
+Modify `docker-compose.drone.yml` to use standard HTTPS ports:
 ```yaml
-drone-traefik:
-  ports:
-    - "80:80"    # Change from "8080:80"
-    - "443:443"  # Change from "8443:443"
+services:
+  drone-traefik:
+    # ... other configuration ...
+    ports:
+      - "80:80"    # Change from "8080:80"
+      - "443:443"  # Change from "8443:443"
 ```
 
 ⚠️ **Warning**: This requires that ports 80 and 443 are not already in use by other services (like NoteHub). If NoteHub is running on the same server using ports 80/443, you must either:
@@ -392,9 +395,9 @@ docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
 
 **Verification**:
 ```bash
-# Check which port Traefik is listening on
-docker ps | grep drone-traefik
-# Look for: 0.0.0.0:8080->80/tcp, 0.0.0.0:8443->443/tcp
+# Check which ports Traefik is listening on
+docker ps --format "table {{.Names}}\t{{.Ports}}" | grep drone-traefik
+# Should show: 0.0.0.0:8080->80/tcp, 0.0.0.0:8443->443/tcp
 
 # Check Traefik is using the correct routing rule
 docker logs drone-traefik 2>&1 | grep -i "drone-ci-notehub.duckdns.org"
@@ -404,6 +407,7 @@ curl -I https://drone-ci-notehub.duckdns.org:8443/
 
 # Check if port 443 is available (if you want to switch to standard ports)
 sudo netstat -tulpn | grep :443
+# Or use: sudo lsof -i :443
 ```
 
 ### UI Not Loading
