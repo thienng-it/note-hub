@@ -8,7 +8,7 @@ import {
   startAuthentication,
   startRegistration,
 } from '@simplewebauthn/browser';
-import { apiClient } from '../api/client';
+import { apiClient, API_VERSION } from '../api/client';
 
 interface PasskeyStatus {
   enabled: boolean;
@@ -68,7 +68,7 @@ class PasskeyService {
       }
 
       // Check if server supports passkeys
-      const response = await apiClient.get<PasskeyStatus>('/api/v1/auth/passkey/status');
+      const response = await apiClient.get<PasskeyStatus>(`${API_VERSION}/auth/passkey/status`);
       return response.enabled;
     } catch {
       return false;
@@ -90,7 +90,7 @@ class PasskeyService {
       const registrationResponse = await startRegistration({ optionsJSON: options });
 
       // Verify registration with server
-      await apiClient.post('/api/v1/auth/passkey/register-verify', {
+      await apiClient.post(`${API_VERSION}/auth/passkey/register-verify`, {
         response: registrationResponse,
         challengeKey,
         deviceName,
@@ -116,7 +116,7 @@ class PasskeyService {
     try {
       // Get authentication options from server
       const { options, challengeKey } = await apiClient.post<AuthenticationOptions>(
-        '/api/v1/auth/passkey/login-options',
+        `${API_VERSION}/auth/passkey/login-options`,
         { username },
       );
 
@@ -124,7 +124,7 @@ class PasskeyService {
       const authenticationResponse = await startAuthentication({ optionsJSON: options });
 
       // Verify authentication with server
-      const result = await apiClient.post('/api/v1/auth/passkey/login-verify', {
+      const result = await apiClient.post(`${API_VERSION}/auth/passkey/login-verify`, {
         response: authenticationResponse,
         challengeKey,
       });
@@ -146,7 +146,7 @@ class PasskeyService {
   async getCredentials(): Promise<Credential[]> {
     try {
       const response = await apiClient.get<{ credentials: Credential[] }>(
-        '/api/v1/auth/passkey/credentials',
+        `${API_VERSION}/auth/passkey/credentials`,
       );
       return response.credentials;
     } catch (error) {
@@ -160,7 +160,7 @@ class PasskeyService {
    */
   async deleteCredential(credentialId: number): Promise<boolean> {
     try {
-      await apiClient.delete(`/api/v1/auth/passkey/credentials/${credentialId}`);
+      await apiClient.delete(`${API_VERSION}/auth/passkey/credentials/${credentialId}`);
       return true;
     } catch (error) {
       console.error('Failed to delete credential:', error);
@@ -173,7 +173,7 @@ class PasskeyService {
    */
   async updateCredentialName(credentialId: number, deviceName: string): Promise<boolean> {
     try {
-      await apiClient.patch(`/api/v1/auth/passkey/credentials/${credentialId}`, {
+      await apiClient.patch(`${API_VERSION}/auth/passkey/credentials/${credentialId}`, {
         deviceName,
       });
       return true;

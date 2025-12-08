@@ -40,6 +40,9 @@ const uploadRoutes = require('./routes/upload');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// API version prefix - centralized for easy updates
+const API_VERSION = '/api/v1';
+
 // Security middleware with CSP configured for SPA
 app.use(helmet({
   contentSecurityPolicy: {
@@ -103,14 +106,14 @@ const { markAsV1, legacyResponseAdapter } = require('./middleware/responseAdapte
 app.use(legacyResponseAdapter);
 
 // API v1 routes (standardized response format)
-app.use('/api/v1/auth', markAsV1, authRoutes);
-app.use('/api/v1/auth/passkey', markAsV1, passkeyRoutes);
-app.use('/api/v1/notes', markAsV1, notesRoutes);
-app.use('/api/v1/tasks', markAsV1, tasksRoutes);
-app.use('/api/v1/profile', markAsV1, profileRoutes);
-app.use('/api/v1/admin', markAsV1, adminRoutes);
-app.use('/api/v1/ai', markAsV1, aiRoutes);
-app.use('/api/v1/upload', markAsV1, uploadRoutes);
+app.use(`${API_VERSION}/auth`, markAsV1, authRoutes);
+app.use(`${API_VERSION}/auth/passkey`, markAsV1, passkeyRoutes);
+app.use(`${API_VERSION}/notes`, markAsV1, notesRoutes);
+app.use(`${API_VERSION}/tasks`, markAsV1, tasksRoutes);
+app.use(`${API_VERSION}/profile`, markAsV1, profileRoutes);
+app.use(`${API_VERSION}/admin`, markAsV1, adminRoutes);
+app.use(`${API_VERSION}/ai`, markAsV1, aiRoutes);
+app.use(`${API_VERSION}/upload`, markAsV1, uploadRoutes);
 
 // Health check endpoints with standardized response
 const responseHandler = require('./utils/responseHandler');
@@ -150,7 +153,7 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-app.get('/api/v1/health', markAsV1, async (req, res) => {
+app.get(`${API_VERSION}/health`, markAsV1, async (req, res) => {
   try {
     const healthStatus = await getHealthStatus();
     responseHandler.success(res, healthStatus, { message: 'Service is healthy' });
@@ -164,7 +167,7 @@ app.get('/api/v1/health', markAsV1, async (req, res) => {
 });
 
 // Version endpoint
-app.get('/api/v1/version', markAsV1, (req, res) => {
+app.get(`${API_VERSION}/version`, markAsV1, (req, res) => {
   responseHandler.success(res, {
     version: packageJson.version,
     name: packageJson.name,
@@ -227,6 +230,11 @@ async function start() {
     // Initialize Elasticsearch (optional)
     await elasticsearch.connect();
 
+    // Log passkey challenge storage mode
+    const { isUsingRedis } = require('./services/challengeStorage');
+    const challengeStorage = isUsingRedis() ? 'Redis (production-ready)' : 'In-memory (single-instance only)';
+    console.log(`🔐 Passkey challenge storage: ${challengeStorage}`);
+
     app.listen(PORT, () => {
       logger.info('🚀 NoteHub API server started', {
         port: PORT,
@@ -234,6 +242,7 @@ async function start() {
         orm: 'Sequelize',
         cache: cache.isEnabled() ? 'Redis (enabled)' : 'Disabled',
         search: elasticsearch.isEnabled() ? 'Elasticsearch (enabled)' : 'SQL LIKE (fallback)',
+        passkeyStorage: challengeStorage,
         environment: process.env.NODE_ENV || 'development',
         logLevel: logger.config.level,
         logFormat: logger.config.format

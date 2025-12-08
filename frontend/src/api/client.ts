@@ -22,6 +22,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 // Use API v1 for new standardized response format
 const API_VERSION = '/api/v1';
 
+// Export API_VERSION for use in other modules
+export { API_VERSION };
+
 // Token storage
 const TOKEN_KEY = 'notehub_access_token';
 const REFRESH_TOKEN_KEY = 'notehub_refresh_token';

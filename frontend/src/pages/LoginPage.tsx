@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { apiClient, storeAuthData } from '../api/client';
+import { apiClient, storeAuthData, API_VERSION } from '../api/client';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { useAuth } from '../context/AuthContext';
 import { passkeyService } from '../services/passkeyService';
@@ -25,7 +25,7 @@ export function LoginPage() {
   useEffect(() => {
     const checkAuthMethods = async () => {
       try {
-        const response = await apiClient.get<{ enabled: boolean }>('/api/v1/auth/google/status');
+        const response = await apiClient.get<{ enabled: boolean }>(`${API_VERSION}/auth/google/status`);
         setGoogleOAuthEnabled(response.enabled);
       } catch {
         setGoogleOAuthEnabled(false);
@@ -65,7 +65,7 @@ export function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const response = await apiClient.get<{ auth_url: string }>('/api/v1/auth/google');
+      const response = await apiClient.get<{ auth_url: string }>(`${API_VERSION}/auth/google`);
       const { auth_url } = response;
 
       // Redirect to Google OAuth

@@ -8,41 +8,7 @@ const jwtService = require('../services/jwtService');
 const AuthService = require('../services/authService');
 const { jwtRequired } = require('../middleware/auth');
 const responseHandler = require('../utils/responseHandler');
-
-// TODO: Move to Redis in production for multi-instance deployments
-// In-memory challenge storage (suitable for single-instance development only)
-const challengeStore = new Map();
-
-/**
- * Helper to store challenge with expiration.
- */
-function storeChallenge(key, challenge, expirationMs = 5 * 60 * 1000) {
-  challengeStore.set(key, {
-    challenge,
-    expires: Date.now() + expirationMs,
-  });
-  
-  // Clean up expired challenges periodically
-  setTimeout(() => {
-    const entry = challengeStore.get(key);
-    if (entry && entry.expires < Date.now()) {
-      challengeStore.delete(key);
-    }
-  }, expirationMs);
-}
-
-/**
- * Helper to retrieve and remove challenge.
- */
-function getAndRemoveChallenge(key) {
-  const entry = challengeStore.get(key);
-  challengeStore.delete(key);
-  
-  if (!entry) return null;
-  if (entry.expires < Date.now()) return null;
-  
-  return entry.challenge;
-}
+const { storeChallenge, getAndRemoveChallenge, isUsingRedis } = require('../services/challengeStorage');
 
 /**
  * GET /api/auth/passkey/status - Check if passkey authentication is enabled
@@ -73,7 +39,7 @@ router.post('/register-options', jwtRequired, async (req, res) => {
 
     // Store challenge for verification
     const challengeKey = `reg_${req.userId}_${Date.now()}`;
-    storeChallenge(challengeKey, options.challenge);
+    await storeChallenge(challengeKey, options.challenge);
 
     return responseHandler.success(res, {
       options,
@@ -102,7 +68,7 @@ router.post('/register-verify', jwtRequired, async (req, res) => {
     }
 
     // Retrieve challenge
-    const expectedChallenge = getAndRemoveChallenge(challengeKey);
+    const expectedChallenge = await getAndRemoveChallenge(challengeKey);
     if (!expectedChallenge) {
       return responseHandler.error(res, 'Invalid or expired challenge', {
         statusCode: 400,
@@ -159,7 +125,7 @@ router.post('/login-options', async (req, res) => {
 
     // Store challenge for verification
     const challengeKey = `auth_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    storeChallenge(challengeKey, options.challenge);
+    await storeChallenge(challengeKey, options.challenge);
 
     return responseHandler.success(res, {
       options,
@@ -188,7 +154,7 @@ router.post('/login-verify', async (req, res) => {
     }
 
     // Retrieve challenge
-    const expectedChallenge = getAndRemoveChallenge(challengeKey);
+    const expectedChallenge = await getAndRemoveChallenge(challengeKey);
     if (!expectedChallenge) {
       return responseHandler.error(res, 'Invalid or expired challenge', {
         statusCode: 400,
