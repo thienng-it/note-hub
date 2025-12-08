@@ -9,6 +9,7 @@ import {
   startRegistration,
 } from '@simplewebauthn/browser';
 import { API_VERSION, apiClient } from '../api/client';
+import i18n from '../i18n';
 
 interface PasskeyStatus {
   enabled: boolean;
@@ -46,6 +47,43 @@ interface PasskeyTokens {
 }
 
 class PasskeyService {
+  /**
+   * Handle WebAuthn errors with user-friendly translated messages.
+   */
+  private handleWebAuthnError(
+    error: unknown,
+    operationType: 'registration' | 'authentication',
+  ): string {
+    if (error instanceof Error) {
+      switch (error.name) {
+        case 'NotAllowedError':
+          return operationType === 'registration'
+            ? i18n.t('passkey.errors.registrationCancelled')
+            : i18n.t('passkey.errors.authenticationCancelled');
+        case 'NotSupportedError':
+          return i18n.t('passkey.errors.notSupported');
+        case 'InvalidStateError':
+          return operationType === 'registration'
+            ? i18n.t('passkey.errors.alreadyRegistered')
+            : i18n.t('passkey.errors.notFound');
+        case 'AbortError':
+          return i18n.t('passkey.errors.cancelled');
+        case 'SecurityError':
+          return i18n.t('passkey.errors.securityError');
+      }
+    }
+
+    // Fallback to generic error or server error message
+    const err = error as { error?: string; message?: string };
+    return (
+      err?.error ||
+      err?.message ||
+      (operationType === 'registration'
+        ? i18n.t('passkey.errors.registrationFailed')
+        : i18n.t('passkey.errors.authenticationFailed'))
+    );
+  }
+
   /**
    * Check if passkey authentication is available.
    */
@@ -99,40 +137,9 @@ class PasskeyService {
       return { success: true };
     } catch (error: unknown) {
       console.error('Passkey registration error:', error);
-
-      // Handle specific WebAuthn errors
-      if (error instanceof Error) {
-        if (error.name === 'NotAllowedError') {
-          return {
-            success: false,
-            error: 'Registration was cancelled or timed out. Please try again.',
-          };
-        }
-        if (error.name === 'NotSupportedError') {
-          return {
-            success: false,
-            error:
-              'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
-          };
-        }
-        if (error.name === 'InvalidStateError') {
-          return {
-            success: false,
-            error: 'This passkey is already registered. Please try with a different authenticator.',
-          };
-        }
-        if (error.name === 'AbortError') {
-          return {
-            success: false,
-            error: 'Registration was cancelled. Please try again.',
-          };
-        }
-      }
-
-      const err = error as { error?: string; message?: string };
       return {
         success: false,
-        error: err?.error || err?.message || 'Failed to register passkey',
+        error: this.handleWebAuthnError(error, 'registration'),
       };
     }
   }
@@ -162,48 +169,9 @@ class PasskeyService {
       return { success: true, tokens: result as PasskeyTokens };
     } catch (error: unknown) {
       console.error('Passkey authentication error:', error);
-
-      // Handle specific WebAuthn errors
-      if (error instanceof Error) {
-        if (error.name === 'NotAllowedError') {
-          return {
-            success: false,
-            error: 'Authentication was cancelled or timed out. Please try again.',
-          };
-        }
-        if (error.name === 'NotSupportedError') {
-          return {
-            success: false,
-            error:
-              'Your device does not support passkeys. Please use a modern browser or device with biometric authentication.',
-          };
-        }
-        if (error.name === 'SecurityError') {
-          return {
-            success: false,
-            error:
-              'Security error occurred. Please ensure you are using a secure connection (HTTPS).',
-          };
-        }
-        if (error.name === 'AbortError') {
-          return {
-            success: false,
-            error: 'Authentication was cancelled. Please try again.',
-          };
-        }
-        if (error.name === 'InvalidStateError') {
-          return {
-            success: false,
-            error:
-              'No matching passkey found. Please check your credentials or sign in with password.',
-          };
-        }
-      }
-
-      const err = error as { error?: string; message?: string };
       return {
         success: false,
-        error: err?.error || err?.message || 'Failed to authenticate with passkey',
+        error: this.handleWebAuthnError(error, 'authentication'),
       };
     }
   }

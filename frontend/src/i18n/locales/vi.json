@@ -280,7 +280,18 @@
     "editName": "Edit name",
     "removePasskey": "Remove passkey",
     "noPasskeys": "No passkeys registered yet",
-    "created": "Created"
+    "created": "Created",
+    "errors": {
+      "registrationCancelled": "Đăng ký đã bị hủy hoặc hết thời gian. Vui lòng thử lại.",
+      "authenticationCancelled": "Xác thực đã bị hủy hoặc hết thời gian. Vui lòng thử lại.",
+      "notSupported": "Thiết bị của bạn không hỗ trợ passkey. Vui lòng sử dụng trình duyệt hiện đại hoặc thiết bị có xác thực sinh trắc học.",
+      "alreadyRegistered": "Passkey này đã được đăng ký. Vui lòng thử với trình xác thực khác.",
+      "notFound": "Không tìm thấy passkey phù hợp. Vui lòng kiểm tra thông tin đăng nhập hoặc đăng nhập bằng mật khẩu.",
+      "cancelled": "Thao tác đã bị hủy. Vui lòng thử lại.",
+      "securityError": "Đã xảy ra lỗi bảo mật. Vui lòng đảm bảo bạn đang sử dụng kết nối an toàn (HTTPS).",
+      "registrationFailed": "Không thể đăng ký passkey",
+      "authenticationFailed": "Không thể xác thực bằng passkey"
+    }
   },
   "setup2fa": {
     "generateNewQR": "Generate new QR code",

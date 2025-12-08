@@ -280,7 +280,18 @@
     "editName": "Edit name",
     "removePasskey": "Remove passkey",
     "noPasskeys": "No passkeys registered yet",
-    "created": "Created"
+    "created": "Created",
+    "errors": {
+      "registrationCancelled": "Registration was cancelled or timed out. Please try again.",
+      "authenticationCancelled": "Authentication was cancelled or timed out. Please try again.",
+      "notSupported": "Your device does not support passkeys. Please use a modern browser or device with biometric authentication.",
+      "alreadyRegistered": "This passkey is already registered. Please try with a different authenticator.",
+      "notFound": "No matching passkey found. Please check your credentials or sign in with password.",
+      "cancelled": "Operation was cancelled. Please try again.",
+      "securityError": "Security error occurred. Please ensure you are using a secure connection (HTTPS).",
+      "registrationFailed": "Failed to register passkey",
+      "authenticationFailed": "Failed to authenticate with passkey"
+    }
   },
   "setup2fa": {
     "generateNewQR": "Generate new QR code",

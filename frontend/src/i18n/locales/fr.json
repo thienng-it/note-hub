@@ -280,7 +280,18 @@
     "editName": "Edit name",
     "removePasskey": "Remove passkey",
     "noPasskeys": "No passkeys registered yet",
-    "created": "Created"
+    "created": "Created",
+    "errors": {
+      "registrationCancelled": "L'enregistrement a été annulé ou a expiré. Veuillez réessayer.",
+      "authenticationCancelled": "L'authentification a été annulée ou a expiré. Veuillez réessayer.",
+      "notSupported": "Votre appareil ne prend pas en charge les clés d'accès. Veuillez utiliser un navigateur moderne ou un appareil avec authentification biométrique.",
+      "alreadyRegistered": "Cette clé d'accès est déjà enregistrée. Veuillez essayer avec un autre authentificateur.",
+      "notFound": "Aucune clé d'accès correspondante trouvée. Veuillez vérifier vos identifiants ou vous connecter avec un mot de passe.",
+      "cancelled": "L'opération a été annulée. Veuillez réessayer.",
+      "securityError": "Une erreur de sécurité s'est produite. Veuillez vous assurer que vous utilisez une connexion sécurisée (HTTPS).",
+      "registrationFailed": "Échec de l'enregistrement de la clé d'accès",
+      "authenticationFailed": "Échec de l'authentification avec la clé d'accès"
+    }
   },
   "setup2fa": {
     "generateNewQR": "Generate new QR code",

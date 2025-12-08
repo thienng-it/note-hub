@@ -280,7 +280,18 @@
     "editName": "Edit name",
     "removePasskey": "Remove passkey",
     "noPasskeys": "No passkeys registered yet",
-    "created": "Created"
+    "created": "Created",
+    "errors": {
+      "registrationCancelled": "Die Registrierung wurde abgebrochen oder es ist eine Zeitüberschreitung aufgetreten. Bitte versuchen Sie es erneut.",
+      "authenticationCancelled": "Die Authentifizierung wurde abgebrochen oder es ist eine Zeitüberschreitung aufgetreten. Bitte versuchen Sie es erneut.",
+      "notSupported": "Ihr Gerät unterstützt keine Passkeys. Bitte verwenden Sie einen modernen Browser oder ein Gerät mit biometrischer Authentifizierung.",
+      "alreadyRegistered": "Dieser Passkey ist bereits registriert. Bitte versuchen Sie es mit einem anderen Authentifikator.",
+      "notFound": "Kein passender Passkey gefunden. Bitte überprüfen Sie Ihre Anmeldedaten oder melden Sie sich mit einem Passwort an.",
+      "cancelled": "Der Vorgang wurde abgebrochen. Bitte versuchen Sie es erneut.",
+      "securityError": "Es ist ein Sicherheitsfehler aufgetreten. Bitte stellen Sie sicher, dass Sie eine sichere Verbindung (HTTPS) verwenden.",
+      "registrationFailed": "Passkey-Registrierung fehlgeschlagen",
+      "authenticationFailed": "Authentifizierung mit Passkey fehlgeschlagen"
+    }
   },
   "setup2fa": {
     "generateNewQR": "Generate new QR code",

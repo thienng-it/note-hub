@@ -280,7 +280,18 @@
     "editName": "Edit name",
     "removePasskey": "Remove passkey",
     "noPasskeys": "No passkeys registered yet",
-    "created": "Created"
+    "created": "Created",
+    "errors": {
+      "registrationCancelled": "登録がキャンセルされたか、タイムアウトしました。もう一度お試しください。",
+      "authenticationCancelled": "認証がキャンセルされたか、タイムアウトしました。もう一度お試しください。",
+      "notSupported": "お使いのデバイスはパスキーに対応していません。生体認証に対応した最新のブラウザまたはデバイスをご使用ください。",
+      "alreadyRegistered": "このパスキーは既に登録されています。別の認証デバイスでお試しください。",
+      "notFound": "一致するパスキーが見つかりませんでした。認証情報を確認するか、パスワードでサインインしてください。",
+      "cancelled": "操作がキャンセルされました。もう一度お試しください。",
+      "securityError": "セキュリティエラーが発生しました。安全な接続（HTTPS）を使用していることを確認してください。",
+      "registrationFailed": "パスキーの登録に失敗しました",
+      "authenticationFailed": "パスキーでの認証に失敗しました"
+    }
   },
   "setup2fa": {
     "generateNewQR": "Generate new QR code",
