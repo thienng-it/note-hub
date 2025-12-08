@@ -209,7 +209,9 @@ export function NotesPage() {
             <span className="text-[var(--text-primary)]">{getViewTitle()}</span>
           </h1>
           <div className="flex items-center space-x-3">
-            <span className="text-sm text-[var(--text-secondary)]">{notes.length} {t('common.notesCount')}</span>
+            <span className="text-sm text-[var(--text-secondary)]">
+              {notes.length} {t('common.notesCount')}
+            </span>
             {notes.length > 0 && (
               <div className="flex items-center gap-2">
                 <button
@@ -218,7 +220,8 @@ export function NotesPage() {
                   className="btn-secondary-glass text-sm"
                   title={t('notes.hideAllNotes')}
                 >
-                  <i className="glass-i fas fa-eye-slash mr-2"></i>{t('common.hideAll')}
+                  <i className="glass-i fas fa-eye-slash mr-2"></i>
+                  {t('common.hideAll')}
                 </button>
                 <button
                   type="button"
@@ -226,12 +229,14 @@ export function NotesPage() {
                   className="btn-secondary-glass text-sm"
                   title={t('notes.showAllNotes')}
                 >
-                  <i className="glass-i fas fa-eye mr-2"></i>{t('common.showAll')}
+                  <i className="glass-i fas fa-eye mr-2"></i>
+                  {t('common.showAll')}
                 </button>
               </div>
             )}
             <Link to="/notes/new" className="btn-apple">
-              <i className="glass-i fas fa-plus mr-2"></i>{t('common.addNote')}
+              <i className="glass-i fas fa-plus mr-2"></i>
+              {t('common.addNote')}
             </Link>
           </div>
         </div>

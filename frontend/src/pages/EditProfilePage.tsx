@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -122,9 +122,7 @@ export function EditProfilePage() {
               className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
               placeholder={t('profile.emailPlaceholder')}
             />
-            <p className="mt-2 text-sm text-[var(--text-muted)]">
-              {t('profile.emailOptional')}
-            </p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">{t('profile.emailOptional')}</p>
           </div>
 
           {/* Bio */}
@@ -145,9 +143,7 @@ export function EditProfilePage() {
               placeholder={t('profile.bioPlaceholder')}
               maxLength={500}
             />
-            <p className="mt-2 text-sm text-[var(--text-muted)]">
-              {t('profile.bioOptional')}
-            </p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">{t('profile.bioOptional')}</p>
           </div>
 
           {/* Preferred Language */}

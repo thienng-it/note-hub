@@ -31,7 +31,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const response = await authApi.validate();
           setUser(response.user);
           // Sync i18n language with user's preferred language
-          if (response.user.preferred_language && response.user.preferred_language !== i18n.language) {
+          if (
+            response.user.preferred_language &&
+            response.user.preferred_language !== i18n.language
+          ) {
             i18n.changeLanguage(response.user.preferred_language);
           }
         } catch {

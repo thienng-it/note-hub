@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { ConfirmModal } from '../components/Modal';
@@ -16,6 +17,7 @@ interface Note {
 }
 
 export function ShareNotePage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
 
   const [note, setNote] = useState<Note | null>(null);

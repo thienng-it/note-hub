@@ -127,7 +127,10 @@ router.put('/', jwtRequired, async (req, res) => {
       updates.push('theme = ?');
       params.push(theme);
     }
-    if (preferred_language !== undefined && ['en', 'de', 'vi', 'ja', 'fr', 'es'].includes(preferred_language)) {
+    if (
+      preferred_language !== undefined &&
+      ['en', 'de', 'vi', 'ja', 'fr', 'es'].includes(preferred_language)
+    ) {
       updates.push('preferred_language = ?');
       params.push(preferred_language);
     }

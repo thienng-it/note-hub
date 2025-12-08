@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { logger } from '../utils/logger';
@@ -20,6 +21,7 @@ interface AdminStats {
 }
 
 export function AdminDashboardPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [stats, setStats] = useState<AdminStats>({
