@@ -1,0 +1,188 @@
+# =============================================================================
+# Docker Compose for Drone CI with DuckDNS - DNS Challenge Configuration
+# =============================================================================
+#
+# Use this configuration when:
+# - Your domain is from DuckDNS (*.duckdns.org)
+# - Ports 80/443 are already in use by other services (like NoteHub)
+# - You want automatic SSL certificate generation via DNS challenge
+#
+# Prerequisites:
+# 1. DuckDNS account and token from https://www.duckdns.org/
+# 2. DNS A record pointing your domain to your server IP
+# 3. Configure .env.drone with:
+#    - DRONE_DOMAIN=drone-ci-notehub.duckdns.org
+#    - DRONE_SERVER_HOST=drone-ci-notehub.duckdns.org
+#    - DRONE_SERVER_PROTO=https
+#    - DRONE_ROUTER_RULE=Host(`drone-ci-notehub.duckdns.org`)
+#    - DUCKDNS_TOKEN=your-duckdns-token
+#    - ACME_EMAIL=your-email@example.com
+#
+# Usage:
+#   docker compose --env-file .env.drone -f docker-compose.drone.duckdns.yml up -d
+#
+# Access:
+#   https://drone-ci-notehub.duckdns.org:8443/
+#
+# =============================================================================
+
+services:
+  # ==========================================================================
+  # Traefik - Reverse Proxy with DuckDNS DNS Challenge
+  # ==========================================================================
+  drone-traefik:
+    image: traefik:v2.11
+    container_name: drone-traefik
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=drone-network"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      # DNS Challenge for DuckDNS (instead of HTTP challenge)
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=duckdns"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=10"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--ping=true"
+    ports:
+      # Non-standard ports to avoid conflict with NoteHub (ports 80/443)
+      - "8080:80"
+      - "8443:443"
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN:?DUCKDNS_TOKEN must be set in .env.drone}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/traefik/drone-dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./letsencrypt-drone:/letsencrypt
+    depends_on:
+      drone-server:
+        condition: service_healthy
+    networks:
+      - drone-network
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ==========================================================================
+  # Drone Server - Main API and Web UI
+  # ==========================================================================
+  drone-server:
+    image: drone/drone:2
+    container_name: drone-server
+    restart: unless-stopped
+    env_file:
+      - .env.drone
+    environment:
+      # Database Configuration
+      - DRONE_DATABASE_DRIVER=postgres
+      - DRONE_DATABASE_DATASOURCE=postgres://${DRONE_POSTGRES_USER:-drone}:${DRONE_POSTGRES_PASSWORD}@drone-db:5432/${DRONE_POSTGRES_DB:-drone}?sslmode=disable
+      
+      # User Configuration
+      - DRONE_USER_CREATE=${DRONE_USER_CREATE:-}
+      
+      # Optional: Registration Mode
+      - DRONE_REGISTRATION_CLOSED=${DRONE_REGISTRATION_CLOSED:-false}
+      
+      # Optional: Logs
+      - DRONE_LOGS_DEBUG=${DRONE_LOGS_DEBUG:-false}
+      - DRONE_LOGS_TRACE=${DRONE_LOGS_TRACE:-false}
+    volumes:
+      - drone-data:/data
+    depends_on:
+      drone-db:
+        condition: service_healthy
+    networks:
+      - drone-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+      
+      # Route traffic to drone-server
+      - "traefik.http.routers.drone-server.rule=${DRONE_ROUTER_RULE:-PathPrefix(`/`)}"
+      - "traefik.http.routers.drone-server.entrypoints=websecure"
+      - "traefik.http.routers.drone-server.tls=true"
+      - "traefik.http.routers.drone-server.tls.certresolver=letsencrypt"
+      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
+      
+      # Apply middlewares
+      - "traefik.http.routers.drone-server.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"
+
+  # ==========================================================================
+  # Drone Runner - Docker-based Pipeline Executor
+  # ==========================================================================
+  drone-runner:
+    image: drone/drone-runner-docker:1
+    container_name: drone-runner
+    restart: unless-stopped
+    env_file:
+      - .env.drone
+    environment:
+      - DRONE_RPC_PROTO=${DRONE_SERVER_PROTO:-http}
+      - DRONE_RPC_HOST=drone-server
+      - DRONE_RUNNER_CAPACITY=${DRONE_RUNNER_CAPACITY:-2}
+      - DRONE_RUNNER_NAME=${DRONE_RUNNER_NAME:-docker-runner}
+      - DRONE_RUNNER_NETWORKS=drone-network
+      - DRONE_DEBUG=${DRONE_DEBUG:-false}
+      - DRONE_TRACE=${DRONE_TRACE:-false}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      drone-server:
+        condition: service_healthy
+    networks:
+      - drone-network
+
+  # ==========================================================================
+  # PostgreSQL Database
+  # ==========================================================================
+  drone-db:
+    image: postgres:15-alpine
+    container_name: drone-db
+    restart: unless-stopped
+    env_file:
+      - .env.drone
+    environment:
+      - POSTGRES_USER=${DRONE_POSTGRES_USER:-drone}
+      - POSTGRES_PASSWORD=${DRONE_POSTGRES_PASSWORD:?DRONE_POSTGRES_PASSWORD must be set}
+      - POSTGRES_DB=${DRONE_POSTGRES_DB:-drone}
+    volumes:
+      - drone-postgres-data:/var/lib/postgresql/data
+    networks:
+      - drone-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DRONE_POSTGRES_USER:-drone}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  drone-network:
+    driver: bridge
+
+volumes:
+  drone-data:
+    driver: local
+  drone-postgres-data:
+    driver: local

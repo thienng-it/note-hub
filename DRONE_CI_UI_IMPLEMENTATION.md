@@ -458,14 +458,45 @@ If you only need port 80 for initial certificate issuance:
 3. Let certificate generate
 4. Change back to port 8080 (certificate will remain valid)
 
-**Option 3: Use DNS challenge (Advanced)**
-Requires configuring your DNS provider's API in Traefik. Example for Cloudflare:
+**Option 3: Use DNS challenge (For DuckDNS and other providers)**
+
+DNS challenge allows certificate generation without needing port 80. Required when ports 80/443 are used by other services.
+
+**For DuckDNS (drone-ci-notehub.duckdns.org):**
+
+1. Get your DuckDNS token from https://www.duckdns.org/
+
+2. Update `docker-compose.drone.yml`:
+```yaml
+drone-traefik:
+  command:
+    # Replace HTTP challenge with DNS challenge
+    - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+    - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=duckdns"
+    - "--certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=10"
+    # Remove or comment out these HTTP challenge lines:
+    # - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+    # - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+  environment:
+    - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
+    - DUCKDNS_TOKEN=your-duckdns-token  # Add your DuckDNS token
+```
+
+3. Restart services:
+```bash
+docker compose --env-file .env.drone -f docker-compose.drone.yml down
+docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+```
+
+4. Access via: `https://drone-ci-notehub.duckdns.org:8443/`
+
+**For other DNS providers (Cloudflare, Route53, etc.):**
 ```yaml
 # In docker-compose.drone.yml command section
 - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
 - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare"
 ```
-Then set DNS provider credentials in environment variables.
+Then set DNS provider credentials in environment variables. See [Traefik DNS providers](https://doc.traefik.io/traefik/https/acme/#providers) for supported providers.
 
 **If using standard ports (80/443):**
 
