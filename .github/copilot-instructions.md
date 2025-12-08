@@ -588,11 +588,13 @@ docker compose logs -f backend    # View backend logs
 
 ## Additional Resources
 
-- [Architecture Documentation](docs/architecture/ARCHITECTURE.md)
-- [API Documentation](docs/api/JWT_API.md)
-- [Security Guide](docs/security/SECURITY.md)
-- [Contributing Guide](docs/guides/CONTRIBUTING.md)
-- [Test Suite Summary](docs/testing/TEST_SUITE_SUMMARY.md)
+- [API Documentation](docs/api/JWT_API.md) - Current REST API reference
+- [Security Guide](docs/security/SECURITY.md) - Security best practices
+- [Test Suite Summary](docs/testing/TEST_SUITE_SUMMARY.md) - Testing documentation
+- [Database Replication Guide](docs/guides/DATABASE_REPLICATION.md) - Read replica setup
+- [Google OAuth Setup](docs/guides/GOOGLE_SSO_SETUP.md) - SSO configuration
+
+**Note:** Some documentation files may reference older Python/Flask implementation. Always refer to the actual Node.js/Express codebase in `backend/src/` and React/TypeScript code in `frontend/src/` for current patterns and conventions.
 
 ## Summary
 
