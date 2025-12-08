@@ -13,7 +13,8 @@ jest.mock('../src/config/database', () => ({
   query: jest.fn(),
   queryOne: jest.fn(),
   run: jest.fn(),
-  isSQLite: true
+  isSQLite: true,
+  getReplicationStatus: jest.fn(() => ({ enabled: false, message: 'Replication is disabled' })),
 }));
 
 // Mock JWT middleware

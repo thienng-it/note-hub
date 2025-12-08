@@ -11,7 +11,8 @@ jest.mock('../src/config/database', () => ({
   query: jest.fn(),
   queryOne: jest.fn(),
   run: jest.fn(),
-  isSQLite: true
+  isSQLite: true,
+  getReplicationStatus: jest.fn(() => ({ enabled: false, message: 'Replication is disabled' }))
 }));
 
 // Mock Redis
@@ -62,7 +63,8 @@ describe('Health Check Endpoints', () => {
         database: 'connected',
         services: {
           cache: 'disabled',
-          search: 'disabled'
+          search: 'disabled',
+          replication: 'disabled'
         },
         user_count: 5
       });
@@ -95,7 +97,8 @@ describe('Health Check Endpoints', () => {
         database: 'connected',
         services: {
           cache: 'disabled',
-          search: 'disabled'
+          search: 'disabled',
+          replication: 'disabled'
         },
         user_count: 10
       });

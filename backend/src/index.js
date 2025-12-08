@@ -117,13 +117,20 @@ const packageJson = require('../package.json');
 // Shared health check logic
 async function getHealthStatus() {
   const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
+  const replicationStatus = db.getReplicationStatus();
+  
   return {
     status: 'healthy',
     database: 'connected',
     services: {
       cache: cache.isEnabled() ? 'enabled' : 'disabled',
-      search: elasticsearch.isEnabled() ? 'enabled' : 'disabled'
+      search: elasticsearch.isEnabled() ? 'enabled' : 'disabled',
+      replication: replicationStatus.enabled ? 'enabled' : 'disabled'
     },
+    replication: replicationStatus.enabled ? {
+      replicas: replicationStatus.replicaCount,
+      healthy: replicationStatus.healthyReplicas
+    } : undefined,
     user_count: userCount?.count || 0
   };
 }
