@@ -24,7 +24,10 @@ http:
         # Force HTTPS with HSTS (HTTP Strict Transport Security)
         stsSeconds: 31536000
         stsIncludeSubdomains: true
-        stsPreload: false  # Set to true only if you want to submit to HSTS preload list
+        # IMPORTANT: HSTS preload is a PERMANENT action that cannot be easily reversed
+        # Only enable this if you want to submit your domain to browser HSTS preload lists
+        # This requires manual submission and affects all users of your domain forever
+        stsPreload: false
         # Additional security headers for HTTPS
         forceSTSHeader: true
         contentSecurityPolicy: "upgrade-insecure-requests"
