@@ -1,4 +1,5 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authApi, clearStoredAuth, getStoredToken, getStoredUser } from '../api/client';
 import type { AuthError, LoginCredentials, User } from '../types';
 
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -28,6 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const response = await authApi.validate();
           setUser(response.user);
+          // Sync i18n language with user's preferred language
+          if (response.user.preferred_language && response.user.preferred_language !== i18n.language) {
+            i18n.changeLanguage(response.user.preferred_language);
+          }
         } catch {
           clearStoredAuth();
           setUser(null);
@@ -37,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     checkAuth();
-  }, []);
+  }, [i18n]);
 
   const login = async (
     credentials: LoginCredentials,
@@ -45,6 +51,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.login(credentials);
       setUser(response.user);
+      // Sync i18n language with user's preferred language on login
+      if (response.user.preferred_language && response.user.preferred_language !== i18n.language) {
+        i18n.changeLanguage(response.user.preferred_language);
+      }
       return { success: true };
     } catch (err) {
       const error = err as AuthError & { status?: number };
@@ -64,6 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.validate();
       setUser(response.user);
+      // Sync i18n language with user's preferred language
+      if (response.user.preferred_language && response.user.preferred_language !== i18n.language) {
+        i18n.changeLanguage(response.user.preferred_language);
+      }
     } catch {
       // User validation failed, but don't clear auth - let the component handle this
     }

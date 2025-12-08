@@ -6,6 +6,7 @@ export interface User {
   bio?: string;
   created_at?: string;
   theme?: 'light' | 'dark';
+  preferred_language?: string;
   has_2fa?: boolean;
 }
 

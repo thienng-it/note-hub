@@ -1,15 +1,27 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
+const languages = [
+  { code: 'en', name: 'English' },
+  { code: 'de', name: 'Deutsch (German)' },
+  { code: 'vi', name: 'Tiếng Việt (Vietnamese)' },
+  { code: 'ja', name: '日本語 (Japanese)' },
+  { code: 'fr', name: 'Français (French)' },
+  { code: 'es', name: 'Español (Spanish)' },
+];
+
 export function EditProfilePage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { user, refreshUser } = useAuth();
   const [formData, setFormData] = useState({
     username: user?.username || '',
     email: user?.email || '',
     bio: user?.bio || '',
+    preferred_language: user?.preferred_language || i18n.language || 'en',
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,13 +31,17 @@ export function EditProfilePage() {
     setError('');
 
     if (formData.username.length < 3) {
-      setError('Username must be at least 3 characters');
+      setError(t('profile.usernameRequired'));
       return;
     }
 
     setIsLoading(true);
     try {
       await apiClient.put('/api/v1/profile', formData);
+      // Update i18n language if changed
+      if (formData.preferred_language !== i18n.language) {
+        await i18n.changeLanguage(formData.preferred_language);
+      }
       await refreshUser();
       navigate('/profile', { state: { message: 'Profile updated successfully' } });
     } catch (err: unknown) {
@@ -43,14 +59,14 @@ export function EditProfilePage() {
         <Link
           to="/profile"
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
-          aria-label="Back to Profile"
+          aria-label={t('aria.backToProfile')}
         >
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
-          Back to Profile
+          {t('profile.backToProfile')}
         </Link>
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i className="glass-i fas fa-edit mr-3 text-blue-600" aria-hidden="true"></i>
-          Edit Profile
+          {t('profile.editProfile')}
         </h1>
       </div>
 
@@ -74,7 +90,7 @@ export function EditProfilePage() {
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
               <i className="glass-i fas fa-user mr-2" aria-hidden="true"></i>
-              Username <span className="text-red-500">*</span>
+              {t('profile.username')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -82,7 +98,7 @@ export function EditProfilePage() {
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
-              placeholder="Enter username..."
+              placeholder={t('profile.usernamePlaceholder')}
               required
               minLength={3}
               aria-required="true"
@@ -96,7 +112,7 @@ export function EditProfilePage() {
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
               <i className="glass-i fas fa-envelope mr-2" aria-hidden="true"></i>
-              Email
+              {t('profile.email')}
             </label>
             <input
               type="email"
@@ -104,10 +120,10 @@ export function EditProfilePage() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
-              placeholder="your.email@example.com"
+              placeholder={t('profile.emailPlaceholder')}
             />
             <p className="mt-2 text-sm text-[var(--text-muted)]">
-              Optional: Add your email address for account recovery
+              {t('profile.emailOptional')}
             </p>
           </div>
 
@@ -118,7 +134,7 @@ export function EditProfilePage() {
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
               <i className="glass-i fas fa-user-circle mr-2" aria-hidden="true"></i>
-              Bio
+              {t('profile.bio')}
             </label>
             <textarea
               id="bio"
@@ -126,11 +142,37 @@ export function EditProfilePage() {
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)] resize-none"
               rows={4}
-              placeholder="Tell us about yourself..."
+              placeholder={t('profile.bioPlaceholder')}
               maxLength={500}
             />
             <p className="mt-2 text-sm text-[var(--text-muted)]">
-              Optional: Write a short bio (max 500 characters)
+              {t('profile.bioOptional')}
+            </p>
+          </div>
+
+          {/* Preferred Language */}
+          <div>
+            <label
+              htmlFor="preferred_language"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
+            >
+              <i className="glass-i fas fa-language mr-2" aria-hidden="true"></i>
+              {t('profile.language')}
+            </label>
+            <select
+              id="preferred_language"
+              value={formData.preferred_language}
+              onChange={(e) => setFormData({ ...formData, preferred_language: e.target.value })}
+              className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+            >
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">
+              {t('profile.languageDescription')}
             </p>
           </div>
 
@@ -140,7 +182,7 @@ export function EditProfilePage() {
               to="/profile"
               className="px-6 py-2.5 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] rounded-lg hover:opacity-80 transition-colors"
             >
-              Cancel
+              {t('common.cancel')}
             </Link>
             <button
               type="submit"
@@ -150,12 +192,12 @@ export function EditProfilePage() {
               {isLoading ? (
                 <>
                   <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
-                  Saving...
+                  {t('profile.saving')}
                 </>
               ) : (
                 <>
                   <i className="glass-i fas fa-save mr-2" aria-hidden="true"></i>
-                  Save Changes
+                  {t('profile.saveChanges')}
                 </>
               )}
             </button>

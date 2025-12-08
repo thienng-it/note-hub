@@ -137,6 +137,13 @@ function defineModels() {
         type: DataTypes.STRING(20),
         defaultValue: 'light',
       },
+      preferred_language: {
+        type: DataTypes.STRING(10),
+        defaultValue: 'en',
+        validate: {
+          isIn: [['en', 'de', 'vi', 'ja', 'fr', 'es']],
+        },
+      },
       totp_secret: {
         type: DataTypes.STRING(32),
         allowNull: true,

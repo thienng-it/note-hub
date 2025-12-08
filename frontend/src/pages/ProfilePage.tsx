@@ -94,6 +94,21 @@ export function ProfilePage() {
             </button>
           </div>
 
+          {/* Edit Profile Link */}
+          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
+            <div>
+              <span className="font-medium text-[var(--text-primary)]">{t('profile.editProfile')}</span>
+              <p className="text-sm text-[var(--text-muted)]">{t('profile.languageDescription')}</p>
+            </div>
+            <Link
+              to="/profile/edit"
+              className="btn-apple px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center"
+            >
+              <i className="glass-i fas fa-edit mr-2"></i>
+              {t('profile.editProfile')}
+            </Link>
+          </div>
+
           {/* Change Password Link */}
           <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
             <div>

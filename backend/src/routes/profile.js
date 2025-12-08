@@ -68,6 +68,7 @@ router.get('/', jwtRequired, async (req, res) => {
         email: req.user.email,
         bio: req.user.bio,
         theme: req.user.theme,
+        preferred_language: req.user.preferred_language || 'en',
         has_2fa: !!req.user.totp_secret,
         created_at: req.user.created_at,
         last_login: req.user.last_login,
@@ -94,7 +95,7 @@ router.get('/', jwtRequired, async (req, res) => {
  */
 router.put('/', jwtRequired, async (req, res) => {
   try {
-    const { username, email, bio, theme } = req.body;
+    const { username, email, bio, theme, preferred_language } = req.body;
 
     // Check if new username already exists
     if (username && username !== req.user.username) {
@@ -126,6 +127,10 @@ router.put('/', jwtRequired, async (req, res) => {
       updates.push('theme = ?');
       params.push(theme);
     }
+    if (preferred_language !== undefined && ['en', 'de', 'vi', 'ja', 'fr', 'es'].includes(preferred_language)) {
+      updates.push('preferred_language = ?');
+      params.push(preferred_language);
+    }
 
     if (updates.length > 0) {
       params.push(req.userId);
@@ -133,7 +138,7 @@ router.put('/', jwtRequired, async (req, res) => {
     }
 
     const updatedUser = await db.queryOne(
-      `SELECT id, username, email, bio, theme, totp_secret, created_at FROM users WHERE id = ?`,
+      `SELECT id, username, email, bio, theme, preferred_language, totp_secret, created_at FROM users WHERE id = ?`,
       [req.userId],
     );
 
@@ -145,6 +150,7 @@ router.put('/', jwtRequired, async (req, res) => {
         email: updatedUser.email,
         bio: updatedUser.bio,
         theme: updatedUser.theme,
+        preferred_language: updatedUser.preferred_language || 'en',
         has_2fa: !!updatedUser.totp_secret,
         created_at: updatedUser.created_at,
       },
