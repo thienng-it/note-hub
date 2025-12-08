@@ -1,0 +1,211 @@
+# =============================================================================
+# Docker Compose for Graylog - Log Aggregation Platform
+# =============================================================================
+#
+# IMPORTANT: Graylog is COMPLETELY INDEPENDENT
+#
+# This is a standalone log aggregation system that:
+# - Does NOT depend on NoteHub or Drone CI (but can collect their logs)
+# - Can be deployed on the same server, different server, or alone
+# - Uses its own services, configuration, network, and data storage
+# - Can be started, stopped, moved, or removed independently
+#
+# When deployed on the same server as NoteHub and Drone CI:
+#   - NoteHub uses port 80/443 (Traefik + frontend)
+#   - Drone uses port 8080/8443 (Traefik proxy) - NO CONFLICTS
+#   - Graylog uses port 9000 (Web UI) and 12201 (GELF input) - NO CONFLICTS
+#   - Separate networks: notehub-network, drone-network, graylog-network
+#   - Separate configurations: .env, .env.drone, .env.graylog
+#   - Separate data volumes: completely isolated
+#
+# Prerequisites (INDEPENDENT):
+#   1. Docker and Docker Compose installed
+#   2. At least 4GB RAM available for Graylog stack
+#   3. .env.graylog configuration file (completely independent from other .env files)
+#
+# Quick Setup:
+#   1. Copy .env.graylog.example to .env.graylog:  cp .env.graylog.example .env.graylog
+#   2. Edit .env.graylog with your configuration (see below)
+#   3. Generate password secret: pwgen -N 1 -s 96
+#   4. Generate root password SHA2: echo -n "yourpassword" | shasum -a 256
+#   5. Run docker compose: docker compose --env-file .env.graylog -f docker-compose.graylog.yml up -d
+#
+# Access:
+#   - Graylog UI:  http://your-server:9000
+#   - GELF Input:  your-server:12201 (UDP/TCP)
+#   - NoteHub UI:  http://your-server (port 80)
+#   - Drone CI UI: http://your-server:8080
+#
+# Services:
+#   - graylog: Main Graylog server with web UI (port 9000)
+#   - mongodb: MongoDB for Graylog metadata storage (internal port 27017)
+#   - opensearch: OpenSearch for log storage and search (internal port 9200)
+#
+# Architecture:
+#   Applications → Graylog (GELF/Syslog) → OpenSearch (storage) → Graylog UI (search/analysis)
+#
+# =============================================================================
+
+services:
+  # ==========================================================================
+  # MongoDB - Graylog Metadata Storage
+  # ==========================================================================
+  graylog-mongodb:
+    image: mongo:6.0
+    container_name: graylog-mongodb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${GRAYLOG_MONGODB_USER:-graylog}
+      - MONGO_INITDB_ROOT_PASSWORD=${GRAYLOG_MONGODB_PASSWORD:?Set GRAYLOG_MONGODB_PASSWORD in .env.graylog}
+    volumes:
+      - graylog-mongodb-data:/data/db
+    networks:
+      - graylog-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==========================================================================
+  # OpenSearch - Log Storage and Search Engine
+  # ==========================================================================
+  graylog-opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: graylog-opensearch
+    restart: unless-stopped
+    environment:
+      # OpenSearch Configuration
+      - cluster.name=graylog
+      - node.name=graylog-opensearch
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      
+      # Security Configuration
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${GRAYLOG_OPENSEARCH_PASSWORD:?Set GRAYLOG_OPENSEARCH_PASSWORD in .env.graylog}
+      - plugins.security.disabled=true
+      
+      # Network Configuration
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - graylog-opensearch-data:/usr/share/opensearch/data
+    networks:
+      - graylog-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ==========================================================================
+  # Graylog Server - Main Log Aggregation Platform
+  # ==========================================================================
+  graylog:
+    image: graylog/graylog:5.2
+    container_name: graylog
+    restart: unless-stopped
+    depends_on:
+      graylog-mongodb:
+        condition: service_healthy
+      graylog-opensearch:
+        condition: service_healthy
+    env_file:
+      - .env.graylog
+    environment:
+      # Basic Configuration
+      - GRAYLOG_NODE_ID_FILE=/usr/share/graylog/data/config/node-id
+      
+      # Password Configuration
+      # Generate with: pwgen -N 1 -s 96
+      - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD_SECRET:?Set GRAYLOG_PASSWORD_SECRET in .env.graylog}
+      
+      # Root User Configuration
+      # Generate SHA2 with: echo -n "yourpassword" | shasum -a 256
+      - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_ROOT_PASSWORD_SHA2:?Set GRAYLOG_ROOT_PASSWORD_SHA2 in .env.graylog}
+      - GRAYLOG_ROOT_USERNAME=${GRAYLOG_ROOT_USERNAME:-admin}
+      - GRAYLOG_ROOT_EMAIL=${GRAYLOG_ROOT_EMAIL:-admin@example.com}
+      - GRAYLOG_ROOT_TIMEZONE=${GRAYLOG_ROOT_TIMEZONE:-UTC}
+      
+      # HTTP Configuration
+      - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000
+      - GRAYLOG_HTTP_EXTERNAL_URI=${GRAYLOG_HTTP_EXTERNAL_URI:-http://localhost:9000/}
+      - GRAYLOG_HTTP_PUBLISH_URI=${GRAYLOG_HTTP_EXTERNAL_URI:-http://localhost:9000/}
+      
+      # MongoDB Configuration
+      - GRAYLOG_MONGODB_URI=mongodb://${GRAYLOG_MONGODB_USER:-graylog}:${GRAYLOG_MONGODB_PASSWORD}@graylog-mongodb:27017/graylog
+      
+      # OpenSearch Configuration
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://graylog-opensearch:9200
+      
+      # Message Processing
+      - GRAYLOG_MESSAGE_JOURNAL_ENABLED=true
+      - GRAYLOG_PROCESSBUFFER_PROCESSORS=${GRAYLOG_PROCESSBUFFER_PROCESSORS:-5}
+      - GRAYLOG_OUTPUTBUFFER_PROCESSORS=${GRAYLOG_OUTPUTBUFFER_PROCESSORS:-3}
+      
+      # Optional: Email Configuration
+      - GRAYLOG_TRANSPORT_EMAIL_ENABLED=${GRAYLOG_TRANSPORT_EMAIL_ENABLED:-false}
+      - GRAYLOG_TRANSPORT_EMAIL_HOSTNAME=${GRAYLOG_TRANSPORT_EMAIL_HOSTNAME:-}
+      - GRAYLOG_TRANSPORT_EMAIL_PORT=${GRAYLOG_TRANSPORT_EMAIL_PORT:-587}
+      - GRAYLOG_TRANSPORT_EMAIL_USE_AUTH=${GRAYLOG_TRANSPORT_EMAIL_USE_AUTH:-true}
+      - GRAYLOG_TRANSPORT_EMAIL_USE_TLS=${GRAYLOG_TRANSPORT_EMAIL_USE_TLS:-true}
+      - GRAYLOG_TRANSPORT_EMAIL_USERNAME=${GRAYLOG_TRANSPORT_EMAIL_USERNAME:-}
+      - GRAYLOG_TRANSPORT_EMAIL_PASSWORD=${GRAYLOG_TRANSPORT_EMAIL_PASSWORD:-}
+      - GRAYLOG_TRANSPORT_EMAIL_FROM_EMAIL=${GRAYLOG_TRANSPORT_EMAIL_FROM_EMAIL:-graylog@example.com}
+    ports:
+      # Web UI (external access)
+      - "9000:9000"
+      
+      # GELF UDP (log input)
+      - "12201:12201/udp"
+      
+      # GELF TCP (log input)
+      - "12201:12201/tcp"
+      
+      # Optional: Syslog UDP
+      # - "1514:1514/udp"
+      
+      # Optional: Syslog TCP
+      # - "1514:1514/tcp"
+      
+      # Optional: Raw/Plaintext TCP
+      # - "5555:5555/tcp"
+    volumes:
+      - graylog-data:/usr/share/graylog/data
+      - graylog-journal:/usr/share/graylog/data/journal
+    networks:
+      - graylog-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/api/system/lbstatus || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+networks:
+  # Separate network for Graylog
+  # NoteHub uses 'notehub-network', Drone uses 'drone-network', so no conflicts
+  graylog-network:
+    name: graylog-network
+    driver: bridge
+
+volumes:
+  graylog-mongodb-data:
+    driver: local
+  graylog-opensearch-data:
+    driver: local
+  graylog-data:
+    driver: local
+  graylog-journal:
+    driver: local

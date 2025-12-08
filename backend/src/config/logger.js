@@ -3,8 +3,10 @@
  *
  * Centralized logging using Winston for structured, level-based logging.
  * Supports multiple formats and transports for different environments.
+ * Includes optional Graylog integration via GELF protocol.
  */
 const winston = require('winston');
+const WinstonGraylog2 = require('winston-graylog2');
 
 // Get log configuration from environment
 const LOG_LEVEL =
@@ -76,6 +78,51 @@ if (process.env.NODE_ENV === 'production' && process.env.LOG_FILE_PATH) {
       handleRejections: true,
     }),
   );
+}
+
+// Optional: Add Graylog transport for centralized logging
+if (process.env.GRAYLOG_ENABLED === 'true') {
+  const graylogHost = process.env.GRAYLOG_HOST || 'localhost';
+  const graylogPort = Number.parseInt(process.env.GRAYLOG_PORT || '12201', 10);
+  const graylogProtocol = process.env.GRAYLOG_PROTOCOL || 'udp';
+  const graylogFacility = process.env.GRAYLOG_FACILITY || 'notehub-backend';
+
+  try {
+    const graylogOptions = {
+      name: 'Graylog',
+      level: LOG_LEVEL,
+      silent: false,
+      handleExceptions: true,
+      graylog: {
+        servers: [{ host: graylogHost, port: graylogPort }],
+        hostname: process.env.HOSTNAME || require('node:os').hostname(),
+        facility: graylogFacility,
+        bufferSize: 1400,
+      },
+      staticMeta: {
+        environment: process.env.NODE_ENV || 'development',
+        application: 'notehub-backend',
+        version: process.env.npm_package_version || '1.0.0',
+      },
+    };
+
+    // Set protocol (tcp or udp)
+    if (graylogProtocol === 'tcp') {
+      graylogOptions.graylog.protocol = 'tcp';
+    }
+
+    logger.add(new WinstonGraylog2(graylogOptions));
+    logger.info('Graylog transport enabled', {
+      host: graylogHost,
+      port: graylogPort,
+      protocol: graylogProtocol,
+      facility: graylogFacility,
+    });
+  } catch (error) {
+    // Graceful degradation - if Graylog transport fails, continue without it
+    console.error('Failed to initialize Graylog transport:', error.message);
+    console.error('Continuing with console logging only');
+  }
 }
 
 // Create convenience methods for common logging patterns
