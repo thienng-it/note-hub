@@ -18,11 +18,6 @@ export function PasskeyManager() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [newName, setNewName] = useState('');
 
-  useEffect(() => {
-    loadCredentials();
-    checkPasskeyAvailability();
-  }, []);
-
   const checkPasskeyAvailability = async () => {
     const available = await passkeyService.isAvailable();
     setPasskeyAvailable(available);
@@ -33,12 +28,18 @@ export function PasskeyManager() {
     try {
       const creds = await passkeyService.getCredentials();
       setCredentials(creds);
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to load passkeys');
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadCredentials();
+    checkPasskeyAvailability();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRegister = async () => {
     setIsRegistering(true);
@@ -47,7 +48,7 @@ export function PasskeyManager() {
 
     try {
       const deviceName = prompt('Enter a name for this passkey (e.g., "My iPhone")');
-      
+
       const result = await passkeyService.register(deviceName || undefined);
 
       if (result.success) {
@@ -56,8 +57,9 @@ export function PasskeyManager() {
       } else {
         setError(result.error || 'Failed to register passkey');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to register passkey');
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || 'Failed to register passkey');
     } finally {
       setIsRegistering(false);
     }
@@ -79,7 +81,7 @@ export function PasskeyManager() {
       } else {
         setError('Failed to remove passkey');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to remove passkey');
     }
   };
@@ -107,7 +109,7 @@ export function PasskeyManager() {
       } else {
         setError('Failed to update passkey name');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to update passkey name');
     }
   };
@@ -128,7 +130,8 @@ export function PasskeyManager() {
           />
         </svg>
         <span>
-          Passkeys are not available in your browser or are not configured on the server. Please use a modern browser with WebAuthn support.
+          Passkeys are not available in your browser or are not configured on the server. Please use
+          a modern browser with WebAuthn support.
         </span>
       </div>
     );
@@ -151,8 +154,19 @@ export function PasskeyManager() {
         >
           {isRegistering ? (
             <>
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <svg
+                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -164,7 +178,12 @@ export function PasskeyManager() {
           ) : (
             <>
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               Add Passkey
             </>
@@ -202,8 +221,18 @@ export function PasskeyManager() {
         <div className="text-center py-8 text-[var(--text-muted)]">Loading passkeys...</div>
       ) : credentials.length === 0 ? (
         <div className="text-center py-8 text-[var(--text-muted)]">
-          <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          <svg
+            className="w-16 h-16 mx-auto mb-4 opacity-50"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+            />
           </svg>
           <p>No passkeys registered yet</p>
           <p className="text-sm mt-2">Click "Add Passkey" to register your first passkey</p>
@@ -264,8 +293,18 @@ export function PasskeyManager() {
                       className="p-2 rounded hover:bg-[var(--bg-secondary)] transition-colors text-[var(--text-muted)]"
                       title="Edit name"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
                       </svg>
                     </button>
                     <button
@@ -274,8 +313,18 @@ export function PasskeyManager() {
                       className="p-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600"
                       title="Remove passkey"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </>
@@ -298,7 +347,9 @@ export function PasskeyManager() {
           <div>
             <strong className="block mb-1">What are passkeys?</strong>
             <p>
-              Passkeys provide secure, passwordless authentication using biometrics (fingerprint, face recognition) or your device's security features. They're more secure than passwords and can't be phished.
+              Passkeys provide secure, passwordless authentication using biometrics (fingerprint,
+              face recognition) or your device's security features. They're more secure than
+              passwords and can't be phished.
             </p>
           </div>
         </div>

@@ -3,10 +3,10 @@
  * Handles WebAuthn browser API interactions.
  */
 import {
-  startRegistration,
-  startAuthentication,
   type PublicKeyCredentialCreationOptionsJSON,
   type PublicKeyCredentialRequestOptionsJSON,
+  startAuthentication,
+  startRegistration,
 } from '@simplewebauthn/browser';
 import { apiClient } from '../api/client';
 
@@ -69,7 +69,7 @@ class PasskeyService {
       // Get registration options from server
       const { options, challengeKey } = await apiClient.post<RegistrationOptions>(
         '/api/v1/auth/passkey/register-options',
-        {}
+        {},
       );
 
       // Start WebAuthn registration
@@ -83,11 +83,12 @@ class PasskeyService {
       });
 
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Passkey registration error:', error);
+      const err = error as { error?: string; message?: string };
       return {
         success: false,
-        error: error?.error || error?.message || 'Failed to register passkey',
+        error: err?.error || err?.message || 'Failed to register passkey',
       };
     }
   }
@@ -96,13 +97,13 @@ class PasskeyService {
    * Authenticate using a passkey.
    */
   async authenticate(
-    username?: string
-  ): Promise<{ success: boolean; tokens?: any; error?: string }> {
+    username?: string,
+  ): Promise<{ success: boolean; tokens?: Record<string, unknown>; error?: string }> {
     try {
       // Get authentication options from server
       const { options, challengeKey } = await apiClient.post<AuthenticationOptions>(
         '/api/v1/auth/passkey/login-options',
-        { username }
+        { username },
       );
 
       // Start WebAuthn authentication
@@ -114,12 +115,13 @@ class PasskeyService {
         challengeKey,
       });
 
-      return { success: true, tokens: result };
-    } catch (error: any) {
+      return { success: true, tokens: result as Record<string, unknown> };
+    } catch (error: unknown) {
       console.error('Passkey authentication error:', error);
+      const err = error as { error?: string; message?: string };
       return {
         success: false,
-        error: error?.error || error?.message || 'Failed to authenticate with passkey',
+        error: err?.error || err?.message || 'Failed to authenticate with passkey',
       };
     }
   }
@@ -130,7 +132,7 @@ class PasskeyService {
   async getCredentials(): Promise<Credential[]> {
     try {
       const response = await apiClient.get<{ credentials: Credential[] }>(
-        '/api/v1/auth/passkey/credentials'
+        '/api/v1/auth/passkey/credentials',
       );
       return response.credentials;
     } catch (error) {

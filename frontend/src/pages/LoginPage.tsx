@@ -4,8 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { apiClient, storeAuthData } from '../api/client';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { useAuth } from '../context/AuthContext';
-import { logger } from '../utils/logger';
 import { passkeyService } from '../services/passkeyService';
+import type { User } from '../types';
+import { logger } from '../utils/logger';
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -85,11 +86,15 @@ export function LoginPage() {
 
       if (result.success && result.tokens) {
         // Store authentication data
-        storeAuthData(result.tokens.access_token, result.tokens.user, result.tokens.refresh_token);
-        
+        storeAuthData(
+          result.tokens.access_token as string,
+          result.tokens.refresh_token as string,
+          result.tokens.user as User,
+        );
+
         // Refresh user context
         await refreshUser();
-        
+
         navigate('/');
       } else {
         setError(result.error || 'Passkey authentication failed');
@@ -328,7 +333,12 @@ export function LoginPage() {
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <title>Passkey icon</title>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    />
                   </svg>
                   Sign in with Passkey
                 </button>

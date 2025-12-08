@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { PasskeyManager } from '../components/PasskeyManager';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { PasskeyManager } from '../components/PasskeyManager';
 
 export function ProfilePage() {
   const { t } = useTranslation();
