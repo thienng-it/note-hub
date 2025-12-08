@@ -115,15 +115,6 @@ services:
       - DRONE_DATABASE_DRIVER=postgres
       - DRONE_DATABASE_DATASOURCE=postgres://${DRONE_POSTGRES_USER:-drone}:${DRONE_POSTGRES_PASSWORD}@drone-db:5432/${DRONE_POSTGRES_DB:-drone}?sslmode=disable
       
-      # GitHub OAuth Configuration (REQUIRED)
-      - DRONE_GITHUB_CLIENT_ID=${DRONE_GITHUB_CLIENT_ID:?Set DRONE_GITHUB_CLIENT_ID in .env.drone}
-      - DRONE_GITHUB_CLIENT_SECRET=${DRONE_GITHUB_CLIENT_SECRET:?Set DRONE_GITHUB_CLIENT_SECRET in .env.drone}
-      
-      # Server Configuration
-      - DRONE_SERVER_HOST=${DRONE_SERVER_HOST:?Set DRONE_SERVER_HOST in .env.drone}
-      - DRONE_SERVER_PROTO=${DRONE_SERVER_PROTO:-http}
-      - DRONE_RPC_SECRET=${DRONE_RPC_SECRET:?Set DRONE_RPC_SECRET in .env.drone}
-      
       # User Configuration
       - DRONE_USER_CREATE=${DRONE_USER_CREATE:-}
       
@@ -174,7 +165,6 @@ services:
       # Runner Configuration
       - DRONE_RPC_PROTO=${DRONE_SERVER_PROTO:-http}
       - DRONE_RPC_HOST=drone-server
-      - DRONE_RPC_SECRET=${DRONE_RPC_SECRET:?Set DRONE_RPC_SECRET in .env.drone}
       
       # Runner Capacity
       - DRONE_RUNNER_CAPACITY=${DRONE_RUNNER_CAPACITY:-2}
@@ -207,7 +197,6 @@ services:
       - .env.drone
     environment:
       - POSTGRES_USER=${DRONE_POSTGRES_USER:-drone}
-      - POSTGRES_PASSWORD=${DRONE_POSTGRES_PASSWORD:?Set DRONE_POSTGRES_PASSWORD in .env.drone}
       - POSTGRES_DB=${DRONE_POSTGRES_DB:-drone}
     volumes:
       - drone-postgres-data:/var/lib/postgresql/data
