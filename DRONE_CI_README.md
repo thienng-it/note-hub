@@ -156,27 +156,28 @@ Deploy on any cloud provider:
 echo "DRONE_DOMAIN=drone.yourdomain.com" >> .env.drone
 echo "DRONE_ACME_EMAIL=admin@yourdomain.com" >> .env.drone
 echo "DRONE_SERVER_PROTO=https" >> .env.drone
+echo "DRONE_ROUTER_RULE=Host(\`drone.yourdomain.com\`)" >> .env.drone
 sed -i 's/DRONE_SERVER_HOST=.*/DRONE_SERVER_HOST=drone.yourdomain.com/' .env.drone
 
-# 2. Apply domain configuration
-cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
-
-# 3. Deploy/restart Drone CI
+# 2. Deploy/restart Drone CI
 docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
 
-# 4. Access via HTTPS
+# 3. Access via HTTPS
 # Visit: https://drone.yourdomain.com
 ```
 
 ### Why Custom Domain Configuration?
 
-Without custom domain configuration, accessing Drone CI via a domain (like `drone.yourdomain.com`) will show browser warnings about insecure SSL certificates. The domain configuration ensures:
+Without custom domain configuration, Traefik may generate certificates for the wrong domain, causing browser warnings and certificate conflicts. Setting `DRONE_ROUTER_RULE` ensures:
 
-- ✅ Let's Encrypt issues certificates for your specific domain
+- ✅ Let's Encrypt generates certificates ONLY for your specific domain
+- ✅ Prevents certificate conflicts when multiple services share the same server
 - ✅ Browser shows green padlock (no warnings)
 - ✅ Automatic HTTPS redirect from HTTP
 - ✅ Automatic certificate renewal
 - ✅ Professional SSL/HTTPS setup
+
+**Important:** The `DRONE_ROUTER_RULE` with Host matcher prevents Drone CI's Traefik from trying to generate certificates when accessed via other domain names (e.g., your NoteHub domain).
 
 ### Prerequisites for Custom Domains
 
