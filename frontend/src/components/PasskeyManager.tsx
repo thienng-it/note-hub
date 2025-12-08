@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { passkeyService } from '../services/passkeyService';
 
 interface Credential {
@@ -18,12 +18,12 @@ export function PasskeyManager() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [newName, setNewName] = useState('');
 
-  const checkPasskeyAvailability = async () => {
+  const checkPasskeyAvailability = useCallback(async () => {
     const available = await passkeyService.isAvailable();
     setPasskeyAvailable(available);
-  };
+  }, []);
 
-  const loadCredentials = async () => {
+  const loadCredentials = useCallback(async () => {
     setIsLoading(true);
     try {
       const creds = await passkeyService.getCredentials();
@@ -33,13 +33,12 @@ export function PasskeyManager() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadCredentials();
     checkPasskeyAvailability();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkPasskeyAvailability, loadCredentials]);
+  }, [loadCredentials, checkPasskeyAvailability]);
 
   const handleRegister = async () => {
     setIsRegistering(true);
