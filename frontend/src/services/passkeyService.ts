@@ -8,7 +8,7 @@ import {
   startAuthentication,
   startRegistration,
 } from '@simplewebauthn/browser';
-import { apiClient, API_VERSION } from '../api/client';
+import { API_VERSION, apiClient } from '../api/client';
 
 interface PasskeyStatus {
   enabled: boolean;

@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { apiClient, storeAuthData, API_VERSION } from '../api/client';
+import { API_VERSION, apiClient, storeAuthData } from '../api/client';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { useAuth } from '../context/AuthContext';
 import { passkeyService } from '../services/passkeyService';
@@ -25,7 +25,9 @@ export function LoginPage() {
   useEffect(() => {
     const checkAuthMethods = async () => {
       try {
-        const response = await apiClient.get<{ enabled: boolean }>(`${API_VERSION}/auth/google/status`);
+        const response = await apiClient.get<{ enabled: boolean }>(
+          `${API_VERSION}/auth/google/status`,
+        );
         setGoogleOAuthEnabled(response.enabled);
       } catch {
         setGoogleOAuthEnabled(false);
@@ -85,11 +87,7 @@ export function LoginPage() {
 
       if (result.success && result.tokens) {
         // Store authentication data
-        storeAuthData(
-          result.tokens.access_token,
-          result.tokens.refresh_token,
-          result.tokens.user,
-        );
+        storeAuthData(result.tokens.access_token, result.tokens.refresh_token, result.tokens.user);
 
         // Refresh user context
         await refreshUser();
