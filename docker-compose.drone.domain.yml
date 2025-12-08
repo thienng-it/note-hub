@@ -1,0 +1,75 @@
+# =============================================================================
+# Docker Compose Override for Drone CI Custom Domain Configuration
+# =============================================================================
+#
+# This file provides domain-specific configuration for Drone CI deployments
+# using custom domains (e.g., drone.yourdomain.com, ci.yourdomain.com, etc.)
+#
+# IMPORTANT: This file FIXES the "certificate not secure" warning when accessing
+# your Drone CI instance via a custom domain by ensuring Let's Encrypt issues
+# certificates for the correct domain name.
+#
+# Usage:
+#   1. Copy this file: cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+#   2. Set DRONE_DOMAIN in your .env.drone file: DRONE_DOMAIN=drone.yourdomain.com
+#   3. Set DRONE_ACME_EMAIL in your .env.drone file: DRONE_ACME_EMAIL=admin@yourdomain.com
+#   4. Deploy: docker compose -f docker-compose.drone.yml up -d
+#
+# The override file automatically applies when running docker compose commands.
+# No need to specify -f flags for the override file.
+#
+# How It Works:
+#   - This file overrides the default router rules in docker-compose.drone.yml
+#   - It adds explicit Host() matchers to Traefik router rules
+#   - This ensures Let's Encrypt issues certificates for your specific domain
+#   - Without this, certificates may be issued incorrectly, causing browser warnings
+#
+# Prerequisites:
+#   1. DNS A record pointing your domain to your server's IP address
+#   2. Ports 80 and 443 accessible from the internet (for Let's Encrypt validation)
+#   3. DRONE_DOMAIN set in .env.drone
+#   4. DRONE_ACME_EMAIL set in .env.drone
+#   5. DRONE_SERVER_PROTO=https in .env.drone
+#   6. DRONE_SERVER_HOST should match your DRONE_DOMAIN (without port)
+#
+# Example .env.drone Configuration:
+#   DRONE_DOMAIN=drone.yourdomain.com
+#   DRONE_ACME_EMAIL=admin@yourdomain.com
+#   DRONE_SERVER_PROTO=https
+#   DRONE_SERVER_HOST=drone.yourdomain.com
+#
+# Multiple Domains:
+#   To support multiple domains, edit the override file:
+#   - "traefik.http.routers.drone-server.rule=Host(`drone.domain1.com`) || Host(`ci.domain2.com`)"
+#
+# Troubleshooting:
+#   - Ensure DRONE_DOMAIN in .env.drone matches your actual domain name (no http:// prefix)
+#   - Verify DNS points to your server's IP address: nslookup drone.yourdomain.com
+#   - Check ports 80 and 443 are accessible: telnet drone.yourdomain.com 80
+#   - View logs: docker compose -f docker-compose.drone.yml logs -f drone-traefik
+#   - Monitor certificate: docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i certificate
+#
+# =============================================================================
+
+services:
+  # ==========================================================================
+  # Drone Traefik - Add ACME email configuration
+  # ==========================================================================
+  drone-traefik:
+    environment:
+      - ACME_EMAIL=${DRONE_ACME_EMAIL:-admin@example.com}
+
+  # ==========================================================================
+  # Drone Server - Add Host rule for custom domain
+  # ==========================================================================
+  drone-server:
+    labels:
+      # Override drone-server routing rule to include Host matcher
+      - "traefik.http.routers.drone-server.rule=Host(`${DRONE_DOMAIN}`)"
+      # Keep existing configuration
+      - "traefik.http.routers.drone-server.entrypoints=websecure"
+      - "traefik.http.routers.drone-server.tls=true"
+      - "traefik.http.routers.drone-server.tls.certresolver=letsencrypt"
+      - "traefik.http.services.drone-server.loadbalancer.server.port=80"
+      # Apply middlewares for compression, security, and body size
+      - "traefik.http.routers.drone-server.middlewares=security-headers-drone@file,compression-drone@file,body-size-drone@file"

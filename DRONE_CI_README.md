@@ -8,7 +8,8 @@
 - ✅ **Portable**: Can be deployed on any server with Docker
 - ✅ **Isolated**: Separate network, configuration, and data storage
 - ✅ **Flexible**: Works with or without NoteHub present
-- ✅ **Self-contained**: All services included (nginx, server, runner, database)
+- ✅ **Self-contained**: All services included (Traefik, server, runner, database)
+- 🔒 **SSL/HTTPS**: Built-in support for custom domains with Let's Encrypt
 
 ## What is Drone CI?
 
@@ -22,6 +23,7 @@ Drone CI is a modern, container-native continuous integration and delivery platf
 - 🔒 **Secure**: OAuth authentication with GitHub
 - ⚡ **Fast**: Parallel pipeline execution
 - 📊 **Web UI**: Beautiful dashboard for managing builds
+- 🌐 **Custom Domains**: Built-in SSL/HTTPS support with Let's Encrypt
 
 ## Independence
 
@@ -143,6 +145,65 @@ Deploy on any cloud provider:
    Login with GitHub
    ```
 
+## Custom Domain Setup (Production)
+
+> **⚠️ IMPORTANT**: For production deployments with a custom domain (like `drone.yourdomain.com`), follow these additional steps to enable SSL/HTTPS.
+
+### Quick Custom Domain Setup
+
+```bash
+# 1. Configure domain in .env.drone
+echo "DRONE_DOMAIN=drone.yourdomain.com" >> .env.drone
+echo "DRONE_ACME_EMAIL=admin@yourdomain.com" >> .env.drone
+echo "DRONE_SERVER_PROTO=https" >> .env.drone
+sed -i 's/DRONE_SERVER_HOST=.*/DRONE_SERVER_HOST=drone.yourdomain.com/' .env.drone
+
+# 2. Apply domain configuration
+cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+
+# 3. Deploy/restart Drone CI
+docker compose -f docker-compose.drone.yml up -d
+
+# 4. Access via HTTPS
+# Visit: https://drone.yourdomain.com
+```
+
+### Why Custom Domain Configuration?
+
+Without custom domain configuration, accessing Drone CI via a domain (like `drone.yourdomain.com`) will show browser warnings about insecure SSL certificates. The domain configuration ensures:
+
+- ✅ Let's Encrypt issues certificates for your specific domain
+- ✅ Browser shows green padlock (no warnings)
+- ✅ Automatic HTTPS redirect from HTTP
+- ✅ Automatic certificate renewal
+- ✅ Professional SSL/HTTPS setup
+
+### Prerequisites for Custom Domains
+
+1. **DNS A Record**: Point your domain to your server's IP
+   ```bash
+   nslookup drone.yourdomain.com
+   # Should return your server IP
+   ```
+
+2. **Firewall**: Ports 80 and 443 must be accessible
+   ```bash
+   sudo ufw allow 80/tcp
+   sudo ufw allow 443/tcp
+   ```
+
+3. **GitHub OAuth**: Update callback URL to use `https://`
+   ```
+   https://drone.yourdomain.com/login
+   ```
+
+### Detailed Guide
+
+For comprehensive setup instructions, troubleshooting, and advanced configuration:
+
+- **[DRONE_CI_CUSTOM_DOMAIN_SSL_SETUP.md](docs/guides/DRONE_CI_CUSTOM_DOMAIN_SSL_SETUP.md)** - Complete custom domain guide
+- **[TROUBLESHOOTING_DRONE_SSL.md](TROUBLESHOOTING_DRONE_SSL.md)** - SSL troubleshooting guide
+
 ## Architecture
 
 Drone CI is a complete, self-contained system:
@@ -152,8 +213,8 @@ Drone CI is a complete, self-contained system:
 │  Drone CI - Independent System          │
 │                                          │
 │  ┌────────────┐                         │
-│  │   nginx    │ ← Port 8080             │
-│  └──────┬─────┘                         │
+│  │  Traefik   │ ← Port 8080/8443        │
+│  └──────┬─────┘   (or 80/443 custom)   │
 │         │                                │
 │  ┌──────▼─────┐                         │
 │  │   Server   │ ← Internal              │
@@ -180,7 +241,8 @@ No connections to other applications - completely isolated.
 
 1. **`docker-compose.drone.yml`** - Defines Drone CI services
 2. **`.env.drone`** - Configuration variables (create from `.env.drone.example`)
-3. **`docker/nginx-drone.conf`** - nginx configuration
+3. **`docker/traefik/drone-dynamic.yml`** - Traefik middleware configuration
+4. **`docker-compose.drone.domain.yml`** - Custom domain configuration (optional)
 
 ### Configuration Variables
 

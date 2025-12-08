@@ -9,6 +9,7 @@
 
 # Docker Compose overrides (may contain domain-specific config)
 docker-compose.override.yml
+docker-compose.drone.override.yml
 
 # Database files (SENSITIVE - never commit)
 *.db
