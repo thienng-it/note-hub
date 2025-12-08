@@ -7,6 +7,9 @@
 *.env
 .env.drone
 
+# Docker Compose overrides (may contain domain-specific config)
+docker-compose.override.yml
+
 # Database files (SENSITIVE - never commit)
 *.db
 *.db-shm
