@@ -406,6 +406,7 @@ docker compose -f docker-compose.drone.yml up -d
 
 **Documentation:**
 - **[DRONE_CI_README.md](DRONE_CI_README.md)** - Quick start and overview
+- **[DRONE_CI_UI_IMPLEMENTATION.md](DRONE_CI_UI_IMPLEMENTATION.md)** - UI features and verification
 - **[DRONE_CI_STANDALONE.md](docs/guides/DRONE_CI_STANDALONE.md)** - Complete independence documentation
 - **[DRONE_CI_SETUP.md](docs/guides/DRONE_CI_SETUP.md)** - Detailed setup guide
 
@@ -451,6 +452,7 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 | **[Custom Domain SSL Setup](docs/guides/CUSTOM_DOMAIN_SSL_SETUP.md)** | **Fix "not secure" certificate warnings** |
 | [SSL/HTTPS Setup](docs/guides/SSL_HTTPS_SETUP.md)             | SSL certificate configuration  |
 | **[Drone CI README](DRONE_CI_README.md)** | **Quick start for independent Drone CI** |
+| **[Drone CI UI Implementation](DRONE_CI_UI_IMPLEMENTATION.md)** | **UI features, architecture, and verification** |
 | **[Drone CI Standalone](docs/guides/DRONE_CI_STANDALONE.md)** | **Complete independence documentation** |
 | [Drone CI Setup](docs/guides/DRONE_CI_SETUP.md)               | Detailed Drone CI setup guide |
 | [Environment Configuration](docs/guides/ENVIRONMENT_CONFIGURATION.md) | .env setup and management |
