@@ -4,6 +4,7 @@
  * Uses Redis when available, falls back to in-memory storage for single-instance deployments.
  */
 const cache = require('../config/redis');
+const logger = require('../config/logger');
 
 // Fallback in-memory storage for when Redis is not available
 const memoryStore = new Map();
@@ -24,7 +25,7 @@ async function storeChallenge(key, challenge, expirationMs = 5 * 60 * 1000) {
       const success = await cache.set(`challenge:${key}`, challenge, expirationSeconds);
       return success;
     } catch (error) {
-      console.error('Redis challenge storage error, falling back to memory:', error.message);
+      logger.warn('Redis challenge storage error, falling back to memory', { error: error.message });
     }
   }
   
@@ -61,7 +62,7 @@ async function getAndRemoveChallenge(key) {
         return challenge;
       }
     } catch (error) {
-      console.error('Redis challenge retrieval error, falling back to memory:', error.message);
+      logger.warn('Redis challenge retrieval error, falling back to memory', { error: error.message });
     }
   }
   

@@ -9,6 +9,7 @@ const AuthService = require('../services/authService');
 const { jwtRequired } = require('../middleware/auth');
 const responseHandler = require('../utils/responseHandler');
 const { storeChallenge, getAndRemoveChallenge, isUsingRedis } = require('../services/challengeStorage');
+const logger = require('../config/logger');
 
 /**
  * GET /api/auth/passkey/status - Check if passkey authentication is enabled
@@ -46,7 +47,7 @@ router.post('/register-options', jwtRequired, async (req, res) => {
       challengeKey,
     });
   } catch (error) {
-    console.error('Passkey registration options error:', error);
+    logger.error('Passkey registration options error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to generate registration options', {
       statusCode: 500,
       errorCode: 'REGISTRATION_OPTIONS_ERROR',
@@ -92,13 +93,13 @@ router.post('/register-verify', jwtRequired, async (req, res) => {
     }
 
     // Log security event
-    console.log(`[SECURITY] Passkey registered for user ID: ${req.userId}`);
+    logger.security('Passkey registered', { userId: req.userId });
 
     return responseHandler.success(res, {
       message: 'Passkey registered successfully',
     });
   } catch (error) {
-    console.error('Passkey registration verification error:', error);
+    logger.error('Passkey registration verification error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Registration verification failed', {
       statusCode: 500,
       errorCode: 'REGISTRATION_VERIFICATION_ERROR',
@@ -132,7 +133,7 @@ router.post('/login-options', async (req, res) => {
       challengeKey,
     });
   } catch (error) {
-    console.error('Passkey authentication options error:', error);
+    logger.error('Passkey authentication options error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to generate authentication options', {
       statusCode: 500,
       errorCode: 'AUTHENTICATION_OPTIONS_ERROR',
@@ -190,7 +191,7 @@ router.post('/login-verify', async (req, res) => {
     await AuthService.updateLastLogin(user.id);
 
     // Log security event
-    console.log(`[SECURITY] User logged in via passkey: ${user.username} (ID: ${user.id})`);
+    logger.auth('Passkey login', user.id, { username: user.username, method: 'passkey' });
 
     return responseHandler.success(res, {
       access_token: accessToken,
@@ -206,7 +207,7 @@ router.post('/login-verify', async (req, res) => {
       },
     }, { message: 'Login successful' });
   } catch (error) {
-    console.error('Passkey authentication verification error:', error);
+    logger.error('Passkey authentication verification error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Authentication verification failed', {
       statusCode: 500,
       errorCode: 'AUTHENTICATION_VERIFICATION_ERROR',
@@ -222,7 +223,7 @@ router.get('/credentials', jwtRequired, async (req, res) => {
     const credentials = await PasskeyService.getUserCredentials(req.userId);
     return responseHandler.success(res, { credentials });
   } catch (error) {
-    console.error('Get credentials error:', error);
+    logger.error('Get credentials error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to retrieve credentials', {
       statusCode: 500,
       errorCode: 'GET_CREDENTIALS_ERROR',
@@ -253,13 +254,13 @@ router.delete('/credentials/:id', jwtRequired, async (req, res) => {
     }
 
     // Log security event
-    console.log(`[SECURITY] Passkey deleted for user ID: ${req.userId}, credential ID: ${credentialId}`);
+    logger.security('Passkey deleted', { userId: req.userId, credentialId });
 
     return responseHandler.success(res, {
       message: 'Passkey deleted successfully',
     });
   } catch (error) {
-    console.error('Delete credential error:', error);
+    logger.error('Delete credential error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to delete credential', {
       statusCode: 500,
       errorCode: 'DELETE_CREDENTIAL_ERROR',
@@ -300,7 +301,7 @@ router.patch('/credentials/:id', jwtRequired, async (req, res) => {
       message: 'Passkey updated successfully',
     });
   } catch (error) {
-    console.error('Update credential error:', error);
+    logger.error('Update credential error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to update credential', {
       statusCode: 500,
       errorCode: 'UPDATE_CREDENTIAL_ERROR',

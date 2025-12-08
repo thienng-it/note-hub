@@ -233,7 +233,7 @@ async function start() {
     // Log passkey challenge storage mode
     const { isUsingRedis } = require('./services/challengeStorage');
     const challengeStorage = isUsingRedis() ? 'Redis (production-ready)' : 'In-memory (single-instance only)';
-    console.log(`🔐 Passkey challenge storage: ${challengeStorage}`);
+    logger.info('🔐 Passkey challenge storage', { mode: challengeStorage });
 
     app.listen(PORT, () => {
       logger.info('🚀 NoteHub API server started', {
