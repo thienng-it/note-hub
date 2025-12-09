@@ -1,4 +1,4 @@
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import { notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import { ImageUpload } from '../components/ImageUpload';
+import { MarkdownToolbar } from '../components/MarkdownToolbar';
 import type { Note } from '../types';
 import { type NoteTemplate, noteTemplates } from '../utils/templates';
 
@@ -14,6 +15,7 @@ export function NoteEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isNew = !id;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -90,6 +92,31 @@ export function NoteEditPage() {
     setTags(template.tags);
     setShowTemplates(false);
     setHasAppliedTemplate(true);
+  };
+
+  const handleMarkdownInsert = (text: string, cursorOffset: number = 0) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = body.substring(start, end);
+
+    // If text is selected, wrap it with the markdown syntax
+    let insertText = text;
+    if (selectedText && (text.includes('**') || text.includes('*') || text.includes('~~'))) {
+      insertText = text.replace(/text/g, selectedText);
+    }
+
+    const newBody = body.substring(0, start) + insertText + body.substring(end);
+    setBody(newBody);
+
+    // Set cursor position after insert
+    setTimeout(() => {
+      const newPosition = start + insertText.length + cursorOffset;
+      textarea.focus();
+      textarea.setSelectionRange(newPosition, newPosition);
+    }, 0);
   };
 
   if (isLoading) {
@@ -284,13 +311,17 @@ export function NoteEditPage() {
                 <Markdown remarkPlugins={[remarkGfm]}>{body || '*No content to preview*'}</Markdown>
               </div>
             ) : (
-              <textarea
-                id="body"
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] md:min-h-[400px] lg:min-h-[500px] font-mono text-sm resize-y"
-                placeholder={t('notes.contentPlaceholderMarkdown')}
-              />
+              <>
+                <MarkdownToolbar onInsert={handleMarkdownInsert} disabled={isSaving} />
+                <textarea
+                  ref={textareaRef}
+                  id="body"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] md:min-h-[400px] lg:min-h-[500px] font-mono text-sm resize-y"
+                  placeholder={t('notes.contentPlaceholderMarkdown')}
+                />
+              </>
             )}
           </div>
 
