@@ -151,12 +151,14 @@ You need:
 
 ```bash
 # Check Drone CI certificate
+# Note: Use port 8443 if Drone uses separate Traefik on non-standard port
+#       Use port 443 if Drone is behind main Traefik or reverse proxy
 echo | openssl s_client -connect drone-ci-notehub.duckdns.org:8443 -servername drone-ci-notehub.duckdns.org 2>/dev/null | openssl x509 -noout -text | grep -E "Subject:|DNS:"
 
-# Check Grafana certificate
+# Check Grafana certificate (uses NoteHub's Traefik on standard port 443)
 echo | openssl s_client -connect monitoring-notehub.duckdns.org:443 -servername monitoring-notehub.duckdns.org 2>/dev/null | openssl x509 -noout -text | grep -E "Subject:|DNS:"
 
-# Check NoteHub certificate
+# Check NoteHub certificate (standard port 443)
 echo | openssl s_client -connect notehub.duckdns.org:443 -servername notehub.duckdns.org 2>/dev/null | openssl x509 -noout -text | grep -E "Subject:|DNS:"
 ```
 
