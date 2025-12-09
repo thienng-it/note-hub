@@ -599,8 +599,6 @@ class Database {
       if (!hasPreferredLanguage) {
         console.log('🔄 Migrating users table: adding preferred_language column');
         this.db.exec(`ALTER TABLE users ADD COLUMN preferred_language TEXT DEFAULT 'en'`);
-        // Set default value for existing rows
-        this.db.exec(`UPDATE users SET preferred_language = 'en' WHERE preferred_language IS NULL`);
       }
 
       console.log('✅ SQLite schema migration completed');
