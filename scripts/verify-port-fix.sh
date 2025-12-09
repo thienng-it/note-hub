@@ -46,7 +46,7 @@ if docker ps | grep -q "notehub-traefik"; then
     echo -e "${GREEN}✓ Traefik container is running: ${TRAEFIK_CONTAINER}${NC}"
     
     # Check if Traefik is healthy
-    TRAEFIK_HEALTH=$(docker inspect --format='{{.State.Health.Status}}' ${TRAEFIK_CONTAINER} 2>/dev/null || echo "unknown")
+    TRAEFIK_HEALTH=$(docker inspect --format='{{.State.Health.Status}}' "${TRAEFIK_CONTAINER}" 2>/dev/null || echo "unknown")
     if [ "$TRAEFIK_HEALTH" = "healthy" ]; then
         echo -e "${GREEN}✓ Traefik is healthy${NC}"
     else
@@ -56,7 +56,7 @@ if docker ps | grep -q "notehub-traefik"; then
     # Verify metrics endpoint is on port 9091
     echo ""
     echo "Verifying Traefik metrics endpoint..."
-    if docker exec ${TRAEFIK_CONTAINER} wget -O- -q http://localhost:9091/metrics | head -5 > /dev/null 2>&1; then
+    if docker exec "${TRAEFIK_CONTAINER}" wget -O- -q http://localhost:9091/metrics | head -5 > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Traefik metrics are accessible on port 9091${NC}"
     else
         echo -e "${RED}✗ Failed to access Traefik metrics on port 9091${NC}"
@@ -64,8 +64,8 @@ if docker ps | grep -q "notehub-traefik"; then
     fi
     
     # Check that port 8080 is NOT used by Traefik for metrics
-    if docker exec ${TRAEFIK_CONTAINER} netstat -tln 2>/dev/null | grep -q ":8080"; then
-        if ! docker exec ${TRAEFIK_CONTAINER} wget -O- -q http://localhost:8080/metrics 2>/dev/null | grep -q "traefik"; then
+    if docker exec "${TRAEFIK_CONTAINER}" netstat -tln 2>/dev/null | grep -q ":8080"; then
+        if ! docker exec "${TRAEFIK_CONTAINER}" wget -O- -q http://localhost:8080/metrics 2>/dev/null | grep -q "traefik"; then
             echo -e "${GREEN}✓ Port 8080 is not used for Traefik metrics (as expected)${NC}"
         else
             echo -e "${RED}✗ WARNING: Port 8080 still serving Traefik metrics!${NC}"
@@ -86,7 +86,7 @@ if docker ps | grep -q "notehub-prometheus"; then
     echo "Checking monitoring stack..."
     
     # Check if Prometheus can scrape Traefik
-    if docker exec notehub-prometheus wget -O- -q http://${TRAEFIK_CONTAINER}:9091/metrics | head -5 > /dev/null 2>&1; then
+    if docker exec notehub-prometheus wget -O- -q http://"${TRAEFIK_CONTAINER}":9091/metrics | head -5 > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Prometheus can reach Traefik metrics on port 9091${NC}"
     else
         echo -e "${RED}✗ Prometheus cannot reach Traefik metrics${NC}"
@@ -94,9 +94,10 @@ if docker ps | grep -q "notehub-prometheus"; then
     
     # Check cAdvisor
     if docker ps | grep -q "notehub-cadvisor"; then
-        echo -e "${GREEN}✓ cAdvisor is running${NC}"
+        CADVISOR_CONTAINER=$(docker ps --filter "name=notehub-cadvisor" --format "{{.Names}}" | head -1)
+        echo -e "${GREEN}✓ cAdvisor is running: ${CADVISOR_CONTAINER}${NC}"
         # cAdvisor uses port 8080 internally, which should not conflict
-        if docker exec notehub-cadvisor wget -O- -q http://localhost:8080/healthz > /dev/null 2>&1; then
+        if docker exec "${CADVISOR_CONTAINER}" wget -O- -q http://localhost:8080/healthz > /dev/null 2>&1; then
             echo -e "${GREEN}✓ cAdvisor healthcheck on port 8080 is working${NC}"
         fi
     fi
