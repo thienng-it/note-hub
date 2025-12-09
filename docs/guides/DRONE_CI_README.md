@@ -147,24 +147,39 @@ Deploy on any cloud provider:
 
 ## Custom Domain Setup (Production)
 
-> **⚠️ IMPORTANT**: For production deployments with a custom domain (like `drone.yourdomain.com`), follow these additional steps to enable SSL/HTTPS.
+> **⚠️ IMPORTANT**: For production deployments with a custom domain (like `drone.yourdomain.com` or `drone-ci-notehub.duckdns.org`), follow these additional steps to enable SSL/HTTPS and avoid "certificate not secure" warnings.
 
 ### Quick Custom Domain Setup
 
 ```bash
-# 1. Configure domain in .env.drone
+# 1. Configure domain in .env.drone (REQUIRED: set DRONE_ROUTER_RULE!)
 echo "DRONE_DOMAIN=drone.yourdomain.com" >> .env.drone
 echo "DRONE_ACME_EMAIL=admin@yourdomain.com" >> .env.drone
 echo "DRONE_SERVER_PROTO=https" >> .env.drone
-echo 'DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)' >> .env.drone
+echo 'DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)' >> .env.drone  # ⚠️ CRITICAL!
 sed -i 's/DRONE_SERVER_HOST=.*/DRONE_SERVER_HOST=drone.yourdomain.com/' .env.drone
 
-# 2. Deploy/restart Drone CI
+# 2. Validate configuration (optional but recommended)
+./scripts/validate-ssl-config.sh --service drone
+
+# 3. Deploy/restart Drone CI
 docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
 
-# 3. Access via HTTPS
+# 4. Access via HTTPS
 # Visit: https://drone.yourdomain.com
 ```
+
+### Troubleshooting Certificate Issues
+
+If you see "certificate not secure" or "Your connection is not private" warnings:
+
+1. **Most common issue**: `DRONE_ROUTER_RULE` not set correctly
+   - See [Certificate Troubleshooting Guide](./CERTIFICATE_TROUBLESHOOTING.md)
+   - See [Drone SSL Troubleshooting](./TROUBLESHOOTING_DRONE_SSL.md)
+
+2. **Quick fix**: Ensure `DRONE_ROUTER_RULE=Host(\`your-domain\`)` is set in `.env.drone`
+
+3. **Validation tool**: Run `./scripts/validate-ssl-config.sh --service drone` to check configuration
 
 ### Why Custom Domain Configuration?
 
