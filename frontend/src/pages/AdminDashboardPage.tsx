@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { API_VERSION } from '../api/client.ts';
 import { useAuth } from '../context/AuthContext';
 import { logger } from '../utils/logger';
-import {API_VERSION} from "../api/client.ts";
 
 interface AdminUser {
   id: number;
@@ -99,13 +99,16 @@ export function AdminDashboardPage() {
 
     try {
       const token = localStorage.getItem('notehub_access_token');
-      const response = await fetch(`${API_BASE_URL}/${API_VERSION}/admin/users/${userId}/disable-2fa`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${API_BASE_URL}/${API_VERSION}/admin/users/${userId}/disable-2fa`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         const data = await response.json();
