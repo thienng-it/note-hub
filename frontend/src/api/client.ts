@@ -455,7 +455,8 @@ export const uploadApi = {
     }
 
     const data = await response.json();
-    return data.success ? data.data : data;
+    // Backend returns { success: true, path: ..., filename: ..., size: ..., mimetype: ... }
+    return data;
   },
 
   async deleteImage(filename: string): Promise<void> {

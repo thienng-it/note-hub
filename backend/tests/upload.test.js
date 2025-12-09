@@ -86,7 +86,7 @@ describe('Upload Routes', () => {
     jest.clearAllMocks();
   });
 
-  describe('POST /api/upload/image', () => {
+  describe('POST /api/v1/upload/image', () => {
     it('should upload a single image successfully', async () => {
       const response = await request(app)
         .post('/api/v1/upload/image')
@@ -177,7 +177,7 @@ describe('Upload Routes', () => {
     });
   });
 
-  describe('POST /api/upload/images', () => {
+  describe('POST /api/v1/upload/images', () => {
     it('should upload multiple images successfully', async () => {
       // Count existing files before upload
       const filesBefore = fs.readdirSync(uploadsDir).filter((f) => f.endsWith('.png'));
@@ -227,7 +227,7 @@ describe('Upload Routes', () => {
     });
   });
 
-  describe('DELETE /api/upload/:filename', () => {
+  describe('DELETE /api/v1/upload/:filename', () => {
     let uploadedFilename;
 
     beforeEach(async () => {
@@ -242,7 +242,7 @@ describe('Upload Routes', () => {
       const filePathBefore = path.join(uploadsDir, uploadedFilename);
       expect(fs.existsSync(filePathBefore)).toBe(true);
 
-      const response = await request(app).delete(`/api/upload/${uploadedFilename}`);
+      const response = await request(app).delete(`/api/v1/upload/${uploadedFilename}`);
 
       expect(response.status).toBe(200);
 
