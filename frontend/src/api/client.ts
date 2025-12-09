@@ -460,7 +460,7 @@ export const uploadApi = {
 
   async deleteImage(filename: string): Promise<void> {
     const token = getStoredToken();
-    const response = await fetch(`${API_BASE_URL}/api/upload/${filename}`, {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/upload/${filename}`, {
       method: 'DELETE',
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),

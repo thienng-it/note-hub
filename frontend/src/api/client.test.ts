@@ -330,7 +330,7 @@ describe('API Client', () => {
         await uploadApi.deleteImage('image-123.jpg');
 
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/upload/image-123.jpg'),
+          expect.stringContaining('/api/v1/upload/image-123.jpg'),
           expect.objectContaining({
             method: 'DELETE',
             headers: expect.objectContaining({
