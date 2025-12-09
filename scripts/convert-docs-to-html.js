@@ -14,6 +14,7 @@ const path = require('path');
 const { marked } = require('marked');
 
 // Configure marked options
+// Note: This is for trusted documentation content only, not user-generated content
 marked.setOptions({
   gfm: true, // GitHub Flavored Markdown
   breaks: true, // Convert \n to <br>
@@ -373,8 +374,9 @@ const convertMarkdownFile = (inputPath, outputPath) => {
     const titleMatch = markdown.match(/^#\s+(.+)$/m);
     const title = titleMatch ? titleMatch[1] : path.basename(inputPath, '.md');
     
-    // Get relative path for the template
-    const relativePath = outputPath.replace(process.cwd() + '/docs/', '');
+    // Get relative path for the template (cross-platform compatible)
+    const docsDir = path.join(process.cwd(), 'docs');
+    const relativePath = path.relative(docsDir, outputPath);
     
     // Wrap in HTML template
     const fullHtml = getHtmlTemplate(title, htmlContent, relativePath);
