@@ -36,7 +36,8 @@
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
     "uuid": "^11.0.3",
-    "winston": "^3.18.3"
+    "winston": "^3.18.3",
+    "winston-graylog2": "^2.1.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
