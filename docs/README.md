@@ -1,4 +1,4 @@
-# NoteHub
+# NoteHub Documentation
 
 A modern, secure, and feature-rich personal notes application with a React SPA frontend and Node.js/Express API backend. Supports markdown editing, tags, tasks, two-factor authentication, and more.
 
@@ -7,6 +7,74 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 ## 📊 Status
 
 ![CI/CD Pipeline](https://github.com/thienng-it/note-hub/actions/workflows/ci-cd.yml/badge.svg?branch=main)
+
+---
+
+## 📚 Documentation Navigation
+
+- **[Documentation Portal](documentation.html)** - Beautiful web interface to browse all documentation
+- **[Complete Index](INDEX.md)** - Full list of all documentation files organized by category
+- **[GitHub Repository](https://github.com/thienng-it/note-hub)** - Source code and issues
+
+---
+
+## 📖 Documentation Structure
+
+This documentation is organized into the following categories:
+
+### 🏗️ Architecture
+Documentation about system design, database flow, and architectural patterns.
+- [ARCHITECTURE.md](architecture/ARCHITECTURE.md) - System architecture overview
+- [DATABASE_FLOW.md](architecture/DATABASE_FLOW.md) - Database schema and relationships
+
+### 🔌 API
+API references, authentication, and versioning information.
+- [JWT_API.md](api/JWT_API.md) - JWT authentication API reference
+- [API_CHANGELOG.md](api/API_CHANGELOG.md) - API version history
+
+### 📚 Guides
+Step-by-step guides for deployment, configuration, and features.
+
+#### Deployment & Infrastructure
+- [HETZNER_DEPLOYMENT.md](guides/HETZNER_DEPLOYMENT.md) - Deploy to Hetzner Cloud
+- [SSL_HTTPS_SETUP.md](guides/SSL_HTTPS_SETUP.md) - SSL/HTTPS configuration
+- [DATABASE_REPLICATION.md](guides/DATABASE_REPLICATION.md) - Database replication setup
+
+#### Drone CI
+- [DRONE_CI_README.md](guides/DRONE_CI_README.md) - Drone CI overview
+- [DRONE_CI_SETUP.md](guides/DRONE_CI_SETUP.md) - Drone CI installation
+- [TROUBLESHOOTING_DRONE_SSL.md](guides/TROUBLESHOOTING_DRONE_SSL.md) - Drone CI troubleshooting
+
+#### Features & Configuration
+- [CONFIG.md](guides/CONFIG.md) - Configuration guide
+- [I18N_GUIDE.md](guides/I18N_GUIDE.md) - Internationalization
+- [GOOGLE_SSO_SETUP.md](guides/GOOGLE_SSO_SETUP.md) - Google SSO configuration
+
+### 🔒 Security
+Security best practices, authentication, and protection strategies.
+- [SECURITY.md](security/SECURITY.md) - Security guidelines
+- [2FA_IMPROVEMENTS.md](security/2FA_IMPROVEMENTS.md) - Two-factor authentication
+- [CAPTCHA_SETUP.md](security/CAPTCHA_SETUP.md) - CAPTCHA configuration
+
+### 🧪 Testing
+Testing guidelines and test suite documentation.
+- [TEST_SUITE_SUMMARY.md](testing/TEST_SUITE_SUMMARY.md) - Test coverage and guidelines
+
+### 💻 Development
+Development notes, performance improvements, and enhancement summaries.
+- [PERFORMANCE_IMPROVEMENTS.md](development/PERFORMANCE_IMPROVEMENTS.md)
+- [CAPTCHA_IMPLEMENTATION_COMPLETE.md](development/CAPTCHA_IMPLEMENTATION_COMPLETE.md)
+
+### 📋 Project Management
+Project status, release notes, and CI/CD information.
+- [CI_CD.md](project/CI_CD.md) - CI/CD pipeline documentation
+- [RELEASE_NOTES.md](project/RELEASE_NOTES.md) - Version history
+- [BRANCH_RULESET.md](project/BRANCH_RULESET.md) - Git workflow
+
+### 🔬 Technical Investigations
+In-depth technical analyses and comparisons.
+- [NOSQL_INVESTIGATION.md](investigation/NOSQL_INVESTIGATION.md) - NoSQL analysis
+- [SQL_VS_NOSQL_COMPARISON.md](investigation/SQL_VS_NOSQL_COMPARISON.md) - Database comparison
 
 ---
 

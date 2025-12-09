@@ -71,10 +71,10 @@ Created three levels of documentation:
 
 | Document | Purpose | Size |
 |----------|---------|------|
-| TROUBLESHOOTING_SSL.md | Quick fix reference | 2KB |
-| CUSTOM_DOMAIN_SSL_SETUP.md | Complete setup guide | 10KB |
-| CUSTOM_DOMAIN_SSL_FIX_SUMMARY.md | Implementation details | 11KB |
-| SSL_HTTPS_SETUP.md (updated) | General SSL guide | Updated |
+| [TROUBLESHOOTING_SSL.md](TROUBLESHOOTING_SSL.md) | Quick fix reference | 2KB |
+| [CUSTOM_DOMAIN_SSL_SETUP.md](CUSTOM_DOMAIN_SSL_SETUP.md) | Complete setup guide | 10KB |
+| [CUSTOM_DOMAIN_SSL_FIX.md](CUSTOM_DOMAIN_SSL_FIX.md) | Implementation details | 11KB |
+| [SSL_HTTPS_SETUP.md](SSL_HTTPS_SETUP.md) (updated) | General SSL guide | Updated |
 | README.md (updated) | Quick links | Updated |
 
 ### 4. Test Suite
@@ -306,9 +306,9 @@ Works with:
 
 ### New Files (5)
 1. `docker-compose.domain.yml` - Domain-specific configuration
-2. `docs/guides/CUSTOM_DOMAIN_SSL_SETUP.md` - Setup guide
-3. `TROUBLESHOOTING_SSL.md` - Quick reference
-4. `CUSTOM_DOMAIN_SSL_FIX_SUMMARY.md` - Implementation details
+2. [CUSTOM_DOMAIN_SSL_SETUP.md](CUSTOM_DOMAIN_SSL_SETUP.md) - Setup guide
+3. [TROUBLESHOOTING_SSL.md](TROUBLESHOOTING_SSL.md) - Quick reference
+4. [CUSTOM_DOMAIN_SSL_FIX.md](CUSTOM_DOMAIN_SSL_FIX.md) - Implementation details
 5. `tests/test_domain_configuration.sh` - Test suite
 
 ### Modified Files (4)
