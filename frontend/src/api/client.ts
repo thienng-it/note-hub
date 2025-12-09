@@ -344,18 +344,12 @@ export const aiApi = {
 
 export const adminApi = {
   async getUsers(params): Promise<UsersResponse> {
-    const response = await apiRequest(`${API_VERSION}/admin/users?${params}`);
-    if (!response.ok) throw new Error('Failed to load users');
-    return response.data;
+    return await apiRequest<UsersResponse>(`${API_VERSION}/admin/users?${params}`);
   },
 
   async disable2fa(userId): Promise<void> {
-    const response = await apiRequest(`${API_VERSION}/admin/users/${userId}/disable-2fa`, {
+    await apiRequest(`${API_VERSION}/admin/users/${userId}/disable-2fa`, {
       method: 'POST',
     });
-
-    if (!response.ok) {
-      throw new Error(response.error || 'Failed to disable 2FA');
-    }
   },
 };
