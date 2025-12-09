@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "frontend/**"
+      - "docs/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -20,7 +21,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build Frontend for GitHub Pages
+    name: Build Frontend and Documentation for GitHub Pages
 
     steps:
       - uses: actions/checkout@v4
@@ -56,11 +57,22 @@ jobs:
       - name: Prepare GitHub Pages content
         run: |
           mkdir -p _site
+          
+          # Copy frontend app to root
           cp -r frontend/dist/* _site/
-          # Copy documentation
-          cp -r docs/* _site/docs/ 2>/dev/null || mkdir -p _site/docs
+          
+          # Copy all documentation to docs subdirectory
+          mkdir -p _site/docs
+          cp -r docs/* _site/docs/
+          
+          # Create a redirect from /docs to /docs/documentation.html
+          echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=documentation.html"><title>Redirecting to Documentation</title></head><body><p>If you are not redirected automatically, <a href="documentation.html">click here to view the documentation</a>.</p></body></html>' > _site/docs/index.html
+          
           echo "✅ GitHub Pages site structure:"
           ls -lah _site/
+          echo ""
+          echo "📚 Documentation structure:"
+          ls -lah _site/docs/ | head -20
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub - Complete Documentation for a modern, feature-rich personal notes application">
+    <title>NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .hero {
+            margin-top: 5rem;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+        }
+
+        .content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .doc-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .doc-card:hover {
+            border-color: var(--accent);
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 211, 238, 0.1);
+        }
+
+        .doc-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .doc-card a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .doc-card a:hover {
+            color: var(--primary);
+        }
+
+        .doc-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .badge.new {
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--accent);
+        }
+
+        .badge.important {
+            background: rgba(236, 72, 153, 0.2);
+            color: var(--secondary);
+        }
+
+        footer {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .doc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        .quick-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .quick-link {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .quick-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" aria-label="NoteHub Documentation Logo">📚 NoteHub Documentation</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository (opens in new tab)">GitHub</a>
+            <a href="INDEX.md">Full Index</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>NoteHub Documentation</h1>
+            <p class="tagline">Comprehensive guides, API references, and tutorials for NoteHub</p>
+            
+            <div class="search-container">
+                <label for="searchBox" class="sr-only">Search documentation</label>
+                <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search documentation..." aria-label="Search documentation" />
+                <div id="searchResults" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+            </div>
+
+            <div class="quick-links">
+                <a href="README.md" class="quick-link">📖 Getting Started</a>
+                <a href="guides/HETZNER_DEPLOYMENT.md" class="quick-link">🚀 Deploy</a>
+                <a href="api/JWT_API.md" class="quick-link">🔌 API Docs</a>
+                <a href="security/SECURITY.md" class="quick-link">🔒 Security</a>
+            </div>
+        </section>
+
+        <div class="content">
+            <!-- Main Documentation -->
+            <section class="section">
+                <h2><span class="icon">📖</span> Main Documentation</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="README.md">Project README</a></h3>
+                        <p>Complete project overview, features, installation, and quick start guide</p>
+                        <span class="badge important">Start Here</span>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="BACKEND_IMPROVEMENTS_SUMMARY.md">Backend Improvements</a></h3>
+                        <p>Backend improvements and enhancements summary</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="UI_IMPROVEMENTS_SUMMARY.md">UI Improvements</a></h3>
+                        <p>UI/UX improvements and enhancements</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Architecture -->
+            <section class="section">
+                <h2><span class="icon">🏗️</span> Architecture</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="architecture/ARCHITECTURE.md">System Architecture</a></h3>
+                        <p>Complete system design and architecture patterns</p>
+                        <span class="badge">Core</span>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="architecture/DATABASE_FLOW.md">Database Flow</a></h3>
+                        <p>Database schema and data flow documentation</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="architecture/ARCHITECTURE_IMPROVEMENTS.md">Architecture Improvements</a></h3>
+                        <p>Architecture enhancements and improvements</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Documentation -->
+            <section class="section">
+                <h2><span class="icon">🔌</span> API Documentation</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="api/JWT_API.md">JWT Authentication API</a></h3>
+                        <p>Complete JWT authentication API reference</p>
+                        <span class="badge important">Essential</span>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="api/API_CHANGELOG.md">API Changelog</a></h3>
+                        <p>API version history and changes</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="api/API_VERSIONING.md">API Versioning</a></h3>
+                        <p>API versioning strategy and guidelines</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deployment Guides -->
+            <section class="section">
+                <h2><span class="icon">🚀</span> Deployment & Infrastructure</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="guides/HETZNER_DEPLOYMENT.md">Hetzner Deployment</a></h3>
+                        <p>Complete guide for deploying on Hetzner Cloud</p>
+                        <span class="badge">Popular</span>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/SSL_HTTPS_SETUP.md">SSL/HTTPS Setup</a></h3>
+                        <p>SSL/HTTPS configuration and setup guide</p>
+                        <span class="badge important">Security</span>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/DATABASE_REPLICATION.md">Database Replication</a></h3>
+                        <p>Database replication guide for high availability</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/ENVIRONMENT_CONFIGURATION.md">Environment Configuration</a></h3>
+                        <p>Environment variables and configuration guide</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/DOCKER_UPLOAD_FIX.md">Docker Upload Fix</a></h3>
+                        <p>Fix for Docker Compose file upload issues</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/TRAEFIK_MIGRATION_SUMMARY.md">Traefik Migration</a></h3>
+                        <p>Migration from nginx to Traefik reverse proxy</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Drone CI -->
+            <section class="section">
+                <h2><span class="icon">🔄</span> Drone CI</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="guides/DRONE_CI_README.md">Drone CI Overview</a></h3>
+                        <p>Introduction to Drone CI for NoteHub</p>
+                        <span class="badge">Start Here</span>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/DRONE_CI_SETUP.md">Drone CI Setup</a></h3>
+                        <p>Complete Drone CI setup guide</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/DRONE_CI_IMPLEMENTATION.md">Drone CI Implementation</a></h3>
+                        <p>Drone CI docker-compose implementation</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/TROUBLESHOOTING_DRONE_SSL.md">Troubleshooting Drone SSL</a></h3>
+                        <p>Fix SSL certificate issues in Drone CI</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security -->
+            <section class="section">
+                <h2><span class="icon">🔒</span> Security</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="security/SECURITY.md">Security Best Practices</a></h3>
+                        <p>Security guidelines and best practices</p>
+                        <span class="badge important">Critical</span>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="security/SECURITY_ATTACK_PREVENTION.md">Attack Prevention</a></h3>
+                        <p>Strategies for preventing common attacks</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="security/2FA_IMPROVEMENTS.md">Two-Factor Authentication</a></h3>
+                        <p>2FA implementation and improvements</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="security/CAPTCHA_SETUP.md">CAPTCHA Setup</a></h3>
+                        <p>CAPTCHA implementation and configuration</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Database & Migration -->
+            <section class="section">
+                <h2><span class="icon">🗄️</span> Database & Migration</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="guides/MIGRATION_GUIDE.md">Migration Guide</a></h3>
+                        <p>Database migration guide and procedures</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/MYSQL_MIGRATION_GUIDE.md">MySQL Migration</a></h3>
+                        <p>MySQL-specific migration instructions</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="investigation/NOSQL_INVESTIGATION.md">NoSQL Investigation</a></h3>
+                        <p>Analysis of NoSQL suitability for NoteHub</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="investigation/SQL_VS_NOSQL_COMPARISON.md">SQL vs NoSQL</a></h3>
+                        <p>Comprehensive comparison and analysis</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features & Configuration -->
+            <section class="section">
+                <h2><span class="icon">⚙️</span> Features & Configuration</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="guides/CONFIG.md">Configuration Guide</a></h3>
+                        <p>Application configuration and settings</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/I18N_GUIDE.md">Internationalization</a></h3>
+                        <p>i18n implementation and usage guide</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/CACHING_AND_SEARCH.md">Caching & Search</a></h3>
+                        <p>Caching strategies and search features</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/LOGGING_CONFIGURATION.md">Logging Configuration</a></h3>
+                        <p>Logging setup and configuration</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/GOOGLE_SSO_SETUP.md">Google SSO Setup</a></h3>
+                        <p>Google Single Sign-On configuration</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testing & Development -->
+            <section class="section">
+                <h2><span class="icon">🧪</span> Testing & Development</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="testing/TEST_SUITE_SUMMARY.md">Test Suite Summary</a></h3>
+                        <p>Test coverage and testing guidelines</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="development/PERFORMANCE_IMPROVEMENTS.md">Performance Improvements</a></h3>
+                        <p>Performance optimization strategies</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/CONTRIBUTING.md">Contributing Guidelines</a></h3>
+                        <p>How to contribute to NoteHub</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="guides/ERROR_HANDLING.md">Error Handling</a></h3>
+                        <p>Error handling patterns and best practices</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Management -->
+            <section class="section">
+                <h2><span class="icon">📋</span> Project Management</h2>
+                <div class="doc-grid">
+                    <div class="doc-card">
+                        <h3><a href="project/CI_CD.md">CI/CD Pipeline</a></h3>
+                        <p>Continuous Integration and Deployment</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="project/RELEASE_NOTES.md">Release Notes</a></h3>
+                        <p>Version history and release information</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="project/BRANCH_RULESET.md">Branch Ruleset</a></h3>
+                        <p>Git branch rules and workflow</p>
+                    </div>
+                    <div class="doc-card">
+                        <h3><a href="project/FINAL_SUMMARY.md">Project Summary</a></h3>
+                        <p>Overall project summary and status</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>Made with ❤️ by <a href="https://github.com/thienng-it" target="_blank">thienng-it</a></p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            <a href="INDEX.md">Complete Documentation Index</a> | 
+            <a href="https://github.com/thienng-it/note-hub" target="_blank">GitHub Repository</a> | 
+            <a href="index.html">App Home</a>
+        </p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">© 2025 NoteHub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Simple search functionality with accessibility
+        const searchBox = document.getElementById('searchBox');
+        const docCards = document.querySelectorAll('.doc-card');
+        const searchResults = document.getElementById('searchResults');
+
+        searchBox.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            let visibleCount = 0;
+            
+            docCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Announce results to screen readers
+            if (searchTerm) {
+                searchResults.textContent = visibleCount === 0 
+                    ? 'No results found' 
+                    : `${visibleCount} result${visibleCount === 1 ? '' : 's'} found`;
+            } else {
+                searchResults.textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>

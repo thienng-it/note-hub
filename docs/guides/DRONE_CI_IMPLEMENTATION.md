@@ -45,9 +45,9 @@ This mirrors NoteHub's architecture where nginx serves as the entry point.
 
 | File | Purpose |
 |------|---------|
-| `docs/guides/DRONE_CI_SETUP.md` | Comprehensive setup guide (12,000+ words) |
-| `docs/guides/PORT_ALLOCATION.md` | Port allocation and conflict resolution guide |
-| `DRONE_CI_IMPLEMENTATION_SUMMARY.md` | This file |
+| [DRONE_CI_SETUP.md](DRONE_CI_SETUP.md) | Comprehensive setup guide (12,000+ words) |
+| [PORT_ALLOCATION.md](PORT_ALLOCATION.md) | Port allocation and conflict resolution guide |
+| [DRONE_CI_IMPLEMENTATION.md](DRONE_CI_IMPLEMENTATION.md) | This file |
 
 ### Scripts & Tests
 
