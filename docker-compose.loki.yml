@@ -5,33 +5,47 @@
 # Grafana Loki is a lightweight alternative to Graylog that uses only
 # 300-500MB RAM compared to Graylog's 4GB+ requirement.
 #
-# IMPORTANT: Coexistence with Monitoring Stack
-#   This Loki stack can run alongside docker-compose.monitoring.yml
-#   - Monitoring Grafana (metrics): Port 3000, container: notehub-grafana
-#   - Loki Grafana (logs): Port 3001, container: grafana-loki
-#   - Both stacks are independent and don't conflict
+# IMPORTANT: Integration with NoteHub Infrastructure
+#   - Integrated with Traefik reverse proxy for HTTPS access
+#   - Accessible via subdomain: https://logs.your-domain.com
+#   - Coexists with monitoring Grafana (monitoring.your-domain.com)
+#   - Fallback direct access: http://localhost:3001
+#
+# Coexistence with Monitoring Stack:
+#   - Monitoring Grafana (metrics): monitoring.${DOMAIN}, port 3000
+#   - Loki Grafana (logs): logs.${DOMAIN}, port 3001
+#   - Both use Traefik for HTTPS with Let's Encrypt
+#   - No port, container, or volume conflicts
 #
 # Prerequisites:
 #   1. Docker and Docker Compose installed
-#   2. At least 512MB RAM available for Loki stack
-#   3. .env.loki configuration file (optional, uses defaults)
+#   2. NoteHub main stack running (for Traefik integration)
+#   3. At least 512MB RAM available for Loki stack
+#   4. .env file with DOMAIN and ACME_EMAIL configured
+#   5. DNS A record: logs.your-domain.com → server IP
 #
 # Quick Setup:
-#   1. Run: docker compose -f docker-compose.loki.yml up -d
-#   2. Access Grafana UI: http://your-server:3001 (admin/admin)
-#   3. Send logs to Loki: http://your-server:3100
+#   1. Ensure NoteHub is running: docker compose up -d
+#   2. Start Loki stack: docker compose -f docker-compose.loki.yml up -d
+#   3. Access via Traefik: https://logs.your-domain.com (admin/admin)
+#   4. Or direct access: http://localhost:3001
 #
 # Services:
 #   - loki: Log aggregation server (port 3100)
 #   - promtail: Log collector agent (collects from /var/log and Docker)
-#   - grafana-loki: Web UI for log visualization (port 3001)
+#   - grafana-loki: Web UI for log visualization (via Traefik + port 3001)
 #
 # Architecture:
-#   Applications → Promtail → Loki → Grafana (visualization)
+#   Applications → Promtail → Loki → Grafana Loki (visualization)
+#                                         ↓
+#                                      Traefik (HTTPS)
+#                                         ↓
+#                                  logs.your-domain.com
 #
-# Port Allocation:
-#   - 3100: Loki server
-#   - 3001: Grafana Loki UI (changed from 3000 to avoid conflicts)
+# Access URLs:
+#   - Via Traefik (HTTPS): https://logs.your-domain.com
+#   - Direct (HTTP): http://localhost:3001
+#   - Loki API: http://localhost:3100
 #
 # =============================================================================
 
@@ -93,7 +107,7 @@ services:
   # Grafana - Visualization UI (Loki)
   # ==========================================================================
   # Note: This is a separate Grafana instance dedicated to Loki logs
-  # It runs on port 3001 to avoid conflicts with the monitoring Grafana (port 3000)
+  # Accessible via Traefik at logs.${DOMAIN} or http://localhost:3001
   grafana-loki:
     image: grafana/grafana:10.2.2
     container_name: grafana-loki
@@ -104,13 +118,15 @@ services:
       - GF_SECURITY_ADMIN_USER=${LOKI_GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${LOKI_GRAFANA_ADMIN_PASSWORD:-admin}
       - GF_INSTALL_PLUGINS=${GRAFANA_INSTALL_PLUGINS:-}
-      - GF_SERVER_ROOT_URL=${LOKI_GRAFANA_ROOT_URL:-http://localhost:3001}
+      - GF_SERVER_ROOT_URL=${LOKI_GRAFANA_ROOT_URL:-https://logs.${DOMAIN:-localhost}}
+      - GF_SERVER_DOMAIN=${LOKI_GRAFANA_DOMAIN:-logs.${DOMAIN:-localhost}}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana-loki-data:/var/lib/grafana
       - ./docker/loki/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
     networks:
       - loki-network
+      - notehub-network  # Connect to Traefik network
     depends_on:
       loki:
         condition: service_healthy
@@ -127,12 +143,35 @@ services:
       retries: 5
       start_period: 60s
     labels:
+      # Enable Traefik for Grafana Loki
+      - "traefik.enable=true"
+      
+      # HTTP router with subdomain (e.g., logs.yourdomain.com)
+      # Use LOKI_GRAFANA_ROUTER_RULE to customize routing
+      - "traefik.http.routers.grafana-loki-http.rule=${LOKI_GRAFANA_ROUTER_RULE:-Host(`logs.${DOMAIN:-localhost}`)}"
+      - "traefik.http.routers.grafana-loki-http.entrypoints=web"
+      - "traefik.http.routers.grafana-loki-http.priority=10"
+      
+      # HTTPS router with subdomain
+      - "traefik.http.routers.grafana-loki.rule=${LOKI_GRAFANA_ROUTER_RULE:-Host(`logs.${DOMAIN:-localhost}`)}"
+      - "traefik.http.routers.grafana-loki.entrypoints=websecure"
+      - "traefik.http.routers.grafana-loki.priority=10"
+      - "traefik.http.routers.grafana-loki.tls=true"
+      - "traefik.http.routers.grafana-loki.tls.certresolver=letsencrypt"
+      
+      # Service configuration
+      - "traefik.http.services.grafana-loki.loadbalancer.server.port=3000"
+      - "traefik.docker.network=notehub-network"
+      
       - "com.notehub.description=Grafana Loki log visualization"
 
 networks:
   loki-network:
     name: loki-network
     driver: bridge
+  # Connect to existing NoteHub network for Traefik integration
+  notehub-network:
+    external: true
 
 volumes:
   loki-data:

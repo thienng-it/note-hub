@@ -16,10 +16,11 @@ Both stacks can run simultaneously on the same server without conflicts.
 | **Purpose** | Metrics, performance, resource monitoring | Log aggregation, search, analysis |
 | **Primary Tool** | Prometheus + Grafana | Loki + Grafana |
 | **Data Type** | Time-series metrics | Log lines and events |
-| **Grafana Port** | 3000 (via Traefik) | 3001 (direct) |
+| **Traefik URL** | `monitoring.${DOMAIN}` | `logs.${DOMAIN}` |
+| **Direct Port** | 3000 (internal) | 3001 |
 | **Container Name** | `notehub-grafana` | `grafana-loki` |
 | **Volume Name** | `grafana-data` | `grafana-loki-data` |
-| **Network** | `monitoring-network` | `loki-network` |
+| **Network** | `monitoring-network` + `notehub-network` | `loki-network` + `notehub-network` |
 | **RAM Usage** | ~1GB | ~600MB |
 
 ## Running Both Stacks
@@ -42,7 +43,8 @@ docker compose -f docker-compose.monitoring.yml up -d
 docker compose -f docker-compose.loki.yml up -d
 
 # Access logs Grafana
-http://localhost:3001
+# Via Traefik: https://logs.your-domain.com
+# Direct: http://localhost:3001
 ```
 
 ### Access Both
@@ -50,13 +52,14 @@ http://localhost:3001
 After starting both stacks:
 
 1. **Monitoring Grafana** (Metrics):
-   - URL: `https://monitoring.your-domain.com` (via Traefik)
-   - Or: `http://localhost:3000` (if exposed)
+   - **Production**: `https://monitoring.your-domain.com` (via Traefik)
+   - **Development**: `http://localhost:3000` (if exposed)
    - Shows: System metrics, container stats, API performance
    - Dashboards: Pre-configured with Prometheus data sources
 
 2. **Loki Grafana** (Logs):
-   - URL: `http://localhost:3001`
+   - **Production**: `https://logs.your-domain.com` (via Traefik)
+   - **Development**: `http://localhost:3001` (direct)
    - Shows: Application logs, system logs, Docker container logs
    - Data Source: Loki (pre-configured)
 
@@ -72,7 +75,7 @@ After starting both stacks:
 | **Logging Stack** |
 | Loki | 3100 | Log storage | Direct (for log shipping) |
 | Promtail | 9080 | Log collector | Internal only |
-| Grafana (Loki) | 3001 | Log visualization | Direct access |
+| Grafana (Loki) | 3001 | Log visualization | Via Traefik (logs.domain) + Direct |
 
 ## Architecture
 

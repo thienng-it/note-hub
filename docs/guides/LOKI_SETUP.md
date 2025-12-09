@@ -28,57 +28,89 @@ Applications → Promtail (collector) → Loki (storage) → Grafana (visualizat
 2. **Promtail**: Log collector agent (collects from /var/log and Docker containers)
 3. **Grafana Loki**: Web UI for log visualization (port 3001)
 
+## Traefik Integration
+
+Loki Grafana is integrated with Traefik reverse proxy for production deployments:
+
+- **Production Access**: `https://logs.your-domain.com` (via Traefik with Let's Encrypt SSL)
+- **Development/Fallback**: `http://localhost:3001` (direct access)
+- **Monitoring Grafana**: `https://monitoring.your-domain.com`
+
+### DNS Configuration
+
+Add an A record for the logs subdomain:
+```
+logs.your-domain.com  →  your-server-ip
+```
+
 ## Coexistence with Monitoring Stack
 
-**IMPORTANT**: If you're running `docker-compose.monitoring.yml` (Prometheus + Grafana), both stacks can coexist:
+Both Grafana instances use Traefik and coexist perfectly:
 
-- **Monitoring Grafana** (metrics): `http://your-server:3000` or `https://monitoring.your-domain.com`
-- **Loki Grafana** (logs): `http://your-server:3001`
-
-They use different:
-- Ports (3000 vs 3001)
-- Container names (`notehub-grafana` vs `grafana-loki`)
-- Volume names (`grafana-data` vs `grafana-loki-data`)
-- Networks (`monitoring-network` vs `loki-network`)
+| Stack | Traefik URL | Direct Port | Container | Volume |
+|-------|-------------|-------------|-----------|--------|
+| **Monitoring** | `monitoring.${DOMAIN}` | 3000 (internal) | `notehub-grafana` | `grafana-data` |
+| **Loki** | `logs.${DOMAIN}` | 3001 | `grafana-loki` | `grafana-loki-data` |
 
 ## Prerequisites
 
 - Docker and Docker Compose installed
+- **NoteHub main stack running** (provides Traefik)
 - At least 512MB RAM available for Loki stack
-- Ports 3001 (Grafana) and 3100 (Loki) available
-- Port 3000 should remain free if using monitoring Grafana
+- `.env` file configured with `DOMAIN` and `ACME_EMAIL`
+- DNS A record: `logs.your-domain.com` pointing to server IP
+- Ports 3001 (Grafana fallback) and 3100 (Loki API) available
 
 ## Quick Start
 
-### 1. Copy Environment Configuration
+### 1. Ensure NoteHub is Running
+
+Loki integrates with NoteHub's Traefik instance:
 
 ```bash
-cp .env.loki.example .env.loki
+# Start NoteHub main stack first (if not already running)
+docker compose up -d
 ```
 
-### 2. (Optional) Customize Configuration
+### 2. Configure DNS
 
-Edit `.env.loki` and change the default admin password:
+Add DNS A record:
+```
+logs.your-domain.com  →  your-server-ip
+```
+
+### 3. (Optional) Customize Configuration
+
+The stack uses the main `.env` file's `DOMAIN` variable automatically. Optionally customize Loki-specific settings:
 
 ```bash
+# Copy and edit (optional)
+cp .env.loki.example .env.loki
+
+# Change admin password
 LOKI_GRAFANA_ADMIN_USER=admin
 LOKI_GRAFANA_ADMIN_PASSWORD=your-secure-password
 ```
 
-### 3. Start Loki Stack
+### 4. Start Loki Stack
 
 ```bash
 docker compose -f docker-compose.loki.yml up -d
 ```
 
-### 4. Access Grafana Loki UI
+### 5. Access Grafana Loki UI
 
-Open your browser and navigate to:
+**Production (Recommended)**:
 ```
-http://your-server:3001
+https://logs.your-domain.com
 ```
+- Automatic HTTPS via Let's Encrypt
+- Traefik handles SSL termination
 
-**Note**: Port 3001 (not 3000) to avoid conflicts with monitoring Grafana.
+**Development/Fallback**:
+```
+http://localhost:3001
+```
 
 Default credentials:
 - Username: `admin`
