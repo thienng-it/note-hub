@@ -143,7 +143,7 @@ jobs:
 
       - name: Install backend dependencies
         working-directory: backend
-        run: npm ci
+        run: npm i
 
       - name: Audit backend dependencies
         working-directory: backend
@@ -151,7 +151,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm i
 
       - name: Audit frontend dependencies
         working-directory: frontend
