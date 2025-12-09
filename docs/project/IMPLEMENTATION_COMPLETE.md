@@ -176,8 +176,8 @@ letsencrypt-drone/.gitkeep         (Drone CI certificates)
 docs/guides/SSL_HTTPS_SETUP.md           (Complete setup guide)
 docs/guides/TRAEFIK_MIGRATION.md         (SSL section updated)
 README.md                                 (HTTPS instructions)
-SSL_HTTPS_IMPLEMENTATION_SUMMARY.md      (Technical details)
-TESTING_SSL_HTTPS.md                      (Testing guide)
+docs/guides/SSL_HTTPS_IMPLEMENTATION.md  (Technical details)
+docs/guides/TESTING_SSL_HTTPS.md         (Testing guide)
 ```
 
 ---
@@ -297,10 +297,10 @@ For existing deployments:
 ## Support Resources
 
 ### Documentation
-- [SSL/HTTPS Setup Guide](docs/guides/SSL_HTTPS_SETUP.md) - Complete setup instructions
-- [Testing Guide](TESTING_SSL_HTTPS.md) - Comprehensive testing procedures
-- [Traefik Migration Guide](docs/guides/TRAEFIK_MIGRATION.md) - SSL/HTTPS section
-- [Implementation Summary](SSL_HTTPS_IMPLEMENTATION_SUMMARY.md) - Technical details
+- [SSL/HTTPS Setup Guide](../guides/SSL_HTTPS_SETUP.md) - Complete setup instructions
+- [Testing Guide](../guides/TESTING_SSL_HTTPS.md) - Comprehensive testing procedures
+- [Traefik Migration Guide](../guides/TRAEFIK_MIGRATION.md) - SSL/HTTPS section
+- [Implementation Summary](../guides/SSL_HTTPS_IMPLEMENTATION.md) - Technical details
 
 ### External Resources
 - [Traefik HTTPS Documentation](https://doc.traefik.io/traefik/https/overview/)

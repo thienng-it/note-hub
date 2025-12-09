@@ -257,9 +257,9 @@ Test with specific domain:
 
 ### New Files
 - `docker-compose.domain.yml` - Domain-specific router configuration
-- `docs/guides/CUSTOM_DOMAIN_SSL_SETUP.md` - Comprehensive setup guide
-- `TROUBLESHOOTING_SSL.md` - Quick reference guide
-- `CUSTOM_DOMAIN_SSL_FIX_SUMMARY.md` - This document
+- [CUSTOM_DOMAIN_SSL_SETUP.md](CUSTOM_DOMAIN_SSL_SETUP.md) - Comprehensive setup guide
+- [TROUBLESHOOTING_SSL.md](TROUBLESHOOTING_SSL.md) - Quick reference guide
+- [CUSTOM_DOMAIN_SSL_FIX.md](CUSTOM_DOMAIN_SSL_FIX.md) - This document
 - `tests/test_domain_configuration.sh` - Automated test suite
 
 ### Modified Files
