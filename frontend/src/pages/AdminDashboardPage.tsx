@@ -1,19 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { API_VERSION } from '../api/client.ts';
+import { adminApi } from '../api/client.ts';
 import { useAuth } from '../context/AuthContext';
+import type { User } from '../types';
 import { logger } from '../utils/logger';
-
-interface AdminUser {
-  id: number;
-  username: string;
-  email: string | null;
-  created_at: string;
-  last_login: string | null;
-  totp_secret: boolean;
-  has_2fa?: boolean;
-}
 
 interface AdminStats {
   total_users: number;
@@ -24,7 +15,7 @@ interface AdminStats {
 export function AdminDashboardPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<AdminStats>({
     total_users: 0,
     users_with_2fa: 0,
@@ -36,36 +27,23 @@ export function AdminDashboardPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-
   const loadUsers = useCallback(async () => {
     setIsLoading(true);
     setError('');
 
     try {
-      const token = localStorage.getItem('notehub_access_token');
       const params = new URLSearchParams({ page: String(page) });
       if (searchQuery) params.append('search', searchQuery);
 
-      const response = await fetch(`${API_BASE_URL}/${API_VERSION}/admin/users?${params}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const data = await adminApi.getUsers(params);
 
-      if (!response.ok) {
-        throw new Error('Failed to load users');
-      }
-
-      const data = await response.json();
       setUsers(data.users);
       setStats({
         total_users: data.stats.total_users,
         users_with_2fa: data.stats.users_with_2fa,
         users_with_email: data.stats.users_with_email,
       });
-      setTotalPages(data.total_pages);
+      setTotalPages(data.pagination.total_pages);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load users');
     } finally {
@@ -98,22 +76,7 @@ export function AdminDashboardPage() {
     }
 
     try {
-      const token = localStorage.getItem('notehub_access_token');
-      const response = await fetch(
-        `${API_BASE_URL}/${API_VERSION}/admin/users/${userId}/disable-2fa`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to disable 2FA');
-      }
+      await adminApi.disable2fa(userId);
 
       // Refresh user list
       await loadUsers();

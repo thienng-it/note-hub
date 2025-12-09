@@ -15,6 +15,7 @@ import type {
   TaskResponse,
   TasksResponse,
   User,
+  UsersResponse,
 } from '../types';
 
 // Use relative URL in production (same origin), absolute in development
@@ -338,5 +339,23 @@ export const aiApi = {
       body: JSON.stringify({ text, style }),
     });
     return result.result;
+  },
+};
+
+export const adminApi = {
+  async getUsers(params): Promise<UsersResponse> {
+    const response = await apiRequest(`${API_VERSION}/admin/users?${params}`);
+    if (!response.ok) throw new Error('Failed to load users');
+    return response.data;
+  },
+
+  async disable2fa(userId): Promise<void> {
+    const response = await apiRequest(`${API_VERSION}/admin/users/${userId}/disable-2fa`, {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw new Error(response.error || 'Failed to disable 2FA');
+    }
   },
 };

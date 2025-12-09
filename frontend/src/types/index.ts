@@ -5,6 +5,7 @@ export interface User {
   email?: string;
   bio?: string;
   created_at?: string;
+  last_login?: string;
   theme?: 'light' | 'dark';
   preferred_language?: string;
   has_2fa?: boolean;
@@ -112,6 +113,21 @@ export interface TasksResponse {
 
 export interface TaskResponse {
   task: Task;
+}
+
+export interface UsersResponse {
+  users: User[];
+  stats: {
+    total_users: number;
+    users_with_2fa: number;
+    users_with_email: number;
+  };
+  pagination: {
+    page: number;
+    per_page: number;
+    total_count: number;
+    total_pages: number;
+  };
 }
 
 // View types
