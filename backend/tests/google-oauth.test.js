@@ -58,7 +58,7 @@ process.env.GOOGLE_REDIRECT_URI = 'http://localhost:3000/auth/google/callback';
 
 /**
  * TEMPORARILY DISABLED - See docs/testing/FAILED_TESTS_DECISION.md
- * 
+ *
  * These tests require proper mocking of googleapis library and
  * database calls. They need refactoring to test OAuth flow properly
  * with real or better-mocked dependencies.

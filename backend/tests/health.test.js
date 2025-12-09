@@ -40,7 +40,7 @@ const db = require('../src/config/database');
 
 /**
  * TEMPORARILY DISABLED - See docs/testing/FAILED_TESTS_DECISION.md
- * 
+ *
  * These tests require proper database health check mocking.
  * Should be refactored to use real database for integration testing.
  */

@@ -23,7 +23,7 @@ process.env.JWT_SECRET = 'test-secret-key';
 
 /**
  * TEMPORARILY DISABLED - See docs/testing/FAILED_TESTS_DECISION.md
- * 
+ *
  * These tests require proper mocking of 2FA logic and database queries.
  * Should be refactored to use real database for integration testing.
  */
