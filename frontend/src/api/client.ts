@@ -343,11 +343,11 @@ export const aiApi = {
 };
 
 export const adminApi = {
-  async getUsers(params): Promise<UsersResponse> {
-    return await apiRequest<UsersResponse>(`${API_VERSION}/admin/users?${params}`);
+  async getUsers(params: URLSearchParams): Promise<UsersResponse> {
+    return apiRequest<UsersResponse>(`${API_VERSION}/admin/users?${params}`);
   },
 
-  async disable2fa(userId): Promise<void> {
+  async disable2fa(userId: number): Promise<void> {
     await apiRequest(`${API_VERSION}/admin/users/${userId}/disable-2fa`, {
       method: 'POST',
     });
