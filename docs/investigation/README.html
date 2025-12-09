@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Technical Investigations">
+    <title>Technical Investigations - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Technical Investigations</span>
+        </div>
+
+        <article class="content">
+            <h1>Technical Investigations</h1>
+<p>This directory contains in-depth technical investigations and analyses for NoteHub.</p>
+<hr>
+<h2>📋 Available Investigations</h2>
+<h3>NoSQL Database Evaluation (December 2025)</h3>
+<p><strong>Status</strong>: ✅ Complete<br><strong>Decision</strong>: Continue with SQL (SQLite/MySQL)</p>
+<p>A comprehensive investigation into whether NoteHub should use NoSQL databases instead of SQL.</p>
+<h4>Documents</h4>
+<ol>
+<li><p><strong><a href="EXECUTIVE_SUMMARY.md">EXECUTIVE_SUMMARY.md</a></strong> ⭐ Start here</p>
+<ul>
+<li>Quick overview and decision summary</li>
+<li>Cost-benefit analysis</li>
+<li>Recommendation and action items</li>
+<li><strong>Read time</strong>: 5 minutes</li>
+</ul>
+</li>
+<li><p><strong><a href="NOSQL_INVESTIGATION.md">NOSQL_INVESTIGATION.md</a></strong></p>
+<ul>
+<li>Complete technical analysis (17,000 words)</li>
+<li>Data model analysis</li>
+<li>Query pattern breakdown</li>
+<li>NoSQL evaluation by type (Document, Key-Value, Column-Family, Graph)</li>
+<li>Performance benchmarks</li>
+<li>Future considerations</li>
+<li><strong>Read time</strong>: 30-40 minutes</li>
+</ul>
+</li>
+<li><p><strong><a href="SQL_VS_NOSQL_COMPARISON.md">SQL_VS_NOSQL_COMPARISON.md</a></strong></p>
+<ul>
+<li>Visual side-by-side comparison (13,000 words)</li>
+<li>Performance benchmarks with real queries</li>
+<li>Code complexity examples</li>
+<li>Feature comparison matrix</li>
+<li>Cost analysis</li>
+<li>Real-world scenarios</li>
+<li><strong>Read time</strong>: 20-30 minutes</li>
+</ul>
+</li>
+</ol>
+<h4>Key Findings</h4>
+<pre><code>✅ Recommendation: Continue with SQL (SQLite/MySQL)
+
+Why SQL Wins:
+• Perfect fit for relational data model
+• 2-3x faster for complex queries
+• ACID transactions for data integrity
+• Zero migration cost
+• Team already proficient
+• Excellent tooling ecosystem
+
+Why Not NoSQL:
+• No scale justification (1K users vs 100K needed)
+• Data model is highly relational
+• Would introduce data duplication
+• Complex updates required
+• $15K-20K migration cost with no benefit
+</code></pre>
+<h4>Quick Comparison</h4>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>SQL (Current)</th>
+<th>NoSQL</th>
+<th>Winner</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Query Performance</td>
+<td>5-10ms</td>
+<td>20-40ms</td>
+<td><strong>SQL (2-4x)</strong></td>
+</tr>
+<tr>
+<td>Data Integrity</td>
+<td>ACID</td>
+<td>Manual</td>
+<td><strong>SQL</strong></td>
+</tr>
+<tr>
+<td>Code Complexity</td>
+<td>5 lines</td>
+<td>30+ lines</td>
+<td><strong>SQL (6x)</strong></td>
+</tr>
+<tr>
+<td>Development Time</td>
+<td>0 weeks</td>
+<td>3-4 weeks</td>
+<td><strong>SQL</strong></td>
+</tr>
+<tr>
+<td>Migration Cost</td>
+<td>$0</td>
+<td>$15K-20K</td>
+<td><strong>SQL</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>🎯 How to Use These Documents</h2>
+<h3>For Decision Makers</h3>
+<ol>
+<li>Read <a href="EXECUTIVE_SUMMARY.md">EXECUTIVE_SUMMARY.md</a></li>
+<li>Review the decision matrix and cost-benefit analysis</li>
+<li>Done! (5 minutes)</li>
+</ol>
+<h3>For Architects</h3>
+<ol>
+<li>Start with <a href="EXECUTIVE_SUMMARY.md">EXECUTIVE_SUMMARY.md</a></li>
+<li>Review <a href="SQL_VS_NOSQL_COMPARISON.md">SQL_VS_NOSQL_COMPARISON.md</a> for technical details</li>
+<li>Check <a href="NOSQL_INVESTIGATION.md">NOSQL_INVESTIGATION.md</a> for specific sections of interest</li>
+<li>Total time: 30-60 minutes</li>
+</ol>
+<h3>For Developers</h3>
+<ol>
+<li>Read <a href="EXECUTIVE_SUMMARY.md">EXECUTIVE_SUMMARY.md</a></li>
+<li>Focus on code examples in <a href="SQL_VS_NOSQL_COMPARISON.md">SQL_VS_NOSQL_COMPARISON.md</a></li>
+<li>Review query patterns in <a href="NOSQL_INVESTIGATION.md">NOSQL_INVESTIGATION.md</a></li>
+<li>Total time: 45 minutes</li>
+</ol>
+<hr>
+<h2>📊 Investigation Methodology</h2>
+<h3>Analysis Approach</h3>
+<ol>
+<li><p><strong>Current Architecture Review</strong></p>
+<ul>
+<li>Analyzed existing database schema</li>
+<li>Reviewed all SQL queries in codebase</li>
+<li>Measured query patterns and frequency</li>
+<li>Assessed data relationships</li>
+</ul>
+</li>
+<li><p><strong>NoSQL Evaluation</strong></p>
+<ul>
+<li>Evaluated 4 NoSQL types (Document, Key-Value, Column-Family, Graph)</li>
+<li>Analyzed each against NoteHub&#39;s requirements</li>
+<li>Compared performance characteristics</li>
+<li>Assessed migration complexity</li>
+</ul>
+</li>
+<li><p><strong>Comparison Analysis</strong></p>
+<ul>
+<li>Side-by-side feature comparison</li>
+<li>Performance benchmarking (estimated)</li>
+<li>Code complexity analysis</li>
+<li>Cost-benefit analysis</li>
+</ul>
+</li>
+<li><p><strong>Recommendation</strong></p>
+<ul>
+<li>Based on data-driven analysis</li>
+<li>Considers current and future scale</li>
+<li>Accounts for team expertise</li>
+<li>Includes migration cost</li>
+</ul>
+</li>
+</ol>
+<h3>Data Sources</h3>
+<ul>
+<li><strong>Codebase Analysis</strong>: 20+ SQL queries reviewed</li>
+<li><strong>Schema Analysis</strong>: 8 tables, 15+ relationships</li>
+<li><strong>Query Patterns</strong>: 90% JOINs/aggregations, 10% simple lookups</li>
+<li><strong>Scale Assessment</strong>: 10-1,000 users, &lt;1GB data</li>
+<li><strong>Performance Estimates</strong>: Based on query complexity and database characteristics</li>
+</ul>
+<hr>
+<h2>🔍 Key Insights</h2>
+<h3>Data Model Characteristics</h3>
+<pre><code>✅ Highly Relational
+• 8 tables with foreign key relationships
+• Many-to-many: notes ↔ tags (junction table)
+• One-to-many: users → notes, notes → shares
+• Cascade deletes required
+• Orphan cleanup necessary
+
+❌ Not Suitable for NoSQL
+• Would require data duplication
+• Complex updates across documents
+• Manual referential integrity
+• No benefit from denormalization
+</code></pre>
+<h3>Query Pattern Analysis</h3>
+<pre><code>90% Complex Queries:
+• JOINs across 2-3 tables
+• GROUP BY aggregations
+• Multi-field filtering
+• Sorting on multiple columns
+
+10% Simple Queries:
+• Single-table lookups by ID
+• Basic filters on one field
+
+SQL Advantage: Built-in support for complex queries
+NoSQL Disadvantage: Requires multiple queries + app-level joins
+</code></pre>
+<h3>Scale Assessment</h3>
+<pre><code>Current: 10-1,000 users, &lt;1GB data
+NoSQL Threshold: 100K+ concurrent users, &gt;100GB data
+
+Gap: 100-1000x scale difference
+Conclusion: NoSQL not justified
+</code></pre>
+<hr>
+<h2>📈 Future Considerations</h2>
+<h3>When to Revisit NoSQL</h3>
+<p>The investigation should be revisited when <strong>any</strong> of these conditions are met:</p>
+<ol>
+<li><p><strong>Scale Threshold</strong></p>
+<ul>
+<li>✅ Users exceed 100,000 concurrent</li>
+<li>✅ Data exceeds 100 GB</li>
+<li>✅ Queries exceed 10,000/second</li>
+</ul>
+</li>
+<li><p><strong>Architecture Changes</strong></p>
+<ul>
+<li>✅ Multi-region deployment required</li>
+<li>✅ Geographic data distribution needed</li>
+<li>✅ Real-time collaboration features added</li>
+</ul>
+</li>
+<li><p><strong>Data Model Changes</strong></p>
+<ul>
+<li>✅ Schema becomes unpredictable</li>
+<li>✅ Unstructured data becomes primary</li>
+<li>✅ Document-oriented features required</li>
+</ul>
+</li>
+</ol>
+<p><strong>Current Status</strong>: 0/9 conditions met → <strong>NoSQL not needed</strong></p>
+<h3>Alternative Optimizations</h3>
+<p>Before considering NoSQL, try these complementary technologies:</p>
+<ol>
+<li><p><strong>Redis for Caching</strong></p>
+<ul>
+<li>Cache frequently accessed notes</li>
+<li>Store session data</li>
+<li>Cost: 2-3 days</li>
+<li>Benefit: 10-100x speedup</li>
+<li>Status: Not yet needed</li>
+</ul>
+</li>
+<li><p><strong>Elasticsearch for Search</strong></p>
+<ul>
+<li>Full-text search</li>
+<li>Better ranking</li>
+<li>Cost: 3-4 days</li>
+<li>Benefit: Much better search UX</li>
+<li>Status: Not yet needed</li>
+</ul>
+</li>
+<li><p><strong>SQL Optimization</strong></p>
+<ul>
+<li>Add indexes</li>
+<li>Optimize slow queries</li>
+<li>Cost: 1-2 days</li>
+<li>Benefit: 2-10x speedup</li>
+<li>Status: Current approach</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>📚 Related Documentation</h2>
+<h3>Architecture</h3>
+<ul>
+<li><a href="../architecture/ARCHITECTURE.md">ARCHITECTURE.md</a> - System architecture</li>
+<li><a href="../architecture/DATABASE_FLOW.md">DATABASE_FLOW.md</a> - Database schema and flows</li>
+</ul>
+<h3>Guides</h3>
+<ul>
+<li><a href="../guides/MYSQL_MIGRATION_SUMMARY.md">MYSQL_MIGRATION_SUMMARY.md</a> - MySQL migration details</li>
+<li><a href="../guides/PERFORMANCE_GUIDE.md">PERFORMANCE_GUIDE.md</a> - Performance optimization</li>
+</ul>
+<h3>API</h3>
+<ul>
+<li><a href="../api/JWT_API.md">JWT_API.md</a> - API documentation</li>
+</ul>
+<hr>
+<h2>🤝 Contributing</h2>
+<p>If you have questions about this investigation or want to propose re-evaluation:</p>
+<ol>
+<li>Check if scale thresholds are met (see &quot;When to Revisit NoSQL&quot;)</li>
+<li>Review existing investigation documents</li>
+<li>Open an issue with specific performance metrics</li>
+<li>Provide evidence of limitations with current SQL approach</li>
+</ol>
+<hr>
+<h2>📝 Document Metadata</h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Version</th>
+<th>Date</th>
+<th>Status</th>
+<th>Words</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EXECUTIVE_SUMMARY.md</td>
+<td>1.0</td>
+<td>2025-12-04</td>
+<td>✅ Complete</td>
+<td>1,563</td>
+</tr>
+<tr>
+<td>NOSQL_INVESTIGATION.md</td>
+<td>1.0</td>
+<td>2025-12-04</td>
+<td>✅ Complete</td>
+<td>2,534</td>
+</tr>
+<tr>
+<td>SQL_VS_NOSQL_COMPARISON.md</td>
+<td>1.0</td>
+<td>2025-12-04</td>
+<td>✅ Complete</td>
+<td>1,848</td>
+</tr>
+</tbody></table>
+<p><strong>Total Investigation Size</strong>: ~7,024 words (detailed technical analysis)</p>
+<hr>
+<h2>🎯 Quick Decision Reference</h2>
+<pre><code>┌────────────────────────────────────────────────┐
+│        Should NoteHub Use NoSQL?               │
+│                                                │
+│  Current Scale:    Small/Medium  → SQL ✅      │
+│  Data Model:       Relational    → SQL ✅      │
+│  Query Patterns:   Complex JOINs → SQL ✅      │
+│  Transactions:     ACID Needed   → SQL ✅      │
+│  Team Skills:      SQL Expert    → SQL ✅      │
+│  Migration Cost:   $0 vs $20K    → SQL ✅      │
+│                                                │
+│  VERDICT: Continue with SQL (SQLite/MySQL)    │
+└────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<p><strong>Investigation Lead</strong>: GitHub Copilot Agent<br><strong>Review Date</strong>: December 4, 2025<br><strong>Next Review</strong>: When scale increases 10x or architecture changes significantly</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

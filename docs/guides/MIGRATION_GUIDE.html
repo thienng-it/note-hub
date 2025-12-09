@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Migration Guide: Legacy to New Architecture">
+    <title>Migration Guide: Legacy to New Architecture - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Migration Guide: Legacy to New Architecture</span>
+        </div>
+
+        <article class="content">
+            <h1>Migration Guide: Legacy to New Architecture</h1>
+<p>This guide helps developers understand and work with the new modular architecture.</p>
+<h2>What Changed?</h2>
+<h3>Before (Legacy)</h3>
+<pre><code>src/notehub/
+├── routes/
+│   └── __init__.py    # 850 lines - all routes in one file
+└── services/
+    ├── bootstrap.py
+    └── utils.py       # Only helper functions
+</code></pre>
+<h3>After (New Architecture)</h3>
+<pre><code>src/notehub/
+├── routes/
+│   └── __init__.py           # 40 lines - orchestration only
+├── routes_modules/           # NEW - modular routes
+│   ├── auth_routes.py        # Authentication
+│   ├── note_routes.py        # Notes
+│   ├── task_routes.py        # Tasks
+│   ├── profile_routes.py     # Profiles
+│   └── admin_routes.py       # Admin
+└── services/                 # EXPANDED - business logic
+    ├── auth_service.py       # NEW
+    ├── note_service.py       # NEW
+    ├── task_service.py       # NEW
+    ├── bootstrap.py
+    └── utils.py
+</code></pre>
+<h2>Finding Code in New Structure</h2>
+<h3>Authentication &amp; Authorization</h3>
+<p><strong>Old Location</strong>: <code>routes/__init__.py</code> (lines 75-409)</p>
+<p><strong>New Location</strong>: </p>
+<ul>
+<li>Routes: <code>routes_modules/auth_routes.py</code></li>
+<li>Business Logic: <code>services/auth_service.py</code></li>
+</ul>
+<p><strong>Routes</strong>:</p>
+<ul>
+<li><code>/login</code> - <code>auth_routes.py:login()</code></li>
+<li><code>/register</code> - <code>auth_routes.py:register()</code></li>
+<li><code>/logout</code> - <code>auth_routes.py:logout()</code></li>
+<li><code>/forgot-password</code> - <code>auth_routes.py:forgot_password()</code></li>
+<li><code>/reset-password/&lt;token&gt;</code> - <code>auth_routes.py:reset_password()</code></li>
+<li><code>/verify-2fa</code> - <code>auth_routes.py:verify_2fa()</code></li>
+<li><code>/profile/setup-2fa</code> - <code>auth_routes.py:setup_2fa()</code></li>
+<li><code>/profile/disable-2fa</code> - <code>auth_routes.py:disable_2fa()</code></li>
+</ul>
+<p><strong>Services</strong>:</p>
+<ul>
+<li><code>AuthService.authenticate_user()</code> - Verify credentials</li>
+<li><code>AuthService.register_user()</code> - Create new user</li>
+<li><code>AuthService.create_password_reset_token()</code> - Generate reset token</li>
+<li><code>AuthService.reset_password()</code> - Reset user password</li>
+</ul>
+<h3>Notes Management</h3>
+<p><strong>Old Location</strong>: <code>routes/__init__.py</code> (lines 30-658)</p>
+<p><strong>New Location</strong>:</p>
+<ul>
+<li>Routes: <code>routes_modules/note_routes.py</code></li>
+<li>Business Logic: <code>services/note_service.py</code></li>
+</ul>
+<p><strong>Routes</strong>:</p>
+<ul>
+<li><code>/</code> (index) - <code>note_routes.py:index()</code></li>
+<li><code>/note/new</code> - <code>note_routes.py:new_note()</code></li>
+<li><code>/note/&lt;id&gt;</code> - <code>note_routes.py:view_note()</code></li>
+<li><code>/note/&lt;id&gt;/edit</code> - <code>note_routes.py:edit_note()</code></li>
+<li><code>/note/&lt;id&gt;/delete</code> - <code>note_routes.py:delete_note()</code></li>
+<li><code>/note/&lt;id&gt;/toggle-pin</code> - <code>note_routes.py:toggle_pin()</code></li>
+<li><code>/note/&lt;id&gt;/toggle-favorite</code> - <code>note_routes.py:toggle_favorite()</code></li>
+<li><code>/note/&lt;id&gt;/toggle-archive</code> - <code>note_routes.py:toggle_archive()</code></li>
+<li><code>/note/&lt;id&gt;/share</code> - <code>note_routes.py:share_note()</code></li>
+<li><code>/note/&lt;id&gt;/unshare/&lt;share_id&gt;</code> - <code>note_routes.py:unshare_note()</code></li>
+</ul>
+<p><strong>Services</strong>:</p>
+<ul>
+<li><code>NoteService.get_notes_for_user()</code> - Filter and search notes</li>
+<li><code>NoteService.check_note_access()</code> - Check permissions</li>
+<li><code>NoteService.create_note()</code> - Create new note</li>
+<li><code>NoteService.update_note()</code> - Update existing note</li>
+<li><code>NoteService.share_note()</code> - Share with user</li>
+</ul>
+<h3>Task Management</h3>
+<p><strong>Old Location</strong>: <code>routes/__init__.py</code> (lines 730-828)</p>
+<p><strong>New Location</strong>:</p>
+<ul>
+<li>Routes: <code>routes_modules/task_routes.py</code></li>
+<li>Business Logic: <code>services/task_service.py</code></li>
+</ul>
+<p><strong>Routes</strong>:</p>
+<ul>
+<li><code>/tasks</code> - <code>task_routes.py:tasks()</code></li>
+<li><code>/task/new</code> - <code>task_routes.py:new_task()</code></li>
+<li><code>/task/&lt;id&gt;/edit</code> - <code>task_routes.py:edit_task()</code></li>
+<li><code>/task/&lt;id&gt;/toggle</code> - <code>task_routes.py:toggle_task()</code></li>
+<li><code>/task/&lt;id&gt;/delete</code> - <code>task_routes.py:delete_task()</code></li>
+</ul>
+<p><strong>Services</strong>:</p>
+<ul>
+<li><code>TaskService.get_tasks_for_user()</code> - Get filtered tasks</li>
+<li><code>TaskService.get_task_counts()</code> - Get statistics</li>
+<li><code>TaskService.create_task()</code> - Create new task</li>
+<li><code>TaskService.update_task()</code> - Update task</li>
+<li><code>TaskService.toggle_task_completion()</code> - Toggle status</li>
+<li><code>TaskService.check_task_access()</code> - Check permissions</li>
+</ul>
+<h3>User Profiles</h3>
+<p><strong>Old Location</strong>: <code>routes/__init__.py</code> (lines 679-728)</p>
+<p><strong>New Location</strong>:</p>
+<ul>
+<li>Routes: <code>routes_modules/profile_routes.py</code></li>
+</ul>
+<p><strong>Routes</strong>:</p>
+<ul>
+<li><code>/profile</code> - <code>profile_routes.py:profile()</code></li>
+<li><code>/profile/edit</code> - <code>profile_routes.py:edit_profile()</code></li>
+<li><code>/user/&lt;id&gt;</code> - <code>profile_routes.py:view_user_profile()</code></li>
+<li><code>/invite</code> - <code>profile_routes.py:invite()</code></li>
+<li><code>/toggle-theme</code> - <code>profile_routes.py:toggle_theme()</code></li>
+</ul>
+<h3>Admin Dashboard</h3>
+<p><strong>Old Location</strong>: <code>routes/__init__.py</code> (lines 224-282)</p>
+<p><strong>New Location</strong>:</p>
+<ul>
+<li>Routes: <code>routes_modules/admin_routes.py</code></li>
+</ul>
+<p><strong>Routes</strong>:</p>
+<ul>
+<li><code>/admin/users</code> - <code>admin_routes.py:admin_users()</code></li>
+</ul>
+<h2>Code Examples</h2>
+<h3>Example 1: Adding a New Route</h3>
+<p><strong>Before (Legacy)</strong>:</p>
+<pre><code class="language-python"># routes/__init__.py
+def register_routes(app):
+    @app.route(&quot;/my-route&quot;)
+    def my_route():
+        # All logic here
+        with db() as s:
+            user = s.execute(select(User)...).scalar()
+            # More database queries
+            # Business logic
+            # Validation
+        return render_template(&quot;my_template.html&quot;)
+</code></pre>
+<p><strong>After (New Architecture)</strong>:</p>
+<p><strong>Step 1: Create Service</strong> (if needed)</p>
+<pre><code class="language-python"># services/my_service.py
+class MyService:
+    @staticmethod
+    def do_something(session: Session, user: User) -&gt; Result:
+        &quot;&quot;&quot;Business logic here.&quot;&quot;&quot;
+        # Complex operations
+        return result
+</code></pre>
+<p><strong>Step 2: Create Route Module</strong></p>
+<pre><code class="language-python"># routes_modules/my_routes.py
+from ..services.my_service import MyService
+from ..services.utils import current_user, db, login_required
+
+def register_my_routes(app):
+    @app.route(&quot;/my-route&quot;)
+    @login_required
+    def my_route():
+        user = current_user()
+        with db() as s:
+            result = MyService.do_something(s, user)
+            s.commit()
+        return render_template(&quot;my_template.html&quot;, result=result)
+</code></pre>
+<p><strong>Step 3: Register Routes</strong></p>
+<pre><code class="language-python"># routes/__init__.py
+from ..routes_modules import register_my_routes
+
+def register_routes(app):
+    # ... other registrations
+    register_my_routes(app)
+</code></pre>
+<h3>Example 2: Refactoring Existing Code</h3>
+<p><strong>Before</strong>:</p>
+<pre><code class="language-python">@app.route(&quot;/login&quot;, methods=[&quot;GET&quot;, &quot;POST&quot;])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        with db() as s:
+            user = s.execute(
+                select(User).where(User.username == form.username.data)
+            ).scalar_one_or_none()
+            
+            if user and user.check_password(form.password.data):
+                session[&quot;user_id&quot;] = user.id
+                user.last_login = datetime.now(timezone.utc)
+                s.commit()
+                return redirect(url_for(&quot;index&quot;))
+        flash(&quot;Invalid credentials&quot;, &quot;error&quot;)
+    return render_template(&quot;login.html&quot;, form=form)
+</code></pre>
+<p><strong>After</strong>:</p>
+<pre><code class="language-python"># Service
+class AuthService:
+    @staticmethod
+    def authenticate_user(session, username, password):
+        user = session.execute(
+            select(User).where(User.username == username)
+        ).scalar_one_or_none()
+        if user and user.check_password(password):
+            return user
+        return None
+    
+    @staticmethod
+    def update_last_login(session, user):
+        user.last_login = datetime.now(timezone.utc)
+
+# Route
+@app.route(&quot;/login&quot;, methods=[&quot;GET&quot;, &quot;POST&quot;])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        with db() as s:
+            user = AuthService.authenticate_user(
+                s, form.username.data, form.password.data
+            )
+            if user:
+                session[&quot;user_id&quot;] = user.id
+                AuthService.update_last_login(s, user)
+                s.commit()
+                return redirect(url_for(&quot;index&quot;))
+        flash(&quot;Invalid credentials&quot;, &quot;error&quot;)
+    return render_template(&quot;login.html&quot;, form=form)
+</code></pre>
+<h3>Example 3: Testing</h3>
+<p><strong>Before (Integration Test Only)</strong>:</p>
+<pre><code class="language-python">def test_login(client):
+    response = client.post(&#39;/login&#39;, data={
+        &#39;username&#39;: &#39;admin&#39;,
+        &#39;password&#39;: &#39;test&#39;
+    })
+    assert response.status_code == 302
+</code></pre>
+<p><strong>After (Unit + Integration Tests)</strong>:</p>
+<p><strong>Unit Test (Service)</strong>:</p>
+<pre><code class="language-python">def test_authenticate_user():
+    session = Mock()
+    user = Mock()
+    user.check_password.return_value = True
+    
+    session.execute.return_value.scalar_one_or_none.return_value = user
+    
+    result = AuthService.authenticate_user(session, &quot;admin&quot;, &quot;test&quot;)
+    assert result == user
+</code></pre>
+<p><strong>Integration Test (Route)</strong>:</p>
+<pre><code class="language-python">def test_login_route(client):
+    response = client.post(&#39;/login&#39;, data={
+        &#39;username&#39;: &#39;admin&#39;,
+        &#39;password&#39;: &#39;test&#39;
+    })
+    assert response.status_code == 302
+</code></pre>
+<h2>Common Tasks</h2>
+<h3>Task 1: Add a New Feature</h3>
+<ol>
+<li><strong>Plan</strong> - Identify required routes, services, models</li>
+<li><strong>Models</strong> - Add database models if needed</li>
+<li><strong>Services</strong> - Create service class with business logic</li>
+<li><strong>Routes</strong> - Create route module</li>
+<li><strong>Forms</strong> - Add form definitions</li>
+<li><strong>Templates</strong> - Create HTML templates</li>
+<li><strong>Register</strong> - Add route registration</li>
+<li><strong>Test</strong> - Write unit and integration tests</li>
+</ol>
+<h3>Task 2: Fix a Bug in Authentication</h3>
+<ol>
+<li><strong>Locate</strong> - Check <code>routes_modules/auth_routes.py</code> for route</li>
+<li><strong>Check Service</strong> - Review <code>services/auth_service.py</code> for logic</li>
+<li><strong>Fix</strong> - Make changes in appropriate layer</li>
+<li><strong>Test</strong> - Run tests to verify fix</li>
+<li><strong>Commit</strong> - Commit with clear message</li>
+</ol>
+<h3>Task 3: Add Business Logic to Existing Route</h3>
+<ol>
+<li><strong>Identify Route</strong> - Find in <code>routes_modules/</code></li>
+<li><strong>Extract Logic</strong> - Move business logic to service</li>
+<li><strong>Create Service Method</strong> - Add to appropriate service class</li>
+<li><strong>Update Route</strong> - Call service method from route</li>
+<li><strong>Test</strong> - Ensure functionality unchanged</li>
+</ol>
+<h3>Task 4: Optimize Database Query</h3>
+<ol>
+<li><strong>Locate Query</strong> - Check service methods</li>
+<li><strong>Analyze</strong> - Use SQLAlchemy query logging</li>
+<li><strong>Optimize</strong> - Add indexes, eager loading, etc.</li>
+<li><strong>Verify</strong> - Check performance improvement</li>
+<li><strong>Document</strong> - Add comments about optimization</li>
+</ol>
+<h2>Benefits of New Architecture</h2>
+<h3>1. Better Organization</h3>
+<ul>
+<li>Each file has single, clear purpose</li>
+<li>Easy to find relevant code</li>
+<li>Logical grouping by feature</li>
+</ul>
+<h3>2. Easier Testing</h3>
+<ul>
+<li>Business logic testable independently</li>
+<li>Mock dependencies easily</li>
+<li>Faster unit tests</li>
+</ul>
+<h3>3. Improved Maintainability</h3>
+<ul>
+<li>Changes isolated to relevant modules</li>
+<li>Less risk of breaking unrelated features</li>
+<li>Clear dependencies</li>
+</ul>
+<h3>4. Better Reusability</h3>
+<ul>
+<li>Services can be used across routes</li>
+<li>Common patterns extracted</li>
+<li>DRY principle</li>
+</ul>
+<h3>5. Clearer Responsibilities</h3>
+<ul>
+<li>Routes: HTTP concerns only</li>
+<li>Services: Business logic only</li>
+<li>Models: Data access only</li>
+</ul>
+<h2>Backward Compatibility</h2>
+<p>All changes are <strong>100% backward compatible</strong>:</p>
+<ul>
+<li>✅ All routes work as before</li>
+<li>✅ All URLs unchanged</li>
+<li>✅ All functionality preserved</li>
+<li>✅ All templates work</li>
+<li>✅ No database changes required</li>
+<li>✅ Existing tests pass</li>
+</ul>
+<h2>Getting Help</h2>
+<h3>Documentation</h3>
+<ul>
+<li><code>docs/ARCHITECTURE.md</code> - Complete architecture overview</li>
+<li><code>docs/DATABASE_FLOW.md</code> - Database operations guide</li>
+<li>Code comments - Inline documentation</li>
+</ul>
+<h3>Finding Specific Functionality</h3>
+<ol>
+<li>Check <code>routes_modules/</code> for route handlers</li>
+<li>Check <code>services/</code> for business logic</li>
+<li>Check <code>models.py</code> for data models</li>
+<li>Check <code>forms.py</code> for form definitions</li>
+</ol>
+<h3>Common Questions</h3>
+<p><strong>Q: Where should I put database queries?</strong><br>A: In service methods. Routes should only call services.</p>
+<p><strong>Q: Where should I put validation?</strong><br>A: Form validation in <code>forms.py</code>, business validation in services.</p>
+<p><strong>Q: How do I add a new route?</strong><br>A: Create method in appropriate <code>routes_modules/</code> file, or create new module.</p>
+<p><strong>Q: Can I still access the database directly in routes?</strong><br>A: Yes, but prefer using services for testability and reusability.</p>
+<p><strong>Q: How do I test my changes?</strong><br>A: Write unit tests for services, integration tests for routes.</p>
+<h2>Checklist for New Features</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Models updated (if needed)</li>
+<li><input disabled="" type="checkbox"> Service methods created</li>
+<li><input disabled="" type="checkbox"> Service methods have docstrings</li>
+<li><input disabled="" type="checkbox"> Routes created in appropriate module</li>
+<li><input disabled="" type="checkbox"> Forms created (if needed)</li>
+<li><input disabled="" type="checkbox"> Templates created</li>
+<li><input disabled="" type="checkbox"> Routes registered in <code>routes/__init__.py</code></li>
+<li><input disabled="" type="checkbox"> Unit tests for services</li>
+<li><input disabled="" type="checkbox"> Integration tests for routes</li>
+<li><input disabled="" type="checkbox"> Documentation updated</li>
+<li><input disabled="" type="checkbox"> Code reviewed</li>
+<li><input disabled="" type="checkbox"> All tests passing</li>
+</ul>
+<h2>Next Steps</h2>
+<p>The architecture will continue to evolve:</p>
+<ul>
+<li><strong>Phase 3</strong>: Add comprehensive test suite</li>
+<li><strong>Phase 4</strong>: Implement repository pattern</li>
+<li><strong>Phase 5</strong>: Add API layer</li>
+<li><strong>Phase 6</strong>: Improve caching and performance</li>
+</ul>
+<p>Stay tuned for updates!</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

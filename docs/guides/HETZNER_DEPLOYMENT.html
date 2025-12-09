@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - 🚀 Hetzner VPS Deployment Guide">
+    <title>🚀 Hetzner VPS Deployment Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>🚀 Hetzner VPS Deployment Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>🚀 Hetzner VPS Deployment Guide</h1>
+<p>Deploy NoteHub on <strong>Hetzner VPS</strong> (€3.29/month) with <strong>Cloudflare Tunnel</strong> (free unlimited bandwidth).</p>
+<h2>✨ Why This Setup?</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Cost</th>
+<th>Benefits</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Hetzner VPS</strong></td>
+<td>€3.29/mo</td>
+<td>2 vCPU, 2GB RAM, 20GB SSD, 20TB traffic</td>
+</tr>
+<tr>
+<td><strong>Cloudflare Tunnel</strong></td>
+<td>Free</td>
+<td>Unlimited bandwidth, DDoS protection, Global CDN</td>
+</tr>
+<tr>
+<td><strong>MySQL</strong></td>
+<td>Included</td>
+<td>Runs on VPS, no external DB needed</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>~$3.50/mo</strong></td>
+<td>Full control, unlimited bandwidth, production-ready</td>
+</tr>
+</tbody></table>
+<h2>📋 Prerequisites</h2>
+<ol>
+<li><strong>Hetzner Account</strong>: <a href="https://hetzner.com">hetzner.com</a></li>
+<li><strong>Cloudflare Account</strong> (free): <a href="https://cloudflare.com">cloudflare.com</a></li>
+<li><strong>Domain Name</strong>: Added to Cloudflare</li>
+<li><strong>SSH Client</strong>: Terminal (macOS/Linux) or PuTTY (Windows)</li>
+</ol>
+<hr>
+<h2>Part 1: Set Up Hetzner VPS</h2>
+<h3>Step 1: Create Hetzner Account</h3>
+<ol>
+<li>Go to <a href="https://www.hetzner.com/cloud">hetzner.com</a></li>
+<li>Sign up for an account</li>
+<li>Add a payment method</li>
+</ol>
+<h3>Step 2: Create a Server</h3>
+<ol>
+<li>Go to <a href="https://console.hetzner.cloud">Hetzner Cloud Console</a></li>
+<li>Click <strong>&quot;Create Server&quot;</strong></li>
+<li>Configure:<ul>
+<li><strong>Location</strong>: Choose nearest (Nuremberg, Falkenstein, Helsinki, etc.)</li>
+<li><strong>Image</strong>: Ubuntu 24.04</li>
+<li><strong>Type</strong>: CX22 (€3.29/mo) - 2 vCPU, 2GB RAM, 40GB SSD</li>
+<li><strong>SSH Key</strong>: Add your public SSH key (recommended)</li>
+<li><strong>Name</strong>: <code>notehub</code></li>
+</ul>
+</li>
+<li>Click <strong>&quot;Create &amp; Buy Now&quot;</strong></li>
+</ol>
+<h3>Step 3: Connect to Your Server</h3>
+<pre><code class="language-bash"># Connect via SSH (replace with your server IP)
+ssh root@YOUR_SERVER_IP
+</code></pre>
+<h3>Step 4: Initial Server Setup</h3>
+<pre><code class="language-bash"># Update system
+apt update &amp;&amp; apt upgrade -y
+
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+
+# Install Docker Compose
+apt install docker-compose-plugin -y
+
+# Verify installation
+docker --version
+docker compose version
+
+# Create app user (optional but recommended)
+adduser --disabled-password --gecos &quot;&quot; notehub
+usermod -aG docker notehub
+</code></pre>
+<hr>
+<h2>Part 2: Set Up Cloudflare Tunnel</h2>
+<h3>Step 1: Add Domain to Cloudflare</h3>
+<ol>
+<li>Go to <a href="https://dash.cloudflare.com">Cloudflare Dashboard</a></li>
+<li>Click <strong>&quot;Add a Site&quot;</strong></li>
+<li>Enter your domain name</li>
+<li>Select the <strong>Free</strong> plan</li>
+<li>Update your domain&#39;s nameservers to Cloudflare&#39;s</li>
+<li>Wait for DNS propagation (5-30 minutes)</li>
+</ol>
+<h3>Step 2: Create Cloudflare Tunnel</h3>
+<ol>
+<li>Go to <a href="https://one.dash.cloudflare.com">Cloudflare Zero Trust</a></li>
+<li>Navigate to <strong>Networks</strong> → <strong>Tunnels</strong></li>
+<li>Click <strong>&quot;Create a tunnel&quot;</strong></li>
+<li>Choose <strong>&quot;Cloudflared&quot;</strong></li>
+<li>Name: <code>notehub</code></li>
+<li><strong>Save the tunnel token</strong> (you&#39;ll need this!)</li>
+</ol>
+<h3>Step 3: Configure Public Hostname</h3>
+<p>In the tunnel configuration:</p>
+<ol>
+<li>Click <strong>&quot;Add a public hostname&quot;</strong></li>
+<li>Configure:<ul>
+<li><strong>Subdomain</strong>: <code>notes</code> (or leave blank for root)</li>
+<li><strong>Domain</strong>: Select your domain</li>
+<li><strong>Service Type</strong>: <code>HTTP</code></li>
+<li><strong>URL</strong>: <code>notehub:8080</code></li>
+</ul>
+</li>
+<li>Click <strong>&quot;Save hostname&quot;</strong></li>
+</ol>
+<hr>
+<h2>Part 3: Deploy NoteHub</h2>
+<h3>Step 1: Clone Repository</h3>
+<pre><code class="language-bash"># On your Hetzner VPS
+cd /opt
+git clone https://github.com/thienng-it/note-hub.git
+cd note-hub
+</code></pre>
+<h3>Step 2: Configure Environment</h3>
+<pre><code class="language-bash"># Copy environment template
+cp .env.example .env
+
+# Generate secure secrets
+FLASK_SECRET=$(openssl rand -hex 32)
+MYSQL_ROOT_PASSWORD=$(openssl rand -hex 16)
+MYSQL_PASSWORD=$(openssl rand -hex 16)
+
+# Edit .env file
+nano .env
+</code></pre>
+<p>Fill in your <code>.env</code> file:</p>
+<pre><code class="language-bash"># Flask Configuration
+FLASK_SECRET=&lt;paste generated FLASK_SECRET&gt;
+
+# Admin Credentials (CHANGE THESE!)
+NOTES_ADMIN_USERNAME=admin
+NOTES_ADMIN_PASSWORD=YourSecurePassword123!
+
+# MySQL Database
+MYSQL_ROOT_PASSWORD=&lt;paste generated MYSQL_ROOT_PASSWORD&gt;
+MYSQL_USER=notehub
+MYSQL_PASSWORD=&lt;paste generated MYSQL_PASSWORD&gt;
+MYSQL_DATABASE=notehub
+
+# Cloudflare Tunnel Token (from Step 2)
+CLOUDFLARE_TUNNEL_TOKEN=&lt;paste your tunnel token&gt;
+
+# CAPTCHA
+CAPTCHA_TYPE=simple
+</code></pre>
+<h3>Step 3: Deploy</h3>
+<pre><code class="language-bash"># Build and start all services
+docker compose up -d --build
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f
+</code></pre>
+<h3>Step 4: Verify Deployment</h3>
+<ol>
+<li><p>Check all containers are running:</p>
+<pre><code class="language-bash">docker compose ps
+</code></pre>
+</li>
+<li><p>Test health endpoint:</p>
+<pre><code class="language-bash">docker compose exec notehub curl http://localhost:8080/health
+</code></pre>
+</li>
+<li><p>Open your domain in a browser:</p>
+<ul>
+<li><code>https://notes.yourdomain.com</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>🔧 Management Commands</h2>
+<h3>View Logs</h3>
+<pre><code class="language-bash"># All services
+docker compose logs -f
+
+# Specific service
+docker compose logs -f notehub
+docker compose logs -f mysql
+docker compose logs -f cloudflared
+</code></pre>
+<h3>Restart Services</h3>
+<pre><code class="language-bash"># Restart all
+docker compose restart
+
+# Restart specific service
+docker compose restart notehub
+</code></pre>
+<h3>Update Application</h3>
+<pre><code class="language-bash">cd /opt/note-hub
+
+# Pull latest code
+git pull origin main
+
+# Rebuild and restart
+docker compose up -d --build
+</code></pre>
+<h3>Backup Database</h3>
+<pre><code class="language-bash"># Create backup
+docker compose exec mysql mysqldump -u root -p notehub &gt; backup_$(date +%Y%m%d).sql
+
+# Restore backup
+docker compose exec -T mysql mysql -u root -p notehub &lt; backup_20241130.sql
+</code></pre>
+<h3>Stop Everything</h3>
+<pre><code class="language-bash"># Stop (keeps data)
+docker compose stop
+
+# Stop and remove containers (keeps data volumes)
+docker compose down
+
+# Stop and remove everything including data (DANGEROUS!)
+docker compose down -v
+</code></pre>
+<hr>
+<h2>🔒 Security Hardening</h2>
+<h3>1. Configure Firewall</h3>
+<pre><code class="language-bash"># Install UFW
+apt install ufw -y
+
+# Default policies
+ufw default deny incoming
+ufw default allow outgoing
+
+# Allow SSH
+ufw allow ssh
+
+# Enable firewall (no other ports needed - Cloudflare Tunnel handles everything!)
+ufw enable
+</code></pre>
+<h3>2. Automatic Updates</h3>
+<pre><code class="language-bash"># Install unattended-upgrades
+apt install unattended-upgrades -y
+
+# Enable automatic security updates
+dpkg-reconfigure -plow unattended-upgrades
+</code></pre>
+<h3>3. Fail2ban (SSH Protection)</h3>
+<pre><code class="language-bash">apt install fail2ban -y
+systemctl enable fail2ban
+systemctl start fail2ban
+</code></pre>
+<hr>
+<h2>📊 Monitoring</h2>
+<h3>Check Resource Usage</h3>
+<pre><code class="language-bash"># Container stats
+docker stats
+
+# Disk usage
+df -h
+
+# Memory usage
+free -h
+</code></pre>
+<h3>Cloudflare Analytics</h3>
+<ol>
+<li>Go to <a href="https://dash.cloudflare.com">Cloudflare Dashboard</a></li>
+<li>Select your domain</li>
+<li>View <strong>Analytics</strong> for traffic, threats, and performance</li>
+</ol>
+<hr>
+<h2>🐛 Troubleshooting</h2>
+<h3>Container Won&#39;t Start</h3>
+<pre><code class="language-bash"># Check logs
+docker compose logs notehub
+
+# Check if port is in use
+netstat -tlnp | grep 8080
+
+# Rebuild container
+docker compose up -d --build --force-recreate notehub
+</code></pre>
+<h3>Database Connection Error</h3>
+<pre><code class="language-bash"># Check if MySQL is healthy
+docker compose ps mysql
+
+# Check MySQL logs
+docker compose logs mysql
+
+# Connect to MySQL manually
+docker compose exec mysql mysql -u root -p
+</code></pre>
+<h3>Tunnel Not Working</h3>
+<pre><code class="language-bash"># Check cloudflared logs
+docker compose logs cloudflared
+
+# Verify token is correct
+grep CLOUDFLARE_TUNNEL_TOKEN .env
+
+# Restart tunnel
+docker compose restart cloudflared
+</code></pre>
+<h3>Out of Disk Space</h3>
+<pre><code class="language-bash"># Check disk usage
+df -h
+
+# Clean Docker resources
+docker system prune -a
+
+# Clean old logs
+docker compose logs --no-log-prefix notehub 2&gt;&amp;1 | tail -1000 &gt; /tmp/recent_logs.txt
+</code></pre>
+<hr>
+<h2>💰 Cost Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Monthly Cost</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Hetzner CX22 VPS</td>
+<td>€3.29</td>
+</tr>
+<tr>
+<td>Cloudflare (Free tier)</td>
+<td>€0</td>
+</tr>
+<tr>
+<td>Domain (.com)</td>
+<td>~€1/mo (€12/year)</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>~€4.29/mo</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>🔗 Useful Links</h2>
+<ul>
+<li><a href="https://console.hetzner.cloud">Hetzner Cloud Console</a></li>
+<li><a href="https://one.dash.cloudflare.com">Cloudflare Zero Trust</a></li>
+<li><a href="https://docs.docker.com">Docker Documentation</a></li>
+<li><a href="https://github.com/thienng-it/note-hub">Project GitHub</a></li>
+</ul>
+<hr>
+<p><strong>Need help?</strong> Open an issue on <a href="https://github.com/thienng-it/note-hub/issues">GitHub</a>!</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

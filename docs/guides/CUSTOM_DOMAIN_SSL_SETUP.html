@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Custom Domain SSL Setup Guide">
+    <title>Custom Domain SSL Setup Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Custom Domain SSL Setup Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Custom Domain SSL Setup Guide</h1>
+<h2>Problem: &quot;Not Secure&quot; Certificate Warning</h2>
+<p>If you&#39;re accessing your NoteHub instance via a custom domain (like <code>note-hub.duckdns.org</code>, <code>app.yourdomain.com</code>, etc.) and seeing a browser warning about an insecure or invalid SSL certificate, this guide will help you fix it.</p>
+<h3>Why This Happens</h3>
+<p>The default NoteHub configuration uses Traefik router rules that match any domain using path-based routing (<code>PathPrefix(&#39;/&#39;)</code>). While this works for localhost development, it can cause problems for custom domains:</p>
+<ol>
+<li><strong>Certificate Mismatch</strong>: Let&#39;s Encrypt may issue a certificate for the wrong domain or IP address</li>
+<li><strong>No Host Validation</strong>: Traefik doesn&#39;t know which specific domain to request a certificate for</li>
+<li><strong>Browser Warning</strong>: The SSL certificate doesn&#39;t match the domain you&#39;re accessing, causing security warnings</li>
+</ol>
+<h3>The Solution</h3>
+<p>You need to explicitly configure your domain name in the Traefik router rules. This ensures:</p>
+<ul>
+<li>Let&#39;s Encrypt issues certificates for the correct domain</li>
+<li>The SSL certificate matches your actual domain name</li>
+<li>No browser warnings when accessing your site</li>
+</ul>
+<hr>
+<h2>Quick Fix (Recommended)</h2>
+<h3>Step 1: Configure Your Domain</h3>
+<p>Edit your <code>.env</code> file and set your domain:</p>
+<pre><code class="language-bash"># Open .env file
+nano .env
+
+# Add these lines (replace with your actual domain):
+DOMAIN=note-hub.duckdns.org
+ACME_EMAIL=your-email@example.com
+</code></pre>
+<p><strong>Important</strong>: </p>
+<ul>
+<li>Use your actual domain name without <code>http://</code> or <code>https://</code></li>
+<li>Examples: <code>yourdomain.com</code>, <code>note-hub.duckdns.org</code>, <code>app.example.com</code></li>
+<li>ACME_EMAIL is required for Let&#39;s Encrypt certificate notifications</li>
+</ul>
+<h3>Step 2: Apply Domain Configuration</h3>
+<p>Copy the domain-specific Docker Compose configuration:</p>
+<pre><code class="language-bash">cp docker-compose.domain.yml docker-compose.override.yml
+</code></pre>
+<p>This file adds explicit Host rules to your Traefik routers, ensuring Let&#39;s Encrypt issues certificates for your specific domain.</p>
+<h3>Step 3: Restart Services</h3>
+<pre><code class="language-bash"># Stop current services
+docker compose down
+
+# Start with new configuration
+docker compose up -d
+
+# Monitor certificate issuance
+docker compose logs -f traefik
+</code></pre>
+<p>You should see logs like:</p>
+<pre><code>traefik | time=&quot;...&quot; level=info msg=&quot;Obtaining certificate for note-hub.duckdns.org&quot;
+traefik | time=&quot;...&quot; level=info msg=&quot;Certificate obtained for note-hub.duckdns.org&quot;
+</code></pre>
+<h3>Step 4: Verify</h3>
+<ol>
+<li>Wait 1-2 minutes for certificate issuance</li>
+<li>Access your domain: <code>https://your-domain.com</code></li>
+<li>Check for the green padlock icon in your browser</li>
+<li>Verify the certificate (click padlock → View certificate)<ul>
+<li>Should be issued by &quot;Let&#39;s Encrypt&quot;</li>
+<li>Should match your domain name</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>What the Override File Does</h2>
+<p>The <code>docker-compose.override.yml</code> file modifies Traefik router rules to include Host matchers:</p>
+<p><strong>Before (default configuration):</strong></p>
+<pre><code class="language-yaml">- &quot;traefik.http.routers.frontend.rule=PathPrefix(`/`)&quot;
+</code></pre>
+<p><strong>After (with domain configuration):</strong></p>
+<pre><code class="language-yaml">- &quot;traefik.http.routers.frontend.rule=Host(`note-hub.duckdns.org`) || Host(`www.note-hub.duckdns.org`)&quot;
+</code></pre>
+<p>This tells Traefik:</p>
+<ol>
+<li>Only accept requests for your specific domain</li>
+<li>Request Let&#39;s Encrypt certificates for that domain</li>
+<li>Ensure the certificate matches the domain being accessed</li>
+</ol>
+<hr>
+<h2>Alternative: Manual Configuration</h2>
+<p>If you prefer not to use the override file, you can manually edit <code>docker-compose.yml</code>:</p>
+<h3>For Frontend</h3>
+<p>Find the frontend service labels and update the router rule:</p>
+<pre><code class="language-yaml">frontend:
+  labels:
+    # Change from:
+    - &quot;traefik.http.routers.frontend.rule=PathPrefix(`/`)&quot;
+    
+    # To:
+    - &quot;traefik.http.routers.frontend.rule=Host(`your-domain.com`) || Host(`www.your-domain.com`)&quot;
+</code></pre>
+<h3>For Backend</h3>
+<p>Update backend router rules to include Host matcher:</p>
+<pre><code class="language-yaml">backend:
+  labels:
+    # Change from:
+    - &quot;traefik.http.routers.backend-api.rule=PathPrefix(`/api`)&quot;
+    
+    # To:
+    - &quot;traefik.http.routers.backend-api.rule=(Host(`your-domain.com`) || Host(`www.your-domain.com`)) &amp;&amp; PathPrefix(`/api`)&quot;
+</code></pre>
+<p>Repeat for all router rules (<code>backend-uploads</code>, <code>backend-health</code>, etc.)</p>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Certificate Not Being Issued</h3>
+<p><strong>Check DNS:</strong></p>
+<pre><code class="language-bash"># Verify domain points to your server
+nslookup your-domain.com
+dig your-domain.com
+</code></pre>
+<p>DNS should show your server&#39;s IP address.</p>
+<p><strong>Check Ports:</strong></p>
+<pre><code class="language-bash"># Test if ports 80 and 443 are accessible
+telnet your-domain.com 80
+telnet your-domain.com 443
+</code></pre>
+<p>If connection fails, check firewall:</p>
+<pre><code class="language-bash">sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+</code></pre>
+<p><strong>Check Traefik Logs:</strong></p>
+<pre><code class="language-bash">docker compose logs traefik | grep -i &quot;certificate\|acme\|error&quot;
+</code></pre>
+<p>Look for error messages about certificate issuance.</p>
+<h3>&quot;Rate Limit Exceeded&quot; Error</h3>
+<p>Let&#39;s Encrypt has rate limits (50 certificates per domain per week). If you hit this:</p>
+<ol>
+<li><strong>Wait 7 days</strong> for the rate limit to reset, OR</li>
+<li><strong>Use staging environment</strong> for testing:</li>
+</ol>
+<p>Create a <code>docker-compose.staging.yml</code> override file with:</p>
+<pre><code class="language-yaml">services:
+  traefik:
+    command:
+      - &quot;--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory&quot;
+</code></pre>
+<p>Then deploy with:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.staging.yml up -d
+</code></pre>
+<p><strong>Note</strong>: Staging certificates are not trusted by browsers (for testing only). Remove the staging override file for production use.</p>
+<h3>Wrong Certificate Issued</h3>
+<p>If the certificate is for the wrong domain:</p>
+<ol>
+<li><p>Stop Traefik:</p>
+<pre><code class="language-bash">docker compose stop traefik
+</code></pre>
+</li>
+<li><p>Remove old certificate:</p>
+<pre><code class="language-bash">rm letsencrypt/acme.json
+</code></pre>
+</li>
+<li><p>Verify DOMAIN in <code>.env</code> is correct</p>
+</li>
+<li><p>Restart:</p>
+<pre><code class="language-bash">docker compose up -d
+</code></pre>
+</li>
+</ol>
+<h3>Certificate for Both www and non-www</h3>
+<p>The override file automatically requests certificates for both:</p>
+<ul>
+<li><code>your-domain.com</code></li>
+<li><code>www.your-domain.com</code></li>
+</ul>
+<p>To access both, ensure DNS is configured:</p>
+<pre><code>A Record:  your-domain.com      →  Your.Server.IP
+A Record:  www.your-domain.com  →  Your.Server.IP
+</code></pre>
+<h3>Still Seeing Browser Warning</h3>
+<ol>
+<li><strong>Clear browser cache</strong> (certificates may be cached)</li>
+<li><strong>Check certificate details</strong>: Click padlock → View certificate<ul>
+<li>Verify it&#39;s from &quot;Let&#39;s Encrypt&quot;</li>
+<li>Verify it matches your domain</li>
+<li>Check expiration date (should be valid for 90 days)</li>
+</ul>
+</li>
+<li><strong>Try incognito/private browsing</strong> to rule out browser cache</li>
+<li><strong>Test with SSL Labs</strong>: <a href="https://www.ssllabs.com/ssltest/">https://www.ssllabs.com/ssltest/</a></li>
+</ol>
+<hr>
+<h2>DuckDNS Specific Configuration</h2>
+<p>If you&#39;re using DuckDNS (like <code>note-hub.duckdns.org</code>):</p>
+<h3>DNS Configuration</h3>
+<p>DuckDNS provides free subdomains with automatic IP updates. To use it:</p>
+<ol>
+<li>Sign up at <a href="https://www.duckdns.org">DuckDNS</a></li>
+<li>Create a subdomain (e.g., <code>note-hub</code>)</li>
+<li>Set the IP to your server&#39;s public IP</li>
+<li>Keep it updated (DuckDNS provides scripts for auto-update)</li>
+</ol>
+<h3>NoteHub Configuration</h3>
+<pre><code class="language-bash"># In .env file
+DOMAIN=note-hub.duckdns.org
+ACME_EMAIL=your-email@example.com
+</code></pre>
+<h3>Copy Override File</h3>
+<pre><code class="language-bash">cp docker-compose.domain.yml docker-compose.override.yml
+</code></pre>
+<h3>Deploy</h3>
+<pre><code class="language-bash">docker compose up -d
+docker compose logs -f traefik
+</code></pre>
+<p>Wait for certificate issuance (usually 30-60 seconds).</p>
+<hr>
+<h2>For Multiple Domains</h2>
+<p>If you want to access NoteHub via multiple domains:</p>
+<p>Edit <code>docker-compose.override.yml</code> and update the Host rule:</p>
+<pre><code class="language-yaml">- &quot;traefik.http.routers.frontend.rule=Host(`domain1.com`) || Host(`domain2.com`) || Host(`domain3.com`)&quot;
+</code></pre>
+<p>All domains must:</p>
+<ol>
+<li>Point to your server&#39;s IP</li>
+<li>Be included in the Host rule</li>
+<li>Have DNS configured properly</li>
+</ol>
+<p>Let&#39;s Encrypt will issue a certificate valid for all listed domains.</p>
+<hr>
+<h2>Security Best Practices</h2>
+<h3>1. Keep DOMAIN in .env</h3>
+<p>Never hardcode domain names in docker-compose.yml. Use <code>.env</code> file:</p>
+<pre><code class="language-bash"># .env
+DOMAIN=your-domain.com
+</code></pre>
+<p>This keeps your configuration portable and secure.</p>
+<h3>2. Backup Certificates</h3>
+<p>SSL certificates are stored in <code>letsencrypt/acme.json</code>:</p>
+<pre><code class="language-bash"># Backup certificates
+cp letsencrypt/acme.json backups/acme.json.$(date +%Y%m%d)
+</code></pre>
+<h3>3. Monitor Certificate Expiration</h3>
+<p>Let&#39;s Encrypt certificates expire after 90 days. They auto-renew after 60 days, but monitor for failures:</p>
+<pre><code class="language-bash"># Check certificate expiration
+echo | openssl s_client -connect your-domain.com:443 -servername your-domain.com 2&gt;/dev/null | openssl x509 -noout -dates
+</code></pre>
+<p>Set up monitoring with services like:</p>
+<ul>
+<li>UptimeRobot</li>
+<li>StatusCake  </li>
+<li>Pingdom</li>
+</ul>
+<h3>4. Enable HSTS Preload (Optional)</h3>
+<p>For maximum security, submit your domain to HSTS preload list:</p>
+<ol>
+<li>Visit: <a href="https://hstspreload.org">https://hstspreload.org</a></li>
+<li>Enter your domain</li>
+<li>Follow submission instructions</li>
+</ol>
+<p><strong>Warning</strong>: This is a permanent action that cannot be easily reversed.</p>
+<hr>
+<h2>Different Deployment Modes</h2>
+<h3>Development (localhost)</h3>
+<p>For localhost development, you don&#39;t need the override file:</p>
+<pre><code class="language-bash"># .env
+# DOMAIN= (leave blank or commented)
+</code></pre>
+<p>Access via: <code>https://localhost</code> (will show security warning, which is normal)</p>
+<h3>Production with Domain</h3>
+<pre><code class="language-bash"># .env
+DOMAIN=your-domain.com
+ACME_EMAIL=admin@your-domain.com
+</code></pre>
+<pre><code class="language-bash">cp docker-compose.domain.yml docker-compose.override.yml
+docker compose --profile production up -d
+</code></pre>
+<h3>With MySQL</h3>
+<pre><code class="language-bash"># .env
+DOMAIN=your-domain.com
+ACME_EMAIL=admin@your-domain.com
+</code></pre>
+<pre><code class="language-bash">cp docker-compose.domain.yml docker-compose.override.yml
+docker compose --profile mysql up -d
+</code></pre>
+<p>The override file works with all deployment profiles.</p>
+<hr>
+<h2>Reverting to Default (No Domain)</h2>
+<p>To revert to the default configuration (useful for localhost):</p>
+<pre><code class="language-bash"># Remove override file
+rm docker-compose.override.yml
+
+# Comment out DOMAIN in .env
+# DOMAIN=
+
+# Restart
+docker compose down
+docker compose up -d
+</code></pre>
+<hr>
+<h2>Summary</h2>
+<p>To fix &quot;not secure&quot; certificate warnings when using a custom domain:</p>
+<ol>
+<li>✅ Set <code>DOMAIN</code> in <code>.env</code> file</li>
+<li>✅ Copy <code>docker-compose.domain.yml</code> to <code>docker-compose.override.yml</code></li>
+<li>✅ Restart services with <code>docker compose up -d</code></li>
+<li>✅ Wait for certificate issuance (1-2 minutes)</li>
+<li>✅ Verify green padlock in browser</li>
+</ol>
+<p>This ensures Let&#39;s Encrypt issues SSL certificates for your specific domain, eliminating browser warnings.</p>
+<hr>
+<h2>Need Help?</h2>
+<ul>
+<li>Check <a href="SSL_HTTPS_SETUP.md">SSL/HTTPS Setup Guide</a> for general SSL configuration</li>
+<li>Check <a href="TRAEFIK_MIGRATION.md">Traefik Migration Guide</a> for Traefik details</li>
+<li>Open an issue on <a href="https://github.com/thienng-it/note-hub/issues">GitHub</a></li>
+</ul>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

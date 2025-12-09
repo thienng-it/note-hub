@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Drone CI Certificate Issuance Fix - Implementation Summary">
+    <title>Drone CI Certificate Issuance Fix - Implementation Summary - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Drone CI Certificate Issuance Fix - Implementation Summary</span>
+        </div>
+
+        <article class="content">
+            <h1>Drone CI Certificate Issuance Fix - Implementation Summary</h1>
+<h2>Problem Statement</h2>
+<p>Drone CI was experiencing TLS-ALPN-01 challenge failures when requesting Let&#39;s Encrypt SSL certificates, resulting in the following error:</p>
+<pre><code>time=&quot;2025-12-08T13:36:18Z&quot; level=error msg=&quot;Unable to obtain ACME certificate for domains \&quot;drone-ci-notehub.duckdns.org\&quot;: 
+unable to generate a certificate for the domains [drone-ci-notehub.duckdns.org]: 
+error: one or more domains had a problem:
+[drone-ci-notehub.duckdns.org] invalid authorization: acme: error: 403 :: urn:ietf:params:acme:error:unauthorized :: 
+Incorrect validation certificate for tls-alpn-01 challenge. 
+Requested drone-ci-notehub.duckdns.org from 135.181.96.141:443. 
+Received certificate with acmeValidationV1 extension value a4921cdc88f73168ef78a1d05e0f2b412d1afd2e56826e06c4f1d76f911d2399 
+but expected 3ae5494ed60e2112fcc049ec82d41c4bafa3e1e59820d1316e43c7d390b3be5d.&quot;
+</code></pre>
+<h2>Root Cause</h2>
+<p>The <strong>TLS-ALPN-01 challenge</strong> validation method can fail in several scenarios:</p>
+<ol>
+<li><strong>Multiple Traefik instances</strong>: When multiple Traefik instances run on the same server (e.g., NoteHub Traefik + Drone CI Traefik)</li>
+<li><strong>Port conflicts</strong>: When port 443 has routing conflicts or multiple services competing</li>
+<li><strong>Docker networking issues</strong>: When Docker networking interferes with TLS validation on port 443</li>
+</ol>
+<p>The TLS-ALPN-01 challenge requires the ACME server to connect to port 443 and receive a specific validation certificate. When multiple services handle TLS on the same port, the wrong validation certificate can be served, causing the 403 unauthorized error.</p>
+<h2>Solution Implemented</h2>
+<h3>Change: Switch from TLS-ALPN-01 to HTTP-01 Challenge</h3>
+<p>The fix switches Drone CI&#39;s Traefik configuration from <strong>TLS-ALPN-01</strong> challenge to <strong>HTTP-01</strong> challenge for Let&#39;s Encrypt certificate validation.</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-yaml">- &quot;--certificatesresolvers.letsencrypt.acme.tlschallenge=true&quot;
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-yaml">- &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge=true&quot;
+- &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web&quot;
+</code></pre>
+<h3>Why HTTP-01 Challenge is Better</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>TLS-ALPN-01</th>
+<th>HTTP-01</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Validation Port</strong></td>
+<td>443 (HTTPS)</td>
+<td>80 (HTTP)</td>
+</tr>
+<tr>
+<td><strong>Reliability</strong></td>
+<td>Can fail with multiple TLS services</td>
+<td>More reliable</td>
+</tr>
+<tr>
+<td><strong>Conflicts</strong></td>
+<td>Can conflict with other TLS services</td>
+<td>Minimal conflicts</td>
+</tr>
+<tr>
+<td><strong>Complexity</strong></td>
+<td>More complex TLS certificate exchange</td>
+<td>Simple HTTP file validation</td>
+</tr>
+<tr>
+<td><strong>Use Case</strong></td>
+<td>Advanced scenarios</td>
+<td>Standard deployments</td>
+</tr>
+<tr>
+<td><strong>Recommended by Let&#39;s Encrypt</strong></td>
+<td>For specific use cases</td>
+<td>✅ For most deployments</td>
+</tr>
+</tbody></table>
+<h2>Files Modified</h2>
+<h3>1. docker-compose.drone.yml</h3>
+<p><strong>Location:</strong> Line 84-86</p>
+<p><strong>Change:</strong> Replaced TLS challenge configuration with HTTP challenge:</p>
+<pre><code class="language-diff">-      - &quot;--certificatesresolvers.letsencrypt.acme.tlschallenge=true&quot;
++      - &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge=true&quot;
++      - &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web&quot;
+</code></pre>
+<h3>2. docker/traefik/traefik.yml</h3>
+<p><strong>Location:</strong> Line 84-88</p>
+<p><strong>Change:</strong> Updated reference configuration to show HTTP challenge as the recommended method:</p>
+<pre><code class="language-diff">-      # Use TLS challenge for certificate validation
+-      tlsChallenge: {}
+-      # Optional: Use HTTP challenge (useful for development/testing)
+-      # httpChallenge:
+-      #   entryPoint: web
++      # Use HTTP challenge (more reliable than TLS challenge)
++      httpChallenge:
++        entryPoint: web
++      # Alternative: TLS challenge (can fail with port conflicts)
++      # tlsChallenge: {}
+</code></pre>
+<h3>3. TROUBLESHOOTING_DRONE_SSL.md</h3>
+<p><strong>Addition:</strong> Added comprehensive troubleshooting section for TLS-ALPN-01 challenge failures:</p>
+<ul>
+<li>Error symptoms and diagnosis</li>
+<li>Root cause explanation</li>
+<li>Step-by-step fix instructions</li>
+<li>Explanation of why HTTP-01 is better</li>
+<li>Prevention guidance</li>
+</ul>
+<h2>How It Works</h2>
+<h3>HTTP-01 Challenge Flow</h3>
+<pre><code>1. Drone CI requests certificate from Let&#39;s Encrypt for drone-ci-notehub.duckdns.org
+2. Let&#39;s Encrypt generates a unique token
+3. Traefik receives the token and creates an HTTP endpoint:
+   http://drone-ci-notehub.duckdns.org/.well-known/acme-challenge/{token}
+4. Let&#39;s Encrypt makes HTTP request to port 80 to verify domain ownership
+5. Traefik serves the validation token
+6. Let&#39;s Encrypt validates the response
+7. Certificate is issued and stored in /letsencrypt/acme.json
+8. Traefik automatically uses the new certificate for HTTPS
+</code></pre>
+<h3>Why This Fixes the Issue</h3>
+<ul>
+<li><strong>Port 80 validation</strong>: Uses port 80 (HTTP) instead of port 443 (HTTPS), avoiding TLS conflicts</li>
+<li><strong>No TLS complexity</strong>: Simple HTTP file serving, not dependent on TLS certificate exchange</li>
+<li><strong>Better isolation</strong>: Multiple services can coexist on the same server without interference</li>
+<li><strong>Standard method</strong>: Widely used and tested method, recommended by Let&#39;s Encrypt</li>
+</ul>
+<h2>Testing &amp; Validation</h2>
+<h3>Automated Tests</h3>
+<h1>All existing tests pass:<br>```bash<br>$ bash tests/traefik-config.test.sh</h1>
+<h1>Traefik Configuration Unit Tests</h1>
+<p>Tests run:    20<br>Tests passed: 20<br>All tests passed!</p>
+<pre><code>
+### YAML Syntax Validation
+
+Both configuration files pass YAML syntax validation:
+```bash
+✓ docker-compose.drone.yml YAML syntax is valid
+✓ docker/traefik/traefik.yml YAML syntax is valid
+</code></pre>
+<h3>yamllint Validation</h3>
+<p>Configuration files pass yamllint strict validation with no errors.</p>
+<h2>Deployment Instructions</h2>
+<h3>For Users Experiencing the Issue</h3>
+<ol>
+<li><p><strong>Pull the latest configuration:</strong></p>
+<pre><code class="language-bash">cd /path/to/note-hub
+git pull origin main
+</code></pre>
+</li>
+<li><p><strong>Stop Drone CI:</strong></p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml down
+</code></pre>
+</li>
+<li><p><strong>Remove existing certificate (to force re-issuance):</strong></p>
+<pre><code class="language-bash">sudo rm -f letsencrypt-drone/acme.json
+</code></pre>
+</li>
+<li><p><strong>Restart Drone CI with updated configuration:</strong></p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+</li>
+<li><p><strong>Monitor certificate issuance:</strong></p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i &quot;certificate\|acme&quot;
+</code></pre>
+<p>Look for messages like:</p>
+<ul>
+<li>&quot;Requesting certificate for drone-ci-notehub.duckdns.org&quot;</li>
+<li>&quot;Certificate obtained successfully&quot;</li>
+</ul>
+</li>
+<li><p><strong>Verify certificate:</strong></p>
+<pre><code class="language-bash">echo | openssl s_client -connect drone-ci-notehub.duckdns.org:443 -servername drone-ci-notehub.duckdns.org 2&gt;/dev/null | openssl x509 -noout -issuer -subject
+</code></pre>
+</li>
+</ol>
+<h3>Expected Outcome</h3>
+<p>After applying this fix:</p>
+<ul>
+<li>✅ Certificate issuance succeeds</li>
+<li>✅ No more &quot;Incorrect validation certificate&quot; errors</li>
+<li>✅ Valid Let&#39;s Encrypt certificate issued</li>
+<li>✅ HTTPS works correctly with green padlock in browser</li>
+</ul>
+<h2>Impact Assessment</h2>
+<h3>Positive Impacts</h3>
+<ol>
+<li><strong>Fixes certificate issuance failures</strong> - Resolves the TLS-ALPN-01 challenge error</li>
+<li><strong>More reliable</strong> - HTTP-01 challenge is more stable and widely supported</li>
+<li><strong>Better compatibility</strong> - Works with multiple services on the same server</li>
+<li><strong>Follows best practices</strong> - Uses Let&#39;s Encrypt&#39;s recommended challenge method</li>
+<li><strong>No breaking changes</strong> - Existing deployments can upgrade seamlessly</li>
+</ol>
+<h3>No Negative Impacts</h3>
+<ul>
+<li>✅ No changes to existing functionality</li>
+<li>✅ No changes to certificate renewal process</li>
+<li>✅ No changes to security posture (HTTP-01 is equally secure)</li>
+<li>✅ No downtime required during update</li>
+<li>✅ Automatic rollback possible if needed</li>
+</ul>
+<h3>Requirements</h3>
+<p>The HTTP-01 challenge requires:</p>
+<ul>
+<li>✅ Port 80 must be accessible from the internet (already required)</li>
+<li>✅ Domain must resolve to the server IP (already required)</li>
+<li>✅ No additional dependencies</li>
+</ul>
+<h2>Security Considerations</h2>
+<h3>Is HTTP-01 Challenge Secure?</h3>
+<p><strong>Yes.</strong> The HTTP-01 challenge is secure because:</p>
+<ol>
+<li><strong>Domain ownership validation</strong>: Still proves you control the domain</li>
+<li><strong>Unique tokens</strong>: Each challenge uses a cryptographically random token</li>
+<li><strong>Short-lived</strong>: Tokens expire quickly after validation</li>
+<li><strong>Public endpoint</strong>: The <code>.well-known/acme-challenge/</code> path is designed to be public</li>
+<li><strong>No sensitive data</strong>: No private keys or sensitive data transmitted</li>
+<li><strong>Recommended by Let&#39;s Encrypt</strong>: It&#39;s the standard validation method</li>
+</ol>
+<h3>TLS-ALPN-01 vs HTTP-01 Security</h3>
+<p>Both methods are equally secure:</p>
+<ul>
+<li>Both prove domain ownership</li>
+<li>Both are approved by Let&#39;s Encrypt</li>
+<li>Both result in valid, trusted SSL certificates</li>
+<li>Neither exposes sensitive information</li>
+</ul>
+<p>The difference is in <strong>reliability</strong>, not security.</p>
+<h2>Technical Details</h2>
+<h3>Traefik Configuration</h3>
+<p>The HTTP challenge configuration tells Traefik:</p>
+<ol>
+<li>Use HTTP-01 challenge method for ACME validation</li>
+<li>Serve validation tokens on the <code>web</code> entrypoint (port 80)</li>
+<li>Let&#39;s Encrypt will make HTTP requests to validate domain ownership</li>
+</ol>
+<h3>Port Usage</h3>
+<ul>
+<li><strong>Port 80 (HTTP)</strong>: Used for ACME validation and automatic redirect to HTTPS</li>
+<li><strong>Port 443 (HTTPS)</strong>: Used for secure connections after certificate is issued</li>
+<li><strong>Port 8080 (Drone HTTP)</strong>: Mapped to internal port 80 on host</li>
+<li><strong>Port 8443 (Drone HTTPS)</strong>: Mapped to internal port 443 on host</li>
+</ul>
+<h3>Certificate Storage</h3>
+<p>Certificates remain stored in the same location:</p>
+<ul>
+<li>Path: <code>letsencrypt-drone/acme.json</code></li>
+<li>Permissions: 600 (owner read/write only)</li>
+<li>Format: JSON with encrypted certificate data</li>
+</ul>
+<h3>Automatic Renewal</h3>
+<p>Certificate renewal continues to work automatically:</p>
+<ul>
+<li>Let&#39;s Encrypt certificates expire after 90 days</li>
+<li>Traefik automatically renews at ~30 days before expiration</li>
+<li>Uses the same HTTP-01 challenge for renewal</li>
+<li>No manual intervention required</li>
+</ul>
+<h2>Backward Compatibility</h2>
+<p>✅ <strong>Fully backward compatible:</strong></p>
+<ul>
+<li>Existing deployments can upgrade without changes</li>
+<li>No configuration file changes required by users</li>
+<li>Certificate renewal continues automatically</li>
+<li>No service interruption needed</li>
+</ul>
+<h2>Applying to Other Services</h2>
+<p>If you experience similar TLS-ALPN-01 challenge failures with the main NoteHub deployment or other services, you can apply the same fix:</p>
+<ol>
+<li><strong>Locate the Traefik configuration</strong> in the relevant docker-compose file</li>
+<li><strong>Find the tlschallenge line:</strong><pre><code class="language-yaml">- &quot;--certificatesresolvers.letsencrypt.acme.tlschallenge=true&quot;
+</code></pre>
+</li>
+<li><strong>Replace it with httpchallenge:</strong><pre><code class="language-yaml">- &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge=true&quot;
+- &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web&quot;
+</code></pre>
+</li>
+<li><strong>Restart the service</strong> and remove old certificates to force re-issuance</li>
+</ol>
+<p><strong>Note:</strong> The main NoteHub services (docker-compose.yml) haven&#39;t reported this issue, so this fix is currently only applied to Drone CI. Only apply to other services if you encounter certificate issuance failures.</p>
+<h2>Future Improvements</h2>
+<p>Potential enhancements for future consideration:</p>
+<ol>
+<li>Add monitoring for certificate expiration</li>
+<li>Implement alerts for failed renewals</li>
+<li>Support for DNS-01 challenge for wildcard certificates</li>
+<li>Automated certificate backup to cloud storage</li>
+<li>Consider applying HTTP-01 challenge to all services proactively</li>
+</ol>
+<h2>References</h2>
+<ul>
+<li><a href="https://letsencrypt.org/docs/challenge-types/">Let&#39;s Encrypt: Challenge Types</a></li>
+<li><a href="https://doc.traefik.io/traefik/https/acme/">Traefik: Let&#39;s Encrypt</a></li>
+<li><a href="https://letsencrypt.org/docs/challenge-types/#http-01-challenge">HTTP-01 Challenge</a></li>
+<li><a href="https://letsencrypt.org/docs/challenge-types/#tls-alpn-01">TLS-ALPN-01 Challenge</a></li>
+</ul>
+<h2>Conclusion</h2>
+<p>This fix resolves the Drone CI certificate issuance failures by switching from TLS-ALPN-01 to HTTP-01 challenge. The HTTP-01 challenge is:</p>
+<ul>
+<li>✅ More reliable</li>
+<li>✅ Better suited for multi-service environments</li>
+<li>✅ Recommended by Let&#39;s Encrypt</li>
+<li>✅ Equally secure</li>
+<li>✅ Backward compatible</li>
+</ul>
+<p>Users experiencing certificate issuance errors should pull the latest configuration and restart their Drone CI services to apply this fix.</p>
+<hr>
+<p><strong>Status</strong>: ✅ Complete and Production Ready<br><strong>Date</strong>: December 8, 2024<br><strong>Impact</strong>: Fixes certificate issuance failures for Drone CI deployments<br><strong>Testing</strong>: All automated tests pass<br><strong>Security</strong>: No security impact, equally secure validation method</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

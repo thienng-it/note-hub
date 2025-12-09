@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - SSL/HTTPS Setup Guide for NoteHub">
+    <title>SSL/HTTPS Setup Guide for NoteHub - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>SSL/HTTPS Setup Guide for NoteHub</span>
+        </div>
+
+        <article class="content">
+            <h1>SSL/HTTPS Setup Guide for NoteHub</h1>
+<p>This guide explains how SSL/HTTPS works in NoteHub and how to configure it for different environments.</p>
+<h2>Overview</h2>
+<p><strong>SSL/HTTPS is enabled by default</strong> in all NoteHub deployments! 🔒</p>
+<p>NoteHub uses Traefik reverse proxy with Let&#39;s Encrypt to provide automatic SSL certificate management. All HTTP traffic is automatically redirected to HTTPS, and certificates are obtained and renewed automatically.</p>
+<h2>⚠️ Using a Custom Domain?</h2>
+<p><strong>If you&#39;re accessing NoteHub via a custom domain</strong> (like <code>note-hub.duckdns.org</code>, <code>app.yourdomain.com</code>, etc.) and seeing certificate warnings, please see the <strong><a href="CUSTOM_DOMAIN_SSL_SETUP.md">Custom Domain SSL Setup Guide</a></strong> for the proper configuration.</p>
+<p>The default configuration works for localhost but requires additional setup for custom domains to ensure Let&#39;s Encrypt issues certificates correctly.</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#how-it-works">How It Works</a></li>
+<li><a href="#production-setup">Production Setup</a></li>
+<li><a href="#development-setup">Development Setup</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#advanced-configuration">Advanced Configuration</a></li>
+</ol>
+<h2>How It Works</h2>
+<h3>Automatic SSL Features</h3>
+<ul>
+<li><strong>Automatic Certificate Issuance</strong>: Let&#39;s Encrypt certificates are obtained automatically when you deploy</li>
+<li><strong>Auto-Renewal</strong>: Certificates are renewed 30 days before expiration (no manual intervention)</li>
+<li><strong>HTTP to HTTPS Redirect</strong>: All HTTP traffic (port 80) automatically redirects to HTTPS (port 443)</li>
+<li><strong>Security Headers</strong>: HSTS, CSP, and other security headers are automatically applied</li>
+<li><strong>Self-Signed Fallback</strong>: For localhost/development, self-signed certificates are used</li>
+</ul>
+<h3>Architecture</h3>
+<pre><code>Client Request (HTTP/HTTPS)
+         ↓
+    Traefik (ports 80/443)
+         ↓
+   [SSL Termination]
+         ↓
+   [HTTP Redirect → HTTPS]
+         ↓
+   [Route to Service]
+         ↓
+    Frontend/Backend
+</code></pre>
+<h2>Production Setup</h2>
+<h3>Prerequisites</h3>
+<ol>
+<li><strong>Domain Name</strong>: A registered domain pointing to your server</li>
+<li><strong>Public IP</strong>: Server with a public IP address</li>
+<li><strong>Open Ports</strong>: Ports 80 and 443 must be accessible from the internet</li>
+<li><strong>Valid Email</strong>: For Let&#39;s Encrypt notifications</li>
+</ol>
+<h3>Step-by-Step Setup</h3>
+<h4>1. Configure DNS</h4>
+<p>Point your domain to your server&#39;s public IP:</p>
+<pre><code>A Record: yourdomain.com → Your.Server.IP.Address
+A Record: www.yourdomain.com → Your.Server.IP.Address (optional)
+</code></pre>
+<p>Wait for DNS propagation (can take 5-60 minutes).</p>
+<h4>2. Configure Environment</h4>
+<p>Edit your <code>.env</code> file:</p>
+<pre><code class="language-bash"># Copy example and edit
+cp .env.example .env
+nano .env
+</code></pre>
+<p>Set these variables:</p>
+<pre><code class="language-bash"># SSL Configuration
+ACME_EMAIL=admin@yourdomain.com
+
+# Other required variables
+SECRET_KEY=your-super-secret-key-change-this
+NOTES_ADMIN_PASSWORD=YourSecurePassword123!
+DATABASE_URL=mysql://user:pass@host:3306/database  # For production
+</code></pre>
+<h4>3. Deploy NoteHub</h4>
+<pre><code class="language-bash"># Run with production profile
+docker compose --profile production up -d
+
+# Check logs
+docker compose logs -f traefik-prod
+</code></pre>
+<h4>4. Verify SSL</h4>
+<ol>
+<li>Open your browser and go to <code>http://yourdomain.com</code></li>
+<li>You should be automatically redirected to <code>https://yourdomain.com</code></li>
+<li>Check that the SSL certificate is valid (green padlock in browser)</li>
+</ol>
+<h3>What Happens Behind the Scenes</h3>
+<ol>
+<li><strong>First Request</strong>: Traefik detects the domain from the incoming request</li>
+<li><strong>Certificate Request</strong>: Traefik contacts Let&#39;s Encrypt to obtain a certificate</li>
+<li><strong>Domain Validation</strong>: Let&#39;s Encrypt validates you control the domain (TLS challenge)</li>
+<li><strong>Certificate Storage</strong>: Certificate is saved to <code>./letsencrypt/acme.json</code></li>
+<li><strong>Automatic Serving</strong>: All future requests use the SSL certificate</li>
+<li><strong>Auto-Renewal</strong>: Traefik renews the certificate automatically before expiration</li>
+</ol>
+<h2>Development Setup</h2>
+<h3>Localhost SSL</h3>
+<p>For local development, SSL still works but with self-signed certificates:</p>
+<pre><code class="language-bash"># Configure environment
+cp .env.example .env
+nano .env  # Set NOTES_ADMIN_PASSWORD
+
+# Optional: Set ACME_EMAIL (not required for localhost)
+# ACME_EMAIL=admin@example.com
+
+# Start services
+docker compose up -d
+
+# Access at https://localhost
+</code></pre>
+<h3>Browser Security Warnings</h3>
+<p>When accessing <code>https://localhost</code>, your browser will show a security warning because:</p>
+<ul>
+<li>Self-signed certificates are not trusted by default</li>
+<li>Let&#39;s Encrypt cannot validate localhost domains</li>
+</ul>
+<p><strong>To proceed</strong>:</p>
+<ul>
+<li>Chrome/Edge: Click &quot;Advanced&quot; → &quot;Proceed to localhost (unsafe)&quot;</li>
+<li>Firefox: Click &quot;Advanced&quot; → &quot;Accept the Risk and Continue&quot;</li>
+<li>Safari: Click &quot;Show Details&quot; → &quot;visit this website&quot;</li>
+</ul>
+<p>This is <strong>normal and safe for local development</strong>.</p>
+<h3>Alternative: Use HTTP in Development</h3>
+<p>If you prefer to avoid SSL warnings during development, you can temporarily disable SSL:</p>
+<ol>
+<li>Edit <code>docker-compose.yml</code></li>
+<li>Comment out or remove the SSL-related command flags in the Traefik service</li>
+<li>Remove port 443 mapping</li>
+<li>Update service labels to use <code>web</code> instead of <code>websecure</code></li>
+</ol>
+<p><strong>Note</strong>: This is not recommended as it creates a different environment from production.</p>
+<h2>Troubleshooting</h2>
+<h3>Certificate Not Issued</h3>
+<p><strong>Problem</strong>: SSL certificate is not being issued by Let&#39;s Encrypt.</p>
+<p><strong>Possible Causes &amp; Solutions</strong>:</p>
+<ol>
+<li><p><strong>DNS Not Configured</strong></p>
+<pre><code class="language-bash"># Check if domain points to your server
+nslookup yourdomain.com
+dig yourdomain.com
+</code></pre>
+<p>Solution: Update DNS A record to point to your server&#39;s IP</p>
+</li>
+<li><p><strong>Ports Not Open</strong></p>
+<pre><code class="language-bash"># Check if ports are accessible
+telnet yourdomain.com 80
+telnet yourdomain.com 443
+</code></pre>
+<p>Solution: Open ports in firewall:</p>
+<pre><code class="language-bash">sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+</code></pre>
+</li>
+<li><p><strong>Invalid Email</strong></p>
+<ul>
+<li>Check <code>ACME_EMAIL</code> in <code>.env</code> is valid</li>
+<li>Let&#39;s Encrypt uses this for important notifications</li>
+</ul>
+</li>
+<li><p><strong>Rate Limits</strong></p>
+<ul>
+<li>Let&#39;s Encrypt has rate limits (50 certificates per domain per week)</li>
+<li>Use staging environment for testing (see Advanced Configuration)</li>
+</ul>
+</li>
+</ol>
+<h3>Certificate Renewal Failed</h3>
+<p><strong>Problem</strong>: Certificate expired and auto-renewal failed.</p>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><p>Check Traefik logs:</p>
+<pre><code class="language-bash">docker compose logs traefik
+</code></pre>
+</li>
+<li><p>Verify certificate file permissions:</p>
+<pre><code class="language-bash">ls -la letsencrypt/
+# acme.json should be owned by the container user
+</code></pre>
+</li>
+<li><p>Restart Traefik to trigger renewal:</p>
+<pre><code class="language-bash">docker compose restart traefik
+</code></pre>
+</li>
+</ol>
+<h3>Browser Shows &quot;Not Secure&quot;</h3>
+<p><strong>Problem</strong>: Browser shows site is not secure even with SSL configured.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><p><strong>Mixed Content</strong>: Page loads resources over HTTP</p>
+<ul>
+<li>Check browser console for mixed content warnings</li>
+<li>Ensure all resources use HTTPS or relative URLs</li>
+</ul>
+</li>
+<li><p><strong>Certificate Mismatch</strong>: Certificate domain doesn&#39;t match accessed domain</p>
+<ul>
+<li>Accessing via IP instead of domain name</li>
+<li>www vs non-www mismatch</li>
+<li>Solution: Always access via the domain name in the certificate</li>
+</ul>
+</li>
+<li><p><strong>Certificate Not Trusted</strong>: Self-signed or expired certificate</p>
+<ul>
+<li>Check certificate details in browser</li>
+<li>Verify certificate is from Let&#39;s Encrypt</li>
+</ul>
+</li>
+</ol>
+<h3>Port Conflicts</h3>
+<p><strong>Problem</strong>: Ports 80 or 443 already in use.</p>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><p>Check what&#39;s using the ports:</p>
+<pre><code class="language-bash">sudo lsof -i :80
+sudo lsof -i :443
+</code></pre>
+</li>
+<li><p>Stop conflicting service:</p>
+<pre><code class="language-bash">sudo systemctl stop apache2
+sudo systemctl stop nginx
+</code></pre>
+</li>
+<li><p>Or change NoteHub ports in <code>docker-compose.yml</code>:</p>
+<pre><code class="language-yaml">ports:
+  - &quot;8080:80&quot;
+  - &quot;8443:443&quot;
+</code></pre>
+</li>
+</ol>
+<h2>Advanced Configuration</h2>
+<h3>Using Let&#39;s Encrypt Staging Environment</h3>
+<p>For testing, use Let&#39;s Encrypt staging to avoid rate limits:</p>
+<p>Edit <code>docker-compose.yml</code> Traefik command:</p>
+<pre><code class="language-yaml">command:
+  # ... other commands ...
+  - &quot;--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory&quot;
+</code></pre>
+<p><strong>Note</strong>: Staging certificates are not trusted by browsers. Use only for testing.</p>
+<h3>Custom Certificate Resolver Name</h3>
+<p>Change the resolver name from <code>letsencrypt</code> to something custom:</p>
+<ol>
+<li>In <code>docker-compose.yml</code>, replace all instances of <code>letsencrypt</code> with <code>myresolver</code></li>
+<li>Update command flags and labels accordingly</li>
+</ol>
+<h3>HTTP Challenge Instead of TLS Challenge</h3>
+<p>Use HTTP challenge for certificate validation:</p>
+<pre><code class="language-yaml">command:
+  # ... other commands ...
+  # Remove: - &quot;--certificatesresolvers.letsencrypt.acme.tlschallenge=true&quot;
+  # Add:
+  - &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge=true&quot;
+  - &quot;--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web&quot;
+</code></pre>
+<h3>Multiple Domains</h3>
+<p>To support multiple domains (e.g., yourdomain.com and <a href="http://www.yourdomain.com">www.yourdomain.com</a>):</p>
+<p>Add service labels:</p>
+<pre><code class="language-yaml">labels:
+  - &quot;traefik.http.routers.frontend.rule=Host(`yourdomain.com`) || Host(`www.yourdomain.com`)&quot;
+  - &quot;traefik.http.routers.frontend.tls.domains[0].main=yourdomain.com&quot;
+  - &quot;traefik.http.routers.frontend.tls.domains[0].sans=www.yourdomain.com&quot;
+</code></pre>
+<h3>Wildcard Certificates</h3>
+<p>For wildcard certificates (*.yourdomain.com), you must use DNS challenge:</p>
+<pre><code class="language-yaml">command:
+  # ... other commands ...
+  - &quot;--certificatesresolvers.letsencrypt.acme.dnschallenge=true&quot;
+  - &quot;--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare&quot;  # or other DNS provider
+
+environment:
+  - CF_API_EMAIL=your-email@example.com
+  - CF_API_KEY=your-cloudflare-api-key
+</code></pre>
+<h3>Custom SSL Certificates</h3>
+<p>To use your own SSL certificates instead of Let&#39;s Encrypt:</p>
+<ol>
+<li><p>Create a <code>certs</code> directory:</p>
+<pre><code class="language-bash">mkdir -p ./certs
+</code></pre>
+</li>
+<li><p>Add your certificate files:</p>
+<pre><code class="language-bash">cp yourdomain.crt ./certs/
+cp yourdomain.key ./certs/
+</code></pre>
+</li>
+<li><p>Update Traefik configuration to use file provider:</p>
+<pre><code class="language-yaml"># In docker/traefik/dynamic.yml
+tls:
+  certificates:
+    - certFile: /certs/yourdomain.crt
+      keyFile: /certs/yourdomain.key
+</code></pre>
+</li>
+<li><p>Mount certs directory in docker-compose.yml:</p>
+<pre><code class="language-yaml">volumes:
+  - ./certs:/certs:ro
+</code></pre>
+</li>
+</ol>
+<h2>Security Best Practices</h2>
+<h3>Certificate File Security</h3>
+<p>The <code>acme.json</code> file contains your private keys:</p>
+<ol>
+<li><p><strong>File Permissions</strong>: </p>
+<pre><code class="language-bash">chmod 600 letsencrypt/acme.json
+</code></pre>
+</li>
+<li><p><strong>Backup</strong>: Regularly backup certificate files</p>
+<pre><code class="language-bash">cp letsencrypt/acme.json backups/acme.json.$(date +%Y%m%d)
+</code></pre>
+</li>
+<li><p><strong>Never Commit</strong>: Ensure <code>.gitignore</code> excludes certificate files (already configured)</p>
+</li>
+</ol>
+<h3>HSTS Configuration</h3>
+<p>HSTS (HTTP Strict Transport Security) is enabled by default with:</p>
+<ul>
+<li><code>max-age=31536000</code> (1 year)</li>
+<li><code>includeSubDomains=true</code></li>
+<li><code>preload=true</code></li>
+</ul>
+<p>This forces browsers to always use HTTPS for your domain.</p>
+<h3>Content Security Policy</h3>
+<p>CSP is configured with <code>upgrade-insecure-requests</code> to automatically upgrade any HTTP resources to HTTPS.</p>
+<h2>Certificate Management</h2>
+<h3>View Current Certificates</h3>
+<pre><code class="language-bash"># View certificate file (not recommended - binary format)
+cat letsencrypt/acme.json
+
+# Check certificate via OpenSSL
+openssl s_client -connect yourdomain.com:443 -servername yourdomain.com
+</code></pre>
+<h3>Force Certificate Renewal</h3>
+<p>To force renewal before expiration:</p>
+<pre><code class="language-bash"># Stop Traefik
+docker compose stop traefik
+
+# Remove old certificate
+rm letsencrypt/acme.json
+
+# Start Traefik (will obtain new certificate)
+docker compose start traefik
+</code></pre>
+<h3>Backup Certificates</h3>
+<pre><code class="language-bash"># Backup before updates
+tar czf certificates-backup-$(date +%Y%m%d).tar.gz letsencrypt/ letsencrypt-drone/
+
+# Store in safe location
+mv certificates-backup-*.tar.gz /path/to/secure/backup/
+</code></pre>
+<h3>Restore Certificates</h3>
+<pre><code class="language-bash"># Extract backup
+tar xzf certificates-backup-YYYYMMDD.tar.gz
+
+# Restart Traefik
+docker compose restart traefik
+</code></pre>
+<h2>Monitoring</h2>
+<h3>Check Certificate Expiration</h3>
+<pre><code class="language-bash"># View certificate dates
+echo | openssl s_client -connect yourdomain.com:443 -servername yourdomain.com 2&gt;/dev/null | openssl x509 -noout -dates
+</code></pre>
+<h3>Monitor Traefik Logs</h3>
+<pre><code class="language-bash"># Real-time logs
+docker compose logs -f traefik
+
+# Filter for certificate-related logs
+docker compose logs traefik | grep -i &quot;certificate\|acme&quot;
+</code></pre>
+<h3>Set Up Expiration Alerts</h3>
+<p>Let&#39;s Encrypt sends expiration emails to <code>ACME_EMAIL</code>. Ensure:</p>
+<ol>
+<li>Email is valid and monitored</li>
+<li>Set up additional monitoring (Uptime Robot, Pingdom, etc.)</li>
+<li>Consider using a monitoring service for certificate expiration</li>
+</ol>
+<h2>Resources</h2>
+<ul>
+<li><a href="https://doc.traefik.io/traefik/">Traefik Documentation</a></li>
+<li><a href="https://letsencrypt.org/docs/">Let&#39;s Encrypt Documentation</a></li>
+<li><a href="https://doc.traefik.io/traefik/https/tls/">TLS Best Practices</a></li>
+<li><a href="https://doc.traefik.io/traefik/https/acme/">ACME Protocol</a></li>
+</ul>
+<h2>FAQ</h2>
+<h3>Do I need to manually renew certificates?</h3>
+<p>No. Traefik automatically renews certificates 30 days before expiration.</p>
+<h3>Can I use NoteHub without a domain name?</h3>
+<p>Yes, but you won&#39;t get valid SSL certificates. You can:</p>
+<ul>
+<li>Use HTTP only (not recommended)</li>
+<li>Access via IP with self-signed certificates (browser warnings)</li>
+<li>Use localhost for development</li>
+</ul>
+<h3>What happens if Let&#39;s Encrypt is down?</h3>
+<ul>
+<li>Existing certificates continue to work</li>
+<li>New certificate requests will fail</li>
+<li>Auto-renewal will retry automatically</li>
+<li>Your site remains accessible with existing certificates</li>
+</ul>
+<h3>Can I disable SSL/HTTPS redirect?</h3>
+<p>Not recommended for production, but you can remove the HTTP redirect:</p>
+<p>Remove these lines from Traefik command in <code>docker-compose.yml</code>:</p>
+<pre><code class="language-yaml">- &quot;--entrypoints.web.http.redirections.entrypoint.to=websecure&quot;
+- &quot;--entrypoints.web.http.redirections.entrypoint.scheme=https&quot;
+- &quot;--entrypoints.web.http.redirections.entrypoint.permanent=true&quot;
+</code></pre>
+<h3>How do I check which domains have certificates?</h3>
+<pre><code class="language-bash"># View certificate domains
+docker compose exec traefik cat /letsencrypt/acme.json | grep -A 5 &quot;domain&quot;
+</code></pre>
+<h3>Can I use CloudFlare with NoteHub?</h3>
+<p>Yes! CloudFlare works great with NoteHub:</p>
+<ol>
+<li><p><strong>CloudFlare Proxy Disabled</strong> (Orange Cloud Off):</p>
+<ul>
+<li>Let&#39;s Encrypt connects directly to your server</li>
+<li>TLS challenge works as configured</li>
+<li>Recommended setup</li>
+</ul>
+</li>
+<li><p><strong>CloudFlare Proxy Enabled</strong> (Orange Cloud On):</p>
+<ul>
+<li>Must use DNS challenge instead of TLS challenge</li>
+<li>Configure CloudFlare API credentials in Traefik</li>
+<li>CloudFlare provides its own SSL certificate to visitors</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>Need Help?</strong> Check the <a href="#troubleshooting">Troubleshooting</a> section or open an issue on GitHub.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

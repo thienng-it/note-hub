@@ -1,0 +1,23 @@
+{
+  "name": "note-hub-docs",
+  "version": "1.0.0",
+  "description": "Documentation build tools for NoteHub",
+  "private": true,
+  "scripts": {
+    "build:docs": "node scripts/convert-docs-to-html.js"
+  },
+  "dependencies": {
+    "marked": "^11.1.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thienng-it/note-hub"
+  },
+  "keywords": [
+    "documentation",
+    "markdown",
+    "html"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - 🔄 CI/CD Pipeline Documentation">
+    <title>🔄 CI/CD Pipeline Documentation - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>🔄 CI/CD Pipeline Documentation</span>
+        </div>
+
+        <article class="content">
+            <h1>🔄 CI/CD Pipeline Documentation</h1>
+<h2>Overview</h2>
+<p>This project uses <strong>GitHub Actions</strong> for continuous integration and continuous deployment (CI/CD). The pipeline automatically tests, lints, scans for security vulnerabilities, and deploys your application on every push to the <code>main</code> branch.</p>
+<hr>
+<h2>📊 Status Badges</h2>
+<p>Add these badges to your README to show the current status:</p>
+<pre><code class="language-markdown">![CI/CD Pipeline](https://github.com/thienng-it/note-hub/actions/workflows/ci-cd.yml/badge.svg?branch=main)
+![Deploy Netlify](https://github.com/thienng-it/note-hub/actions/workflows/deploy-netlify.yml/badge.svg?branch=main)
+![Deploy GitHub Pages](https://github.com/thienng-it/note-hub/actions/workflows/deploy-pages.yml/badge.svg?branch=main)
+</code></pre>
+<hr>
+<h2>🔧 Workflows Configuration</h2>
+<h3>1. <strong>CI/CD Pipeline</strong> (<code>ci-cd.yml</code>)</h3>
+<p><strong>Triggers:</strong> Push or PR to <code>main</code> or <code>develop</code> branches</p>
+<p><strong>Jobs:</strong></p>
+<h4>Test Job</h4>
+<ul>
+<li><strong>Python Versions:</strong> 3.9, 3.10, 3.11</li>
+<li><strong>Tasks:</strong><ul>
+<li>Install dependencies from <code>requirements.txt</code></li>
+<li>Run pytest with coverage reporting</li>
+<li>Upload coverage to Codecov</li>
+<li>Matrix testing across multiple Python versions</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-bash"># Equivalent local command:
+python -m pytest tests/test_app.py -v --cov=. --cov-report=xml
+</code></pre>
+<h4>Lint Job</h4>
+<ul>
+<li><strong>Tasks:</strong><ul>
+<li>Code formatting check with <code>black</code></li>
+<li>Import sorting check with <code>isort</code></li>
+<li>Linting with <code>flake8</code></li>
+<li>Security scanning with <code>bandit</code></li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-bash"># Equivalent local commands:
+black --check src/notehub scripts/dev_server.py
+isort --check-only src/notehub scripts/dev_server.py
+flake8 src/notehub
+bandit -r src/notehub -ll
+</code></pre>
+<h4>Security Job</h4>
+<ul>
+<li><strong>Tasks:</strong><ul>
+<li>Trivy filesystem vulnerability scanning</li>
+<li>Results uploaded to GitHub Security tab</li>
+</ul>
+</li>
+</ul>
+<h4>Dependency Check Job</h4>
+<ul>
+<li><strong>Tasks:</strong><ul>
+<li>Run <code>safety</code> to check for known vulnerabilities in dependencies</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3>2. <strong>Deploy to Netlify</strong> (<code>deploy-netlify.yml</code>)</h3>
+<p><strong>Triggers:</strong> Push to <code>main</code> branch (excluding docs/markdown to reduce noise)</p>
+<p><strong>Prerequisites:</strong></p>
+<ol>
+<li>Create a <a href="https://www.netlify.com/">Netlify</a> site pointing at this repo</li>
+<li>Generate a <strong>Deploy Hook</strong> from the Netlify dashboard (Site settings → Build &amp; deploy → Build hooks)</li>
+<li>Add the hook URL as a GitHub secret named <code>NETLIFY_DEPLOY_HOOK</code></li>
+</ol>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Workflow checks that <code>NETLIFY_DEPLOY_HOOK</code> exists</li>
+<li>Issues a <code>curl</code> POST to the Netlify deploy hook</li>
+<li>Netlify builds using <code>netlify.toml</code>, installs Python deps, bundles the serverless function, and publishes the result</li>
+</ol>
+<p><strong>Setup Instructions:</strong></p>
+<pre><code class="language-bash"># 1. netlify init --manual  # connect repo if not already linked
+
+# 2. In the Netlify UI:
+#    Site settings → Build &amp; deploy → Build hooks → Add build hook
+#    Copy the generated URL
+
+# 3. Add to GitHub Secrets:
+#    Repo → Settings → Secrets and variables → Actions
+#    Secret name: NETLIFY_DEPLOY_HOOK
+#    Secret value: [paste hook URL]
+</code></pre>
+<hr>
+<h3>3. <strong>Deploy GitHub Pages</strong> (<code>deploy-pages.yml</code>)</h3>
+<p><strong>Triggers:</strong> Push to <code>main</code> branch (docs, README, or workflow changes)</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li><p><strong>Build</strong></p>
+<ul>
+<li>Copy <code>docs/</code> folder content to <code>_site/</code></li>
+<li>Verify <code>index.html</code> exists</li>
+</ul>
+</li>
+<li><p><strong>Deploy</strong></p>
+<ul>
+<li>GitHub automatically deploys <code>_site</code> as static content</li>
+<li>Available at: <code>https://thienng-it.github.io/note-hub</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>Site Location:</strong> <code>/docs</code> directory</p>
+<hr>
+<h2>🚀 Deployment Flow</h2>
+<pre><code>Developer Push to main
+   ↓
+GitHub Actions Triggered
+   ├─→ CI/CD Pipeline (test + lint + security)
+   ├─→ Deploy to Netlify (if NETLIFY_DEPLOY_HOOK is set)
+   └─→ Deploy GitHub Pages (if docs changed)
+   ↓
+All Workflows Complete ✅
+</code></pre>
+<hr>
+<h2>📋 Running Workflows Locally</h2>
+<h3>Test Pipeline</h3>
+<pre><code class="language-bash"># Install test dependencies
+pip install pytest pytest-cov
+
+# Run tests
+python -m pytest tests/test_app.py -v --cov=. --cov-report=term
+</code></pre>
+<h3>Code Quality</h3>
+<pre><code class="language-bash"># Install linting tools
+pip install black isort flake8 bandit
+
+# Check formatting
+black --check scripts/dev_server.py
+
+# Check import sorting
+isort --check-only scripts/dev_server.py
+
+# Run linter
+flake8 scripts/dev_server.py
+
+# Security scan
+bandit -r . -ll
+</code></pre>
+<h3>Security Check</h3>
+<pre><code class="language-bash"># Install safety
+pip install safety
+
+# Check dependencies
+safety check
+</code></pre>
+<hr>
+<h2>🔐 Secrets Management</h2>
+<p><strong>Required Secrets:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Secret Name</th>
+<th>Where to Get</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NETLIFY_DEPLOY_HOOK</code></td>
+<td>Netlify Site → Build hooks</td>
+<td>Auto-deploy to Netlify Functions</td>
+</tr>
+</tbody></table>
+<p><strong>To Add Secrets:</strong></p>
+<ol>
+<li>Go to GitHub repo</li>
+<li>Settings → Secrets and variables → Actions</li>
+<li>Click &quot;New repository secret&quot;</li>
+<li>Enter name and value</li>
+<li>Save</li>
+</ol>
+<hr>
+<h2>✅ Best Practices</h2>
+<ol>
+<li><p><strong>Always test locally before pushing</strong></p>
+<pre><code class="language-bash">pytest tests/test_app.py
+black --check scripts/dev_server.py
+</code></pre>
+</li>
+<li><p><strong>Commit with conventional messages</strong> (already set up)</p>
+<ul>
+<li><code>feat:</code> for new features</li>
+<li><code>fix:</code> for bug fixes</li>
+<li><code>docs:</code> for documentation</li>
+<li><code>chore:</code> for maintenance</li>
+</ul>
+</li>
+<li><p><strong>Review workflow results</strong></p>
+<ul>
+<li>Go to repo → Actions tab</li>
+<li>Check individual workflow runs</li>
+<li>Fix any failures before merging PRs</li>
+</ul>
+</li>
+<li><p><strong>Keep dependencies up to date</strong></p>
+<ul>
+<li>Regularly update <code>requirements.txt</code></li>
+<li>Run <code>safety check</code> to catch vulnerabilities</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>🐛 Troubleshooting</h2>
+<h3>Netlify Deployment Not Triggering</h3>
+<p><strong>Issue:</strong> Deploy Netlify workflow skipped and site not updated</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Confirm the <code>NETLIFY_DEPLOY_HOOK</code> secret exists and is spelled correctly</li>
+<li>Verify the hook URL has not been rotated or deleted in Netlify</li>
+<li>Check Netlify dashboard → Deploys for errors during the build</li>
+</ol>
+<h3>Tests Failing in CI but Passing Locally</h3>
+<p><strong>Possible Causes:</strong></p>
+<ul>
+<li>Python version differences (check matrix in <code>ci-cd.yml</code>)</li>
+<li>Missing environment variables</li>
+<li>Database state issues</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-bash"># Test with same Python version as CI
+python3.11 -m pytest tests/test_app.py -v
+
+# Check environment
+echo $FLASK_ENV
+echo $NOTES_DB_PATH
+</code></pre>
+<h3>GitHub Pages Not Updating</h3>
+<p><strong>Issue:</strong> Changes to <code>docs/</code> not showing on GitHub Pages</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Ensure changes are pushed to <code>main</code> branch</li>
+<li>Check Actions tab for deploy-pages workflow status</li>
+<li>Go to repo Settings → Pages → verify source is <code>/docs</code></li>
+<li>Wait 1-2 minutes for GitHub to update</li>
+</ol>
+<hr>
+<h2>📊 Monitoring</h2>
+<p><strong>View Workflow Status:</strong></p>
+<ol>
+<li>Go to repo homepage</li>
+<li>Click &quot;Actions&quot; tab</li>
+<li>Select workflow to view details</li>
+<li>Click specific run to see logs</li>
+</ol>
+<p><strong>Coverage Reports:</strong></p>
+<ul>
+<li>Uploaded to Codecov on each test run</li>
+<li>View at: <code>https://codecov.io/gh/thienng-it/note-hub</code></li>
+</ul>
+<p><strong>Security Scanning:</strong></p>
+<ul>
+<li>Results in GitHub Security tab</li>
+<li>Vulnerabilities sorted by severity</li>
+</ul>
+<hr>
+<h2>🎯 Next Steps</h2>
+<ol>
+<li>✅ Add <code>NETLIFY_DEPLOY_HOOK</code> secret for auto-deployment (or let Netlify auto-build via Git integration)</li>
+<li>✅ Push changes to trigger workflows</li>
+<li>✅ Verify all workflows pass in Actions tab</li>
+<li>✅ Add badges to README.md</li>
+</ol>
+<hr>
+<h2>📚 Resources</h2>
+<ul>
+<li><a href="https://docs.github.com/en/actions">GitHub Actions Documentation</a></li>
+<li><a href="https://docs.netlify.com/configure-builds/build-hooks/">Netlify Build Hooks</a></li>
+<li><a href="https://docs.github.com/en/pages">GitHub Pages Documentation</a></li>
+<li><a href="https://docs.pytest.org/">Python Testing with pytest</a></li>
+<li><a href="https://black.readthedocs.io/">Code Formatting with Black</a></li>
+</ul>
+<hr>
+<p><strong>Last Updated:</strong> November 22, 2025<br><strong>Maintained By:</strong> CI/CD Pipeline Documentation</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

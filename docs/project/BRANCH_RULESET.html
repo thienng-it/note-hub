@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - 🔐 GitHub Branch Ruleset Configuration">
+    <title>🔐 GitHub Branch Ruleset Configuration - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>🔐 GitHub Branch Ruleset Configuration</span>
+        </div>
+
+        <article class="content">
+            <h1>🔐 GitHub Branch Ruleset Configuration</h1>
+<h2>Overview</h2>
+<p>This document provides the configuration for protecting the <code>main</code> branch with GitHub&#39;s Branch Ruleset feature. This ensures code quality, security, and stability before any changes are merged.</p>
+<hr>
+<h2>🎯 Recommended Branch Ruleset Settings</h2>
+<h3>Target Branch</h3>
+<ul>
+<li><strong>Applies to:</strong> <code>main</code> branch</li>
+</ul>
+<h3>1. <strong>Enforce Status Checks</strong></h3>
+<p><strong>Required Status Checks:</strong></p>
+<ul>
+<li>✅ <code>Test (Python 3.9)</code></li>
+<li>✅ <code>Test (Python 3.10)</code></li>
+<li>✅ <code>Test (Python 3.11)</code></li>
+<li>✅ <code>Code Quality</code></li>
+<li>✅ <code>Security Scanning</code></li>
+<li>✅ <code>Dependency Check</code></li>
+</ul>
+<p><strong>Settings:</strong></p>
+<ul>
+<li>✅ Require status checks to pass before merging</li>
+<li>✅ Require branches to be up to date before merging</li>
+<li>✅ Require code reviews before merging: <strong>1 approval</strong></li>
+</ul>
+<h3>2. <strong>Dismiss Stale Pull Request Approvals</strong></h3>
+<ul>
+<li>✅ Enabled (dismiss previous approvals when new commits are pushed)</li>
+</ul>
+<h3>3. <strong>Require Pull Request Review</strong></h3>
+<ul>
+<li>✅ Require approval: <strong>1</strong> (can be adjusted based on team size)</li>
+<li>✅ Dismiss stale pull request approvals when new commits are pushed</li>
+<li>✅ Require review from code owners (optional, if <code>.github/CODEOWNERS</code> file exists)</li>
+</ul>
+<h3>4. <strong>Require Conversation Resolution</strong></h3>
+<ul>
+<li>✅ Enabled (all conversations must be resolved before merging)</li>
+</ul>
+<h3>5. <strong>Require a Linear History</strong></h3>
+<ul>
+<li>✅ Enabled (prevents merge commits, requires rebasing)</li>
+</ul>
+<h3>6. <strong>Restrict Deletions</strong></h3>
+<ul>
+<li>✅ Enabled (prevent accidental deletion of the branch)</li>
+</ul>
+<h3>7. <strong>Require Signed Commits</strong></h3>
+<ul>
+<li>⚪ Optional (enhanced security, requires GPG key setup)</li>
+</ul>
+<h3>8. <strong>Require Deployments to Succeed Before Merging</strong></h3>
+<ul>
+<li>✅ Netlify Deployment</li>
+<li>✅ GitHub Pages Deployment</li>
+</ul>
+<h3>9. <strong>Lock Branch</strong></h3>
+<ul>
+<li>⚪ Disabled (keep branch unlocked for regular development)</li>
+</ul>
+<h3>10. <strong>Allow Force Pushes</strong></h3>
+<ul>
+<li>✅ Enabled: <strong>Administrators only</strong> (for emergency fixes)</li>
+</ul>
+<hr>
+<h2>📋 Step-by-Step Setup Instructions</h2>
+<h3>Via GitHub Web Interface:</h3>
+<ol>
+<li><p><strong>Navigate to Branch Protection Rules</strong></p>
+<ul>
+<li>Go to: <code>https://github.com/thienng-it/note-hub</code></li>
+<li>Click: <strong>Settings</strong> → <strong>Rules</strong> → <strong>Rulesets</strong></li>
+<li>Click: <strong>New ruleset</strong> (or <strong>New branch ruleset</strong>)</li>
+</ul>
+</li>
+<li><p><strong>Configure Ruleset Name</strong></p>
+<ul>
+<li>Name: <code>Protect main branch</code></li>
+<li>Description: <code>Enforce code quality, security, and testing standards</code></li>
+</ul>
+</li>
+<li><p><strong>Set Target</strong></p>
+<ul>
+<li>Enforcement: <strong>Active</strong></li>
+<li>Target type: <strong>Branch</strong></li>
+<li>Include: <code>main</code></li>
+<li>Exclude: (leave empty)</li>
+</ul>
+</li>
+<li><p><strong>Add Rules</strong></p>
+<p><strong>a) Require Workflows to Pass</strong></p>
+<ul>
+<li>Enable: ✅ &quot;Require status checks to pass before merging&quot;</li>
+<li>Status checks:<ul>
+<li><code>Test (Python 3.9)</code></li>
+<li><code>Test (Python 3.10)</code></li>
+<li><code>Test (Python 3.11)</code></li>
+<li><code>Code Quality</code></li>
+<li><code>Security Scanning</code></li>
+<li><code>Dependency Check</code></li>
+</ul>
+</li>
+<li>✅ &quot;Require branches to be up to date before merging&quot;</li>
+</ul>
+<p><strong>b) Require Pull Reviews</strong></p>
+<ul>
+<li>Enable: ✅ &quot;Require pull request reviews before merging&quot;</li>
+<li>Number of reviewers: <code>1</code></li>
+<li>✅ &quot;Dismiss stale pull request approvals when new commits are pushed&quot;</li>
+<li>✅ &quot;Require review from code owners&quot; (if using <code>.github/CODEOWNERS</code>)</li>
+</ul>
+<p><strong>c) Require Conversation Resolution</strong></p>
+<ul>
+<li>Enable: ✅ &quot;Require all conversations on code to be resolved before merging&quot;</li>
+</ul>
+<p><strong>d) Require Linear History</strong></p>
+<ul>
+<li>Enable: ✅ &quot;Require linear history&quot;</li>
+</ul>
+<p><strong>e) Restrict Deletions</strong></p>
+<ul>
+<li>Enable: ✅ &quot;Restrict deletions&quot;</li>
+</ul>
+<p><strong>f) Require Deployments to Succeed</strong></p>
+<ul>
+<li>Enable: ✅ &quot;Require deployments to succeed before merging&quot;</li>
+<li>Select deployments:<ul>
+<li><code>Netlify</code></li>
+<li><code>GitHub Pages</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Bypass List</strong> (Optional)</p>
+<ul>
+<li>Allow admins to bypass these rules: <strong>Yes</strong> (checked)</li>
+</ul>
+</li>
+<li><p><strong>Review and Save</strong></p>
+<ul>
+<li>Click: <strong>Create</strong> button</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>📝 Alternative: GitHub CLI Setup</h2>
+<p>If you prefer command-line setup:</p>
+<pre><code class="language-bash"># Note: As of now, GitHub CLI has limited ruleset support
+# The web interface is recommended for complete configuration
+# However, you can use the REST API:
+
+# Example using gh cli (when full support is available):
+gh ruleset create --name &quot;Protect main&quot; \
+  --target-branch main \
+  --bypass-actors-list admin \
+  --require-status-checks \
+  --require-code-reviews --code-review-count 1
+</code></pre>
+<hr>
+<h2>🔄 GitHub REST API</h2>
+<p>For automation or detailed configuration:</p>
+<pre><code class="language-bash"># Create a ruleset via REST API
+curl -X POST \
+  -H &quot;Authorization: token YOUR_GITHUB_TOKEN&quot; \
+  -H &quot;X-GitHub-Api-Version: 2022-11-28&quot; \
+  https://api.github.com/repos/thienng-it/note-hub/rulesets \
+  -d &#39;{
+    &quot;name&quot;: &quot;Protect main branch&quot;,
+    &quot;description&quot;: &quot;Enforce code quality and security&quot;,
+    &quot;type&quot;: &quot;branch&quot;,
+    &quot;enforcement&quot;: &quot;active&quot;,
+    &quot;target&quot;: &quot;branch&quot;,
+    &quot;conditions&quot;: {
+      &quot;ref_name&quot;: {
+        &quot;include&quot;: [&quot;main&quot;],
+        &quot;exclude&quot;: []
+      }
+    },
+    &quot;rules&quot;: [
+      {
+        &quot;type&quot;: &quot;required_status_checks&quot;,
+        &quot;parameters&quot;: {
+          &quot;required_status_checks&quot;: [
+            {
+              &quot;context&quot;: &quot;Test (Python 3.9)&quot;,
+              &quot;integration_id&quot;: 0
+            },
+            {
+              &quot;context&quot;: &quot;Test (Python 3.10)&quot;,
+              &quot;integration_id&quot;: 0
+            },
+            {
+              &quot;context&quot;: &quot;Test (Python 3.11)&quot;,
+              &quot;integration_id&quot;: 0
+            },
+            {
+              &quot;context&quot;: &quot;Code Quality&quot;,
+              &quot;integration_id&quot;: 0
+            },
+            {
+              &quot;context&quot;: &quot;Security Scanning&quot;,
+              &quot;integration_id&quot;: 0
+            },
+            {
+              &quot;context&quot;: &quot;Dependency Check&quot;,
+              &quot;integration_id&quot;: 0
+            }
+          ],
+          &quot;strict_required_status_checks_policy&quot;: true
+        }
+      },
+      {
+        &quot;type&quot;: &quot;pull_request&quot;,
+        &quot;parameters&quot;: {
+          &quot;required_approving_review_count&quot;: 1,
+          &quot;dismiss_stale_reviews_on_push&quot;: true,
+          &quot;require_code_owner_review&quot;: false
+        }
+      },
+      {
+        &quot;type&quot;: &quot;require_linear_history&quot;
+      }
+    ],
+    &quot;bypass_actors&quot;: [
+      {
+        &quot;actor_type&quot;: &quot;RepositoryRole&quot;,
+        &quot;actor_id&quot;: 5,
+        &quot;bypass_mode&quot;: &quot;always&quot;
+      }
+    ]
+  }&#39;
+</code></pre>
+<hr>
+<h2>✅ What This Ruleset Enforces</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Status Checks</strong></td>
+<td>All CI/CD tests must pass</td>
+</tr>
+<tr>
+<td><strong>Code Review</strong></td>
+<td>At least 1 approval required</td>
+</tr>
+<tr>
+<td><strong>Resolved Conversations</strong></td>
+<td>All code comments must be addressed</td>
+</tr>
+<tr>
+<td><strong>Linear History</strong></td>
+<td>Clean, rebased commit history</td>
+</tr>
+<tr>
+<td><strong>Restrict Deletions</strong></td>
+<td>Prevent accidental branch deletion</td>
+</tr>
+<tr>
+<td><strong>Up-to-date with main</strong></td>
+<td>Prevents merge conflicts</td>
+</tr>
+<tr>
+<td><strong>Deployments</strong></td>
+<td>Apps must deploy successfully</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>🚀 Benefits</h2>
+<p>✅ <strong>Code Quality</strong></p>
+<ul>
+<li>Prevents merging of failing code</li>
+<li>Requires peer review</li>
+<li>Maintains clean git history</li>
+</ul>
+<p>✅ <strong>Security</strong></p>
+<ul>
+<li>Security scanning must pass</li>
+<li>Dependency vulnerabilities checked</li>
+<li>All conversations resolved</li>
+</ul>
+<p>✅ <strong>Stability</strong></p>
+<ul>
+<li>Deployments verified before merge</li>
+<li>No stale code reviews approved</li>
+<li>Prevents direct pushes to main</li>
+</ul>
+<p>✅ <strong>Team Collaboration</strong></p>
+<ul>
+<li>Enforces code review process</li>
+<li>Clear merge requirements</li>
+<li>Protects against accidents</li>
+</ul>
+<hr>
+<h2>📖 Workflow for Contributors</h2>
+<p>With this ruleset in place, developers must:</p>
+<ol>
+<li><p><strong>Create a feature branch</strong> from <code>main</code></p>
+<pre><code class="language-bash">git checkout -b feature/my-feature
+</code></pre>
+</li>
+<li><p><strong>Make changes and commit</strong></p>
+<pre><code class="language-bash">git commit -m &quot;feat: add new feature&quot;
+</code></pre>
+</li>
+<li><p><strong>Push branch to GitHub</strong></p>
+<pre><code class="language-bash">git push origin feature/my-feature
+</code></pre>
+</li>
+<li><p><strong>Create a Pull Request</strong></p>
+<ul>
+<li>Go to repository on GitHub</li>
+<li>Click &quot;Compare &amp; pull request&quot;</li>
+<li>Add description and assignee if needed</li>
+</ul>
+</li>
+<li><p><strong>Automated checks run</strong></p>
+<ul>
+<li>All CI/CD jobs execute</li>
+<li>Tests, linting, security scanning run</li>
+<li>Results shown on PR</li>
+</ul>
+</li>
+<li><p><strong>Code review</strong></p>
+<ul>
+<li>Team members review changes</li>
+<li>At least 1 approval needed</li>
+<li>Conversations must be resolved</li>
+</ul>
+</li>
+<li><p><strong>Merge to main</strong></p>
+<ul>
+<li>Once all checks pass and approved</li>
+<li>Click &quot;Squash and merge&quot; or &quot;Rebase and merge&quot;</li>
+<li>Branch is automatically deleted</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>🔍 Monitoring &amp; Management</h2>
+<p><strong>View Ruleset Status:</strong></p>
+<ol>
+<li>Go to: Settings → Rules → Rulesets</li>
+<li>Click on the ruleset name to see details</li>
+<li>View enforcement history and bypasses</li>
+</ol>
+<p><strong>Bypass Rules (Admins Only):</strong></p>
+<ul>
+<li>Only repository admins can bypass rules (if configured)</li>
+<li>Use for emergency hotfixes only</li>
+<li>Document why bypass was needed</li>
+</ul>
+<hr>
+<h2>🛠️ Troubleshooting</h2>
+<h3>&quot;Ruleset not found&quot;</h3>
+<ul>
+<li>Ensure you&#39;re on a GitHub organization or have enterprise features</li>
+<li>Free GitHub accounts have limited ruleset support</li>
+<li>Use legacy &quot;Branch Protection Rules&quot; as fallback</li>
+</ul>
+<h3>&quot;Status checks not showing&quot;</h3>
+<ul>
+<li>Wait for workflows to run (can take 1-2 minutes)</li>
+<li>Ensure workflow names match exactly in ruleset configuration</li>
+<li>Check if workflows are running on push events</li>
+</ul>
+<h3>&quot;Cannot merge despite checks passing&quot;</h3>
+<ul>
+<li>Verify all required reviews are approved</li>
+<li>Check that all conversations are resolved</li>
+<li>Ensure branch is up-to-date with main</li>
+</ul>
+<hr>
+<h2>📚 Resources</h2>
+<ul>
+<li><a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets">GitHub Branch Rulesets Documentation</a></li>
+<li><a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#about-required-status-checks">GitHub Status Checks</a></li>
+<li><a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#about-required-reviews-for-pull-requests">GitHub Code Review Requirements</a></li>
+</ul>
+<hr>
+<p><strong>Last Updated:</strong> November 22, 2025<br><strong>Configuration Status:</strong> Ready for implementation<br><strong>Recommended Enforcement:</strong> Active</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

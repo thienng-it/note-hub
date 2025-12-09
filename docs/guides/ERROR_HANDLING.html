@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Error Handling Guide">
+    <title>Error Handling Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Error Handling Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Error Handling Guide</h1>
+<p>This document explains the error handling strategy implemented in the Note Hub application.</p>
+<h2>Overview</h2>
+<p>The application implements comprehensive error handling for all database operations to ensure:</p>
+<ul>
+<li><strong>Data consistency</strong>: Automatic rollback on errors prevents partial commits</li>
+<li><strong>User-friendly messages</strong>: Clear, actionable error messages for common issues</li>
+<li><strong>Debug support</strong>: Detailed logging for troubleshooting</li>
+<li><strong>Security</strong>: Error messages don&#39;t expose sensitive system information</li>
+</ul>
+<h2>Error Categories</h2>
+<h3>1. IntegrityError</h3>
+<p><strong>Cause</strong>: Database constraint violations (unique constraints, foreign key violations, etc.)</p>
+<p><strong>Examples</strong>:</p>
+<ul>
+<li>Duplicate usernames</li>
+<li>Duplicate tag associations (though now prevented by code)</li>
+<li>Foreign key constraint violations</li>
+</ul>
+<p><strong>Handling</strong>:</p>
+<pre><code class="language-python">try:
+    # Database operation
+    session.commit()
+except IntegrityError as exc:
+    session.rollback()
+    logger.error(f&quot;Integrity error: {exc}&quot;)
+    flash(&quot;Error: Database constraint violation. Please check your data.&quot;, &quot;error&quot;)
+</code></pre>
+<p><strong>User Message</strong>: &quot;Error: Database constraint violation. Please check your data.&quot;</p>
+<h3>2. SQLAlchemyError</h3>
+<p><strong>Cause</strong>: General database errors (connection issues, syntax errors, etc.)</p>
+<p><strong>Examples</strong>:</p>
+<ul>
+<li>Database connection timeout</li>
+<li>SQL syntax errors (rare in ORM)</li>
+<li>Transaction deadlocks</li>
+</ul>
+<p><strong>Handling</strong>:</p>
+<pre><code class="language-python">try:
+    # Database operation
+    session.commit()
+except SQLAlchemyError as exc:
+    session.rollback()
+    logger.error(f&quot;Database error: {exc}&quot;)
+    flash(&quot;Error: Database error occurred. Please try again.&quot;, &quot;error&quot;)
+</code></pre>
+<p><strong>User Message</strong>: &quot;Error: Database error occurred. Please try again.&quot;</p>
+<h3>3. Generic Exception</h3>
+<p><strong>Cause</strong>: Unexpected errors not covered by specific handlers</p>
+<p><strong>Examples</strong>:</p>
+<ul>
+<li>Programming errors</li>
+<li>File system issues</li>
+<li>Third-party library errors</li>
+</ul>
+<p><strong>Handling</strong>:</p>
+<pre><code class="language-python">try:
+    # Database operation
+    session.commit()
+except Exception as exc:
+    session.rollback()
+    logger.error(f&quot;Unexpected error: {exc}&quot;)
+    flash(&quot;Error: An unexpected error occurred. Please try again.&quot;, &quot;error&quot;)
+</code></pre>
+<p><strong>User Message</strong>: &quot;Error: An unexpected error occurred. Please try again.&quot;</p>
+<h2>Implementation Patterns</h2>
+<h3>Web Routes (Flask)</h3>
+<pre><code class="language-python">import logging
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+
+logger = logging.getLogger(__name__)
+
+@app.route(&quot;/resource&quot;, methods=[&quot;POST&quot;])
+def create_resource():
+    try:
+        with db() as s:
+            # Create resource
+            resource = Resource(...)
+            s.add(resource)
+            s.commit()
+            flash(&quot;Resource created!&quot;, &quot;success&quot;)
+            return redirect(url_for(&quot;view_resource&quot;))
+    except IntegrityError as exc:
+        s.rollback()
+        logger.error(f&quot;Integrity error creating resource: {exc}&quot;)
+        flash(&quot;Error: Database constraint violation.&quot;, &quot;error&quot;)
+    except SQLAlchemyError as exc:
+        s.rollback()
+        logger.error(f&quot;Database error creating resource: {exc}&quot;)
+        flash(&quot;Error: Database error occurred.&quot;, &quot;error&quot;)
+    except Exception as exc:
+        s.rollback()
+        logger.error(f&quot;Unexpected error creating resource: {exc}&quot;)
+        flash(&quot;Error: An unexpected error occurred.&quot;, &quot;error&quot;)
+</code></pre>
+<h3>API Routes (JSON)</h3>
+<pre><code class="language-python">import logging
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+
+logger = logging.getLogger(__name__)
+
+@app.route(&quot;/api/resources&quot;, methods=[&quot;POST&quot;])
+def api_create_resource():
+    try:
+        with db() as s:
+            # Create resource
+            resource = Resource(...)
+            s.add(resource)
+            s.commit()
+            return jsonify({&#39;resource&#39;: {...}}), 201
+    except IntegrityError as exc:
+        logger.error(f&quot;Integrity error: {exc}&quot;)
+        return jsonify({&#39;error&#39;: &#39;Database constraint violation&#39;}), 400
+    except SQLAlchemyError as exc:
+        logger.error(f&quot;Database error: {exc}&quot;)
+        return jsonify({&#39;error&#39;: &#39;Database error occurred&#39;}), 500
+    except Exception as exc:
+        logger.error(f&quot;Unexpected error: {exc}&quot;)
+        return jsonify({&#39;error&#39;: &#39;An unexpected error occurred&#39;}), 500
+</code></pre>
+<h2>Tag-Specific Error Handling</h2>
+<h3>Duplicate Tags</h3>
+<p>The application handles duplicate tags gracefully:</p>
+<ol>
+<li><strong>Input parsing</strong>: <code>parse_tags()</code> removes duplicate tag names from input</li>
+<li><strong>Database check</strong>: Before adding a tag to a note, checks if already associated</li>
+<li><strong>Race condition handling</strong>: Concurrent tag creation is handled with try/catch</li>
+</ol>
+<pre><code class="language-python">def _process_tags(session: Session, note: Note, tags_str: str) -&gt; None:
+    note.tags.clear()
+    session.flush()  # Clear associations
+    
+    tag_names = parse_tags(tags_str)  # Removes duplicates
+    for tag_name in tag_names:
+        tag = session.execute(
+            select(Tag).where(Tag.name == tag_name)
+        ).scalar_one_or_none()
+        
+        if not tag:
+            tag = Tag(name=tag_name)
+            session.add(tag)
+            try:
+                session.flush()  # Get tag ID
+            except IntegrityError:
+                # Tag created by concurrent request
+                session.rollback()
+                tag = session.execute(
+                    select(Tag).where(Tag.name == tag_name)
+                ).scalar_one_or_none()
+        
+        # Only add if not already attached
+        if tag not in note.tags:
+            note.tags.append(tag)
+</code></pre>
+<h2>Session Management</h2>
+<h3>Proper Flush Operations</h3>
+<p>To avoid SQLAlchemy warnings and ensure data consistency:</p>
+<pre><code class="language-python"># Add object to session BEFORE processing relationships
+note = Note(title=&quot;Test&quot;)
+session.add(note)
+session.flush()  # Note now has an ID
+
+# Process relationships
+for tag_name in tag_names:
+    tag = get_or_create_tag(session, tag_name)
+    note.tags.append(tag)
+
+session.flush()  # Flush associations
+session.commit()  # Commit transaction
+</code></pre>
+<h3>Rollback on Error</h3>
+<p>Always rollback the session on error to prevent partial commits:</p>
+<pre><code class="language-python">try:
+    # Operations
+    session.commit()
+except Exception as exc:
+    session.rollback()  # CRITICAL: Rollback on error
+    logger.error(f&quot;Error: {exc}&quot;)
+    raise
+</code></pre>
+<h2>Logging Strategy</h2>
+<h3>Log Levels</h3>
+<ul>
+<li><strong>ERROR</strong>: Database errors, unexpected exceptions</li>
+<li><strong>WARNING</strong>: Recoverable issues, deprecated features</li>
+<li><strong>INFO</strong>: Normal operation, user actions</li>
+<li><strong>DEBUG</strong>: Detailed debugging information</li>
+</ul>
+<h3>Log Format</h3>
+<pre><code class="language-python">logger.error(f&quot;Integrity error creating note: {exc}&quot;)
+# Output: ERROR:notehub.routes_modules.note_routes:Integrity error creating note: UNIQUE constraint failed: tags.name
+</code></pre>
+<h3>What to Log</h3>
+<p>✅ <strong>Do log</strong>:</p>
+<ul>
+<li>Exception type and message</li>
+<li>Operation being performed</li>
+<li>User ID (not username or email)</li>
+<li>Resource IDs</li>
+</ul>
+<p>❌ <strong>Don&#39;t log</strong>:</p>
+<ul>
+<li>Passwords or tokens</li>
+<li>Personal information (email, real names)</li>
+<li>Full request bodies with sensitive data</li>
+<li>Database connection strings with passwords</li>
+</ul>
+<h2>Testing Error Handling</h2>
+<h3>Test Structure</h3>
+<pre><code class="language-python">def test_error_handling(db_session, test_user):
+    &quot;&quot;&quot;Test that errors are handled gracefully.&quot;&quot;&quot;
+    try:
+        # Operation that should fail
+        service.operation_that_fails(...)
+        assert False, &quot;Should have raised an exception&quot;
+    except ExpectedException as exc:
+        # Verify error message
+        assert &quot;expected message&quot; in str(exc)
+</code></pre>
+<h3>Mock Errors</h3>
+<pre><code class="language-python">from unittest.mock import patch
+
+def test_database_error_handling(client, test_user):
+    &quot;&quot;&quot;Test handling of database errors.&quot;&quot;&quot;
+    with patch(&#39;src.notehub.database.SessionLocal&#39;) as mock_session:
+        mock_session.return_value.commit.side_effect = SQLAlchemyError(&quot;DB error&quot;)
+        
+        response = client.post(&#39;/note/new&#39;, data={...})
+        assert b&#39;Database error occurred&#39; in response.data
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Always rollback on error</strong>: Prevents partial commits</li>
+<li><strong>Log before raising</strong>: Ensure errors are logged even if caught elsewhere</li>
+<li><strong>User-friendly messages</strong>: Don&#39;t expose technical details to users</li>
+<li><strong>Specific error types</strong>: Catch specific exceptions before generic ones</li>
+<li><strong>Module-level loggers</strong>: Import logging at module level, not in functions</li>
+<li><strong>Test error paths</strong>: Write tests for error handling, not just happy paths</li>
+<li><strong>Document error behavior</strong>: Explain what errors mean and how to fix them</li>
+</ol>
+<h2>Common Error Scenarios</h2>
+<h3>Scenario 1: Duplicate Username</h3>
+<p><strong>Cause</strong>: User registration with existing username</p>
+<p><strong>Error Type</strong>: IntegrityError</p>
+<p><strong>Resolution</strong>: Inform user to choose different username</p>
+<h3>Scenario 2: Database Connection Lost</h3>
+<p><strong>Cause</strong>: Network issue or database service restart</p>
+<p><strong>Error Type</strong>: SQLAlchemyError</p>
+<p><strong>Resolution</strong>: Automatic retry (connection pooling), inform user to retry</p>
+<h3>Scenario 3: Concurrent Tag Creation</h3>
+<p><strong>Cause</strong>: Two requests creating same tag simultaneously</p>
+<p><strong>Error Type</strong>: IntegrityError (caught and handled)</p>
+<p><strong>Resolution</strong>: Automatic - fetch existing tag and continue</p>
+<h3>Scenario 4: Foreign Key Violation</h3>
+<p><strong>Cause</strong>: Deleting user with associated notes</p>
+<p><strong>Error Type</strong>: IntegrityError</p>
+<p><strong>Resolution</strong>: Cascade delete or prevent deletion with message</p>
+<h2>Monitoring and Alerting</h2>
+<h3>Metrics to Track</h3>
+<ol>
+<li><strong>Error rate</strong>: Percentage of requests resulting in errors</li>
+<li><strong>Error types</strong>: Distribution of IntegrityError vs SQLAlchemyError vs generic</li>
+<li><strong>Error frequency</strong>: Spike detection for systemic issues</li>
+<li><strong>Response time</strong>: Degradation indicating database issues</li>
+</ol>
+<h3>Alert Thresholds</h3>
+<ul>
+<li>Error rate &gt; 5%: Warning</li>
+<li>Error rate &gt; 10%: Critical</li>
+<li>Database connection errors &gt; 3 in 1 minute: Critical</li>
+<li>Repeated IntegrityError on same resource: Potential bug</li>
+</ul>
+<h2>Future Improvements</h2>
+<ol>
+<li><strong>Retry logic</strong>: Automatic retry for transient errors</li>
+<li><strong>Circuit breaker</strong>: Prevent cascading failures</li>
+<li><strong>Error reporting</strong>: Automatic bug reporting for unexpected errors</li>
+<li><strong>User feedback</strong>: Collect user feedback on error messages</li>
+<li><strong>Metrics dashboard</strong>: Real-time error monitoring</li>
+</ol>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

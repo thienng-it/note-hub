@@ -491,6 +491,28 @@ See [API Documentation](docs/api/JWT_API.md) for full reference.
 | [Implementation Summary](docs/investigation/IMPLEMENTATION_SUMMARY.md) | Performance enhancements |
 | [Test Suite Summary](docs/testing/TEST_SUITE_SUMMARY.md)      | Complete test documentation    |
 
+## 📚 Documentation
+
+All documentation is available in both Markdown and HTML formats for better readability:
+
+- **[Documentation Portal](docs/documentation.html)** - Beautiful web interface with search functionality
+- **[Complete Index](docs/INDEX.md)** - Full list of all documentation files
+- **[Getting Started](docs/README.md)** - Project overview and quick start
+
+### Building Documentation HTML
+
+The documentation is automatically converted from Markdown to HTML during deployment. To build locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Convert all markdown files to HTML
+npm run build:docs
+```
+
+This generates HTML files with consistent styling, syntax highlighting, and easy navigation between documents.
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

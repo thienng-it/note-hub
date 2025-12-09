@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - 🚀 Real-Time User Creation Database Logic Flow">
+    <title>🚀 Real-Time User Creation Database Logic Flow - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>🚀 Real-Time User Creation Database Logic Flow</span>
+        </div>
+
+        <article class="content">
+            <h1>🚀 Real-Time User Creation Database Logic Flow</h1>
+<h2>Overview</h2>
+<p>This document describes the <strong>enhanced, production-ready database logic flow</strong> for user account creation with real-time database persistence, comprehensive error handling, and audit logging.</p>
+<hr>
+<h2>📋 Complete Flow Diagram</h2>
+<pre><code>User Registration Request
+         │
+         ▼
+┌─────────────────────────────────────────┐
+│ 1. Form Validation                      │
+│    • Username format check              │
+│    • CSRF token validation              │
+│    • Field presence validation          │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 2. Pre-Transaction Validation           │
+│    • Password policy enforcement        │
+│    • Input sanitization (strip spaces)  │
+│    • Early validation before DB access  │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 3. Database Transaction Begins          │
+│    • Context manager: with db() as s:   │
+│    • Auto-rollback on exception         │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 4. Race Condition Prevention            │
+│    • SELECT username WHERE...           │
+│    • Inside transaction for consistency │
+│    • Return error if exists             │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 5. User Object Creation                 │
+│    • new_user = User(username=...)      │
+│    • set_password() with policy check   │
+│    • Automatic created_at timestamp     │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 6. Add to Session                       │
+│    • session.add(new_user)              │
+│    • User in pending state              │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 7. Flush to Get ID                      │
+│    • session.flush()                    │
+│    • User gets ID before commit         │
+│    • Needed for invitation link         │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 8. Handle Invitation (if present)       │
+│    • Re-fetch invitation in transaction │
+│    • Mark as used with user ID          │
+│    • Ensures consistency                │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 9. COMMIT TRANSACTION                   │
+│    • session.commit()                   │
+│    • ✅ USER SAVED TO DB IN REAL-TIME  │
+│    • Triggers after_insert event        │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 10. Event Listener Fires                │
+│     • _log_user_insert() called         │
+│     • Real-time audit log created       │
+│     • Monitoring tools notified         │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│ 11. Success Response                    │
+│     • Flash success message             │
+│     • Redirect to login page            │
+│     • Application logger records event  │
+└─────────────────────────────────────────┘
+
+     ERROR HANDLING AT EACH STEP:
+
+     IntegrityError → Username collision
+          ↓
+     Rollback + User-friendly message
+
+     SQLAlchemyError → Database issue
+          ↓
+     Rollback + Generic error message
+
+     ValueError → Password policy
+          ↓
+     No DB transaction + Policy message
+
+     Exception → Unexpected error
+          ↓
+     Rollback + Logged for debugging
+</code></pre>
+<hr>
+<h2>🔑 Key Components</h2>
+<h3>1. <strong>Database Layer</strong> (<code>database.py</code>)</h3>
+<h4>Enhanced Session Management</h4>
+<pre><code class="language-python">@contextmanager
+def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+        # Commit happens explicitly in routes
+    except Exception:
+        session.rollback()  # ← Automatic rollback
+        logger.error(&quot;Session rolled back due to exception&quot;)
+        raise
+    finally:
+        session.close()
+</code></pre>
+<h4>Real-Time Event Listeners</h4>
+<pre><code class="language-python">def _log_user_insert(mapper, connection, target):
+    &quot;&quot;&quot;Fires IMMEDIATELY when user is saved to DB&quot;&quot;&quot;
+    logger.info(
+        f&quot;✅ USER CREATED IN REAL-TIME | &quot;
+        f&quot;ID: {target.id} | &quot;
+        f&quot;Username: {target.username} | &quot;
+        f&quot;Created: {target.created_at}&quot;
+    )
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>✅ Connection pooling with health checks (<code>pool_pre_ping=True</code>)</li>
+<li>✅ Automatic connection recycling (every 1 hour)</li>
+<li>✅ Real-time audit logging on insert/update</li>
+<li>✅ Automatic rollback on exceptions</li>
+</ul>
+<hr>
+<h3>2. <strong>User Model</strong> (<code>models.py</code>)</h3>
+<h4>Database Constraints</h4>
+<pre><code class="language-python">class User(Base):
+    __table_args__ = (
+        Index(&#39;ix_users_username&#39;, &#39;username&#39;, unique=True),
+        Index(&#39;ix_users_email&#39;, &#39;email&#39;),
+        Index(&#39;ix_users_created_at&#39;, &#39;created_at&#39;),
+    )
+
+    username = Column(String(64), unique=True, nullable=False, index=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
+                       nullable=False, index=True)
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>✅ Unique constraint on username (DB-level enforcement)</li>
+<li>✅ Indexes for fast lookups</li>
+<li>✅ Automatic timestamp creation</li>
+<li>✅ NOT NULL constraints</li>
+</ul>
+<hr>
+<h3>3. <strong>Registration Route</strong> (<code>routes/__init__.py</code>)</h3>
+<h4>Enhanced Error Handling</h4>
+<pre><code class="language-python">try:
+    with db() as s:
+        # Username check
+        existing_user = s.execute(
+            select(User).where(User.username == username)
+        ).scalar_one_or_none()
+
+        if existing_user:
+            flash(&quot;Username already exists.&quot;, &quot;error&quot;)
+            return render_template(...)
+
+        # Create user
+        new_user = User(username=username)
+        new_user.set_password(password)
+        s.add(new_user)
+        s.flush()  # Get ID before commit
+
+        # Handle invitation
+        if invitation:
+            invitation.used = True
+            invitation.used_by_id = new_user.id
+
+        s.commit()  # ← Real-time DB save
+
+except IntegrityError:
+    # Race condition caught
+    flash(&quot;Username already exists...&quot;, &quot;error&quot;)
+except SQLAlchemyError:
+    # Database errors
+    flash(&quot;Database error...&quot;, &quot;error&quot;)
+except Exception:
+    # Unexpected errors
+    logger.error(&quot;Unexpected error&quot;, exc_info=True)
+    flash(&quot;Unexpected error...&quot;, &quot;error&quot;)
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>✅ Pre-transaction password validation</li>
+<li>✅ Input sanitization (strip whitespace)</li>
+<li>✅ Within-transaction uniqueness check</li>
+<li>✅ Flush before updating related records</li>
+<li>✅ Comprehensive error handling</li>
+<li>✅ Automatic rollback on failure</li>
+</ul>
+<hr>
+<h2>🛡️ Security Features</h2>
+<h3>1. <strong>Password Policy Enforcement</strong></h3>
+<pre><code class="language-python">def password_policy_errors(password: str) -&gt; List[str]:
+    &quot;&quot;&quot;Returns list of policy violations&quot;&quot;&quot;
+    - Minimum 12 characters
+    - Lowercase letters
+    - Uppercase letters
+    - Numbers
+    - Special characters
+    - No whitespace
+</code></pre>
+<p><strong>Enforced at TWO levels:</strong></p>
+<ol>
+<li>Pre-transaction check in route</li>
+<li>Model validation in <code>set_password()</code></li>
+</ol>
+<h3>2. <strong>Race Condition Prevention</strong></h3>
+<pre><code class="language-python"># Check happens INSIDE transaction
+with db() as s:
+    existing = s.execute(select(User).where(...))
+    if existing:
+        return error
+    # Create new user immediately after check
+    s.add(new_user)
+    s.commit()
+</code></pre>
+<h3>3. <strong>Database-Level Constraints</strong></h3>
+<ul>
+<li><code>UNIQUE</code> constraint on username</li>
+<li><code>NOT NULL</code> on required fields</li>
+<li>Index for fast duplicate detection</li>
+</ul>
+<hr>
+<h2>📊 Real-Time Monitoring</h2>
+<h3>Event Logging Output</h3>
+<pre><code>✅ USER CREATED IN REAL-TIME | ID: 42 | Username: john_doe | Email: john@example.com | Created: 2025-11-22 10:30:45 | 2FA: Disabled
+</code></pre>
+<h3>Application Logging</h3>
+<pre><code>✅ User registration successful | Username: john_doe | ID: 42 | Saved to DB: Real-time
+</code></pre>
+<h3>Database Monitoring Scripts</h3>
+<ul>
+<li><code>monitor_db_realtime.py</code> - Watch for new users in real-time</li>
+<li><code>user_dashboard.py</code> - Live user statistics</li>
+<li><code>test_create_user.py</code> - Create test users with instant verification</li>
+</ul>
+<hr>
+<h2>⚡ Performance Optimizations</h2>
+<h3>1. <strong>Connection Pooling</strong></h3>
+<pre><code class="language-python">create_engine(
+    database_uri,
+    pool_pre_ping=True,    # Health check before use
+    pool_recycle=3600,     # Recycle every hour
+)
+</code></pre>
+<h3>2. <strong>Strategic Indexes</strong></h3>
+<pre><code class="language-sql">CREATE UNIQUE INDEX ix_users_username ON users(username);
+CREATE INDEX ix_users_email ON users(email);
+CREATE INDEX ix_users_created_at ON users(created_at);
+</code></pre>
+<h3>3. <strong>Efficient Transactions</strong></h3>
+<ul>
+<li>Flush only when ID needed</li>
+<li>Commit once at the end</li>
+<li>Minimal database round-trips</li>
+</ul>
+<hr>
+<h2>🧪 Testing the Flow</h2>
+<h3>1. <strong>Manual Test</strong></h3>
+<pre><code class="language-bash"># Terminal 1: Start monitoring
+python scripts/monitoring/monitor_db_realtime.py
+
+# Terminal 2: Create user via web
+# Register at http://localhost:5000/register
+
+# Terminal 1 will show:
+# ✅ NEW USER DETECTED! | ID: 42 | Username: testuser | Created: 2025-11-22...
+</code></pre>
+<h3>2. <strong>Script Test</strong></h3>
+<pre><code class="language-bash">python scripts/monitoring/test_create_user.py testuser &quot;SecurePass123!@#&quot;
+
+# Output:
+# ✅ User created successfully!
+# User Details:
+#   ID:         42
+#   Username:   testuser
+#   Created:    2025-11-22 10:30:45
+# ✅ DATABASE UPDATED IN REAL-TIME!
+</code></pre>
+<h3>3. <strong>Race Condition Test</strong></h3>
+<pre><code class="language-bash"># Run multiple registrations simultaneously
+python scripts/monitoring/demo_realtime_user_creation.py
+
+# Demonstrates:
+# - Concurrent user creation
+# - Proper constraint enforcement
+# - No duplicate usernames
+</code></pre>
+<hr>
+<h2>🔄 Transaction Flow Details</h2>
+<h3>Successful Registration</h3>
+<pre><code>1. BEGIN TRANSACTION
+2. SELECT * FROM users WHERE username = &#39;john_doe&#39;  (empty result)
+3. INSERT INTO users (username, password_hash, created_at, ...) VALUES (...)
+4. SELECT * FROM invitations WHERE id = 123  (if invitation)
+5. UPDATE invitations SET used = 1, used_by_id = 42 WHERE id = 123
+6. COMMIT  ← User saved to DB in real-time
+7. Event listener fires → Audit log created
+</code></pre>
+<h3>Failed Registration (Duplicate)</h3>
+<pre><code>1. BEGIN TRANSACTION
+2. SELECT * FROM users WHERE username = &#39;john_doe&#39;  (found existing)
+3. Flash error message
+4. Return form with error
+5. ROLLBACK (automatic via context manager)
+</code></pre>
+<h3>Failed Registration (Concurrent)</h3>
+<pre><code>Thread A                          Thread B
+BEGIN                            BEGIN
+SELECT (not found)               SELECT (not found)
+INSERT INTO users...             INSERT INTO users...
+COMMIT ✅                         COMMIT ❌ IntegrityError
+                                 ROLLBACK
+                                 Flash error
+</code></pre>
+<hr>
+<h2>📈 Monitoring &amp; Observability</h2>
+<h3>Real-Time Detection</h3>
+<p>The system supports real-time monitoring through:</p>
+<ol>
+<li><strong>Database Event Listeners</strong> - Fire on INSERT/UPDATE</li>
+<li><strong>Application Logs</strong> - Structured logging with timestamps</li>
+<li><strong>Monitoring Scripts</strong> - Poll database for changes</li>
+</ol>
+<h3>Audit Trail</h3>
+<p>Every user creation is logged with:</p>
+<ul>
+<li>Exact timestamp (UTC)</li>
+<li>Username and ID</li>
+<li>Email (if provided)</li>
+<li>2FA status</li>
+<li>Action type (create/update)</li>
+</ul>
+<hr>
+<h2>🚨 Error Scenarios &amp; Handling</h2>
+<table>
+<thead>
+<tr>
+<th>Error Type</th>
+<th>Detection</th>
+<th>Action</th>
+<th>User Message</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Duplicate Username (pre-check)</td>
+<td>SELECT in transaction</td>
+<td>Return early</td>
+<td>&quot;Username already exists&quot;</td>
+</tr>
+<tr>
+<td>Duplicate Username (race)</td>
+<td>IntegrityError on commit</td>
+<td>Rollback</td>
+<td>&quot;Username already exists...&quot;</td>
+</tr>
+<tr>
+<td>Password Policy</td>
+<td>ValueError in set_password()</td>
+<td>No transaction</td>
+<td>&quot;Password policy violation: ...&quot;</td>
+</tr>
+<tr>
+<td>Database Error</td>
+<td>SQLAlchemyError</td>
+<td>Rollback</td>
+<td>&quot;An error occurred...&quot;</td>
+</tr>
+<tr>
+<td>Unexpected Error</td>
+<td>Exception</td>
+<td>Rollback + log</td>
+<td>&quot;Unexpected error occurred&quot;</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>✅ Summary: What Makes This Production-Ready</h2>
+<ol>
+<li><p><strong>Real-Time Persistence</strong> ✅</p>
+<ul>
+<li>User saved to database immediately on commit</li>
+<li>Event listeners fire for instant monitoring</li>
+<li>No delays or background jobs needed</li>
+</ul>
+</li>
+<li><p><strong>Race Condition Safe</strong> ✅</p>
+<ul>
+<li>Username check inside transaction</li>
+<li>Database-level unique constraint</li>
+<li>Proper IntegrityError handling</li>
+</ul>
+</li>
+<li><p><strong>Comprehensive Error Handling</strong> ✅</p>
+<ul>
+<li>Try/except at multiple levels</li>
+<li>Automatic rollback on failures</li>
+<li>User-friendly error messages</li>
+<li>Detailed logging for debugging</li>
+</ul>
+</li>
+<li><p><strong>Performance Optimized</strong> ✅</p>
+<ul>
+<li>Connection pooling</li>
+<li>Strategic indexes</li>
+<li>Minimal round-trips</li>
+</ul>
+</li>
+<li><p><strong>Audit Trail</strong> ✅</p>
+<ul>
+<li>Real-time logging</li>
+<li>Timestamp tracking</li>
+<li>Change detection</li>
+</ul>
+</li>
+<li><p><strong>Security</strong> ✅</p>
+<ul>
+<li>Password policy enforcement</li>
+<li>Input sanitization</li>
+<li>SQL injection prevention (parameterized queries)</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>🎯 Next Steps</h2>
+<ol>
+<li><p><strong>Run Schema Upgrade</strong></p>
+<pre><code class="language-bash">python scripts/upgrade_db_schema.py
+</code></pre>
+</li>
+<li><p><strong>Test Real-Time Creation</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/test_create_user.py testuser &quot;Test123!@#&quot;
+</code></pre>
+</li>
+<li><p><strong>Monitor in Real-Time</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/monitor_db_realtime.py
+</code></pre>
+</li>
+<li><p><strong>Verify Everything Works</strong></p>
+<pre><code class="language-bash">bash scripts/quick_test.sh
+</code></pre>
+</li>
+</ol>
+<hr>
+<p><strong>Last Updated:</strong> 2025-11-22<br><strong>Version:</strong> 2.0 (Enhanced with real-time monitoring)</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

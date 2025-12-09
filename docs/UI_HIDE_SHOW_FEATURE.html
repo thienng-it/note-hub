@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Hide/Show Content Feature - UI Documentation">
+    <title>Hide/Show Content Feature - UI Documentation - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Hide/Show Content Feature - UI Documentation</span>
+        </div>
+
+        <article class="content">
+            <h1>Hide/Show Content Feature - UI Documentation</h1>
+<h2>Overview</h2>
+<p>Added hide/show content buttons for all notes and tasks in the UI, allowing users to quickly hide sensitive information when needed.</p>
+<h2>Implementation Details</h2>
+<h3>Notes Page</h3>
+<p>The notes page already had hide/show functionality implemented. This feature includes:</p>
+<ul>
+<li><strong>Individual note hiding</strong>: Each note card has a hide/show button (eye/eye-slash icon)</li>
+<li><strong>Persistent state</strong>: Hidden notes are saved in localStorage</li>
+<li><strong>Visual feedback</strong>: Hidden notes show a &quot;Content hidden&quot; message with a &quot;Show&quot; button</li>
+<li><strong>Hover action</strong>: The hide button appears on hover in the note&#39;s action menu</li>
+</ul>
+<p><strong>Location</strong>: <code>frontend/src/pages/NotesPage.tsx</code></p>
+<p><strong>UI Elements</strong>:</p>
+<ul>
+<li>Eye-slash icon button in the note card&#39;s quick actions menu</li>
+<li>When hidden: Shows &quot;Content hidden&quot; message with inline &quot;Show&quot; button</li>
+<li>Purple color scheme for the hide/show button to distinguish from other actions</li>
+</ul>
+<h3>Tasks Page (NEW)</h3>
+<p>Added the same hide/show functionality to the tasks page:</p>
+<ul>
+<li><strong>Individual task hiding</strong>: Each task item has a hide/show button (eye/eye-slash icon)</li>
+<li><strong>Persistent state</strong>: Hidden tasks are saved in localStorage under &#39;hiddenTasks&#39; key</li>
+<li><strong>Visual feedback</strong>: Hidden tasks show a &quot;Content hidden&quot; message with a &quot;Show&quot; button</li>
+<li><strong>Always visible</strong>: The hide button is visible alongside edit and delete buttons</li>
+</ul>
+<p><strong>Location</strong>: <code>frontend/src/pages/TasksPage.tsx</code></p>
+<p><strong>Changes Made</strong>:</p>
+<ol>
+<li><p>Added state management for hidden tasks:</p>
+<pre><code class="language-typescript">const [hiddenTasks, setHiddenTasks] = useState&lt;Set&lt;number&gt;&gt;(() =&gt; {
+  const saved = localStorage.getItem(&#39;hiddenTasks&#39;);
+  return saved ? new Set(JSON.parse(saved)) : new Set();
+});
+</code></pre>
+</li>
+<li><p>Added toggle function:</p>
+<pre><code class="language-typescript">const toggleHideTask = (taskId: number) =&gt; {
+  setHiddenTasks(prev =&gt; {
+    const newSet = new Set(prev);
+    if (newSet.has(taskId)) {
+      newSet.delete(taskId);
+    } else {
+      newSet.add(taskId);
+    }
+    localStorage.setItem(&#39;hiddenTasks&#39;, JSON.stringify([...newSet]));
+    return newSet;
+  });
+};
+</code></pre>
+</li>
+<li><p>Updated task rendering to conditionally show/hide content:</p>
+<ul>
+<li>When hidden: Shows &quot;Content hidden&quot; with a &quot;Show&quot; button</li>
+<li>When visible: Shows full task description and metadata</li>
+</ul>
+</li>
+<li><p>Added hide/show button to task actions:</p>
+<ul>
+<li>Eye-slash icon to hide content</li>
+<li>Eye icon when content is hidden</li>
+<li>Purple color scheme for consistency with notes</li>
+</ul>
+</li>
+</ol>
+<h2>User Experience</h2>
+<h3>Notes Page Behavior</h3>
+<ol>
+<li>User hovers over a note card</li>
+<li>Quick action buttons appear including the eye-slash icon</li>
+<li>Clicking the icon hides the note&#39;s excerpt and tags</li>
+<li>Hidden note shows &quot;Content hidden&quot; message</li>
+<li>Clicking &quot;Show&quot; button or the eye icon reveals content again</li>
+</ol>
+<h3>Tasks Page Behavior</h3>
+<ol>
+<li>Each task displays action buttons (hide, edit, delete)</li>
+<li>Clicking the eye-slash icon hides the task&#39;s description and dates</li>
+<li>Hidden task shows &quot;Content hidden&quot; message with inline &quot;Show&quot; button</li>
+<li>Clicking &quot;Show&quot; or the eye icon reveals content again</li>
+<li>Task completion status and actions remain visible even when hidden</li>
+</ol>
+<h2>Privacy Features</h2>
+<ul>
+<li><strong>Persistent</strong>: Hidden state survives page reloads via localStorage</li>
+<li><strong>Independent</strong>: Each note/task can be hidden individually</li>
+<li><strong>Quick toggle</strong>: Single click to hide/show</li>
+<li><strong>Clear indication</strong>: Visual feedback shows what&#39;s hidden</li>
+<li><strong>Accessible</strong>: Can show content with a single click when needed</li>
+</ul>
+<h2>Storage</h2>
+<ul>
+<li>Notes hidden state: <code>localStorage.getItem(&#39;hiddenNotes&#39;)</code></li>
+<li>Tasks hidden state: <code>localStorage.getItem(&#39;hiddenTasks&#39;)</code></li>
+<li>Both stored as JSON arrays of IDs</li>
+</ul>
+<h2>Use Cases</h2>
+<ol>
+<li><strong>Screen sharing</strong>: Quickly hide sensitive information during presentations</li>
+<li><strong>Privacy</strong>: Hide personal tasks/notes when showing the screen to others</li>
+<li><strong>Focus</strong>: Reduce visual clutter by hiding less important items</li>
+<li><strong>Security</strong>: Quick privacy layer for sensitive information</li>
+</ol>
+<h2>Visual Design</h2>
+<ul>
+<li><strong>Icon</strong>: Font Awesome eye/eye-slash icons</li>
+<li><strong>Color</strong>: Purple (#7c3aed) for hide/show actions</li>
+<li><strong>Hover state</strong>: Lighter purple on hover</li>
+<li><strong>Hidden state</strong>: Gray background with muted text</li>
+<li><strong>Show button</strong>: Blue background (#3b82f6) with white text</li>
+</ul>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

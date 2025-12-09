@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Google Single Sign-On (SSO) Setup Guide">
+    <title>Google Single Sign-On (SSO) Setup Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Google Single Sign-On (SSO) Setup Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Google Single Sign-On (SSO) Setup Guide</h1>
+<h2>Overview</h2>
+<p>NoteHub supports Google OAuth 2.0 for Single Sign-On (SSO), allowing users to sign in with their Google account instead of creating a separate username/password.</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>✅ One-click Google Sign-In</li>
+<li>✅ Automatic account creation</li>
+<li>✅ Secure OAuth 2.0 flow</li>
+<li>✅ Optional - app works without it</li>
+<li>✅ Email verification through Google</li>
+</ul>
+<hr>
+<h2>Prerequisites</h2>
+<ul>
+<li>Google Cloud Console account</li>
+<li>Domain for production deployment (optional for development)</li>
+</ul>
+<hr>
+<h2>Setup Instructions</h2>
+<h3>Step 1: Create Google Cloud Project</h3>
+<ol>
+<li>Go to <a href="https://console.cloud.google.com/">Google Cloud Console</a></li>
+<li>Click &quot;Select a project&quot; → &quot;New Project&quot;</li>
+<li>Enter project name: <code>NoteHub</code> (or your app name)</li>
+<li>Click &quot;Create&quot;</li>
+<li>Wait for project creation (takes ~30 seconds)</li>
+<li>Select your new project</li>
+</ol>
+<h3>Step 2: Enable Google+ API</h3>
+<ol>
+<li>In the Google Cloud Console, open the menu (☰)</li>
+<li>Navigate to &quot;APIs &amp; Services&quot; → &quot;Library&quot;</li>
+<li>Search for &quot;Google+ API&quot;</li>
+<li>Click &quot;Google+ API&quot;</li>
+<li>Click &quot;Enable&quot;</li>
+<li>Wait for API to be enabled</li>
+</ol>
+<p><strong>Note:</strong> This API is required for accessing user profile information.</p>
+<h3>Step 3: Configure OAuth Consent Screen</h3>
+<ol>
+<li>Navigate to &quot;APIs &amp; Services&quot; → &quot;OAuth consent screen&quot;</li>
+<li>Select &quot;External&quot; user type</li>
+<li>Click &quot;Create&quot;</li>
+</ol>
+<p><strong>Fill in required information:</strong></p>
+<ul>
+<li><strong>App name:</strong> NoteHub</li>
+<li><strong>User support email:</strong> <a href="mailto:your-email@example.com">your-email@example.com</a></li>
+<li><strong>App logo:</strong> (optional) Upload your logo</li>
+<li><strong>Application home page:</strong> <a href="https://your-domain.com">https://your-domain.com</a></li>
+<li><strong>Authorized domains:</strong> your-domain.com</li>
+<li><strong>Developer contact email:</strong> <a href="mailto:your-email@example.com">your-email@example.com</a></li>
+</ul>
+<ol start="4">
+<li>Click &quot;Save and Continue&quot;</li>
+</ol>
+<p><strong>Scopes:</strong></p>
+<ul>
+<li>Click &quot;Add or Remove Scopes&quot;</li>
+<li>Add the following scopes:<ul>
+<li><code>.../auth/userinfo.email</code></li>
+<li><code>.../auth/userinfo.profile</code></li>
+</ul>
+</li>
+<li>Click &quot;Update&quot;</li>
+<li>Click &quot;Save and Continue&quot;</li>
+</ul>
+<p><strong>Test users (for development):</strong></p>
+<ul>
+<li>Add your Google email addresses</li>
+<li>Click &quot;Save and Continue&quot;</li>
+</ul>
+<ol start="5">
+<li>Click &quot;Back to Dashboard&quot;</li>
+</ol>
+<h3>Step 4: Create OAuth 2.0 Credentials</h3>
+<ol>
+<li>Navigate to &quot;APIs &amp; Services&quot; → &quot;Credentials&quot;</li>
+<li>Click &quot;Create Credentials&quot; → &quot;OAuth client ID&quot;</li>
+<li>Select &quot;Web application&quot;</li>
+</ol>
+<p><strong>Configure:</strong></p>
+<ul>
+<li><p><strong>Name:</strong> NoteHub Web Client</p>
+</li>
+<li><p><strong>Authorized JavaScript origins:</strong></p>
+<ul>
+<li>Docker: <code>http://localhost</code></li>
+<li>Development: <code>http://localhost:3000</code></li>
+<li>Production: <code>https://your-domain.com</code></li>
+</ul>
+</li>
+<li><p><strong>Authorized redirect URIs (ADD ALL THAT APPLY):</strong></p>
+<ul>
+<li>Docker deployment: <code>http://localhost/auth/google/callback</code></li>
+<li>Development (npm): <code>http://localhost:3000/auth/google/callback</code></li>
+<li>Production: <code>https://your-domain.com/auth/google/callback</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Important:</strong> Add ALL redirect URIs for your deployment environments. The OAuth flow will fail if the redirect URI doesn&#39;t match exactly.</p>
+<ol start="4">
+<li>Click &quot;Create&quot;</li>
+<li><strong>Save your credentials:</strong><ul>
+<li>Client ID: <code>123456789-abcdef.apps.googleusercontent.com</code></li>
+<li>Client Secret: <code>GOCSPX-xxxxxxxxxxxxx</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>Important:</strong> Keep these credentials secure! Never commit them to version control.</p>
+<h3>Step 5: Configure NoteHub Backend</h3>
+<ol>
+<li><p>Copy <code>.env.example</code> to <code>.env</code>:</p>
+<pre><code class="language-bash">cp .env.example .env
+</code></pre>
+</li>
+<li><p>Add Google OAuth credentials to <code>.env</code>:</p>
+<p><strong>For Docker deployment (port 80):</strong></p>
+<pre><code class="language-bash"># Google OAuth Configuration
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+</code></pre>
+<p><strong>For development (npm run dev, port 3000):</strong></p>
+<pre><code class="language-bash"># Google OAuth Configuration
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
+</code></pre>
+<p><strong>For production:</strong></p>
+<pre><code class="language-bash"># Google OAuth Configuration
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=https://your-domain.com/auth/google/callback
+</code></pre>
+</li>
+</ol>
+<p><strong>Important:</strong> The <code>GOOGLE_REDIRECT_URI</code> must match:</p>
+<ul>
+<li>Your deployment environment&#39;s port</li>
+<li>The redirect URI added to Google Cloud Console</li>
+<li>The URL structure (HTTP for local, HTTPS for production)</li>
+</ul>
+<h3>Step 6: Update Frontend Routes</h3>
+<p>The Google callback route is already configured in the application:</p>
+<pre><code class="language-typescript">// Already implemented in App.tsx
+&lt;Route path=&quot;/auth/google/callback&quot; element={&lt;GoogleCallbackPage /&gt;} /&gt;
+</code></pre>
+<p>No changes needed unless you&#39;re modifying the routing structure.</p>
+<h3>Step 7: Test the Integration</h3>
+<p><strong>Docker Deployment:</strong></p>
+<ol>
+<li>Start Docker: <code>docker compose up -d</code></li>
+<li>Navigate to: <code>http://localhost/login</code></li>
+<li>Click &quot;Sign in with Google&quot;</li>
+<li>Select your Google account</li>
+<li>Grant permissions</li>
+<li>You should be redirected to <code>http://localhost/</code> and logged in</li>
+</ol>
+<p><strong>Development (npm):</strong></p>
+<ol>
+<li>Start backend: <code>cd backend &amp;&amp; npm start</code></li>
+<li>Start frontend: <code>cd frontend &amp;&amp; npm run dev</code></li>
+<li>Navigate to: <code>http://localhost:3000/login</code></li>
+<li>Click &quot;Sign in with Google&quot;</li>
+<li>Select your Google account</li>
+<li>Grant permissions</li>
+<li>You should be redirected to <code>http://localhost:3000/</code> and logged in</li>
+</ol>
+<p><strong>Verify:</strong></p>
+<ul>
+<li>Check console logs for: <code>🔐 Google OAuth configured - SSO enabled</code></li>
+<li>User created in database with Google email</li>
+<li>JWT tokens stored in localStorage</li>
+<li>You&#39;re redirected to home page after successful login</li>
+</ul>
+<hr>
+<h2>How It Works</h2>
+<h3>Authentication Flow</h3>
+<pre><code>1. User clicks &quot;Sign in with Google&quot;
+   ↓
+2. Frontend requests OAuth URL from backend
+   GET /api/auth/google
+   ↓
+3. Backend returns Google authorization URL
+   ↓
+4. User redirected to Google login
+   ↓
+5. User signs in and grants permissions
+   ↓
+6. Google redirects to callback URL with code
+   ↓
+7. Frontend sends code to backend
+   POST /api/auth/google/callback
+   ↓
+8. Backend exchanges code for tokens
+   ↓
+9. Backend gets user info from Google
+   ↓
+10. Backend creates user (if new) or logs in
+    ↓
+11. Backend returns JWT tokens
+    ↓
+12. Frontend stores tokens and redirects to app
+</code></pre>
+<h3>User Creation</h3>
+<p><strong>For new Google users:</strong></p>
+<ol>
+<li>Extract email from Google profile</li>
+<li>Generate username from email (before @)</li>
+<li>If username exists, append random suffix</li>
+<li>Create user with random password hash</li>
+<li>Store email and mark as verified</li>
+<li>Return JWT tokens</li>
+</ol>
+<p><strong>For existing users:</strong></p>
+<ol>
+<li>Find user by email</li>
+<li>Return JWT tokens</li>
+<li>Update last login</li>
+</ol>
+<p><strong>Security Note:</strong> Google OAuth users have random password hashes and cannot use password login. They must use Google Sign-In.</p>
+<hr>
+<h2>API Endpoints</h2>
+<h3>GET /api/auth/google/status</h3>
+<p>Check if Google OAuth is configured.</p>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;enabled&quot;: true
+}
+</code></pre>
+<h3>GET /api/auth/google</h3>
+<p>Get Google OAuth authorization URL.</p>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;auth_url&quot;: &quot;https://accounts.google.com/o/oauth2/v2/auth?...&quot;
+}
+</code></pre>
+<p><strong>Error (503):</strong></p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Google OAuth not configured&quot;
+}
+</code></pre>
+<h3>POST /api/auth/google/callback</h3>
+<p>Complete Google OAuth flow.</p>
+<p><strong>Request:</strong></p>
+<pre><code class="language-json">{
+  &quot;code&quot;: &quot;4/0AXX...&quot;,  // Authorization code from Google
+  &quot;id_token&quot;: &quot;eyJ...&quot;   // Alternative: ID token (for frontend flow)
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;access_token&quot;: &quot;eyJhbGc...&quot;,
+  &quot;refresh_token&quot;: &quot;eyJhbGc...&quot;,
+  &quot;token_type&quot;: &quot;Bearer&quot;,
+  &quot;expires_in&quot;: 86400,
+  &quot;user&quot;: {
+    &quot;id&quot;: 123,
+    &quot;username&quot;: &quot;john_doe&quot;,
+    &quot;email&quot;: &quot;john@gmail.com&quot;,
+    &quot;has_2fa&quot;: false,
+    &quot;auth_method&quot;: &quot;google&quot;
+  }
+}
+</code></pre>
+<p><strong>Error (400):</strong></p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Authorization code or ID token required&quot;
+}
+</code></pre>
+<hr>
+<h2>Frontend Integration</h2>
+<h3>Login Page</h3>
+<p>The Google Sign-In button appears automatically if OAuth is configured:</p>
+<pre><code class="language-tsx">import { useState, useEffect } from &#39;react&#39;;
+import { apiClient } from &#39;../api/client&#39;;
+
+// Check if Google OAuth is available
+const [googleEnabled, setGoogleEnabled] = useState(false);
+
+useEffect(() =&gt; {
+  const checkGoogle = async () =&gt; {
+    const res = await apiClient.get(&#39;/api/auth/google/status&#39;);
+    setGoogleEnabled(res.data.enabled);
+  };
+  checkGoogle();
+}, []);
+
+// Google Sign-In handler
+const handleGoogleSignIn = async () =&gt; {
+  const res = await apiClient.get(&#39;/api/auth/google&#39;);
+  window.location.href = res.data.auth_url;
+};
+
+// Render button
+{googleEnabled &amp;&amp; (
+  &lt;button onClick={handleGoogleSignIn}&gt;
+    Sign in with Google
+  &lt;/button&gt;
+)}
+</code></pre>
+<h3>Callback Page</h3>
+<p>Handles the OAuth redirect:</p>
+<pre><code class="language-tsx">import { useEffect } from &#39;react&#39;;
+import { useNavigate, useSearchParams } from &#39;react-router-dom&#39;;
+import { apiClient } from &#39;../api/client&#39;;
+
+export function GoogleCallbackPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() =&gt; {
+    const code = searchParams.get(&#39;code&#39;);
+    
+    // Exchange code for tokens
+    const response = await apiClient.post(&#39;/api/auth/google/callback&#39;, { code });
+    
+    // Store tokens
+    localStorage.setItem(&#39;access_token&#39;, response.data.access_token);
+    localStorage.setItem(&#39;refresh_token&#39;, response.data.refresh_token);
+    
+    // Redirect to app
+    navigate(&#39;/&#39;, { replace: true });
+  }, []);
+
+  return &lt;div&gt;Signing you in...&lt;/div&gt;;
+}
+</code></pre>
+<hr>
+<h2>Security Considerations</h2>
+<h3>Token Storage</h3>
+<ul>
+<li>Access tokens stored in localStorage (24h expiry)</li>
+<li>Refresh tokens stored in localStorage (30d expiry)</li>
+<li>Alternative: Use httpOnly cookies for better security</li>
+</ul>
+<h3>Email Verification</h3>
+<ul>
+<li>Google provides verified emails only</li>
+<li>No need for separate email verification flow</li>
+<li>Users can only sign in with verified Google accounts</li>
+</ul>
+<h3>2FA</h3>
+<ul>
+<li>Google OAuth users bypass 2FA requirement</li>
+<li>Google&#39;s own 2FA protects their account</li>
+<li>Optional: Require 2FA setup after first Google sign-in</li>
+</ul>
+<h3>Account Linking</h3>
+<ul>
+<li>Currently: One email = one account</li>
+<li>Users with existing password accounts can&#39;t link Google</li>
+<li>Future: Allow account linking/unlinking</li>
+</ul>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>&quot;Google OAuth not configured&quot;</h3>
+<p><strong>Problem:</strong> Backend shows this message on startup</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Check <code>.env</code> file exists</li>
+<li>Verify all three variables set:<ul>
+<li><code>GOOGLE_CLIENT_ID</code></li>
+<li><code>GOOGLE_CLIENT_SECRET</code></li>
+<li><code>GOOGLE_REDIRECT_URI</code></li>
+</ul>
+</li>
+<li>Restart backend server</li>
+</ol>
+<h3>&quot;Redirect URI mismatch&quot;</h3>
+<p><strong>Problem:</strong> Google shows error during sign-in</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Go to Google Cloud Console → Credentials</li>
+<li>Edit OAuth client ID</li>
+<li>Add exact redirect URI: <code>http://localhost:3000/auth/google/callback</code></li>
+<li>Save and try again</li>
+</ol>
+<h3>&quot;Access blocked: This app&#39;s request is invalid&quot;</h3>
+<p><strong>Problem:</strong> OAuth consent screen not configured</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Go to Google Cloud Console → OAuth consent screen</li>
+<li>Complete all required fields</li>
+<li>Add test users (for development)</li>
+<li>Publish app (for production)</li>
+</ol>
+<h3>&quot;Failed to get user information&quot;</h3>
+<p><strong>Problem:</strong> API not enabled or wrong scopes</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Enable Google+ API in Cloud Console</li>
+<li>Check OAuth scopes include:<ul>
+<li><code>userinfo.email</code></li>
+<li><code>userinfo.profile</code></li>
+</ul>
+</li>
+<li>Regenerate credentials if needed</li>
+</ol>
+<h3>User created but email not stored</h3>
+<p><strong>Problem:</strong> Database doesn&#39;t store Google email</p>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Check backend logs for errors</li>
+<li>Verify <code>users</code> table has <code>email</code> column</li>
+<li>Check SQL INSERT statement</li>
+</ul>
+<hr>
+<h2>Production Deployment</h2>
+<h3>Pre-launch Checklist</h3>
+<ul>
+<li><input disabled="" type="checkbox"> OAuth consent screen published (not in testing mode)</li>
+<li><input disabled="" type="checkbox"> Production redirect URI added to Google credentials</li>
+<li><input disabled="" type="checkbox"> <code>GOOGLE_REDIRECT_URI</code> updated in production <code>.env</code></li>
+<li><input disabled="" type="checkbox"> HTTPS enabled (required by Google)</li>
+<li><input disabled="" type="checkbox"> Domain verified in Google Cloud Console</li>
+<li><input disabled="" type="checkbox"> Test with multiple Google accounts</li>
+<li><input disabled="" type="checkbox"> Error handling tested</li>
+<li><input disabled="" type="checkbox"> Logging configured</li>
+</ul>
+<h3>Environment Variables</h3>
+<p><strong>Development:</strong></p>
+<pre><code class="language-bash">GOOGLE_CLIENT_ID=dev-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=dev-client-secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
+</code></pre>
+<p><strong>Production:</strong></p>
+<pre><code class="language-bash">GOOGLE_CLIENT_ID=prod-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=prod-client-secret
+GOOGLE_REDIRECT_URI=https://notehub.example.com/auth/google/callback
+</code></pre>
+<h3>Separate Credentials</h3>
+<p><strong>Recommended:</strong> Use different OAuth credentials for dev and prod:</p>
+<ul>
+<li>Easier to debug</li>
+<li>Better security isolation</li>
+<li>Different redirect URIs</li>
+</ul>
+<hr>
+<h2>Cost</h2>
+<p><strong>Google OAuth:</strong> FREE</p>
+<ul>
+<li>No charges for OAuth API usage</li>
+<li>Unlimited sign-ins</li>
+<li>No user limits</li>
+</ul>
+<hr>
+<h2>Future Improvements</h2>
+<h3>Short Term</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Account linking (connect Google to existing account)</li>
+<li><input disabled="" type="checkbox"> Sign out from Google when signing out of app</li>
+<li><input disabled="" type="checkbox"> Profile picture from Google</li>
+</ul>
+<h3>Medium Term</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Multiple OAuth providers (GitHub, Microsoft)</li>
+<li><input disabled="" type="checkbox"> Account unlinking</li>
+<li><input disabled="" type="checkbox"> OAuth token refresh</li>
+</ul>
+<h3>Long Term</h3>
+<ul>
+<li><input disabled="" type="checkbox"> OpenID Connect (OIDC) support</li>
+<li><input disabled="" type="checkbox"> Enterprise SSO (SAML)</li>
+<li><input disabled="" type="checkbox"> Social login aggregation</li>
+</ul>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Common Issues</h3>
+<h4>&quot;Google Sign-In is temporarily unavailable&quot;</h4>
+<p><strong>Cause:</strong> Google OAuth not configured or incorrect configuration.</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Check environment variables are set in <code>.env</code></li>
+<li>Verify backend logs: <code>docker logs notehub-backend | grep OAuth</code></li>
+<li>Should see: <code>🔐 Google OAuth configured - SSO enabled</code></li>
+<li>If you see <code>⚠️  Google OAuth not configured</code>, check your <code>.env</code> file</li>
+</ol>
+<h4>&quot;redirect_uri_mismatch&quot; Error</h4>
+<p><strong>Cause:</strong> Redirect URI mismatch between <code>.env</code> and Google Cloud Console.</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Check your redirect URI: <code>docker exec notehub-backend printenv GOOGLE_REDIRECT_URI</code></li>
+<li>Add this EXACT URI to Google Cloud Console → Credentials → OAuth 2.0 Client IDs</li>
+<li>Common URIs to add:<ul>
+<li>Docker: <code>http://localhost/auth/google/callback</code></li>
+<li>Dev: <code>http://localhost:3000/auth/google/callback</code></li>
+<li>Prod: <code>https://yourdomain.com/auth/google/callback</code></li>
+</ul>
+</li>
+</ol>
+<h4>OAuth works in development but not in Docker</h4>
+<p><strong>Cause:</strong> Different ports (dev uses 3000, Docker uses 80).</p>
+<p><strong>Solution:</strong><br>Update <code>.env</code> for Docker:</p>
+<pre><code class="language-bash"># Docker uses port 80, not 3000
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+</code></pre>
+<p>Then restart:</p>
+<pre><code class="language-bash">docker compose restart backend
+</code></pre>
+<h4>&quot;Cannot access <a href="http://localhost:3000/auth/google/callback">http://localhost:3000/auth/google/callback</a>&quot;</h4>
+<p><strong>Cause:</strong> Using development redirect URI in Docker.</p>
+<p><strong>Solution:</strong><br>Change redirect URI from port 3000 to port 80 in <code>.env</code>:</p>
+<pre><code class="language-bash">GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+</code></pre>
+<h3>Complete Troubleshooting Guide</h3>
+<p>For detailed troubleshooting including:</p>
+<ul>
+<li>Port mismatch issues</li>
+<li>Docker vs development configuration</li>
+<li>Production deployment</li>
+<li>Testing and verification steps</li>
+</ul>
+<p>See: <strong><a href="GOOGLE_OAUTH_TROUBLESHOOTING.md">GOOGLE_OAUTH_TROUBLESHOOTING.md</a></strong></p>
+<hr>
+<h2>References</h2>
+<ul>
+<li><a href="https://developers.google.com/identity/protocols/oauth2">Google OAuth 2.0 Documentation</a></li>
+<li><a href="https://tools.ietf.org/html/rfc6749">OAuth 2.0 RFC 6749</a></li>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/OAuth_Cheat_Sheet.html">OWASP OAuth Security Cheat Sheet</a></li>
+<li><a href="GOOGLE_OAUTH_TROUBLESHOOTING.md">NoteHub OAuth Troubleshooting</a></li>
+</ul>
+<hr>
+<p><strong>Document Version:</strong> 1.1<br><strong>Date:</strong> 2025-12-04<br><strong>Status:</strong> Implemented<br><strong>Last Updated:</strong> Added Docker configuration and troubleshooting</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

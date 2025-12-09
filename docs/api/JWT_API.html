@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - JWT API Documentation">
+    <title>JWT API Documentation - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>JWT API Documentation</span>
+        </div>
+
+        <article class="content">
+            <h1>JWT API Documentation</h1>
+<h2>Overview</h2>
+<p>NoteHub provides a RESTful API with JWT (JSON Web Token) authentication for programmatic access to notes, tasks, and user data. This allows integration with external applications, mobile apps, or automation scripts.</p>
+<h2>Authentication</h2>
+<h3>Token Types</h3>
+<p>The API uses two types of JWT tokens:</p>
+<ol>
+<li><strong>Access Token</strong>: Short-lived token (1 hour) for API requests</li>
+<li><strong>Refresh Token</strong>: Long-lived token (30 days) to obtain new access tokens</li>
+</ol>
+<h3>Login</h3>
+<p><strong>Endpoint</strong>: <code>POST /api/auth/login</code></p>
+<p><strong>Request</strong>:</p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;your_username&quot;,
+  &quot;password&quot;: &quot;your_password&quot;,
+  &quot;totp_code&quot;: &quot;123456&quot;  // Optional, required if 2FA is enabled
+}
+</code></pre>
+<p><strong>Response</strong> (200 OK):</p>
+<pre><code class="language-json">{
+  &quot;access_token&quot;: &quot;eyJhbGciOiJIUzI1NiIs...&quot;,
+  &quot;refresh_token&quot;: &quot;eyJhbGciOiJIUzI1NiIs...&quot;,
+  &quot;token_type&quot;: &quot;Bearer&quot;,
+  &quot;expires_in&quot;: 3600,
+  &quot;user&quot;: {
+    &quot;id&quot;: 1,
+    &quot;username&quot;: &quot;your_username&quot;,
+    &quot;email&quot;: &quot;user@example.com&quot;
+  }
+}
+</code></pre>
+<p><strong>Error Response</strong> (401 Unauthorized):</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Invalid credentials&quot;
+}
+</code></pre>
+<p><strong>Error Response</strong> (401 Unauthorized with 2FA):</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;2FA code required&quot;,
+  &quot;requires_2fa&quot;: true
+}
+</code></pre>
+<h3>Refresh Token</h3>
+<p><strong>Endpoint</strong>: <code>POST /api/auth/refresh</code></p>
+<p><strong>Request</strong>:</p>
+<pre><code class="language-json">{
+  &quot;refresh_token&quot;: &quot;eyJhbGciOiJIUzI1NiIs...&quot;
+}
+</code></pre>
+<p><strong>Response</strong> (200 OK):</p>
+<pre><code class="language-json">{
+  &quot;access_token&quot;: &quot;eyJhbGciOiJIUzI1NiIs...&quot;,
+  &quot;token_type&quot;: &quot;Bearer&quot;,
+  &quot;expires_in&quot;: 3600
+}
+</code></pre>
+<h3>Validate Token</h3>
+<p><strong>Endpoint</strong>: <code>GET /api/auth/validate</code></p>
+<p><strong>Headers</strong>:</p>
+<pre><code>Authorization: Bearer &lt;access_token&gt;
+</code></pre>
+<p><strong>Response</strong> (200 OK):</p>
+<pre><code class="language-json">{
+  &quot;valid&quot;: true,
+  &quot;user&quot;: {
+    &quot;id&quot;: 1,
+    &quot;username&quot;: &quot;your_username&quot;,
+    &quot;email&quot;: &quot;user@example.com&quot;,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00+00:00&quot;
+  }
+}
+</code></pre>
+<h2>Making Authenticated Requests</h2>
+<p>All API endpoints (except login and refresh) require authentication via JWT.</p>
+<p><strong>Include the access token in the Authorization header</strong>:</p>
+<pre><code>Authorization: Bearer &lt;your_access_token&gt;
+</code></pre>
+<h3>Example with curl:</h3>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer eyJhbGciOiJIUzI1NiIs...&quot; \
+  https://your-app.com/api/notes
+</code></pre>
+<h3>Example with Python:</h3>
+<pre><code class="language-python">import requests
+
+headers = {
+    &#39;Authorization&#39;: f&#39;Bearer {access_token}&#39;,
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+}
+
+response = requests.get(&#39;https://your-app.com/api/notes&#39;, headers=headers)
+data = response.json()
+</code></pre>
+<h3>Example with JavaScript:</h3>
+<pre><code class="language-javascript">const response = await fetch(&#39;https://your-app.com/api/notes&#39;, {
+  headers: {
+    &#39;Authorization&#39;: `Bearer ${accessToken}`,
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+  }
+});
+const data = await response.json();
+</code></pre>
+<h2>Notes API</h2>
+<h3>List Notes</h3>
+<p><strong>Endpoint</strong>: <code>GET /api/notes</code></p>
+<p><strong>Query Parameters</strong>:</p>
+<ul>
+<li><code>view</code> (optional): <code>all</code>, <code>favorites</code>, <code>archived</code>, <code>shared</code> (default: <code>all</code>)</li>
+<li><code>q</code> (optional): Search query</li>
+<li><code>tag</code> (optional): Filter by tag name</li>
+</ul>
+<p><strong>Response</strong> (200 OK):</p>
+<pre><code class="language-json">{
+  &quot;notes&quot;: [
+    {
+      &quot;id&quot;: 1,
+      &quot;title&quot;: &quot;My Note&quot;,
+      &quot;body&quot;: &quot;Note content&quot;,
+      &quot;excerpt&quot;: &quot;Note content...&quot;,
+      &quot;pinned&quot;: false,
+      &quot;favorite&quot;: true,
+      &quot;archived&quot;: false,
+      &quot;created_at&quot;: &quot;2025-01-01T00:00:00+00:00&quot;,
+      &quot;updated_at&quot;: &quot;2025-01-02T00:00:00+00:00&quot;,
+      &quot;tags&quot;: [
+        {&quot;id&quot;: 1, &quot;name&quot;: &quot;important&quot;},
+        {&quot;id&quot;: 2, &quot;name&quot;: &quot;work&quot;}
+      ]
+    }
+  ]
+}
+</code></pre>
+<h3>Get Note</h3>
+<p><strong>Endpoint</strong>: <code>GET /api/notes/{note_id}</code></p>
+<p><strong>Response</strong> (200 OK):</p>
+<pre><code class="language-json">{
+  &quot;note&quot;: {
+    &quot;id&quot;: 1,
+    &quot;title&quot;: &quot;My Note&quot;,
+    &quot;body&quot;: &quot;Note content&quot;,
+    &quot;pinned&quot;: false,
+    &quot;favorite&quot;: true,
+    &quot;archived&quot;: false,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00+00:00&quot;,
+    &quot;updated_at&quot;: &quot;2025-01-02T00:00:00+00:00&quot;,
+    &quot;tags&quot;: [
+      {&quot;id&quot;: 1, &quot;name&quot;: &quot;important&quot;}
+    ],
+    &quot;can_edit&quot;: true
+  }
+}
+</code></pre>
+<p><strong>Error Response</strong> (404 Not Found):</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Note not found&quot;
+}
+</code></pre>
+<p><strong>Error Response</strong> (403 Forbidden):</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Access denied&quot;
+}
+</code></pre>
+<h3>Create Note</h3>
+<p><strong>Endpoint</strong>: <code>POST /api/notes</code></p>
+<p><strong>Request</strong>:</p>
+<pre><code class="language-json">{
+  &quot;title&quot;: &quot;New Note&quot;,
+  &quot;body&quot;: &quot;Note content in markdown&quot;,
+  &quot;tags&quot;: &quot;work,important&quot;,
+  &quot;pinned&quot;: false,
+  &quot;favorite&quot;: false,
+  &quot;archived&quot;: false
+}
+</code></pre>
+<p><strong>Response</strong> (201 Created):</p>
+<pre><code class="language-json">{
+  &quot;note&quot;: {
+    &quot;id&quot;: 2,
+    &quot;title&quot;: &quot;New Note&quot;,
+    &quot;body&quot;: &quot;Note content in markdown&quot;,
+    &quot;pinned&quot;: false,
+    &quot;favorite&quot;: false,
+    &quot;archived&quot;: false,
+    &quot;created_at&quot;: &quot;2025-01-03T00:00:00+00:00&quot;,
+    &quot;tags&quot;: [
+      {&quot;id&quot;: 3, &quot;name&quot;: &quot;work&quot;},
+      {&quot;id&quot;: 1, &quot;name&quot;: &quot;important&quot;}
+    ]
+  }
+}
+</code></pre>
+<h2>Tasks API</h2>
+<h3>List Tasks</h3>
+<p><strong>Endpoint</strong>: <code>GET /api/tasks</code></p>
+<p><strong>Query Parameters</strong>:</p>
+<ul>
+<li><code>filter</code> (optional): <code>all</code>, <code>active</code>, <code>completed</code> (default: <code>all</code>)</li>
+</ul>
+<p><strong>Response</strong> (200 OK):</p>
+<pre><code class="language-json">{
+  &quot;tasks&quot;: [
+    {
+      &quot;id&quot;: 1,
+      &quot;title&quot;: &quot;Complete project&quot;,
+      &quot;description&quot;: &quot;Finish the documentation&quot;,
+      &quot;completed&quot;: false,
+      &quot;priority&quot;: &quot;high&quot;,
+      &quot;due_date&quot;: &quot;2025-01-10T00:00:00+00:00&quot;,
+      &quot;created_at&quot;: &quot;2025-01-01T00:00:00+00:00&quot;,
+      &quot;is_overdue&quot;: false
+    }
+  ]
+}
+</code></pre>
+<h3>Create Task</h3>
+<p><strong>Endpoint</strong>: <code>POST /api/tasks</code></p>
+<p><strong>Request</strong>:</p>
+<pre><code class="language-json">{
+  &quot;title&quot;: &quot;New Task&quot;,
+  &quot;description&quot;: &quot;Task details&quot;,
+  &quot;priority&quot;: &quot;medium&quot;,
+  &quot;due_date&quot;: &quot;2025-01-15&quot;
+}
+</code></pre>
+<p><strong>Response</strong> (201 Created):</p>
+<pre><code class="language-json">{
+  &quot;task&quot;: {
+    &quot;id&quot;: 2,
+    &quot;title&quot;: &quot;New Task&quot;,
+    &quot;description&quot;: &quot;Task details&quot;,
+    &quot;completed&quot;: false,
+    &quot;priority&quot;: &quot;medium&quot;,
+    &quot;due_date&quot;: &quot;2025-01-15T00:00:00+00:00&quot;,
+    &quot;created_at&quot;: &quot;2025-01-03T00:00:00+00:00&quot;
+  }
+}
+</code></pre>
+<h2>Error Responses</h2>
+<h3>400 Bad Request</h3>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Title is required&quot;
+}
+</code></pre>
+<h3>401 Unauthorized</h3>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;No authorization header&quot;
+}
+</code></pre>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Invalid token&quot;
+}
+</code></pre>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Token has expired&quot;
+}
+</code></pre>
+<h3>403 Forbidden</h3>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Access denied&quot;
+}
+</code></pre>
+<h3>404 Not Found</h3>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Note not found&quot;
+}
+</code></pre>
+<h2>Token Management</h2>
+<h3>Token Expiration</h3>
+<ul>
+<li><strong>Access tokens</strong> expire after 1 hour</li>
+<li><strong>Refresh tokens</strong> expire after 30 days</li>
+</ul>
+<p>When an access token expires, use the refresh token to obtain a new one:</p>
+<pre><code class="language-python"># Token expired, refresh it
+response = requests.post(&#39;https://your-app.com/api/auth/refresh&#39;, json={
+    &#39;refresh_token&#39;: refresh_token
+})
+new_access_token = response.json()[&#39;access_token&#39;]
+</code></pre>
+<h3>Best Practices</h3>
+<ol>
+<li><strong>Store tokens securely</strong>: Never expose tokens in client-side code or version control</li>
+<li><strong>Use HTTPS</strong>: Always use HTTPS in production to protect tokens in transit</li>
+<li><strong>Implement token refresh</strong>: Automatically refresh tokens before they expire</li>
+<li><strong>Handle errors gracefully</strong>: Check for 401 errors and refresh tokens when needed</li>
+<li><strong>Logout</strong>: Discard tokens when user logs out (server-side token revocation can be added if needed)</li>
+</ol>
+<h2>Rate Limiting</h2>
+<p>Currently, there are no rate limits, but it&#39;s recommended to:</p>
+<ul>
+<li>Cache responses where appropriate</li>
+<li>Avoid making excessive requests</li>
+<li>Use pagination for large data sets (to be implemented)</li>
+</ul>
+<h2>Future Enhancements</h2>
+<p>Planned improvements to the API:</p>
+<ul>
+<li><input disabled="" type="checkbox"> PATCH/PUT endpoints for updating notes and tasks</li>
+<li><input disabled="" type="checkbox"> DELETE endpoints for removing resources</li>
+<li><input disabled="" type="checkbox"> Pagination for list endpoints</li>
+<li><input disabled="" type="checkbox"> Filtering and sorting options</li>
+<li><input disabled="" type="checkbox"> WebSocket support for real-time updates</li>
+<li><input disabled="" type="checkbox"> API versioning (v1, v2, etc.)</li>
+<li><input disabled="" type="checkbox"> Rate limiting</li>
+<li><input disabled="" type="checkbox"> API key authentication as alternative to JWT</li>
+</ul>
+<h2>Example: Complete Workflow</h2>
+<h3>Python Example</h3>
+<pre><code class="language-python">import requests
+import json
+
+BASE_URL = &#39;https://your-app.com/api&#39;
+
+# 1. Login
+login_response = requests.post(f&#39;{BASE_URL}/auth/login&#39;, json={
+    &#39;username&#39;: &#39;your_username&#39;,
+    &#39;password&#39;: &#39;your_password&#39;
+})
+tokens = login_response.json()
+access_token = tokens[&#39;access_token&#39;]
+refresh_token = tokens[&#39;refresh_token&#39;]
+
+# 2. Set up headers
+headers = {
+    &#39;Authorization&#39;: f&#39;Bearer {access_token}&#39;,
+    &#39;Content-Type&#39;: &#39;application/json&#39;
+}
+
+# 3. List all notes
+notes = requests.get(f&#39;{BASE_URL}/notes&#39;, headers=headers).json()
+print(f&quot;Found {len(notes[&#39;notes&#39;])} notes&quot;)
+
+# 4. Create a new note
+new_note = requests.post(f&#39;{BASE_URL}/notes&#39;, 
+    headers=headers,
+    json={
+        &#39;title&#39;: &#39;API Created Note&#39;,
+        &#39;body&#39;: &#39;# Hello from API\n\nThis note was created via the API!&#39;,
+        &#39;tags&#39;: &#39;api,automation&#39;
+    }
+).json()
+print(f&quot;Created note with ID: {new_note[&#39;note&#39;][&#39;id&#39;]}&quot;)
+
+# 5. Create a task
+new_task = requests.post(f&#39;{BASE_URL}/tasks&#39;,
+    headers=headers,
+    json={
+        &#39;title&#39;: &#39;Review API integration&#39;,
+        &#39;priority&#39;: &#39;high&#39;,
+        &#39;description&#39;: &#39;Test all API endpoints&#39;
+    }
+).json()
+print(f&quot;Created task with ID: {new_task[&#39;task&#39;][&#39;id&#39;]}&quot;)
+
+# 6. If token expires, refresh it
+def get_new_token(refresh_token):
+    response = requests.post(f&#39;{BASE_URL}/auth/refresh&#39;, json={
+        &#39;refresh_token&#39;: refresh_token
+    })
+    return response.json()[&#39;access_token&#39;]
+</code></pre>
+<h3>JavaScript Example</h3>
+<pre><code class="language-javascript">class NoteHubAPI {
+  constructor(baseURL) {
+    this.baseURL = baseURL;
+    this.accessToken = null;
+    this.refreshToken = null;
+  }
+
+  async login(username, password, totpCode = null) {
+    const response = await fetch(`${this.baseURL}/auth/login`, {
+      method: &#39;POST&#39;,
+      headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+      body: JSON.stringify({
+        username,
+        password,
+        totp_code: totpCode
+      })
+    });
+    
+    if (!response.ok) throw new Error(&#39;Login failed&#39;);
+    
+    const data = await response.json();
+    this.accessToken = data.access_token;
+    this.refreshToken = data.refresh_token;
+    return data.user;
+  }
+
+  async getNotes(filter = {}) {
+    const params = new URLSearchParams(filter);
+    const response = await fetch(`${this.baseURL}/notes?${params}`, {
+      headers: {
+        &#39;Authorization&#39;: `Bearer ${this.accessToken}`
+      }
+    });
+    
+    if (!response.ok) throw new Error(&#39;Failed to fetch notes&#39;);
+    return await response.json();
+  }
+
+  async createNote(noteData) {
+    const response = await fetch(`${this.baseURL}/notes`, {
+      method: &#39;POST&#39;,
+      headers: {
+        &#39;Authorization&#39;: `Bearer ${this.accessToken}`,
+        &#39;Content-Type&#39;: &#39;application/json&#39;
+      },
+      body: JSON.stringify(noteData)
+    });
+    
+    if (!response.ok) throw new Error(&#39;Failed to create note&#39;);
+    return await response.json();
+  }
+}
+
+// Usage
+const api = new NoteHubAPI(&#39;https://your-app.com/api&#39;);
+await api.login(&#39;username&#39;, &#39;password&#39;);
+const notes = await api.getNotes({ view: &#39;favorites&#39; });
+console.log(notes);
+</code></pre>
+<h2>Support</h2>
+<p>For questions or issues with the API:</p>
+<ol>
+<li>Check this documentation</li>
+<li>Review the API test files in <code>tests/test_api.py</code></li>
+<li>Open an issue on GitHub</li>
+<li>Contact support</li>
+</ol>
+<hr>
+<p><strong>Version</strong>: 1.0<br><strong>Last Updated</strong>: 2025-11-23</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

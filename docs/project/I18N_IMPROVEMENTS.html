@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - i18n Improvements and Preferred Language Feature - Implementation Summary">
+    <title>i18n Improvements and Preferred Language Feature - Implementation Summary - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>i18n Improvements and Preferred Language Feature - Implementation Summary</span>
+        </div>
+
+        <article class="content">
+            <h1>i18n Improvements and Preferred Language Feature - Implementation Summary</h1>
+<h2>Overview</h2>
+<p>This implementation adds comprehensive internationalization (i18n) support improvements and user language preference functionality to NoteHub.</p>
+<h2>Changes Implemented</h2>
+<h3>1. Backend Changes</h3>
+<h4>Database Schema</h4>
+<ul>
+<li>Added <code>preferred_language</code> field to <code>users</code> table</li>
+<li>Field type: VARCHAR(10)</li>
+<li>Default value: &#39;en&#39;</li>
+<li>Validation: Accepts only [&#39;en&#39;, &#39;de&#39;, &#39;vi&#39;, &#39;ja&#39;, &#39;fr&#39;, &#39;es&#39;]</li>
+<li>Auto-migration on application startup (Sequelize sync)</li>
+</ul>
+<h4>API Endpoints Updated</h4>
+<ul>
+<li><strong>POST /api/auth/login</strong>: Returns <code>preferred_language</code> in user object</li>
+<li><strong>GET /api/auth/validate</strong>: Returns <code>preferred_language</code> in user object</li>
+<li><strong>POST /api/auth/google/callback</strong>: Returns <code>preferred_language</code> in user object</li>
+<li><strong>GET /api/v1/profile</strong>: Returns <code>preferred_language</code> in user object</li>
+<li><strong>PUT /api/v1/profile</strong>: Accepts and updates <code>preferred_language</code> field</li>
+</ul>
+<h4>Files Modified</h4>
+<ul>
+<li><code>backend/src/models/index.js</code> - Added preferred_language field to User model</li>
+<li><code>backend/src/routes/auth.js</code> - Updated user responses to include preferred_language</li>
+<li><code>backend/src/routes/profile.js</code> - Added preferred_language handling in profile update</li>
+</ul>
+<h3>2. Frontend Changes</h3>
+<h4>User Interface</h4>
+<ul>
+<li>Added language selector dropdown in Edit Profile page</li>
+<li>Languages available: English, German, Vietnamese, Japanese, French, Spanish</li>
+<li>Language changes are applied immediately without page reload</li>
+<li>Current language is highlighted in the dropdown</li>
+</ul>
+<h4>Type Definitions</h4>
+<ul>
+<li>Updated <code>User</code> interface in <code>types/index.ts</code> to include <code>preferred_language?: string</code></li>
+</ul>
+<h4>Context Integration</h4>
+<ul>
+<li><strong>AuthContext</strong>: Enhanced to sync i18n language with user&#39;s preferred_language<ul>
+<li>Syncs on initial authentication check</li>
+<li>Syncs on login</li>
+<li>Syncs on user profile refresh</li>
+</ul>
+</li>
+<li>Language preference persists across sessions via JWT token</li>
+</ul>
+<h4>Translation Keys Added (118+ new keys)</h4>
+<p>Categories of translations added:</p>
+<ul>
+<li><strong>Placeholders</strong>: Input field hints for forms</li>
+<li><strong>Tooltips</strong>: title attributes for buttons and icons</li>
+<li><strong>Aria Labels</strong>: Accessibility labels</li>
+<li><strong>Button Text</strong>: Action buttons and links</li>
+<li><strong>Form Labels</strong>: Field labels and descriptions</li>
+<li><strong>Common UI</strong>: Shared elements like &quot;Hide All&quot;, &quot;Show All&quot;, &quot;Clear&quot;, &quot;Search&quot;</li>
+<li><strong>Profile</strong>: Language preferences, password management</li>
+<li><strong>AI Features</strong>: Proofread, summarize, rewrite actions</li>
+<li><strong>Passkeys</strong>: Passkey management interface</li>
+<li><strong>Admin</strong>: Admin dashboard elements</li>
+</ul>
+<h4>Pages Updated with Translations</h4>
+<ol>
+<li><p><strong>NotesPage.tsx</strong></p>
+<ul>
+<li>Search and filter placeholders</li>
+<li>Hide/Show all buttons</li>
+<li>Note actions (edit, share, delete tooltips)</li>
+<li>Reading time and last updated tooltips</li>
+</ul>
+</li>
+<li><p><strong>NoteEditPage.tsx</strong></p>
+<ul>
+<li>Note title placeholder</li>
+<li>Tags placeholder</li>
+<li>Content placeholder (markdown support message)</li>
+</ul>
+</li>
+<li><p><strong>ProfilePage.tsx</strong></p>
+<ul>
+<li>Added Edit Profile link with language description</li>
+<li>Language preference section</li>
+</ul>
+</li>
+<li><p><strong>EditProfilePage.tsx</strong></p>
+<ul>
+<li>All form labels translated</li>
+<li>All placeholders translated</li>
+<li>Added language selector with dropdown</li>
+<li>Language change synced with i18n on form submit</li>
+</ul>
+</li>
+<li><p><strong>ChangePasswordPage.tsx</strong></p>
+<ul>
+<li>Password field placeholders translated</li>
+</ul>
+</li>
+<li><p><strong>ShareNotePage.tsx</strong></p>
+<ul>
+<li>Username placeholder translated</li>
+<li>Share modal tooltips translated</li>
+</ul>
+</li>
+<li><p><strong>AdminDashboardPage.tsx</strong></p>
+<ul>
+<li>Search placeholder translated</li>
+<li>Action buttons translated</li>
+<li>Tooltips for user actions</li>
+</ul>
+</li>
+</ol>
+<h4>Files Modified</h4>
+<ul>
+<li><code>frontend/src/types/index.ts</code></li>
+<li><code>frontend/src/context/AuthContext.tsx</code></li>
+<li><code>frontend/src/pages/ProfilePage.tsx</code></li>
+<li><code>frontend/src/pages/EditProfilePage.tsx</code></li>
+<li><code>frontend/src/pages/NotesPage.tsx</code></li>
+<li><code>frontend/src/pages/NoteEditPage.tsx</code></li>
+<li><code>frontend/src/pages/ChangePasswordPage.tsx</code></li>
+<li><code>frontend/src/pages/ShareNotePage.tsx</code></li>
+<li><code>frontend/src/pages/AdminDashboardPage.tsx</code></li>
+</ul>
+<h3>3. Translation Files</h3>
+<h4>English (en.json) - Base File</h4>
+<ul>
+<li>Added 118+ new translation keys</li>
+<li>All existing keys preserved</li>
+<li>Organized into logical sections</li>
+</ul>
+<h4>Other Locales (de, vi, ja, fr, es)</h4>
+<ul>
+<li>All locale files synchronized with English keys</li>
+<li>English text used as fallback for new keys</li>
+<li>Existing translations preserved</li>
+<li>Total: 325 lines per locale file (previously 207)</li>
+</ul>
+<p><strong>Note</strong>: Proper translations for non-English locales should be provided by native speakers. The current implementation uses English as placeholder to maintain functionality while translations are being prepared.</p>
+<h2>Technical Implementation</h2>
+<h3>Language Selection Flow</h3>
+<ol>
+<li>User navigates to Profile → Edit Profile</li>
+<li>Selects preferred language from dropdown</li>
+<li>Clicks &quot;Save Changes&quot;</li>
+<li>Profile API updates <code>preferred_language</code> in database</li>
+<li>i18n language is changed immediately via <code>i18n.changeLanguage()</code></li>
+<li>User profile is refreshed to reflect changes</li>
+<li>User is redirected to Profile page</li>
+</ol>
+<h3>Language Synchronization</h3>
+<pre><code class="language-typescript">// On login
+const response = await authApi.login(credentials);
+if (response.user.preferred_language) {
+  i18n.changeLanguage(response.user.preferred_language);
+}
+
+// On app initialization
+const response = await authApi.validate();
+if (response.user.preferred_language) {
+  i18n.changeLanguage(response.user.preferred_language);
+}
+</code></pre>
+<h3>Database Migration</h3>
+<p>The <code>preferred_language</code> field is added automatically via Sequelize&#39;s <code>sync()</code> method when the application starts. No manual migration script required.</p>
+<h2>Testing Performed</h2>
+<h3>Build Tests</h3>
+<ul>
+<li>✅ Backend builds successfully</li>
+<li>✅ Frontend builds successfully</li>
+<li>✅ TypeScript compilation passes</li>
+<li>✅ All linting passes (Biome)</li>
+</ul>
+<h3>Database Tests</h3>
+<ul>
+<li>✅ Database schema syncs successfully</li>
+<li>✅ preferred_language field created in users table</li>
+<li>✅ Default value &#39;en&#39; applied</li>
+</ul>
+<h3>Security Tests</h3>
+<ul>
+<li>✅ CodeQL analysis passed (0 alerts)</li>
+<li>✅ No security vulnerabilities introduced</li>
+<li>✅ Input validation in place for preferred_language field</li>
+</ul>
+<h2>Manual Testing Required</h2>
+<p>The following should be manually tested in a development environment:</p>
+<ol>
+<li><strong>User Registration</strong>: New users should have &#39;en&#39; as default language</li>
+<li><strong>Language Selection</strong>: Change language in Edit Profile and verify it persists</li>
+<li><strong>Language Switching</strong>: Verify UI updates immediately when language is changed</li>
+<li><strong>Login Persistence</strong>: Language preference should persist across login sessions</li>
+<li><strong>Translation Display</strong>: Verify translations display correctly in all pages</li>
+<li><strong>Fallback Behavior</strong>: Test with unsupported language codes (should fallback to English)</li>
+</ol>
+<h2>Known Limitations</h2>
+<ol>
+<li><p><strong>Translations</strong>: Non-English locale files currently use English text as placeholders</p>
+<ul>
+<li><strong>Resolution</strong>: Requires native speakers to provide proper translations</li>
+<li><strong>Impact</strong>: Functional but not fully localized</li>
+</ul>
+</li>
+<li><p><strong>Coverage</strong>: Not all components updated with translations</p>
+<ul>
+<li><strong>Resolution</strong>: Additional pages can be updated incrementally</li>
+<li><strong>Impact</strong>: Some UI elements may still show English text in non-English locales</li>
+</ul>
+</li>
+<li><p><strong>RTL Support</strong>: Right-to-left languages not currently supported</p>
+<ul>
+<li><strong>Resolution</strong>: Would require CSS and layout changes</li>
+<li><strong>Impact</strong>: Languages like Arabic, Hebrew not supported yet</li>
+</ul>
+</li>
+</ol>
+<h2>Future Enhancements</h2>
+<ol>
+<li><strong>Complete Translations</strong>: Engage native speakers to translate all keys</li>
+<li><strong>Translation Management</strong>: Consider using a translation management platform (Crowdin, Lokalise)</li>
+<li><strong>Additional Languages</strong>: Add more language options based on user demand</li>
+<li><strong>Dynamic Language Loading</strong>: Implement code splitting for locale files</li>
+<li><strong>Translation Coverage</strong>: Update remaining components with i18n support</li>
+<li><strong>RTL Support</strong>: Add support for right-to-left languages</li>
+<li><strong>Pluralization</strong>: Implement proper pluralization rules per language</li>
+<li><strong>Date/Time Formatting</strong>: Add locale-specific date and time formatting</li>
+<li><strong>Number Formatting</strong>: Add locale-specific number and currency formatting</li>
+</ol>
+<h2>Rollback Plan</h2>
+<p>If issues are discovered:</p>
+<ol>
+<li><strong>Database Rollback</strong>: The <code>preferred_language</code> field can be safely ignored if not used</li>
+<li><strong>Code Rollback</strong>: Revert commits in reverse order:<ul>
+<li>Commit 3: Sync missing translation keys to all locale files</li>
+<li>Commit 2: Fix linting issues and add missing useTranslation imports</li>
+<li>Commit 1: Update key pages with missing translations (placeholders, tooltips)</li>
+<li>Commit 0: Add preferred_language field to User model and profile management</li>
+</ul>
+</li>
+</ol>
+<h2>Files Changed Summary</h2>
+<p><strong>Backend (4 files)</strong>:</p>
+<ul>
+<li>src/models/index.js</li>
+<li>src/routes/auth.js</li>
+<li>src/routes/profile.js</li>
+</ul>
+<p><strong>Frontend (14 files)</strong>:</p>
+<ul>
+<li>src/types/index.ts</li>
+<li>src/context/AuthContext.tsx</li>
+<li>src/pages/ProfilePage.tsx</li>
+<li>src/pages/EditProfilePage.tsx</li>
+<li>src/pages/NotesPage.tsx</li>
+<li>src/pages/NoteEditPage.tsx</li>
+<li>src/pages/ChangePasswordPage.tsx</li>
+<li>src/pages/ShareNotePage.tsx</li>
+<li>src/pages/AdminDashboardPage.tsx</li>
+<li>src/i18n/locales/en.json</li>
+<li>src/i18n/locales/de.json</li>
+<li>src/i18n/locales/vi.json</li>
+<li>src/i18n/locales/ja.json</li>
+<li>src/i18n/locales/fr.json</li>
+<li>src/i18n/locales/es.json</li>
+</ul>
+<p><strong>Total</strong>: 18 files modified</p>
+<h2>Conclusion</h2>
+<p>This implementation successfully adds user language preference functionality and significantly improves i18n support throughout the application. The infrastructure is in place for complete localization, with placeholders ready for native translations to be added by the community or professional translators.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

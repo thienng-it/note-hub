@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Environment Configuration Guide">
+    <title>Environment Configuration Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Environment Configuration Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Environment Configuration Guide</h1>
+<p>This guide explains how environment variables are managed in NoteHub for both development and production deployments.</p>
+<h2>Overview</h2>
+<p>NoteHub uses a centralized <code>.env</code> file for configuration, loaded efficiently through Docker Compose&#39;s <code>env_file</code> directive. This approach ensures:</p>
+<ul>
+<li><strong>No missing variables</strong>: All environment variables are automatically loaded</li>
+<li><strong>Single source of truth</strong>: One <code>.env</code> file for all services</li>
+<li><strong>Validation</strong>: Critical variables have required checks</li>
+<li><strong>Easy setup</strong>: Simple copy-paste configuration</li>
+</ul>
+<h2>Quick Start</h2>
+<h3>1. Create .env file</h3>
+<pre><code class="language-bash"># Copy the example file
+cp .env.example .env
+
+# Edit with your values
+nano .env
+</code></pre>
+<h3>2. Configure Required Variables</h3>
+<p>At minimum, set these required variables:</p>
+<pre><code class="language-bash"># Admin password (REQUIRED)
+NOTES_ADMIN_PASSWORD=YourSecurePassword123!
+
+# Google OAuth (REQUIRED for SSO)
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+
+# AI Configuration (REQUIRED for AI features)
+AI_PROVIDER=ollama
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2
+</code></pre>
+<h3>3. Start Services</h3>
+<pre><code class="language-bash"># Development mode (SQLite)
+docker compose up -d
+
+# Production mode (Cloud DB)
+docker compose --profile production up -d
+
+# Development with MySQL
+docker compose --profile mysql up -d
+</code></pre>
+<h2>Environment Loading Architecture</h2>
+<h3>Docker Compose Approach</h3>
+<p>NoteHub uses the <code>env_file</code> directive in <code>docker-compose.yml</code>:</p>
+<pre><code class="language-yaml">services:
+  backend:
+    env_file:
+      - .env
+    environment:
+      # Override specific variables
+      - NODE_ENV=development
+      - PORT=5000
+</code></pre>
+<h3>How It Works</h3>
+<ol>
+<li><strong>File Loading</strong>: Docker Compose reads <code>.env</code> and loads ALL variables</li>
+<li><strong>Override</strong>: Variables in <code>environment</code> section override those from <code>.env</code></li>
+<li><strong>Validation</strong>: Required variables use <code>${VAR:?error message}</code> syntax</li>
+<li><strong>Defaults</strong>: Optional variables use <code>${VAR:-default}</code> syntax</li>
+</ol>
+<h3>Benefits</h3>
+<p>✅ <strong>Efficient</strong>: Single file read, all variables available<br>✅ <strong>No duplication</strong>: Don&#39;t repeat variables in docker-compose.yml<br>✅ <strong>Validation</strong>: Docker fails fast if required variables are missing<br>✅ <strong>Defaults</strong>: Sensible defaults for optional variables<br>✅ <strong>Documentation</strong>: .env.example documents all variables  </p>
+<h2>Environment Variables Reference</h2>
+<h3>Required Variables (All Modes)</h3>
+<pre><code class="language-bash"># Admin Credentials
+NOTES_ADMIN_USERNAME=admin                    # Admin username (default: admin)
+NOTES_ADMIN_PASSWORD=YourSecurePassword123!   # REQUIRED: Strong password
+
+# JWT Secret (generate with: openssl rand -hex 32)
+SECRET_KEY=your-super-secret-key-change-this  # REQUIRED in production
+
+# Google OAuth (REQUIRED for SSO)
+GOOGLE_CLIENT_ID=your-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-secret
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+
+# AI Provider (REQUIRED for AI features)
+AI_PROVIDER=ollama                            # Options: ollama, openai, gemini
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2
+</code></pre>
+<h3>Development Mode Variables</h3>
+<pre><code class="language-bash"># SQLite database path (default mode)
+NOTES_DB_PATH=/app/data/notes.db              # Default: /app/data/notes.db
+</code></pre>
+<h3>Production Mode Variables</h3>
+<pre><code class="language-bash"># Cloud Database URL
+DATABASE_URL=mysql://user:password@host:3306/database
+
+# OR separate MySQL config
+MYSQL_HOST=db.example.com
+MYSQL_PORT=3306
+MYSQL_USER=notehub
+MYSQL_PASSWORD=secure-password
+MYSQL_DATABASE=notehub
+
+# Frontend API URL (if backend on different domain)
+VITE_API_URL=https://api.example.com
+</code></pre>
+<h3>MySQL Development Variables</h3>
+<pre><code class="language-bash"># MySQL container configuration
+MYSQL_ROOT_PASSWORD=change-this-root-password
+MYSQL_USER=notehub
+MYSQL_PASSWORD=change-this-password
+MYSQL_DATABASE=notehub
+</code></pre>
+<h3>Optional Performance Variables</h3>
+<pre><code class="language-bash"># Redis Caching (10x performance boost)
+REDIS_URL=redis://localhost:6379
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# Elasticsearch (5x faster search)
+ELASTICSEARCH_NODE=http://localhost:9200
+ELASTICSEARCH_USERNAME=elastic
+ELASTICSEARCH_PASSWORD=changeme
+</code></pre>
+<h3>Logging Variables</h3>
+<pre><code class="language-bash"># Backend logging
+LOG_LEVEL=info                                # debug, info, warn, error, silent
+LOG_FORMAT=simple                             # json, simple, detailed
+LOG_FILE_PATH=/var/log/notehub/app.log        # Optional: file logging
+
+# Frontend logging
+VITE_LOG_LEVEL=info                           # debug, info, warn, error, silent
+</code></pre>
+<h2>Deployment Modes</h2>
+<h3>Development Mode (Default)</h3>
+<p><strong>Use case</strong>: Local development and testing</p>
+<pre><code class="language-bash"># Setup
+cp .env.example .env
+nano .env  # Set required variables
+
+# Run
+docker compose up -d
+docker compose exec backend node scripts/seed_db.js
+
+# Access
+http://localhost
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>SQLite database (no external DB needed)</li>
+<li>Database seeding enabled</li>
+<li>Verbose logging</li>
+<li>Auto-reload on code changes</li>
+</ul>
+<h3>Production Mode</h3>
+<p><strong>Use case</strong>: Cloud deployment with external database</p>
+<pre><code class="language-bash"># Setup
+cp .env.example .env
+nano .env  # Configure production variables
+
+# Required production variables
+SECRET_KEY=&lt;strong-random-key&gt;
+DATABASE_URL=mysql://user:password@cloud-db:3306/notehub
+NOTES_ADMIN_PASSWORD=&lt;secure-password&gt;
+LOG_LEVEL=error
+LOG_FORMAT=json
+
+# Run
+docker compose --profile production up -d
+
+# Note: Do NOT run seed script in production
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Cloud database (PlanetScale, AWS RDS, etc.)</li>
+<li>Seeding blocked (safety)</li>
+<li>Error-only logging</li>
+<li>Production optimizations</li>
+</ul>
+<h3>MySQL Development Mode</h3>
+<p><strong>Use case</strong>: Local development with MySQL</p>
+<pre><code class="language-bash"># Setup
+cp .env.example .env
+nano .env  # Set MySQL variables
+
+# Required MySQL variables
+MYSQL_ROOT_PASSWORD=secure-root-password
+MYSQL_USER=notehub
+MYSQL_PASSWORD=secure-password
+
+# Run
+docker compose --profile mysql up -d
+docker compose exec backend-mysql node scripts/seed_db.js
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Local MySQL container</li>
+<li>Similar to production DB setup</li>
+<li>Database seeding enabled</li>
+<li>Development logging</li>
+</ul>
+<h2>Variable Validation</h2>
+<h3>Required Variables</h3>
+<p>Docker Compose validates required variables using the <code>:?</code> syntax:</p>
+<pre><code class="language-yaml">${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+</code></pre>
+<p>If the variable is not set, Docker Compose will fail with an error message:</p>
+<pre><code>Error: Set NOTES_ADMIN_PASSWORD in .env file
+</code></pre>
+<h3>Optional Variables with Defaults</h3>
+<p>Optional variables use the <code>:-</code> syntax:</p>
+<pre><code class="language-yaml">${NOTES_ADMIN_USERNAME:-admin}
+</code></pre>
+<p>If not set, defaults to <code>admin</code>.</p>
+<h2>Security Best Practices</h2>
+<h3>1. Never Commit .env</h3>
+<p>The <code>.env</code> file is in <code>.gitignore</code> and should NEVER be committed:</p>
+<pre><code class="language-bash"># In .gitignore
+.env
+.env.local
+.env.*.local
+</code></pre>
+<h3>2. Use Strong Secrets</h3>
+<p>Generate strong secrets:</p>
+<pre><code class="language-bash"># JWT Secret
+openssl rand -hex 32
+
+# MySQL Root Password
+openssl rand -base64 32
+
+# Admin Password (manual)
+# Use password manager to generate
+</code></pre>
+<h3>3. Rotate Secrets Regularly</h3>
+<p>In production:</p>
+<ul>
+<li>Rotate JWT secrets every 90 days</li>
+<li>Rotate database passwords every 6 months</li>
+<li>Use different secrets per environment</li>
+</ul>
+<h3>4. Restrict File Permissions</h3>
+<pre><code class="language-bash"># On VPS
+chmod 600 .env
+chown root:root .env
+</code></pre>
+<h3>5. Environment-Specific Files</h3>
+<p>Use separate files for different environments:</p>
+<pre><code class="language-bash">.env.development
+.env.production
+.env.staging
+</code></pre>
+<p>Link the appropriate one:</p>
+<pre><code class="language-bash">ln -sf .env.production .env
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Error: Variable not set</h3>
+<pre><code>Error: Set NOTES_ADMIN_PASSWORD in .env file
+</code></pre>
+<p><strong>Solution</strong>: Add the missing variable to <code>.env</code>:</p>
+<pre><code class="language-bash">NOTES_ADMIN_PASSWORD=YourSecurePassword123!
+</code></pre>
+<h3>Services not seeing variables</h3>
+<ol>
+<li><strong>Check .env location</strong>: Must be in project root</li>
+<li><strong>Check env_file directive</strong>: Verify in docker-compose.yml</li>
+<li><strong>Recreate containers</strong>: <code>docker compose up -d --force-recreate</code></li>
+</ol>
+<h3>Variables not updating</h3>
+<p>Docker Compose caches environment variables. To update:</p>
+<pre><code class="language-bash"># Stop services
+docker compose down
+
+# Update .env
+nano .env
+
+# Recreate containers
+docker compose up -d --force-recreate
+</code></pre>
+<h3>Debugging environment variables</h3>
+<p>Check what variables a container sees:</p>
+<pre><code class="language-bash"># View all environment variables
+docker compose exec backend env
+
+# View specific variable
+docker compose exec backend env | grep JWT_SECRET
+</code></pre>
+<h2>Migration from Old Configuration</h2>
+<h3>Before: Inline Variables</h3>
+<pre><code class="language-yaml">environment:
+  - SECRET_KEY=${SECRET_KEY}
+  - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+  - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+  # ... 20+ more variables
+</code></pre>
+<p><strong>Problems</strong>:</p>
+<ul>
+<li>Verbose and repetitive</li>
+<li>Easy to miss variables</li>
+<li>Hard to maintain</li>
+</ul>
+<h3>After: env_file Directive</h3>
+<pre><code class="language-yaml">env_file:
+  - .env
+environment:
+  # Only override what&#39;s needed
+  - NODE_ENV=production
+  - PORT=5000
+</code></pre>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>Clean and concise</li>
+<li>All variables automatically loaded</li>
+<li>Easy to add new variables</li>
+</ul>
+<h2>Advanced Configuration</h2>
+<h3>Multiple Environment Files</h3>
+<p>Load multiple .env files:</p>
+<pre><code class="language-yaml">env_file:
+  - .env
+  - .env.local
+  - .env.production
+</code></pre>
+<p>Later files override earlier ones.</p>
+<h3>Service-Specific Variables</h3>
+<p>Create service-specific files:</p>
+<pre><code class="language-yaml">backend:
+  env_file:
+    - .env
+    - .env.backend
+    
+frontend:
+  env_file:
+    - .env
+    - .env.frontend
+</code></pre>
+<h3>Build-Time vs Runtime Variables</h3>
+<p><strong>Build-time</strong> (Vite frontend):</p>
+<pre><code class="language-yaml">build:
+  args:
+    - VITE_API_URL=${VITE_API_URL}
+</code></pre>
+<p><strong>Runtime</strong> (backend):</p>
+<pre><code class="language-yaml">environment:
+  - DATABASE_URL=${DATABASE_URL}
+</code></pre>
+<h2>CI/CD Integration</h2>
+<h3>GitHub Actions</h3>
+<pre><code class="language-yaml">- name: Setup environment
+  run: |
+    echo &quot;SECRET_KEY=${{ secrets.SECRET_KEY }}&quot; &gt;&gt; .env
+    echo &quot;DATABASE_URL=${{ secrets.DATABASE_URL }}&quot; &gt;&gt; .env
+    
+- name: Deploy
+  run: docker compose --profile production up -d
+</code></pre>
+<h3>Environment Secrets</h3>
+<p>Store sensitive values in CI/CD secrets:</p>
+<ul>
+<li>GitHub Secrets</li>
+<li>GitLab CI/CD Variables</li>
+<li>AWS Secrets Manager</li>
+<li>HashiCorp Vault</li>
+</ul>
+<h2>References</h2>
+<ul>
+<li><a href="https://docs.docker.com/compose/environment-variables/">Docker Compose Environment Variables</a></li>
+<li><a href="https://12factor.net/config">12-Factor App: Config</a></li>
+<li><a href="https://blog.gitguardian.com/secrets-api-management/">Environment Variable Best Practices</a></li>
+</ul>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

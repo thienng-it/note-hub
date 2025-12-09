@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Screenshots Guide for NoteHub">
+    <title>Screenshots Guide for NoteHub - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Screenshots Guide for NoteHub</span>
+        </div>
+
+        <article class="content">
+            <h1>Screenshots Guide for NoteHub</h1>
+<p>This guide explains what screenshots are needed and how to capture them for the README.</p>
+<h2>Required Screenshots</h2>
+<h3>Core Features (Existing)</h3>
+<ol>
+<li><p><strong>login.png</strong> - Login page showing:</p>
+<ul>
+<li>Username/password fields</li>
+<li>Google Sign-In button (if OAuth configured)</li>
+<li>Clean UI with glassmorphism design</li>
+</ul>
+</li>
+<li><p><strong>notes.png</strong> - Notes dashboard showing:</p>
+<ul>
+<li>List of notes with tags</li>
+<li>Search bar</li>
+<li>Filter options (favorites, pinned)</li>
+<li>Sidebar navigation</li>
+</ul>
+</li>
+<li><p><strong>editor.png</strong> - Note editor showing:</p>
+<ul>
+<li>Markdown editor with toolbar</li>
+<li>Live preview</li>
+<li>Tag management</li>
+<li>Save/cancel buttons</li>
+</ul>
+</li>
+<li><p><strong>tasks.png</strong> - Tasks page showing:</p>
+<ul>
+<li>Task list with priorities</li>
+<li>Due dates</li>
+<li>Completion status</li>
+<li>Task creation form</li>
+</ul>
+</li>
+<li><p><strong>dark-mode.png</strong> - Dark mode view showing:</p>
+<ul>
+<li>Dark theme applied to notes page</li>
+<li>Contrast and readability</li>
+</ul>
+</li>
+</ol>
+<h3>New Features (December 2024)</h3>
+<ol start="6">
+<li><p><strong>google-oauth.png</strong> - Google OAuth flow showing:</p>
+<ul>
+<li>Google Sign-In button on login page</li>
+<li>OAuth consent screen (if possible)</li>
+<li>Successful login redirect</li>
+</ul>
+</li>
+<li><p><strong>2fa-disable.png</strong> - Simplified 2FA disable showing:</p>
+<ul>
+<li>Disable 2FA page with confirmation buttons</li>
+<li>Info message: &quot;No OTP Required - You&#39;re already authenticated&quot;</li>
+<li>Success notification</li>
+</ul>
+</li>
+<li><p><strong>admin-dashboard.png</strong> - Admin dashboard showing:</p>
+<ul>
+<li>User management table</li>
+<li>&quot;Disable 2FA&quot; button in Actions column</li>
+<li>User details (ID, username, role, 2FA status)</li>
+</ul>
+</li>
+<li><p><strong>admin-2fa-disable.png</strong> - Admin 2FA recovery showing:</p>
+<ul>
+<li>Confirmation dialog for disabling user&#39;s 2FA</li>
+<li>Success notification</li>
+<li>Updated user list</li>
+</ul>
+</li>
+<li><p><strong>performance-benchmark.png</strong> (Optional) - Performance comparison showing:</p>
+<ul>
+<li>Browser DevTools Network tab</li>
+<li>Response times before/after Redis caching</li>
+<li>Or a chart comparing performance metrics</li>
+</ul>
+</li>
+</ol>
+<h2>How to Capture Screenshots</h2>
+<h3>Prerequisites</h3>
+<ul>
+<li>Run NoteHub locally (see Quick Start in main README)</li>
+<li>Optionally set up Redis, Elasticsearch, and Google OAuth for full feature showcase</li>
+<li>Use a clean browser window (preferably Chrome/Firefox)</li>
+<li>Recommended resolution: 1920x1080 or 1440x900</li>
+</ul>
+<h3>Capture Steps</h3>
+<ol>
+<li><p><strong>Open the application</strong> at <a href="http://localhost:3000">http://localhost:3000</a></p>
+</li>
+<li><p><strong>Navigate to the feature</strong> you want to screenshot</p>
+</li>
+<li><p><strong>Take the screenshot</strong>:</p>
+<ul>
+<li>macOS: <code>Cmd + Shift + 4</code> (select area) or <code>Cmd + Shift + 3</code> (full screen)</li>
+<li>Windows: <code>Windows + Shift + S</code> or use Snipping Tool</li>
+<li>Linux: <code>Shift + PrtScn</code> or use Screenshot utility</li>
+</ul>
+</li>
+<li><p><strong>Crop and optimize</strong>:</p>
+<ul>
+<li>Crop to show only relevant UI elements</li>
+<li>Remove personal data (real names, emails, private notes)</li>
+<li>Optimize file size: PNG for UI, JPEG for photos</li>
+<li>Recommended width: 1200px - 1600px max</li>
+</ul>
+</li>
+<li><p><strong>Save the file</strong>:</p>
+<ul>
+<li>Use the exact filename from the list above</li>
+<li>Save to <code>/docs/screenshots/</code> directory</li>
+<li>Commit and push to repository</li>
+</ul>
+</li>
+</ol>
+<h3>Tips for Great Screenshots</h3>
+<ul>
+<li><strong>Clean Data</strong>: Use sample/demo data, not real personal information</li>
+<li><strong>Good Lighting</strong>: Use light mode for primary screenshots (better contrast)</li>
+<li><strong>Focus</strong>: Highlight the key feature, remove distractions</li>
+<li><strong>Consistency</strong>: Use the same browser and zoom level for all screenshots</li>
+<li><strong>Annotations</strong>: Consider adding arrows or highlights for complex features</li>
+<li><strong>Accessibility</strong>: Ensure good contrast and readable text</li>
+</ul>
+<h2>Alternative: Add Links to Live Demo</h2>
+<p>If you deploy NoteHub to a public instance, you can also:</p>
+<ol>
+<li>Replace screenshot PNG files with links to the live demo</li>
+<li>Or keep screenshots but add &quot;Try it live&quot; links below them</li>
+</ol>
+<p>Example:</p>
+<pre><code class="language-markdown">### Login Page
+![Login Page](docs/screenshots/login.png)
+[Try it live →](https://your-demo.example.com)
+</code></pre>
+<h2>Screenshot Checklist</h2>
+<p>Use this checklist when capturing screenshots:</p>
+<ul>
+<li><input disabled="" type="checkbox"> login.png - Login page with Google OAuth button</li>
+<li><input disabled="" type="checkbox"> notes.png - Notes dashboard with sample notes</li>
+<li><input disabled="" type="checkbox"> editor.png - Note editor with markdown content</li>
+<li><input disabled="" type="checkbox"> tasks.png - Tasks page with sample tasks</li>
+<li><input disabled="" type="checkbox"> dark-mode.png - Dark theme applied</li>
+<li><input disabled="" type="checkbox"> google-oauth.png - Google Sign-In flow</li>
+<li><input disabled="" type="checkbox"> 2fa-disable.png - Simplified 2FA disable page</li>
+<li><input disabled="" type="checkbox"> admin-dashboard.png - Admin user management</li>
+<li><input disabled="" type="checkbox"> admin-2fa-disable.png - Admin 2FA recovery action</li>
+<li><input disabled="" type="checkbox"> performance-benchmark.png (optional) - Performance comparison</li>
+</ul>
+<h2>After Adding Screenshots</h2>
+<ol>
+<li><p>Verify all images load correctly in the README</p>
+</li>
+<li><p>Check file sizes (optimize if &gt; 500KB each)</p>
+</li>
+<li><p>Commit with descriptive message:</p>
+<pre><code class="language-bash">git add docs/screenshots/*.png
+git commit -m &quot;docs: add screenshots for v2.0 features&quot;
+git push
+</code></pre>
+</li>
+<li><p>Test README rendering on GitHub to ensure images display properly</p>
+</li>
+</ol>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - NoteHub Documentation">
+    <title>NoteHub Documentation - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>NoteHub Documentation</span>
+        </div>
+
+        <article class="content">
+            <h1>NoteHub Documentation</h1>
+<p>A modern, secure, and feature-rich personal notes application with a React SPA frontend and Node.js/Express API backend. Supports markdown editing, tags, tasks, two-factor authentication, and more.</p>
+<hr>
+<h2>📊 Status</h2>
+<p><img src="https://github.com/thienng-it/note-hub/actions/workflows/ci-cd.yml/badge.svg?branch=main" alt="CI/CD Pipeline"></p>
+<hr>
+<h2>📚 Documentation Navigation</h2>
+<ul>
+<li><strong><a href="documentation.html">Documentation Portal</a></strong> - Beautiful web interface to browse all documentation</li>
+<li><strong><a href="INDEX.md">Complete Index</a></strong> - Full list of all documentation files organized by category</li>
+<li><strong><a href="https://github.com/thienng-it/note-hub">GitHub Repository</a></strong> - Source code and issues</li>
+</ul>
+<hr>
+<h2>📖 Documentation Structure</h2>
+<p>This documentation is organized into the following categories:</p>
+<h3>🏗️ Architecture</h3>
+<p>Documentation about system design, database flow, and architectural patterns.</p>
+<ul>
+<li><a href="architecture/ARCHITECTURE.md">ARCHITECTURE.md</a> - System architecture overview</li>
+<li><a href="architecture/DATABASE_FLOW.md">DATABASE_FLOW.md</a> - Database schema and relationships</li>
+</ul>
+<h3>🔌 API</h3>
+<p>API references, authentication, and versioning information.</p>
+<ul>
+<li><a href="api/JWT_API.md">JWT_API.md</a> - JWT authentication API reference</li>
+<li><a href="api/API_CHANGELOG.md">API_CHANGELOG.md</a> - API version history</li>
+</ul>
+<h3>📚 Guides</h3>
+<p>Step-by-step guides for deployment, configuration, and features.</p>
+<h4>Deployment &amp; Infrastructure</h4>
+<ul>
+<li><a href="guides/HETZNER_DEPLOYMENT.md">HETZNER_DEPLOYMENT.md</a> - Deploy to Hetzner Cloud</li>
+<li><a href="guides/SSL_HTTPS_SETUP.md">SSL_HTTPS_SETUP.md</a> - SSL/HTTPS configuration</li>
+<li><a href="guides/DATABASE_REPLICATION.md">DATABASE_REPLICATION.md</a> - Database replication setup</li>
+</ul>
+<h4>Drone CI</h4>
+<ul>
+<li><a href="guides/DRONE_CI_README.md">DRONE_CI_README.md</a> - Drone CI overview</li>
+<li><a href="guides/DRONE_CI_SETUP.md">DRONE_CI_SETUP.md</a> - Drone CI installation</li>
+<li><a href="guides/TROUBLESHOOTING_DRONE_SSL.md">TROUBLESHOOTING_DRONE_SSL.md</a> - Drone CI troubleshooting</li>
+</ul>
+<h4>Features &amp; Configuration</h4>
+<ul>
+<li><a href="guides/CONFIG.md">CONFIG.md</a> - Configuration guide</li>
+<li><a href="guides/I18N_GUIDE.md">I18N_GUIDE.md</a> - Internationalization</li>
+<li><a href="guides/GOOGLE_SSO_SETUP.md">GOOGLE_SSO_SETUP.md</a> - Google SSO configuration</li>
+</ul>
+<h3>🔒 Security</h3>
+<p>Security best practices, authentication, and protection strategies.</p>
+<ul>
+<li><a href="security/SECURITY.md">SECURITY.md</a> - Security guidelines</li>
+<li><a href="security/2FA_IMPROVEMENTS.md">2FA_IMPROVEMENTS.md</a> - Two-factor authentication</li>
+<li><a href="security/CAPTCHA_SETUP.md">CAPTCHA_SETUP.md</a> - CAPTCHA configuration</li>
+</ul>
+<h3>🧪 Testing</h3>
+<p>Testing guidelines and test suite documentation.</p>
+<ul>
+<li><a href="testing/TEST_SUITE_SUMMARY.md">TEST_SUITE_SUMMARY.md</a> - Test coverage and guidelines</li>
+</ul>
+<h3>💻 Development</h3>
+<p>Development notes, performance improvements, and enhancement summaries.</p>
+<ul>
+<li><a href="development/PERFORMANCE_IMPROVEMENTS.md">PERFORMANCE_IMPROVEMENTS.md</a></li>
+<li><a href="development/CAPTCHA_IMPLEMENTATION_COMPLETE.md">CAPTCHA_IMPLEMENTATION_COMPLETE.md</a></li>
+</ul>
+<h3>📋 Project Management</h3>
+<p>Project status, release notes, and CI/CD information.</p>
+<ul>
+<li><a href="project/CI_CD.md">CI_CD.md</a> - CI/CD pipeline documentation</li>
+<li><a href="project/RELEASE_NOTES.md">RELEASE_NOTES.md</a> - Version history</li>
+<li><a href="project/BRANCH_RULESET.md">BRANCH_RULESET.md</a> - Git workflow</li>
+</ul>
+<h3>🔬 Technical Investigations</h3>
+<p>In-depth technical analyses and comparisons.</p>
+<ul>
+<li><a href="investigation/NOSQL_INVESTIGATION.md">NOSQL_INVESTIGATION.md</a> - NoSQL analysis</li>
+<li><a href="investigation/SQL_VS_NOSQL_COMPARISON.md">SQL_VS_NOSQL_COMPARISON.md</a> - Database comparison</li>
+</ul>
+<hr>
+<h2>🚀 Quick Start</h2>
+<p><strong>Default Login:</strong> <code>admin</code> / <code>ChangeMeNow!42</code> (change immediately after first login)</p>
+<hr>
+<h2>✨ Features</h2>
+<ul>
+<li><strong>📝 Rich Markdown Editing</strong> - Full markdown support with live preview</li>
+<li><strong>🏷️ Smart Tagging</strong> - Organize notes with tags and filter by them</li>
+<li><strong>🔍 Powerful Search</strong> - Search notes by title, content, or tags</li>
+<li><strong>⭐ Favorites &amp; Pinning</strong> - Mark important notes as favorites or pin them</li>
+<li><strong>📱 Responsive Design</strong> - Beautiful UI that works on all devices</li>
+<li><strong>🌙 Dark Mode</strong> - Toggle between light and dark themes</li>
+<li><strong>🔐 Secure</strong> - CSRF protection, input validation, and HTML sanitization</li>
+<li><strong>📊 Reading Time</strong> - Automatic reading time estimation</li>
+<li><strong>🔑 Two-Factor Authentication (2FA)</strong> - TOTP-based 2FA with QR code setup</li>
+<li><strong>✅ Task Management</strong> - Create and track tasks with priorities and due dates</li>
+<li><strong>👥 Note Sharing</strong> - Share notes with other users with view/edit permissions</li>
+</ul>
+<hr>
+<h2>📁 Project Structure</h2>
+<pre><code>note-hub/
+├── frontend/                  # Vite + React frontend
+│   ├── src/                   # React components
+│   └── vite.config.ts         # Vite configuration
+├── backend/                   # Node.js/Express API
+│   ├── src/                   # API source code
+│   │   ├── config/            # Database configuration
+│   │   ├── middleware/        # Authentication middleware
+│   │   ├── models/            # Sequelize models
+│   │   ├── routes/            # API routes
+│   │   └── services/          # Business logic
+│   └── tests/                 # Backend tests
+├── docs/                      # Documentation
+│   ├── api/                   # API documentation
+│   ├── architecture/          # Architecture docs
+│   ├── guides/                # User guides
+│   ├── investigation/         # Technical investigations
+│   └── security/              # Security documentation
+├── scripts/                   # Utility scripts
+├── docker-compose.yml         # Docker setup
+└── package.json               # Project dependencies
+</code></pre>
+<hr>
+<h2>⚙️ Installation &amp; Setup</h2>
+<h3>Local Development</h3>
+<ol>
+<li>Clone the repository:</li>
+</ol>
+<pre><code class="language-bash">git clone https://github.com/thienng-it/note-hub.git
+cd note-hub
+</code></pre>
+<ol start="2">
+<li>Create and activate virtual environment:</li>
+</ol>
+<pre><code class="language-bash">python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+</code></pre>
+<ol start="3">
+<li>Install dependencies:</li>
+</ol>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<ol start="4">
+<li>Set up MySQL database:</li>
+</ol>
+<pre><code class="language-bash"># Install MySQL if not already installed
+# macOS: brew install mysql
+# Ubuntu: sudo apt-get install mysql-server
+
+# Start MySQL and create database
+mysql -u root -p
+CREATE DATABASE notehub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER &#39;notehub&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your_secure_password&#39;;
+GRANT ALL PRIVILEGES ON notehub.* TO &#39;notehub&#39;@&#39;localhost&#39;;
+FLUSH PRIVILEGES;
+EXIT;
+</code></pre>
+<ol start="5">
+<li>Configure environment variables:</li>
+</ol>
+<pre><code class="language-bash">export NOTES_ADMIN_USERNAME=&quot;admin&quot;
+export NOTES_ADMIN_PASSWORD=&quot;your-secure-password&quot;
+export FLASK_SECRET=&quot;your-secret-key&quot;
+
+# MySQL Configuration
+export MYSQL_HOST=&quot;localhost&quot;
+export MYSQL_PORT=&quot;3306&quot;
+export MYSQL_USER=&quot;notehub&quot;
+export MYSQL_PASSWORD=&quot;your_secure_password&quot;
+export MYSQL_DATABASE=&quot;notehub&quot;
+
+# Optional: Enable CAPTCHA protection
+export RECAPTCHA_SITE_KEY=&quot;your-recaptcha-site-key&quot;
+export RECAPTCHA_SECRET_KEY=&quot;your-recaptcha-secret-key&quot;
+</code></pre>
+<ol start="6">
+<li>Run the application:</li>
+</ol>
+<pre><code class="language-bash">python wsgi.py
+</code></pre>
+<p>Visit <code>http://127.0.0.1:5000</code> in your browser.</p>
+<hr>
+<h2>🚀 Deployment</h2>
+<h3>Deploy to Render.com</h3>
+<ol>
+<li>Set up a MySQL database (Render offers managed MySQL databases)</li>
+<li>Fork this repository</li>
+<li>Create a new Web Service on <a href="https://render.com">Render.com</a></li>
+<li>Connect your GitHub repository</li>
+<li>Render will automatically detect <code>render.yaml</code> and configure the service</li>
+<li>Set environment variables in Render dashboard:<ul>
+<li><code>MYSQL_HOST</code> (your MySQL host)</li>
+<li><code>MYSQL_PORT</code> (default: 3306)</li>
+<li><code>MYSQL_USER</code> (your MySQL username)</li>
+<li><code>MYSQL_PASSWORD</code> (your MySQL password)</li>
+<li><code>MYSQL_DATABASE</code> (your database name)</li>
+<li><code>NOTES_ADMIN_PASSWORD</code> (generate a secure password)</li>
+<li><code>FLASK_SECRET</code> (generate a random secret key)</li>
+</ul>
+</li>
+</ol>
+<p>The app will be automatically deployed with MySQL database connection.</p>
+<h3>Manual Deployment (Any Platform)</h3>
+<p>For other platforms supporting Python WSGI apps:</p>
+<pre><code class="language-bash">gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 wsgi:app
+</code></pre>
+<p>Ensure you set the required environment variables on your platform.</p>
+<hr>
+<h2>🔒 Security Features</h2>
+<ul>
+<li><strong>CSRF Protection</strong> - All forms protected against cross-site request forgery</li>
+<li><strong>Input Validation</strong> - Server-side validation for all user inputs</li>
+<li><strong>HTML Sanitization</strong> - Safe markdown rendering with bleach</li>
+<li><strong>Secure Sessions</strong> - Proper session management</li>
+<li><strong>Password Hashing</strong> - Passwords stored securely with Werkzeug</li>
+<li><strong>Two-Factor Authentication (2FA)</strong> - TOTP-based authentication with QR code setup</li>
+<li><strong>CAPTCHA Protection</strong> - Optional reCAPTCHA v2 integration to prevent bots and automated attacks</li>
+</ul>
+<h2>🤖 CAPTCHA Protection</h2>
+<p>Optional CAPTCHA integration to protect against bots and automated attacks:</p>
+<ol>
+<li><strong>Setup:</strong> Get reCAPTCHA keys from <a href="https://www.google.com/recaptcha/admin">Google reCAPTCHA Admin</a></li>
+<li><strong>Configure:</strong> Set environment variables:<ul>
+<li><code>RECAPTCHA_SITE_KEY</code> - Public site key</li>
+<li><code>RECAPTCHA_SECRET_KEY</code> - Secret key</li>
+</ul>
+</li>
+<li><strong>Forms Protected:</strong><ul>
+<li>Login form (prevents brute force attacks)</li>
+<li>Registration form (prevents bot registrations)</li>
+<li>Forgot password form (prevents abuse)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Note:</strong> CAPTCHA is automatically enabled when keys are configured. Without keys, forms work normally without CAPTCHA.</p>
+<p>For detailed setup instructions, see <a href="docs/CAPTCHA_SETUP.md">docs/CAPTCHA_SETUP.md</a>.</p>
+<h2>🔑 Two-Factor Authentication (2FA)</h2>
+<p>Optional 2FA support for enhanced security:</p>
+<ol>
+<li><strong>Setup:</strong> Navigate to Profile → Setup 2FA → Scan QR code with authenticator app</li>
+<li><strong>Login:</strong> Enter username, password, then 6-digit code from authenticator</li>
+<li><strong>Disable:</strong> Visit Profile page and click &quot;Disable 2FA&quot;</li>
+<li><strong>Password Reset:</strong> 2FA can be bypassed during password reset flow</li>
+</ol>
+<p><strong>Supported Apps:</strong> Google Authenticator, Microsoft Authenticator, Authy, 1Password, or any TOTP-compatible app</p>
+<hr>
+<h2>🛠️ Technology Stack</h2>
+<ul>
+<li><strong>Frontend:</strong> Vite + React 19 + TypeScript</li>
+<li><strong>Backend:</strong> Node.js + Express</li>
+<li><strong>Database:</strong> SQLite (dev) / MySQL (prod)</li>
+<li><strong>ORM:</strong> Sequelize</li>
+<li><strong>Security:</strong> JWT authentication, bcrypt, HTML sanitization</li>
+<li><strong>Reverse Proxy:</strong> Traefik v2.11</li>
+<li><strong>Deployment:</strong> Docker + Traefik</li>
+</ul>
+<hr>
+<h2>📝 Markdown Support</h2>
+<p>Full markdown syntax supported including:</p>
+<ul>
+<li>Headers (<code># H1</code>, <code>## H2</code>)</li>
+<li><strong>Bold</strong>, <em>Italic</em>, <code>Code</code></li>
+<li>Lists, links, images</li>
+<li>Code blocks with syntax highlighting</li>
+<li>Tables and blockquotes</li>
+</ul>
+<hr>
+<h2>🧪 Testing</h2>
+<p>Run the test suite:</p>
+<pre><code class="language-bash">python tests/test_app.py
+</code></pre>
+<p>Or use pytest:</p>
+<pre><code class="language-bash">pytest tests/ -v
+</code></pre>
+<hr>
+<h2>⚠️ Important Notes</h2>
+<ul>
+<li>Designed for personal or small team use</li>
+<li><strong>Change default password immediately</strong> after first login</li>
+<li>Regular backups of MySQL database are recommended (use <code>mysqldump</code>)</li>
+<li>MySQL provides better performance and concurrency than SQLite</li>
+<li>Enable HTTPS in production environments</li>
+</ul>
+<hr>
+<h2>📄 License</h2>
+<p>Open source - available for personal and commercial use.</p>
+<hr>
+<p><strong>Built with ❤️ using Flask, SQLAlchemy, and Tailwind CSS</strong></p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

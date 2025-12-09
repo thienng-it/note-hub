@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - SQLite to MySQL Migration Guide">
+    <title>SQLite to MySQL Migration Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>SQLite to MySQL Migration Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>SQLite to MySQL Migration Guide</h1>
+<p>This guide will help you migrate your existing NoteHub data from SQLite to MySQL.</p>
+<h2>Prerequisites</h2>
+<ul>
+<li>Access to your existing SQLite database file (<code>notes.db</code>)</li>
+<li>MySQL server installed and running</li>
+<li>Python environment with required packages installed</li>
+</ul>
+<h2>Step 1: Setup MySQL Database</h2>
+<p>First, create a new MySQL database and user:</p>
+<pre><code class="language-bash"># Connect to MySQL as root
+mysql -u root -p
+
+# Create database with UTF-8 support
+CREATE DATABASE notehub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# Create user and grant privileges
+CREATE USER &#39;notehub&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your_secure_password&#39;;
+GRANT ALL PRIVILEGES ON notehub.* TO &#39;notehub&#39;@&#39;localhost&#39;;
+FLUSH PRIVILEGES;
+EXIT;
+</code></pre>
+<h2>Step 2: Configure Environment Variables</h2>
+<p>Update your environment variables to use MySQL:</p>
+<pre><code class="language-bash"># Old SQLite configuration (remove these)
+# export NOTES_DB_PATH=notes.db
+
+# New MySQL configuration
+export MYSQL_HOST=localhost
+export MYSQL_PORT=3306
+export MYSQL_USER=notehub
+export MYSQL_PASSWORD=your_secure_password
+export MYSQL_DATABASE=notehub
+
+# Keep these as before
+export NOTES_ADMIN_USERNAME=admin
+export NOTES_ADMIN_PASSWORD=your_password
+export FLASK_SECRET=your_secret_key
+</code></pre>
+<h2>Step 3: Install MySQL Dependencies</h2>
+<p>The requirements.txt has been updated to include MySQL support:</p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<p>This will install:</p>
+<ul>
+<li>PyMySQL (MySQL database adapter)</li>
+<li>cryptography (for SSL connections)</li>
+</ul>
+<h2>Step 4: Initialize MySQL Database</h2>
+<p>Run the application once to create all tables in MySQL:</p>
+<pre><code class="language-bash">python wsgi.py
+</code></pre>
+<p>The application will automatically create all necessary tables in your MySQL database. You can stop it after you see the successful initialization message.</p>
+<h2>Step 5: Export Data from SQLite</h2>
+<p>Create a Python script to export your data from SQLite:</p>
+<pre><code class="language-python"># export_sqlite_data.py
+import sqlite3
+import json
+from datetime import datetime
+
+# Connect to SQLite database
+conn = sqlite3.connect(&#39;notes.db&#39;)
+conn.row_factory = sqlite3.Row
+cursor = conn.cursor()
+
+# Export users
+cursor.execute(&#39;SELECT * FROM users&#39;)
+users = [dict(row) for row in cursor.fetchall()]
+
+# Export notes
+cursor.execute(&#39;SELECT * FROM notes&#39;)
+notes = [dict(row) for row in cursor.fetchall()]
+
+# Export tags
+cursor.execute(&#39;SELECT * FROM tags&#39;)
+tags = [dict(row) for row in cursor.fetchall()]
+
+# Export note_tag relationships
+cursor.execute(&#39;SELECT * FROM note_tag&#39;)
+note_tags = [dict(row) for row in cursor.fetchall()]
+
+# Export tasks
+cursor.execute(&#39;SELECT * FROM tasks&#39;)
+tasks = [dict(row) for row in cursor.fetchall()]
+
+# Export share_notes
+cursor.execute(&#39;SELECT * FROM share_notes&#39;)
+share_notes = [dict(row) for row in cursor.fetchall()]
+
+# Export invitations
+cursor.execute(&#39;SELECT * FROM invitations&#39;)
+invitations = [dict(row) for row in cursor.fetchall()]
+
+# Export password_reset_tokens
+cursor.execute(&#39;SELECT * FROM password_reset_tokens&#39;)
+reset_tokens = [dict(row) for row in cursor.fetchall()]
+
+# Save to JSON file
+export_data = {
+    &#39;users&#39;: users,
+    &#39;notes&#39;: notes,
+    &#39;tags&#39;: tags,
+    &#39;note_tags&#39;: note_tags,
+    &#39;tasks&#39;: tasks,
+    &#39;share_notes&#39;: share_notes,
+    &#39;invitations&#39;: invitations,
+    &#39;password_reset_tokens&#39;: reset_tokens
+}
+
+with open(&#39;sqlite_export.json&#39;, &#39;w&#39;) as f:
+    json.dump(export_data, f, indent=2, default=str)
+
+conn.close()
+print(&quot;✅ Data exported to sqlite_export.json&quot;)
+</code></pre>
+<p>Run the export script:</p>
+<pre><code class="language-bash">python export_sqlite_data.py
+</code></pre>
+<h2>Step 6: Import Data into MySQL</h2>
+<p>Create a Python script to import the data into MySQL:</p>
+<pre><code class="language-python"># import_to_mysql.py
+import json
+import sys
+import os
+
+# Add src directory to path
+sys.path.insert(0, &#39;src&#39;)
+
+from notehub import create_app
+from notehub.config import AppConfig
+from notehub.database import get_session
+from notehub.models import User, Note, Tag, Task, ShareNote, Invitation, PasswordResetToken, note_tag
+
+# Create Flask app
+app = create_app(AppConfig())
+
+# Load exported data
+with open(&#39;sqlite_export.json&#39;, &#39;r&#39;) as f:
+    data = json.load(f)
+
+def import_data():
+    with app.app_context():
+        with get_session() as session:
+            print(&quot;📦 Importing data to MySQL...&quot;)
+
+            # Import users (skip admin if exists)
+            print(f&quot;👥 Importing {len(data[&#39;users&#39;])} users...&quot;)
+            for user_data in data[&#39;users&#39;]:
+                existing = session.query(User).filter_by(username=user_data[&#39;username&#39;]).first()
+                if not existing:
+                    user = User(
+                        id=user_data[&#39;id&#39;],
+                        username=user_data[&#39;username&#39;],
+                        password_hash=user_data[&#39;password_hash&#39;],
+                        theme=user_data.get(&#39;theme&#39;, &#39;light&#39;),
+                        bio=user_data.get(&#39;bio&#39;),
+                        email=user_data.get(&#39;email&#39;),
+                        totp_secret=user_data.get(&#39;totp_secret&#39;),
+                        created_at=user_data.get(&#39;created_at&#39;),
+                        last_login=user_data.get(&#39;last_login&#39;)
+                    )
+                    session.add(user)
+            session.commit()
+            print(&quot;✅ Users imported&quot;)
+
+            # Import tags
+            print(f&quot;🏷️  Importing {len(data[&#39;tags&#39;])} tags...&quot;)
+            for tag_data in data[&#39;tags&#39;]:
+                tag = Tag(
+                    id=tag_data[&#39;id&#39;],
+                    name=tag_data[&#39;name&#39;],
+                    color=tag_data.get(&#39;color&#39;, &#39;#3B82F6&#39;),
+                    created_at=tag_data.get(&#39;created_at&#39;)
+                )
+                session.add(tag)
+            session.commit()
+            print(&quot;✅ Tags imported&quot;)
+
+            # Import notes
+            print(f&quot;📝 Importing {len(data[&#39;notes&#39;])} notes...&quot;)
+            for note_data in data[&#39;notes&#39;]:
+                note = Note(
+                    id=note_data[&#39;id&#39;],
+                    title=note_data[&#39;title&#39;],
+                    body=note_data[&#39;body&#39;],
+                    pinned=note_data.get(&#39;pinned&#39;, False),
+                    archived=note_data.get(&#39;archived&#39;, False),
+                    favorite=note_data.get(&#39;favorite&#39;, False),
+                    created_at=note_data.get(&#39;created_at&#39;),
+                    updated_at=note_data.get(&#39;updated_at&#39;),
+                    owner_id=note_data.get(&#39;owner_id&#39;)
+                )
+                session.add(note)
+            session.commit()
+            print(&quot;✅ Notes imported&quot;)
+
+            # Import note-tag relationships
+            print(f&quot;🔗 Importing {len(data[&#39;note_tags&#39;])} note-tag relationships...&quot;)
+            for nt_data in data[&#39;note_tags&#39;]:
+                stmt = note_tag.insert().values(
+                    note_id=nt_data[&#39;note_id&#39;],
+                    tag_id=nt_data[&#39;tag_id&#39;]
+                )
+                session.execute(stmt)
+            session.commit()
+            print(&quot;✅ Note-tag relationships imported&quot;)
+
+            # Import tasks
+            print(f&quot;✅ Importing {len(data[&#39;tasks&#39;])} tasks...&quot;)
+            for task_data in data[&#39;tasks&#39;]:
+                task = Task(
+                    id=task_data[&#39;id&#39;],
+                    title=task_data[&#39;title&#39;],
+                    description=task_data.get(&#39;description&#39;),
+                    completed=task_data.get(&#39;completed&#39;, False),
+                    due_date=task_data.get(&#39;due_date&#39;),
+                    priority=task_data.get(&#39;priority&#39;, &#39;medium&#39;),
+                    owner_id=task_data[&#39;owner_id&#39;],
+                    created_at=task_data.get(&#39;created_at&#39;),
+                    updated_at=task_data.get(&#39;updated_at&#39;)
+                )
+                session.add(task)
+            session.commit()
+            print(&quot;✅ Tasks imported&quot;)
+
+            # Import share notes
+            print(f&quot;🔗 Importing {len(data[&#39;share_notes&#39;])} share notes...&quot;)
+            for share_data in data[&#39;share_notes&#39;]:
+                share = ShareNote(
+                    id=share_data[&#39;id&#39;],
+                    note_id=share_data[&#39;note_id&#39;],
+                    shared_by_id=share_data[&#39;shared_by_id&#39;],
+                    shared_with_id=share_data[&#39;shared_with_id&#39;],
+                    can_edit=share_data.get(&#39;can_edit&#39;, False),
+                    created_at=share_data.get(&#39;created_at&#39;)
+                )
+                session.add(share)
+            session.commit()
+            print(&quot;✅ Share notes imported&quot;)
+
+            # Import invitations
+            print(f&quot;📨 Importing {len(data[&#39;invitations&#39;])} invitations...&quot;)
+            for inv_data in data[&#39;invitations&#39;]:
+                invitation = Invitation(
+                    id=inv_data[&#39;id&#39;],
+                    token=inv_data[&#39;token&#39;],
+                    inviter_id=inv_data[&#39;inviter_id&#39;],
+                    email=inv_data.get(&#39;email&#39;),
+                    message=inv_data.get(&#39;message&#39;),
+                    used=inv_data.get(&#39;used&#39;, False),
+                    used_by_id=inv_data.get(&#39;used_by_id&#39;),
+                    expires_at=inv_data[&#39;expires_at&#39;],
+                    created_at=inv_data.get(&#39;created_at&#39;)
+                )
+                session.add(invitation)
+            session.commit()
+            print(&quot;✅ Invitations imported&quot;)
+
+            # Import password reset tokens
+            print(f&quot;🔑 Importing {len(data[&#39;password_reset_tokens&#39;])} password reset tokens...&quot;)
+            for token_data in data[&#39;password_reset_tokens&#39;]:
+                token = PasswordResetToken(
+                    id=token_data[&#39;id&#39;],
+                    user_id=token_data[&#39;user_id&#39;],
+                    token=token_data[&#39;token&#39;],
+                    expires_at=token_data[&#39;expires_at&#39;],
+                    used=token_data.get(&#39;used&#39;, False),
+                    created_at=token_data.get(&#39;created_at&#39;)
+                )
+                session.add(token)
+            session.commit()
+            print(&quot;✅ Password reset tokens imported&quot;)
+
+            print(&quot;\n🎉 Migration completed successfully!&quot;)
+            print(f&quot;📊 Summary:&quot;)
+            print(f&quot;   - Users: {len(data[&#39;users&#39;])}&quot;)
+            print(f&quot;   - Notes: {len(data[&#39;notes&#39;])}&quot;)
+            print(f&quot;   - Tags: {len(data[&#39;tags&#39;])}&quot;)
+            print(f&quot;   - Tasks: {len(data[&#39;tasks&#39;])}&quot;)
+
+if __name__ == &#39;__main__&#39;:
+    try:
+        import_data()
+    except Exception as e:
+        print(f&quot;❌ Error during migration: {e}&quot;)
+        import traceback
+        traceback.print_exc()
+</code></pre>
+<p>Run the import script:</p>
+<pre><code class="language-bash">python import_to_mysql.py
+</code></pre>
+<h2>Step 7: Verify Migration</h2>
+<ol>
+<li><p>Start your application:</p>
+<pre><code class="language-bash">python wsgi.py
+</code></pre>
+</li>
+<li><p>Log in with your existing credentials</p>
+</li>
+<li><p>Verify:</p>
+<ul>
+<li>All notes are present</li>
+<li>Tags are preserved</li>
+<li>Tasks are showing correctly</li>
+<li>User profiles are intact</li>
+</ul>
+</li>
+</ol>
+<h2>Step 8: Backup and Cleanup</h2>
+<p>Once you&#39;ve verified everything works:</p>
+<ol>
+<li><p><strong>Backup your SQLite database</strong> (just in case):</p>
+<pre><code class="language-bash">cp notes.db notes.db.backup
+</code></pre>
+</li>
+<li><p><strong>Test MySQL backups</strong>:</p>
+<pre><code class="language-bash">mysqldump -u notehub -p notehub &gt; backup.sql
+</code></pre>
+</li>
+<li><p><strong>Optional: Remove SQLite files</strong> after confirming everything works:</p>
+<pre><code class="language-bash"># Only do this after thorough testing!
+# rm notes.db
+# rm notes.db-shm
+# rm notes.db-wal
+</code></pre>
+</li>
+</ol>
+<h2>Troubleshooting</h2>
+<h3>Connection Errors</h3>
+<p>If you get connection errors:</p>
+<ul>
+<li>Verify MySQL is running: <code>mysql -u notehub -p</code></li>
+<li>Check environment variables are set correctly</li>
+<li>Ensure firewall isn&#39;t blocking port 3306</li>
+</ul>
+<h3>Import Errors</h3>
+<p>If import fails:</p>
+<ul>
+<li>Check the export file: <code>cat sqlite_export.json</code></li>
+<li>Verify MySQL tables exist: <code>mysql -u notehub -p notehub -e &quot;SHOW TABLES;&quot;</code></li>
+<li>Check for foreign key constraints</li>
+</ul>
+<h3>Character Encoding Issues</h3>
+<p>If you see strange characters:</p>
+<ul>
+<li>Ensure database is created with UTF-8: <code>utf8mb4_unicode_ci</code></li>
+<li>Check your MySQL configuration for default character set</li>
+</ul>
+<h2>Benefits of MySQL over SQLite</h2>
+<ul>
+<li>✅ Better concurrency - multiple users can access simultaneously</li>
+<li>✅ Better performance for larger datasets</li>
+<li>✅ Network access - database can be on separate server</li>
+<li>✅ Better backup tools and replication</li>
+<li>✅ More suitable for production environments</li>
+<li>✅ Better scalability for growing applications</li>
+</ul>
+<h2>Need Help?</h2>
+<p>If you encounter issues during migration:</p>
+<ol>
+<li>Check the application logs for detailed error messages</li>
+<li>Verify MySQL connection with: <code>mysql -u notehub -p notehub</code></li>
+<li>Check that all environment variables are set correctly</li>
+<li>Ensure you have the latest version of requirements installed</li>
+</ol>
+<h2>Rollback Plan</h2>
+<p>If you need to rollback to SQLite:</p>
+<ol>
+<li>Stop the application</li>
+<li>Restore old environment variables:<pre><code class="language-bash">export NOTES_DB_PATH=notes.db
+unset MYSQL_HOST MYSQL_PORT MYSQL_USER MYSQL_PASSWORD MYSQL_DATABASE
+</code></pre>
+</li>
+<li>Checkout previous code version (before MySQL migration)</li>
+<li>Start the application</li>
+</ol>
+<p>Your original SQLite database will still be intact if you didn&#39;t delete it.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

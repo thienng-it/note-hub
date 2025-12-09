@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - 🔐 Security Policy">
+    <title>🔐 Security Policy - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>🔐 Security Policy</span>
+        </div>
+
+        <article class="content">
+            <h1>🔐 Security Policy</h1>
+<h2>Overview</h2>
+<p>The Note Hub application takes security very seriously. This document outlines the security features, best practices, and guidelines for using and deploying the application securely.</p>
+<hr>
+<h2>🛡️ Security Features</h2>
+<h3>1. <strong>Authentication &amp; Authorization</strong></h3>
+<ul>
+<li><p><strong>Secure Password Hashing</strong></p>
+<ul>
+<li>Passwords are hashed using Werkzeug&#39;s <code>generate_password_hash()</code></li>
+<li>Uses PBKDF2 with SHA256 by default</li>
+<li>Passwords are salted and never stored in plaintext</li>
+</ul>
+</li>
+<li><p><strong>Password Policy</strong></p>
+<ul>
+<li>Minimum 12 characters required</li>
+<li>Must contain: lowercase, uppercase, numbers, and special characters</li>
+<li>No whitespace allowed</li>
+<li>Real-time validation feedback during registration and password reset</li>
+<li>Password complexity checked on both client and server side</li>
+</ul>
+</li>
+<li><p><strong>Session Management</strong></p>
+<ul>
+<li>Secure server-side session handling</li>
+<li>HTTPS-only cookies (in production)</li>
+<li>HttpOnly flag prevents JavaScript access</li>
+<li>SameSite cookie attribute prevents CSRF attacks</li>
+</ul>
+</li>
+<li><p><strong>CSRF Protection</strong></p>
+<ul>
+<li>All forms protected with Flask-WTF CSRF tokens</li>
+<li>Token validation on all state-changing requests</li>
+<li>Regenerated on each login</li>
+</ul>
+</li>
+</ul>
+<h3>2. <strong>Two-Factor Authentication (2FA)</strong></h3>
+<ul>
+<li><p><strong>TOTP-Based 2FA</strong></p>
+<ul>
+<li>Time-based One-Time Password (TOTP) implementation</li>
+<li>Uses industry-standard pyotp library</li>
+<li>Compatible with Google Authenticator, Authy, Microsoft Authenticator, etc.</li>
+</ul>
+</li>
+<li><p><strong>QR Code Setup</strong></p>
+<ul>
+<li>QR codes generated for easy authenticator setup</li>
+<li>Base64 encoded for safe transmission</li>
+<li>Secret keys stored encrypted in database</li>
+</ul>
+</li>
+<li><p><strong>2FA for Password Reset</strong></p>
+<ul>
+<li>Users with 2FA enabled MUST verify their identity with 2FA code before resetting password</li>
+<li>Password reset flow requires 2FA verification if enabled</li>
+<li>CAPTCHA protection on forgot password form (when enabled)</li>
+<li>Re-enable 2FA after recovering access</li>
+</ul>
+</li>
+</ul>
+<h3>3. <strong>CAPTCHA Protection (reCAPTCHA)</strong></h3>
+<ul>
+<li><p><strong>Bot Prevention</strong></p>
+<ul>
+<li>Google reCAPTCHA v2 integration</li>
+<li>Enabled on login, registration, and password reset forms</li>
+<li>Prevents automated attacks, credential stuffing, and bot registrations</li>
+<li>Configure via <code>RECAPTCHA_ENABLED</code>, <code>RECAPTCHA_SITE_KEY</code>, and <code>RECAPTCHA_SECRET_KEY</code> environment variables</li>
+</ul>
+</li>
+<li><p><strong>Rate Limiting</strong></p>
+<ul>
+<li>Login: 10 attempts per minute</li>
+<li>Registration: 5 attempts per hour</li>
+<li>Password Reset: 5 attempts per hour</li>
+<li>2FA verification: 5 attempts per minute</li>
+</ul>
+</li>
+</ul>
+<h3>4. <strong>Input Validation &amp; Sanitization</strong></h3>
+<ul>
+<li><p><strong>Server-Side Validation</strong></p>
+<ul>
+<li>All user inputs validated on the server</li>
+<li>WTForms validators for form fields</li>
+<li>Length, format, and type checking</li>
+</ul>
+</li>
+<li><p><strong>HTML Sanitization</strong></p>
+<ul>
+<li>User-generated markdown content sanitized with bleach</li>
+<li>Prevents XSS (Cross-Site Scripting) attacks</li>
+<li>Safe subset of HTML allowed</li>
+</ul>
+</li>
+<li><p><strong>SQL Injection Prevention</strong></p>
+<ul>
+<li>SQLAlchemy ORM parameterized queries</li>
+<li>No raw SQL with string concatenation</li>
+<li>Prepared statements for all database operations</li>
+</ul>
+</li>
+</ul>
+<h3>5. <strong>Database Security</strong></h3>
+<ul>
+<li><p><strong>SQLite Encryption (Optional)</strong></p>
+<ul>
+<li>Consider using encrypted SQLite in production</li>
+<li>Or migrate to PostgreSQL with encrypted connections</li>
+</ul>
+</li>
+<li><p><strong>Database Access</strong></p>
+<ul>
+<li>Only admin user has direct database access</li>
+<li>All queries go through authenticated sessions</li>
+<li>Row-level security through session checks</li>
+</ul>
+</li>
+<li><p><strong>Sensitive Data</strong></p>
+<ul>
+<li>No plaintext storage of secrets</li>
+<li>TOTP secrets stored in database</li>
+<li>Database file should be backed up securely</li>
+</ul>
+</li>
+</ul>
+<h3>6. <strong>HTTPS/TLS</strong></h3>
+<ul>
+<li><p><strong>Production Deployment</strong></p>
+<ul>
+<li>Always use HTTPS in production</li>
+<li>Netlify (deployment platform) provisions SSL/TLS automatically via Let&#39;s Encrypt</li>
+<li>Redirect HTTP to HTTPS</li>
+</ul>
+</li>
+<li><p><strong>Certificates</strong></p>
+<ul>
+<li>Let&#39;s Encrypt for free SSL certificates</li>
+<li>Auto-renewal configured</li>
+<li>HSTS headers recommended</li>
+</ul>
+</li>
+</ul>
+<h3>7. <strong>Content Security Policy (CSP)</strong></h3>
+<ul>
+<li><strong>Recommended Headers</strong><ul>
+<li>Content-Security-Policy for XSS protection</li>
+<li>X-Frame-Options to prevent clickjacking</li>
+<li>X-Content-Type-Options to prevent MIME sniffing</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2>🔑 Security Best Practices</h2>
+<h3>For Users</h3>
+<ol>
+<li><p><strong>Password Security</strong></p>
+<ul>
+<li>Use strong, unique passwords (12+ characters)</li>
+<li>Change default password immediately</li>
+<li>Never share your password</li>
+</ul>
+</li>
+<li><p><strong>2FA Setup</strong></p>
+<ul>
+<li>Enable 2FA for all accounts</li>
+<li>Save backup codes in a secure location</li>
+<li>Keep your authenticator app synchronized</li>
+</ul>
+</li>
+<li><p><strong>Session Security</strong></p>
+<ul>
+<li>Log out when finished using the app</li>
+<li>Use HTTPS connections only</li>
+<li>Don&#39;t share session links or cookies</li>
+</ul>
+</li>
+<li><p><strong>Data Backup</strong></p>
+<ul>
+<li>Regularly backup your notes database</li>
+<li>Store backups in secure location</li>
+<li>Test restores periodically</li>
+</ul>
+</li>
+</ol>
+<h3>For Administrators</h3>
+<ol>
+<li><p><strong>Environment Variables</strong></p>
+<ul>
+<li>Never commit <code>.env</code> files to version control</li>
+<li>Use strong, random secret keys</li>
+<li>Rotate secrets periodically</li>
+</ul>
+</li>
+<li><p><strong>Database Management</strong></p>
+<ul>
+<li>Regular backups (daily recommended)</li>
+<li>Backup stored in separate secure location</li>
+<li>Document backup and restore procedures</li>
+</ul>
+</li>
+<li><p><strong>Access Control</strong></p>
+<ul>
+<li>Limit admin access to authorized personnel only</li>
+<li>Monitor access logs</li>
+<li>Review user accounts regularly</li>
+</ul>
+</li>
+<li><p><strong>Updates &amp; Patches</strong></p>
+<ul>
+<li>Keep Flask and dependencies updated</li>
+<li>Monitor security advisories</li>
+<li>Test updates in staging environment first</li>
+</ul>
+</li>
+</ol>
+<h3>For Developers</h3>
+<ol>
+<li><p><strong>Code Security</strong></p>
+<ul>
+<li>Use security linters (bandit)</li>
+<li>Follow OWASP guidelines</li>
+<li>Perform code reviews before deployment</li>
+</ul>
+</li>
+<li><p><strong>Dependency Management</strong></p>
+<ul>
+<li>Keep dependencies up-to-date</li>
+<li>Use tools like Safety to check for vulnerabilities</li>
+<li>Pin versions in requirements.txt</li>
+</ul>
+</li>
+<li><p><strong>Error Handling</strong></p>
+<ul>
+<li>Don&#39;t expose sensitive information in errors</li>
+<li>Log errors securely</li>
+<li>Use generic error messages for users</li>
+</ul>
+</li>
+<li><p><strong>Testing</strong></p>
+<ul>
+<li>Write security-focused tests</li>
+<li>Test input validation thoroughly</li>
+<li>Test authentication flows</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>🚨 Security Considerations</h2>
+<h3>Known Limitations</h3>
+<ol>
+<li><p><strong>Development Mode</strong></p>
+<ul>
+<li>Debug mode disabled in production</li>
+<li>Don&#39;t enable debug in live environments</li>
+<li>Exposes sensitive information</li>
+</ul>
+</li>
+<li><p><strong>Single-User Design</strong></p>
+<ul>
+<li>Built for personal/small team use</li>
+<li>Not suitable for large multi-user deployments</li>
+<li>No built-in multi-tenant isolation</li>
+</ul>
+</li>
+<li><p><strong>Local Database</strong></p>
+<ul>
+<li>SQLite not ideal for concurrent access</li>
+<li>Consider PostgreSQL for production</li>
+<li>Backup strategy crucial</li>
+</ul>
+</li>
+</ol>
+<h3>Threat Model</h3>
+<p>This application protects against:</p>
+<ul>
+<li>✅ Brute force password attacks</li>
+<li>✅ Session hijacking</li>
+<li>✅ CSRF attacks</li>
+<li>✅ XSS attacks</li>
+<li>✅ SQL injection</li>
+</ul>
+<p>This application does NOT protect against:</p>
+<ul>
+<li>❌ Physical access to server</li>
+<li>❌ Compromised hosting environment</li>
+<li>❌ Weak user passwords</li>
+<li>❌ Phishing attacks</li>
+<li>❌ Malware on user device</li>
+</ul>
+<hr>
+<h2>🔍 Security Scanning</h2>
+<h3>GitHub Actions CI/CD</h3>
+<p>The project includes automated security scanning:</p>
+<ol>
+<li><p><strong>CodeQL Analysis</strong></p>
+<ul>
+<li>Scans for known vulnerability patterns</li>
+<li>SARIF report generation</li>
+<li>Integrated with GitHub Security tab</li>
+</ul>
+</li>
+<li><p><strong>Trivy Scanning</strong></p>
+<ul>
+<li>Filesystem vulnerability scanning</li>
+<li>Dependency vulnerability detection</li>
+<li>Regular security updates</li>
+</ul>
+</li>
+<li><p><strong>Safety Checks</strong></p>
+<ul>
+<li>Python package vulnerability scanning</li>
+<li>Identifies known CVEs</li>
+<li>Reports on deprecated packages</li>
+</ul>
+</li>
+<li><p><strong>Code Quality</strong></p>
+<ul>
+<li>Bandit security linting</li>
+<li>SAST (Static Application Security Testing)</li>
+<li>Code formatting and style checks</li>
+</ul>
+</li>
+</ol>
+<h3>Running Security Scans Locally</h3>
+<pre><code class="language-bash"># Install security tools
+pip install bandit safety pylint
+
+# Run bandit security scan
+bandit -r scripts/dev_server.py
+
+# Check dependencies for vulnerabilities
+safety check
+
+# Run full code analysis
+pylint scripts/dev_server.py
+</code></pre>
+<hr>
+<h2>🔐 Environment Variables</h2>
+<h3>Required in Production</h3>
+<pre><code class="language-bash"># Flask Configuration
+FLASK_SECRET=&lt;strong-random-secret-key&gt;
+FLASK_ENV=production
+
+# Admin Credentials
+NOTES_ADMIN_USERNAME=admin
+NOTES_ADMIN_PASSWORD=&lt;strong-random-password&gt;
+
+# Database
+NOTES_DB_PATH=/var/lib/note-hub/notes.db
+
+# Optional: Email Service (for password reset)
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+</code></pre>
+<h3>Generating Secrets</h3>
+<pre><code class="language-bash"># Generate strong secret key
+python -c &quot;import secrets; print(secrets.token_hex(32))&quot;
+
+# Generate strong password
+python -c &quot;import secrets; print(secrets.token_urlsafe(32))&quot;
+</code></pre>
+<hr>
+<h2>📋 Security Checklist</h2>
+<h3>Before Deployment</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Change default admin password</li>
+<li><input disabled="" type="checkbox"> Generate strong <code>FLASK_SECRET</code></li>
+<li><input disabled="" type="checkbox"> Enable HTTPS/SSL</li>
+<li><input disabled="" type="checkbox"> Configure HSTS headers</li>
+<li><input disabled="" type="checkbox"> Set secure cookie flags</li>
+<li><input disabled="" type="checkbox"> Enable 2FA for admin</li>
+<li><input disabled="" type="checkbox"> Set up regular backups</li>
+<li><input disabled="" type="checkbox"> Configure firewall rules</li>
+<li><input disabled="" type="checkbox"> Review .gitignore for sensitive files</li>
+<li><input disabled="" type="checkbox"> Enable security scanning in CI/CD</li>
+</ul>
+<h3>Regular Maintenance</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Weekly: Review access logs</li>
+<li><input disabled="" type="checkbox"> Weekly: Check for security updates</li>
+<li><input disabled="" type="checkbox"> Monthly: Audit user accounts</li>
+<li><input disabled="" type="checkbox"> Monthly: Test backup restoration</li>
+<li><input disabled="" type="checkbox"> Quarterly: Update dependencies</li>
+<li><input disabled="" type="checkbox"> Quarterly: Security audit</li>
+<li><input disabled="" type="checkbox"> Annually: Penetration testing</li>
+</ul>
+<hr>
+<h2>🚨 Reporting Security Issues</h2>
+<p>If you discover a security vulnerability, please <strong>DO NOT</strong> open a public GitHub issue.</p>
+<p>Instead:</p>
+<ol>
+<li>Email: [<a href="mailto:your-security-email@example.com">your-security-email@example.com</a>]</li>
+<li>Include detailed information about the vulnerability</li>
+<li>Allow time for fix before public disclosure</li>
+<li>Follow responsible disclosure practices</li>
+</ol>
+<h3>Security Response Timeline</h3>
+<ul>
+<li><strong>Critical</strong>: Response within 24 hours</li>
+<li><strong>High</strong>: Response within 72 hours</li>
+<li><strong>Medium</strong>: Response within 1 week</li>
+<li><strong>Low</strong>: Response within 2 weeks</li>
+</ul>
+<hr>
+<h2>📚 Additional Resources</h2>
+<h3>Security Standards &amp; Guidelines</h3>
+<ul>
+<li><a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a> - Common web vulnerabilities</li>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html">OWASP Authentication Cheat Sheet</a></li>
+<li><a href="https://www.nist.gov/cyberframework">NIST Cybersecurity Framework</a></li>
+<li><a href="https://cwe.mitre.org/top25/">CWE Top 25</a> - Most Dangerous Software Weaknesses</li>
+</ul>
+<h3>Tools &amp; Services</h3>
+<ul>
+<li><a href="https://www.zaproxy.org/">OWASP ZAP</a> - Security scanning</li>
+<li><a href="https://portswigger.net/burp">Burp Suite</a> - Web security testing</li>
+<li><a href="https://bandit.readthedocs.io/">Bandit</a> - Python security linting</li>
+<li><a href="https://pyup.io/safety/">Safety</a> - Dependency vulnerability scanning</li>
+</ul>
+<h3>Flask Security</h3>
+<ul>
+<li><a href="https://flask-security-too.readthedocs.io/">Flask Security</a> - Authentication/authorization</li>
+<li><a href="https://flask-httpauthx-docs.readthedocs.io/">Flask-HTTPAuth</a> - HTTP authentication</li>
+<li><a href="https://flask-limiter.readthedocs.io/">Flask-Limiter</a> - Rate limiting</li>
+</ul>
+<hr>
+<h2>📝 Change Log</h2>
+<h3>Version 1.1.0 (Current)</h3>
+<ul>
+<li>✅ Added 2FA with TOTP support</li>
+<li>✅ Enhanced input validation</li>
+<li>✅ Security scanning in CI/CD</li>
+<li>✅ Updated dependencies</li>
+</ul>
+<h3>Version 1.0.0</h3>
+<ul>
+<li>✅ Initial release</li>
+<li>✅ CSRF protection</li>
+<li>✅ Secure password hashing</li>
+<li>✅ Session management</li>
+</ul>
+<hr>
+<p><strong>Last Updated:</strong> November 22, 2025<br><strong>Status:</strong> Active &amp; Maintained<br><strong>Contact:</strong> Security team</p>
+<hr>
+<p>For questions or concerns about security, please refer to the documentation or contact the security team.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>
