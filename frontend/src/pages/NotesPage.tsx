@@ -1,12 +1,14 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { notesApi } from '../api/client';
+import { notesApi, profileApi } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import type { Note, NoteViewType, Tag } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
 export function NotesPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [notes, setNotes] = useState<Note[]>([]);
   const [allTags, setAllTags] = useState<Tag[]>([]);
@@ -16,12 +18,26 @@ export function NotesPage() {
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
   const [hiddenNotes, setHiddenNotes] = useState<Set<number>>(() => {
     try {
+      // First try to load from user profile
+      if (user?.hidden_notes) {
+        return new Set(JSON.parse(user.hidden_notes));
+      }
+      // Fallback to localStorage for migration
       const saved = localStorage.getItem('hiddenNotes');
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch {
       return new Set();
     }
   });
+
+  const syncHiddenNotesToBackend = async (hiddenNoteIds: number[]) => {
+    try {
+      await profileApi.updateHiddenNotes(hiddenNoteIds);
+    } catch (err) {
+      console.error('Failed to sync hidden notes:', err);
+      // Silently fail - the user's local state is still updated
+    }
+  };
 
   const toggleHideNote = (noteId: number) => {
     setHiddenNotes((prev) => {
@@ -31,11 +47,9 @@ export function NotesPage() {
       } else {
         newSet.add(noteId);
       }
-      try {
-        localStorage.setItem('hiddenNotes', JSON.stringify([...newSet]));
-      } catch {
-        // Silently fail if localStorage is unavailable (e.g., private browsing, storage full)
-      }
+      const hiddenArray = [...newSet];
+      // Sync to backend
+      syncHiddenNotesToBackend(hiddenArray);
       return newSet;
     });
   };
@@ -43,20 +57,15 @@ export function NotesPage() {
   const hideAllNotes = () => {
     const allNoteIds = new Set(notes.map((note) => note.id));
     setHiddenNotes(allNoteIds);
-    try {
-      localStorage.setItem('hiddenNotes', JSON.stringify([...allNoteIds]));
-    } catch {
-      // Silently fail if localStorage is unavailable
-    }
+    const hiddenArray = [...allNoteIds];
+    // Sync to backend
+    syncHiddenNotesToBackend(hiddenArray);
   };
 
   const showAllNotes = () => {
     setHiddenNotes(new Set());
-    try {
-      localStorage.setItem('hiddenNotes', JSON.stringify([]));
-    } catch {
-      // Silently fail if localStorage is unavailable
-    }
+    // Sync to backend
+    syncHiddenNotesToBackend([]);
   };
 
   const view = (searchParams.get('view') || 'all') as NoteViewType;

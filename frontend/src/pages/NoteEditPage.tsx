@@ -280,7 +280,7 @@ export function NoteEditPage() {
             </div>
 
             {showPreview ? (
-              <div className="glass-input min-h-[300px] p-4 rounded-lg prose prose-lg dark:prose-invert max-w-none overflow-auto note-content">
+              <div className="glass-input min-h-[300px] md:min-h-[400px] lg:min-h-[500px] p-4 rounded-lg prose prose-lg dark:prose-invert max-w-none overflow-auto note-content">
                 <Markdown remarkPlugins={[remarkGfm]}>{body || '*No content to preview*'}</Markdown>
               </div>
             ) : (
@@ -288,7 +288,7 @@ export function NoteEditPage() {
                 id="body"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] font-mono text-sm resize-y"
+                className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] md:min-h-[400px] lg:min-h-[500px] font-mono text-sm resize-y"
                 placeholder={t('notes.contentPlaceholderMarkdown')}
               />
             )}

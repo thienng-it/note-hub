@@ -133,6 +133,7 @@ class Database {
         email TEXT,
         bio TEXT,
         theme TEXT DEFAULT 'light',
+        hidden_notes TEXT,
         totp_secret TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -340,6 +341,7 @@ class Database {
         email VARCHAR(255),
         bio TEXT,
         theme VARCHAR(20) DEFAULT 'light',
+        hidden_notes TEXT,
         totp_secret VARCHAR(32),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -582,6 +584,14 @@ class Database {
       addImagesColumn('notes', 'notes');
       addImagesColumn('tasks', 'tasks');
 
+      // Add hidden_notes column to users table if missing
+      const userColumns = this.db.prepare(`PRAGMA table_info(users)`).all();
+      const hasHiddenNotes = userColumns.some((col) => col.name === 'hidden_notes');
+      if (!hasHiddenNotes) {
+        console.log('🔄 Migrating users table: adding hidden_notes column');
+        this.db.exec(`ALTER TABLE users ADD COLUMN hidden_notes TEXT`);
+      }
+
       console.log('✅ SQLite schema migration completed');
     } catch (error) {
       console.error('⚠️ SQLite migration error (non-fatal):', error.message);
@@ -720,6 +730,7 @@ class Database {
         const allowedColumns = {
           updated_at: 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
           images: 'TEXT',
+          hidden_notes: 'TEXT',
         };
 
         if (!allowedTables.includes(tableName)) {
@@ -752,6 +763,9 @@ class Database {
       // Add missing images columns to notes and tasks tables
       await addColumnIfMissing('notes', 'images', 'notes');
       await addColumnIfMissing('tasks', 'images', 'tasks');
+
+      // Add missing hidden_notes column to users table
+      await addColumnIfMissing('users', 'hidden_notes', 'users');
 
       console.log('✅ MySQL schema migration completed');
     } catch (error) {

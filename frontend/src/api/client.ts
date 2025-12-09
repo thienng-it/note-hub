@@ -255,6 +255,27 @@ export const authApi = {
   },
 };
 
+// Profile API
+export const profileApi = {
+  async get(): Promise<{ user: User }> {
+    return apiRequest(`${API_VERSION}/profile`);
+  },
+
+  async update(data: Partial<User>): Promise<{ user: User; message: string }> {
+    return apiRequest(`${API_VERSION}/profile`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateHiddenNotes(hiddenNoteIds: number[]): Promise<{ user: User; message: string }> {
+    return apiRequest(`${API_VERSION}/profile`, {
+      method: 'PUT',
+      body: JSON.stringify({ hidden_notes: JSON.stringify(hiddenNoteIds) }),
+    });
+  },
+};
+
 // Notes API
 export const notesApi = {
   async list(view: NoteViewType = 'all', query?: string, tag?: string): Promise<Note[]> {

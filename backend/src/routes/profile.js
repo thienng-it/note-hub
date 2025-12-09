@@ -68,6 +68,7 @@ router.get('/', jwtRequired, async (req, res) => {
         email: req.user.email,
         bio: req.user.bio,
         theme: req.user.theme,
+        hidden_notes: req.user.hidden_notes || null,
         preferred_language: req.user.preferred_language || 'en',
         has_2fa: !!req.user.totp_secret,
         created_at: req.user.created_at,
@@ -95,7 +96,7 @@ router.get('/', jwtRequired, async (req, res) => {
  */
 router.put('/', jwtRequired, async (req, res) => {
   try {
-    const { username, email, bio, theme, preferred_language } = req.body;
+    const { username, email, bio, theme, hidden_notes, preferred_language } = req.body;
 
     // Check if new username already exists
     if (username && username !== req.user.username) {
@@ -127,6 +128,20 @@ router.put('/', jwtRequired, async (req, res) => {
       updates.push('theme = ?');
       params.push(theme);
     }
+    if (hidden_notes !== undefined) {
+      updates.push('hidden_notes = ?');
+      // Validate that hidden_notes is either null or a valid JSON string
+      if (hidden_notes !== null) {
+        try {
+          JSON.parse(hidden_notes);
+          params.push(hidden_notes);
+        } catch {
+          return res.status(400).json({ error: 'Invalid hidden_notes format' });
+        }
+      } else {
+        params.push(null);
+      }
+    }
     if (
       preferred_language !== undefined &&
       ['en', 'de', 'vi', 'ja', 'fr', 'es'].includes(preferred_language)
@@ -141,7 +156,7 @@ router.put('/', jwtRequired, async (req, res) => {
     }
 
     const updatedUser = await db.queryOne(
-      `SELECT id, username, email, bio, theme, preferred_language, totp_secret, created_at FROM users WHERE id = ?`,
+      `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, created_at FROM users WHERE id = ?`,
       [req.userId],
     );
 
@@ -153,6 +168,7 @@ router.put('/', jwtRequired, async (req, res) => {
         email: updatedUser.email,
         bio: updatedUser.bio,
         theme: updatedUser.theme,
+        hidden_notes: updatedUser.hidden_notes || null,
         preferred_language: updatedUser.preferred_language || 'en',
         has_2fa: !!updatedUser.totp_secret,
         created_at: updatedUser.created_at,

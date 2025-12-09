@@ -137,6 +137,11 @@ function defineModels() {
         type: DataTypes.STRING(20),
         defaultValue: 'light',
       },
+      hidden_notes: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        comment: 'JSON array of hidden note IDs',
+      },
       preferred_language: {
         type: DataTypes.STRING(10),
         defaultValue: 'en',

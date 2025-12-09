@@ -3,30 +3,63 @@ import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
-import { notesApi } from '../api/client';
+import { notesApi, profileApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
+import { ImageModal } from '../components/ImageModal';
+import { useAuth } from '../context/AuthContext';
 import type { Note } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
 export function NoteViewPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [note, setNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isContentHidden, setIsContentHidden] = useState(() => {
-    const saved = localStorage.getItem('hiddenNotes');
-    const hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set();
-    return id ? hiddenSet.has(parseInt(id, 10)) : false;
+    try {
+      // First try to load from user profile
+      if (user?.hidden_notes) {
+        const hiddenSet = new Set(JSON.parse(user.hidden_notes));
+        return id ? hiddenSet.has(parseInt(id, 10)) : false;
+      }
+      // Fallback to localStorage for migration
+      const saved = localStorage.getItem('hiddenNotes');
+      const hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set();
+      return id ? hiddenSet.has(parseInt(id, 10)) : false;
+    } catch {
+      return false;
+    }
   });
+
+  const syncHiddenNotesToBackend = async (hiddenNoteIds: number[]) => {
+    try {
+      await profileApi.updateHiddenNotes(hiddenNoteIds);
+    } catch (err) {
+      console.error('Failed to sync hidden notes:', err);
+    }
+  };
 
   const toggleHideContent = () => {
     if (!id) return;
     const noteId = parseInt(id, 10);
-    const saved = localStorage.getItem('hiddenNotes');
-    const hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set<number>();
+    let hiddenSet: Set<number>;
+
+    try {
+      if (user?.hidden_notes) {
+        hiddenSet = new Set(JSON.parse(user.hidden_notes));
+      } else {
+        const saved = localStorage.getItem('hiddenNotes');
+        hiddenSet = saved ? new Set(JSON.parse(saved)) : new Set<number>();
+      }
+    } catch {
+      hiddenSet = new Set<number>();
+    }
 
     if (isContentHidden) {
       hiddenSet.delete(noteId);
@@ -34,7 +67,8 @@ export function NoteViewPage() {
       hiddenSet.add(noteId);
     }
 
-    localStorage.setItem('hiddenNotes', JSON.stringify([...hiddenSet]));
+    const hiddenArray = [...hiddenSet];
+    syncHiddenNotesToBackend(hiddenArray);
     setIsContentHidden(!isContentHidden);
   };
 
@@ -94,6 +128,23 @@ export function NoteViewPage() {
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete note');
+    }
+  };
+
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index);
+    setShowImageModal(true);
+  };
+
+  const handleNextImage = () => {
+    if (note?.images && currentImageIndex < note.images.length - 1) {
+      setCurrentImageIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (currentImageIndex > 0) {
+      setCurrentImageIndex((prev) => prev - 1);
     }
   };
 
@@ -314,6 +365,35 @@ export function NoteViewPage() {
               </div>
             )}
 
+            {/* Images */}
+            {note.images && note.images.length > 0 && (
+              <div className="px-6 pt-6 border-b border-[var(--border-color)]">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center">
+                  <i className="fas fa-images mr-2 text-blue-600"></i>
+                  Attached Images ({note.images.length})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-6">
+                  {note.images.map((image, index) => (
+                    <button
+                      type="button"
+                      key={index}
+                      onClick={() => handleImageClick(index)}
+                      className="relative group overflow-hidden rounded-lg border-2 border-[var(--border-color)] hover:border-blue-500 transition-all cursor-pointer aspect-video bg-[var(--bg-tertiary)]"
+                    >
+                      <img
+                        src={image}
+                        alt={`Attachment ${index + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                        <i className="fas fa-search-plus text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Note Content */}
             <div className="p-6 note-content prose prose-lg dark:prose-invert max-w-none">
               <Markdown remarkPlugins={[remarkGfm]}>{note.body || '*No content*'}</Markdown>
@@ -321,6 +401,17 @@ export function NoteViewPage() {
           </>
         )}
       </div>
+
+      {/* Image Modal */}
+      {showImageModal && note?.images && (
+        <ImageModal
+          images={note.images}
+          currentIndex={currentImageIndex}
+          onClose={() => setShowImageModal(false)}
+          onNext={handleNextImage}
+          onPrev={handlePrevImage}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (

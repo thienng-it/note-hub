@@ -7,6 +7,7 @@ export interface User {
   created_at?: string;
   last_login?: string;
   theme?: 'light' | 'dark';
+  hidden_notes?: string | null;
   preferred_language?: string;
   has_2fa?: boolean;
 }

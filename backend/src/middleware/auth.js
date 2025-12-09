@@ -34,7 +34,7 @@ const jwtRequired = async (req, res, next) => {
 
   // Get user from database
   const user = await db.queryOne(
-    `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users WHERE id = ?`,
+    `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, created_at, last_login FROM users WHERE id = ?`,
     [result.userId],
   );
 
@@ -69,7 +69,7 @@ const jwtOptional = async (req, _res, next) => {
 
   if (result.valid) {
     const user = await db.queryOne(
-      `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users WHERE id = ?`,
+      `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, created_at, last_login FROM users WHERE id = ?`,
       [result.userId],
     );
     if (user) {
