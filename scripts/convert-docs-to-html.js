@@ -27,7 +27,7 @@ const getHtmlTemplate = (title, content, filePath) => {
   // Calculate relative path to root for proper linking
   const depth = filePath.split('/').length - 2; // -2 for docs/ and filename
   const rootPath = depth > 0 ? '../'.repeat(depth) : './';
-  
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -366,30 +366,30 @@ const convertMarkdownFile = (inputPath, outputPath) => {
   try {
     // Read markdown file
     const markdown = fs.readFileSync(inputPath, 'utf-8');
-    
+
     // Convert to HTML
     const htmlContent = marked.parse(markdown);
-    
+
     // Extract title from first h1 or use filename
     const titleMatch = markdown.match(/^#\s+(.+)$/m);
     const title = titleMatch ? titleMatch[1] : path.basename(inputPath, '.md');
-    
+
     // Get relative path for the template (cross-platform compatible)
     const docsDir = path.join(process.cwd(), 'docs');
     const relativePath = path.relative(docsDir, outputPath);
-    
+
     // Wrap in HTML template
     const fullHtml = getHtmlTemplate(title, htmlContent, relativePath);
-    
+
     // Ensure output directory exists
     const outputDir = path.dirname(outputPath);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
-    
+
     // Write HTML file
-    fs.writeFileSync(outputPath, fullHtml, 'utf-8');
-    
+    fs.writeFileSync(outputPath, fullHtml.replaceAll('.md)', '.html)'), 'utf-8');
+
     return true;
   } catch (error) {
     console.error(`Error converting ${inputPath}:`, error.message);
@@ -400,11 +400,11 @@ const convertMarkdownFile = (inputPath, outputPath) => {
 // Recursively find all markdown files in a directory
 const findMarkdownFiles = (dir, fileList = []) => {
   const files = fs.readdirSync(dir);
-  
+
   files.forEach(file => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       // Skip node_modules and hidden directories
       if (!file.startsWith('.') && file !== 'node_modules') {
@@ -414,34 +414,34 @@ const findMarkdownFiles = (dir, fileList = []) => {
       fileList.push(filePath);
     }
   });
-  
+
   return fileList;
 };
 
 // Main conversion function
 const convertAllDocs = () => {
   const docsDir = path.join(process.cwd(), 'docs');
-  
+
   if (!fs.existsSync(docsDir)) {
     console.error('Error: docs directory not found');
     process.exit(1);
   }
-  
+
   console.log('🔍 Finding markdown files...');
   const markdownFiles = findMarkdownFiles(docsDir);
-  
+
   console.log(`📚 Found ${markdownFiles.length} markdown files`);
   console.log('🔄 Converting to HTML...\n');
-  
+
   let successCount = 0;
   let failCount = 0;
-  
+
   markdownFiles.forEach(filePath => {
     // Generate output path (replace .md with .html)
     const outputPath = filePath.replace(/\.md$/, '.html');
-    
+
     const relativePath = path.relative(docsDir, filePath);
-    
+
     if (convertMarkdownFile(filePath, outputPath)) {
       console.log(`✅ ${relativePath} → ${path.relative(docsDir, outputPath)}`);
       successCount++;
@@ -450,7 +450,7 @@ const convertAllDocs = () => {
       failCount++;
     }
   });
-  
+
   console.log(`\n✨ Conversion complete!`);
   console.log(`✅ Success: ${successCount}`);
   if (failCount > 0) {

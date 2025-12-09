@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Attack Prevention & Security Guide</span>
         </div>
@@ -410,7 +410,7 @@ Retry-After: 60
 class LoginForm(FlaskForm):
     username = StringField(&quot;Username&quot;, validators=[DataRequired()])
     password = PasswordField(&quot;Password&quot;, validators=[DataRequired()])
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if current_app.config.get(&#39;RECAPTCHA_ENABLED&#39;, False):
@@ -469,15 +469,15 @@ csrf.init_app(app)
 <pre><code class="language-python">def password_policy_errors(password: str) -&gt; list[str]:
     &quot;&quot;&quot;Validate password against security policy.&quot;&quot;&quot;
     errors = []
-    
+
     if len(password) &lt; 12:
         errors.append(&quot;Password must be at least 12 characters long&quot;)
-    
+
     if not re.search(r&#39;[A-Z]&#39;, password):
         errors.append(&quot;Password must contain at least one uppercase letter&quot;)
-    
+
     # ... additional checks
-    
+
     return errors
 </code></pre>
 <p><strong>Benefits</strong>:</p>
@@ -891,7 +891,7 @@ storage_uri=&quot;redis://localhost:6379/0&quot;
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Drone CI Certificate Issuance Fix - Implementation Summary</span>
         </div>
@@ -325,13 +325,13 @@
             <h1>Drone CI Certificate Issuance Fix - Implementation Summary</h1>
 <h2>Problem Statement</h2>
 <p>Drone CI was experiencing TLS-ALPN-01 challenge failures when requesting Let&#39;s Encrypt SSL certificates, resulting in the following error:</p>
-<pre><code>time=&quot;2025-12-08T13:36:18Z&quot; level=error msg=&quot;Unable to obtain ACME certificate for domains \&quot;drone-ci-notehub.duckdns.org\&quot;: 
-unable to generate a certificate for the domains [drone-ci-notehub.duckdns.org]: 
+<pre><code>time=&quot;2025-12-08T13:36:18Z&quot; level=error msg=&quot;Unable to obtain ACME certificate for domains \&quot;drone-ci-notehub.duckdns.org\&quot;:
+unable to generate a certificate for the domains [drone-ci-notehub.duckdns.org]:
 error: one or more domains had a problem:
-[drone-ci-notehub.duckdns.org] invalid authorization: acme: error: 403 :: urn:ietf:params:acme:error:unauthorized :: 
-Incorrect validation certificate for tls-alpn-01 challenge. 
-Requested drone-ci-notehub.duckdns.org from 135.181.96.141:443. 
-Received certificate with acmeValidationV1 extension value a4921cdc88f73168ef78a1d05e0f2b412d1afd2e56826e06c4f1d76f911d2399 
+[drone-ci-notehub.duckdns.org] invalid authorization: acme: error: 403 :: urn:ietf:params:acme:error:unauthorized ::
+Incorrect validation certificate for tls-alpn-01 challenge.
+Requested drone-ci-notehub.duckdns.org from 135.181.96.141:443.
+Received certificate with acmeValidationV1 extension value a4921cdc88f73168ef78a1d05e0f2b412d1afd2e56826e06c4f1d76f911d2399
 but expected 3ae5494ed60e2112fcc049ec82d41c4bafa3e1e59820d1316e43c7d390b3be5d.&quot;
 </code></pre>
 <h2>Root Cause</h2>
@@ -626,7 +626,7 @@ git pull origin main
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

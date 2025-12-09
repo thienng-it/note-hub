@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Google Single Sign-On (SSO) Setup Guide</span>
         </div>
@@ -636,14 +636,14 @@ export function GoogleCallbackPage() {
 
   useEffect(() =&gt; {
     const code = searchParams.get(&#39;code&#39;);
-    
+
     // Exchange code for tokens
     const response = await apiClient.post(&#39;/api/auth/google/callback&#39;, { code });
-    
+
     // Store tokens
     localStorage.setItem(&#39;access_token&#39;, response.data.access_token);
     localStorage.setItem(&#39;refresh_token&#39;, response.data.refresh_token);
-    
+
     // Redirect to app
     navigate(&#39;/&#39;, { replace: true });
   }, []);
@@ -850,7 +850,7 @@ GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

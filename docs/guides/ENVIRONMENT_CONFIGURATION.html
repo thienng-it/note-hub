@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Environment Configuration Guide</span>
         </div>
@@ -648,7 +648,7 @@ environment:
   env_file:
     - .env
     - .env.backend
-    
+
 frontend:
   env_file:
     - .env
@@ -670,7 +670,7 @@ frontend:
   run: |
     echo &quot;SECRET_KEY=${{ secrets.SECRET_KEY }}&quot; &gt;&gt; .env
     echo &quot;DATABASE_URL=${{ secrets.DATABASE_URL }}&quot; &gt;&gt; .env
-    
+
 - name: Deploy
   run: docker compose --profile production up -d
 </code></pre>
@@ -691,7 +691,7 @@ frontend:
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

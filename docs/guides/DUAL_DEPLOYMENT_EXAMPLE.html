@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Dual Deployment Example: NoteHub + Drone CI</span>
         </div>
@@ -534,7 +534,7 @@ sudo apt install nginx certbot python3-certbot-nginx
 server {
     listen 80;
     server_name notehub.example.com;
-    
+
     location / {
         proxy_pass http://localhost:80;
         proxy_set_header Host $host;
@@ -548,14 +548,14 @@ server {
 server {
     listen 80;
     server_name drone.example.com;
-    
+
     location / {
         proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         # WebSocket support for Drone
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -712,7 +712,7 @@ docker compose -f docker-compose.drone.yml logs -f --tail=100
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>
