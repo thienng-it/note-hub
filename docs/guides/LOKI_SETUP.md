@@ -26,13 +26,27 @@ Applications → Promtail (collector) → Loki (storage) → Grafana (visualizat
 
 1. **Loki**: Log aggregation server (port 3100)
 2. **Promtail**: Log collector agent (collects from /var/log and Docker containers)
-3. **Grafana**: Web UI for log visualization (port 3000)
+3. **Grafana Loki**: Web UI for log visualization (port 3001)
+
+## Coexistence with Monitoring Stack
+
+**IMPORTANT**: If you're running `docker-compose.monitoring.yml` (Prometheus + Grafana), both stacks can coexist:
+
+- **Monitoring Grafana** (metrics): `http://your-server:3000` or `https://monitoring.your-domain.com`
+- **Loki Grafana** (logs): `http://your-server:3001`
+
+They use different:
+- Ports (3000 vs 3001)
+- Container names (`notehub-grafana` vs `grafana-loki`)
+- Volume names (`grafana-data` vs `grafana-loki-data`)
+- Networks (`monitoring-network` vs `loki-network`)
 
 ## Prerequisites
 
 - Docker and Docker Compose installed
 - At least 512MB RAM available for Loki stack
-- Ports 3000 (Grafana) and 3100 (Loki) available
+- Ports 3001 (Grafana) and 3100 (Loki) available
+- Port 3000 should remain free if using monitoring Grafana
 
 ## Quick Start
 
@@ -47,8 +61,8 @@ cp .env.loki.example .env.loki
 Edit `.env.loki` and change the default admin password:
 
 ```bash
-GRAFANA_ADMIN_USER=admin
-GRAFANA_ADMIN_PASSWORD=your-secure-password
+LOKI_GRAFANA_ADMIN_USER=admin
+LOKI_GRAFANA_ADMIN_PASSWORD=your-secure-password
 ```
 
 ### 3. Start Loki Stack
@@ -57,12 +71,14 @@ GRAFANA_ADMIN_PASSWORD=your-secure-password
 docker compose -f docker-compose.loki.yml up -d
 ```
 
-### 4. Access Grafana
+### 4. Access Grafana Loki UI
 
 Open your browser and navigate to:
 ```
-http://your-server:3000
+http://your-server:3001
 ```
+
+**Note**: Port 3001 (not 3000) to avoid conflicts with monitoring Grafana.
 
 Default credentials:
 - Username: `admin`
@@ -222,8 +238,8 @@ docker compose -f docker-compose.loki.yml logs -f grafana
 # Check Loki health
 curl http://localhost:3100/ready
 
-# Check Grafana health
-curl http://localhost:3000/api/health
+# Check Grafana Loki health
+curl http://localhost:3001/api/health
 ```
 
 ### View Metrics
@@ -263,15 +279,20 @@ curl http://localhost:3100/ready
 
 ### Cannot Access Grafana
 
-1. Check if port 3000 is already in use:
+1. Ensure you're using the correct port (3001):
 ```bash
-lsof -i :3000
+curl http://localhost:3001/api/health
 ```
 
-2. Change port in `docker-compose.loki.yml` if needed:
+2. If port 3001 is in use, check what's using it:
+```bash
+lsof -i :3001
+```
+
+3. Change port in `docker-compose.loki.yml` if needed:
 ```yaml
 ports:
-  - "3001:3000"  # Use 3001 instead
+  - "3002:3000"  # Use 3002 instead of 3001
 ```
 
 ## Backup and Restore

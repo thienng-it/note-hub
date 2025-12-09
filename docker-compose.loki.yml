@@ -5,6 +5,12 @@
 # Grafana Loki is a lightweight alternative to Graylog that uses only
 # 300-500MB RAM compared to Graylog's 4GB+ requirement.
 #
+# IMPORTANT: Coexistence with Monitoring Stack
+#   This Loki stack can run alongside docker-compose.monitoring.yml
+#   - Monitoring Grafana (metrics): Port 3000, container: notehub-grafana
+#   - Loki Grafana (logs): Port 3001, container: grafana-loki
+#   - Both stacks are independent and don't conflict
+#
 # Prerequisites:
 #   1. Docker and Docker Compose installed
 #   2. At least 512MB RAM available for Loki stack
@@ -12,16 +18,20 @@
 #
 # Quick Setup:
 #   1. Run: docker compose -f docker-compose.loki.yml up -d
-#   2. Access Grafana UI: http://your-server:3000 (admin/admin)
+#   2. Access Grafana UI: http://your-server:3001 (admin/admin)
 #   3. Send logs to Loki: http://your-server:3100
 #
 # Services:
 #   - loki: Log aggregation server (port 3100)
 #   - promtail: Log collector agent (collects from /var/log and Docker)
-#   - grafana: Web UI for log visualization (port 3000)
+#   - grafana-loki: Web UI for log visualization (port 3001)
 #
 # Architecture:
 #   Applications → Promtail → Loki → Grafana (visualization)
+#
+# Port Allocation:
+#   - 3100: Loki server
+#   - 3001: Grafana Loki UI (changed from 3000 to avoid conflicts)
 #
 # =============================================================================
 
@@ -80,22 +90,24 @@ services:
           memory: 32M
 
   # ==========================================================================
-  # Grafana - Visualization UI
+  # Grafana - Visualization UI (Loki)
   # ==========================================================================
-  grafana:
+  # Note: This is a separate Grafana instance dedicated to Loki logs
+  # It runs on port 3001 to avoid conflicts with the monitoring Grafana (port 3000)
+  grafana-loki:
     image: grafana/grafana:10.2.2
-    container_name: grafana
+    container_name: grafana-loki
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_USER=${LOKI_GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${LOKI_GRAFANA_ADMIN_PASSWORD:-admin}
       - GF_INSTALL_PLUGINS=${GRAFANA_INSTALL_PLUGINS:-}
-      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_SERVER_ROOT_URL=${LOKI_GRAFANA_ROOT_URL:-http://localhost:3001}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
-      - grafana-data:/var/lib/grafana
+      - grafana-loki-data:/var/lib/grafana
       - ./docker/loki/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
     networks:
       - loki-network
@@ -114,6 +126,8 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+    labels:
+      - "com.notehub.description=Grafana Loki log visualization"
 
 networks:
   loki-network:
@@ -123,5 +137,5 @@ networks:
 volumes:
   loki-data:
     driver: local
-  grafana-data:
+  grafana-loki-data:
     driver: local
