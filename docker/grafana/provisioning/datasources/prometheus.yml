@@ -11,6 +11,8 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
+    # UID must match the datasource reference in dashboard JSON files
+    uid: prometheus
     url: http://prometheus:9090
     isDefault: true
     editable: true
