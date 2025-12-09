@@ -65,7 +65,7 @@
 #### Traefik Integration
 - **Enabled**: Prometheus metrics for all Traefik instances
 - **Metrics**: Request rates, response times, backend health
-- **Endpoint**: `:8080/metrics` (internal)
+- **Endpoint**: `:9091/metrics` (internal, changed from 8080 to avoid conflicts)
 
 #### Configuration Files
 

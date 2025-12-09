@@ -74,7 +74,7 @@ services:
       - "--metrics.prometheus=true"
       - "--metrics.prometheus.addEntryPointsLabels=true"
       - "--metrics.prometheus.addServicesLabels=true"
-      - "--entrypoints.metrics.address=:8080"
+      - "--entrypoints.metrics.address=:9091"
     ports:
       - "80:80"
       - "443:443"
@@ -253,7 +253,7 @@ services:
       - "--metrics.prometheus=true"
       - "--metrics.prometheus.addEntryPointsLabels=true"
       - "--metrics.prometheus.addServicesLabels=true"
-      - "--entrypoints.metrics.address=:8080"
+      - "--entrypoints.metrics.address=:9091"
     ports:
       - "80:80"
       - "443:443"
@@ -442,7 +442,7 @@ services:
       - "--metrics.prometheus=true"
       - "--metrics.prometheus.addEntryPointsLabels=true"
       - "--metrics.prometheus.addServicesLabels=true"
-      - "--entrypoints.metrics.address=:8080"
+      - "--entrypoints.metrics.address=:9091"
     ports:
       - "80:80"
       - "443:443"

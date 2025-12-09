@@ -19,6 +19,7 @@
 #   - Grafana: port 3000 (Traefik proxy via monitoring.DOMAIN)
 #   - cAdvisor: internal only (no external port)
 #   - Node Exporter: internal only (no external port)
+#   - Traefik metrics: port 9091 (internal, changed from 8080 to avoid conflicts)
 #
 # Prerequisites:
 #   1. Docker and Docker Compose installed
@@ -56,7 +57,7 @@
 #   - Prometheus UI: http://localhost:9090 (internal only)
 #   - Metrics endpoints:
 #     - NoteHub Backend: http://notehub-backend:5000/metrics
-#     - Traefik: http://traefik:8080/metrics
+#     - Traefik: http://traefik:9091/metrics
 #
 # =============================================================================
 

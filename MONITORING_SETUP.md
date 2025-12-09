@@ -20,6 +20,7 @@ When deployed on the same VPS:
 | Service | Port(s) | Access |
 |---------|---------|--------|
 | NoteHub (Traefik) | 80, 443 | External (HTTPS) |
+| NoteHub (Traefik Metrics) | 9091 | Internal only |
 | Drone CI (Traefik) | 8080, 8443 | External (HTTPS) |
 | Graylog | 9000 | External (HTTP) |
 | Prometheus | 9090 | Internal only |
