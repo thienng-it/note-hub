@@ -105,7 +105,7 @@ function metricsMiddleware(req, res, next) {
 
   // Override res.end to capture metrics after response
   const originalEnd = res.end;
-  res.end = function (...args) {
+  res.end = (...args) => {
     // Calculate duration
     const duration = (Date.now() - start) / 1000; // Convert to seconds
 
@@ -141,7 +141,10 @@ function metricsMiddleware(req, res, next) {
  */
 function normalizeRoute(path) {
   // Skip static files
-  if (path.startsWith('/uploads/') || path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/)) {
+  if (
+    path.startsWith('/uploads/') ||
+    path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/)
+  ) {
     return '/static';
   }
 
@@ -202,7 +205,7 @@ function updateApplicationMetrics(metrics) {
 /**
  * Metrics endpoint handler
  */
-async function metricsEndpoint(req, res) {
+async function metricsEndpoint(_req, res) {
   try {
     // Set response headers
     res.setHeader('Content-Type', register.contentType);
