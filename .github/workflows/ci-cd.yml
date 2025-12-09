@@ -31,12 +31,11 @@ jobs:
 
       - name: Run linting
         working-directory: backend
-        run: npm run lint || true
+        run: npm run lint
 
       - name: Run tests with coverage
         working-directory: backend
         run: npm test -- --coverage
-        continue-on-error: true
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
@@ -97,7 +96,7 @@ jobs:
 
       - name: Lint backend
         working-directory: backend
-        run: npm run lint || true
+        run: npm run lint
 
       - name: Install frontend dependencies
         working-directory: frontend
@@ -142,12 +141,18 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm i
+
       - name: Audit backend dependencies
         working-directory: backend
-        run: npm audit --audit-level=moderate || true
-        continue-on-error: true
+        run: npm audit --audit-level=moderate
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm i
 
       - name: Audit frontend dependencies
         working-directory: frontend
-        run: npm audit --audit-level=moderate || true
-        continue-on-error: true
+        run: npm audit --audit-level=moderate

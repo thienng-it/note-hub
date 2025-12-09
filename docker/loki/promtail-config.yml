@@ -1,0 +1,58 @@
+# Promtail Configuration
+# Collects logs from system files and Docker containers
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Collect logs from /var/log
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/*log
+
+  # Collect logs from Docker containers
+  - job_name: containers
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'stream'
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+        target_label: 'compose_project'
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: 'compose_service'
+
+  # Collect NoteHub backend logs (if using file logging)
+  - job_name: notehub-backend
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: notehub-backend
+          app: notehub
+          __path__: /var/log/notehub/backend*.log
+
+  # Collect NoteHub frontend logs (if using file logging)
+  - job_name: notehub-frontend
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: notehub-frontend
+          app: notehub
+          __path__: /var/log/notehub/frontend*.log

@@ -1,0 +1,100 @@
+# Loki Configuration
+# Optimized for 2GB RAM servers with minimal resource usage
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+
+common:
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: inmemory
+
+query_range:
+  results_cache:
+    cache:
+      embedded_cache:
+        enabled: true
+        max_size_mb: 100
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        period: 24h
+
+ruler:
+  alertmanager_url: http://localhost:9093
+
+# Ingester configuration
+ingester:
+  wal:
+    enabled: true
+    dir: /loki/wal
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+    final_sleep: 0s
+  chunk_idle_period: 5m
+  chunk_retain_period: 30s
+  max_chunk_age: 1h
+  chunk_target_size: 1048576
+  chunk_encoding: snappy
+  max_transfer_retries: 0
+
+# Limits configuration
+limits_config:
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h # 7 days
+  ingestion_rate_mb: 10
+  ingestion_burst_size_mb: 20
+  max_query_length: 721h # 30 days
+  max_query_parallelism: 16
+  max_streams_per_user: 10000
+  max_global_streams_per_user: 0
+  max_chunks_per_query: 2000000
+  max_query_series: 500
+
+# Storage configuration
+storage_config:
+  boltdb_shipper:
+    active_index_directory: /loki/boltdb-shipper-active
+    cache_location: /loki/boltdb-shipper-cache
+    cache_ttl: 24h
+    shared_store: filesystem
+  filesystem:
+    directory: /loki/chunks
+
+# Chunk store configuration
+chunk_store_config:
+  max_look_back_period: 0s
+
+# Table manager configuration
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 720h # 30 days
+
+# Compactor configuration
+compactor:
+  working_directory: /loki/boltdb-shipper-compactor
+  shared_store: filesystem
+  compaction_interval: 10m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 150

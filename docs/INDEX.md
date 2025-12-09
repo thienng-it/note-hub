@@ -77,6 +77,10 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [GOOGLE_SSO_SETUP](guides/GOOGLE_SSO_SETUP.md) - Google SSO setup guide
 - [GOOGLE_OAUTH_TROUBLESHOOTING](guides/GOOGLE_OAUTH_TROUBLESHOOTING.md) - Google OAuth troubleshooting
 
+### Monitoring & Logging
+- [LOKI_SETUP](guides/LOKI_SETUP.md) - Grafana Loki log aggregation setup (replaces Graylog)
+- [MONITORING_AND_LOGGING_STACK](guides/MONITORING_AND_LOGGING_STACK.md) - Integration guide for monitoring and logging stacks
+
 ### Other
 - [PERFORMANCE_GUIDE](guides/PERFORMANCE_GUIDE.md) - Performance optimization guide
 - [CONTRIBUTING](guides/CONTRIBUTING.md) - Contribution guidelines
@@ -84,7 +88,6 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [TRAEFIK_MIGRATION](guides/TRAEFIK_MIGRATION.md) - Traefik migration guide
 - [TRAEFIK_MIGRATION_SUMMARY](guides/TRAEFIK_MIGRATION_SUMMARY.md) - Traefik migration summary
 - [DOCKER_UPLOAD_FIX](guides/DOCKER_UPLOAD_FIX.md) - Docker upload fix
-- [GRAYLOG_SETUP](guides/GRAYLOG_SETUP.md) - Graylog log aggregation setup
 
 ## 🔒 Security
 

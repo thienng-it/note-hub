@@ -235,7 +235,8 @@ router.post('/invitations', jwtRequired, async (req, res) => {
 });
 
 /**
- * GET /api/users/:id - Get user profile (public view)
+ * GET /api/profile/:id - Get user profile (public view)
+ * Note: This endpoint is deprecated. Use /api/v1/users/:id instead
  */
 router.get('/:id', jwtRequired, async (req, res) => {
   try {

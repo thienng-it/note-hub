@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
@@ -14,6 +14,11 @@ interface SharedUser {
 interface Note {
   id: number;
   title: string;
+}
+
+interface UserSuggestion {
+  id: number;
+  username: string;
 }
 
 export function ShareNotePage() {
@@ -32,6 +37,11 @@ export function ShareNotePage() {
     null,
   );
   const [isUnsharing, setIsUnsharing] = useState(false);
+  const [userSuggestions, setUserSuggestions] = useState<UserSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const fetchNoteAndShares = useCallback(async () => {
     try {
@@ -55,6 +65,86 @@ export function ShareNotePage() {
     }
   }, [id, fetchNoteAndShares]);
 
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Fetch user suggestions when username changes
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (username.trim().length < 2) {
+        setUserSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
+      try {
+        const response = await apiClient.get<{ users: UserSuggestion[] }>(
+          `/api/v1/users/search?q=${encodeURIComponent(username.trim())}`,
+        );
+        setUserSuggestions(response.users || []);
+        setShowSuggestions(response.users.length > 0);
+      } catch (_err) {
+        // Silent fail for autocomplete
+        setUserSuggestions([]);
+        setShowSuggestions(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [username]);
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+    setSelectedIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || userSuggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev < userSuggestions.length - 1 ? prev + 1 : prev));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < userSuggestions.length) {
+          selectUser(userSuggestions[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+        break;
+    }
+  };
+
+  const selectUser = (user: UserSuggestion) => {
+    setUsername(user.username);
+    setShowSuggestions(false);
+    setSelectedIndex(-1);
+    inputRef.current?.focus();
+  };
+
   const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -74,6 +164,7 @@ export function ShareNotePage() {
       setSuccess(`Note shared with ${username}`);
       setUsername('');
       setCanEdit(false);
+      setUserSuggestions([]);
       fetchNoteAndShares();
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to share note';
@@ -159,7 +250,7 @@ export function ShareNotePage() {
       <div className="glass-card p-6 rounded-xl mb-6">
         <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Share with User</h2>
         <form onSubmit={handleShare} className="space-y-4">
-          <div>
+          <div className="relative">
             <label
               htmlFor="username"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
@@ -168,13 +259,46 @@ export function ShareNotePage() {
               {t('share.usernamePlaceholder')}
             </label>
             <input
+              ref={inputRef}
               type="text"
               id="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsernameChange}
+              onKeyDown={handleKeyDown}
+              onFocus={() =>
+                username.length >= 2 && userSuggestions.length > 0 && setShowSuggestions(true)
+              }
               className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
               placeholder={t('share.usernamePlaceholder')}
+              autoComplete="off"
             />
+            {showSuggestions && userSuggestions.length > 0 && (
+              <div
+                ref={suggestionsRef}
+                className="absolute z-10 w-full mt-1 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg shadow-lg max-h-60 overflow-y-auto"
+              >
+                {userSuggestions.map((user, index) => (
+                  <button
+                    key={user.id}
+                    type="button"
+                    onClick={() => selectUser(user)}
+                    className={`w-full px-4 py-3 text-left hover:bg-[var(--bg-secondary)] transition-colors flex items-center gap-3 ${
+                      index === selectedIndex ? 'bg-[var(--bg-secondary)]' : ''
+                    }`}
+                  >
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-[var(--text-primary)] font-medium">{user.username}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {username.length > 0 && username.length < 2 && (
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
+                Type at least 2 characters to search for users
+              </p>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
