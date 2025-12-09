@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { authApi } from '../api/client';
 
 export function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -12,8 +13,6 @@ export function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const navigate = useNavigate();
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -33,17 +32,12 @@ export function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, password_confirm: passwordConfirm }),
+      await authApi.register({
+        username,
+        email: email || undefined,
+        password,
+        password_confirm: passwordConfirm,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
-      }
 
       setSuccess('Account created successfully! Redirecting to login...');
       setTimeout(() => navigate('/login'), 2000);

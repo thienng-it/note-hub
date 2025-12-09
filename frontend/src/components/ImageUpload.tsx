@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { uploadApi } from '../api/client';
 
 interface ImageUploadProps {
   images: string[];
@@ -39,25 +40,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
           continue;
         }
 
-        const formData = new FormData();
-        formData.append('image', file);
-
-        // Use fetch directly for multipart/form-data as apiClient expects JSON
-        const token = localStorage.getItem('notehub_access_token');
-        const apiUrl = import.meta.env.VITE_API_URL || '';
-        const fetchResponse = await fetch(`${apiUrl}/api/v1/upload/image`, {
-          method: 'POST',
-          headers: {
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-          body: formData,
-        });
-
-        if (!fetchResponse.ok) {
-          throw new Error('Failed to upload image');
-        }
-
-        const response = (await fetchResponse.json()) as { path: string };
+        const response = await uploadApi.uploadImage(file);
 
         if (response.path) {
           uploadedPaths.push(response.path);
@@ -82,14 +65,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
       // Extract filename from path
       const filename = imagePath.split('/').pop();
       if (filename) {
-        const token = localStorage.getItem('notehub_access_token');
-        const apiUrl = import.meta.env.VITE_API_URL || '';
-        await fetch(`${apiUrl}/api/upload/${filename}`, {
-          method: 'DELETE',
-          headers: {
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-        });
+        await uploadApi.deleteImage(filename);
       }
       onImagesChange(images.filter((img) => img !== imagePath));
     } catch (err) {

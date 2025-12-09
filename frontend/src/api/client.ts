@@ -173,6 +173,86 @@ export const authApi = {
   logout(): void {
     clearStoredAuth();
   },
+
+  async register(data: {
+    username: string;
+    email?: string;
+    password: string;
+    password_confirm: string;
+  }): Promise<{ message: string }> {
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Registration failed');
+    }
+
+    return result;
+  },
+
+  async forgotPassword(username: string): Promise<{
+    requires_2fa?: boolean;
+    reset_token?: string;
+    message: string;
+  }> {
+    const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Request failed');
+    }
+
+    return result;
+  },
+
+  async forgotPasswordVerify2FA(
+    username: string,
+    totpCode: string,
+  ): Promise<{ reset_token?: string; message: string }> {
+    const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password/verify-2fa`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, totp_code: totpCode }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Verification failed');
+    }
+
+    return result;
+  },
+
+  async resetPassword(data: {
+    token: string;
+    password: string;
+    password_confirm: string;
+  }): Promise<{ message: string }> {
+    const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Password reset failed');
+    }
+
+    return result;
+  },
 };
 
 // Notes API
@@ -351,5 +431,45 @@ export const adminApi = {
     await apiRequest(`${API_VERSION}/admin/users/${userId}/disable-2fa`, {
       method: 'POST',
     });
+  },
+};
+
+// Upload API
+export const uploadApi = {
+  async uploadImage(file: File): Promise<{ path: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const token = getStoredToken();
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/upload/image`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+      throw new Error(errorData.error || 'Failed to upload image');
+    }
+
+    const data = await response.json();
+    return data.success ? data.data : data;
+  },
+
+  async deleteImage(filename: string): Promise<void> {
+    const token = getStoredToken();
+    const response = await fetch(`${API_BASE_URL}/api/upload/${filename}`, {
+      method: 'DELETE',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Delete failed' }));
+      throw new Error(errorData.error || 'Failed to delete image');
+    }
   },
 };

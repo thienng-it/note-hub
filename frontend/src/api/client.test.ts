@@ -10,6 +10,7 @@ import {
   notesApi,
   setStoredAuth,
   tasksApi,
+  uploadApi,
 } from './client';
 
 describe('API Client', () => {
@@ -37,37 +38,172 @@ describe('API Client', () => {
     });
   });
 
-  describe('authApi.login', () => {
-    it('calls login endpoint and stores tokens', async () => {
-      const mockResponse = {
-        access_token: 'access-123',
-        refresh_token: 'refresh-123',
-        token_type: 'Bearer',
-        expires_in: 86400,
-        user: { id: 1, username: 'test', email: 'test@example.com' },
-      };
+  describe('authApi', () => {
+    describe('login', () => {
+      it('calls login endpoint and stores tokens', async () => {
+        const mockResponse = {
+          access_token: 'access-123',
+          refresh_token: 'refresh-123',
+          token_type: 'Bearer',
+          expires_in: 86400,
+          user: { id: 1, username: 'test', email: 'test@example.com' },
+        };
 
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await authApi.login({ username: 'test', password: 'password' });
+
+        expect(result.access_token).toBe('access-123');
+        expect(result.user.username).toBe('test');
+        expect(getStoredToken()).toBe('access-123');
       });
 
-      const result = await authApi.login({ username: 'test', password: 'password' });
+      it('throws on invalid credentials', async () => {
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: false,
+          status: 401,
+          json: () => Promise.resolve({ error: 'Invalid credentials' }),
+        });
 
-      expect(result.access_token).toBe('access-123');
-      expect(result.user.username).toBe('test');
-      expect(getStoredToken()).toBe('access-123');
+        await expect(authApi.login({ username: 'test', password: 'wrong' })).rejects.toMatchObject({
+          error: 'Invalid credentials',
+        });
+      });
     });
 
-    it('throws on invalid credentials', async () => {
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-        ok: false,
-        status: 401,
-        json: () => Promise.resolve({ error: 'Invalid credentials' }),
+    describe('register', () => {
+      it('registers a new user successfully', async () => {
+        const mockResponse = { message: 'User registered successfully' };
+
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await authApi.register({
+          username: 'newuser',
+          email: 'newuser@example.com',
+          password: 'securePassword123!',
+          password_confirm: 'securePassword123!',
+        });
+
+        expect(result.message).toBe('User registered successfully');
       });
 
-      await expect(authApi.login({ username: 'test', password: 'wrong' })).rejects.toMatchObject({
-        error: 'Invalid credentials',
+      it('throws on registration failure', async () => {
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: false,
+          json: () => Promise.resolve({ error: 'Username already exists' }),
+        });
+
+        await expect(
+          authApi.register({
+            username: 'existinguser',
+            password: 'password123',
+            password_confirm: 'password123',
+          }),
+        ).rejects.toThrow('Username already exists');
+      });
+    });
+
+    describe('forgotPassword', () => {
+      it('initiates password reset without 2FA', async () => {
+        const mockResponse = {
+          message: 'Password reset initiated',
+          reset_token: 'reset-token-123',
+        };
+
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await authApi.forgotPassword('testuser');
+
+        expect(result.reset_token).toBe('reset-token-123');
+        expect(result.requires_2fa).toBeUndefined();
+      });
+
+      it('requires 2FA verification', async () => {
+        const mockResponse = {
+          message: '2FA verification required',
+          requires_2fa: true,
+        };
+
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await authApi.forgotPassword('testuser');
+
+        expect(result.requires_2fa).toBe(true);
+      });
+    });
+
+    describe('forgotPasswordVerify2FA', () => {
+      it('verifies 2FA and returns reset token', async () => {
+        const mockResponse = {
+          message: '2FA verified',
+          reset_token: 'reset-token-456',
+        };
+
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await authApi.forgotPasswordVerify2FA('testuser', '123456');
+
+        expect(result.reset_token).toBe('reset-token-456');
+      });
+
+      it('throws on invalid 2FA code', async () => {
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: false,
+          json: () => Promise.resolve({ error: 'Invalid verification code' }),
+        });
+
+        await expect(authApi.forgotPasswordVerify2FA('testuser', '000000')).rejects.toThrow(
+          'Invalid verification code',
+        );
+      });
+    });
+
+    describe('resetPassword', () => {
+      it('resets password successfully', async () => {
+        const mockResponse = { message: 'Password reset successful' };
+
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await authApi.resetPassword({
+          token: 'reset-token-123',
+          password: 'newPassword123!',
+          password_confirm: 'newPassword123!',
+        });
+
+        expect(result.message).toBe('Password reset successful');
+      });
+
+      it('throws on invalid token', async () => {
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: false,
+          json: () => Promise.resolve({ error: 'Invalid or expired token' }),
+        });
+
+        await expect(
+          authApi.resetPassword({
+            token: 'invalid-token',
+            password: 'newPassword123!',
+            password_confirm: 'newPassword123!',
+          }),
+        ).rejects.toThrow('Invalid or expired token');
       });
     });
   });
@@ -139,6 +275,79 @@ describe('API Client', () => {
 
       expect(task.title).toBe('New Task');
       expect(task.priority).toBe('high');
+    });
+  });
+
+  describe('uploadApi', () => {
+    beforeEach(() => {
+      const mockUser = { id: 1, username: 'test', email: 'test@example.com' };
+      setStoredAuth('test-token', 'test-refresh', mockUser);
+    });
+
+    describe('uploadImage', () => {
+      it('uploads an image successfully', async () => {
+        const mockResponse = { path: '/uploads/image-123.jpg' };
+        const mockFile = new File(['image content'], 'test.jpg', { type: 'image/jpeg' });
+
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await uploadApi.uploadImage(mockFile);
+
+        expect(result.path).toBe('/uploads/image-123.jpg');
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/api/v1/upload/image'),
+          expect.objectContaining({
+            method: 'POST',
+            headers: expect.objectContaining({
+              Authorization: 'Bearer test-token',
+            }),
+          }),
+        );
+      });
+
+      it('throws on upload failure', async () => {
+        const mockFile = new File(['image content'], 'test.jpg', { type: 'image/jpeg' });
+
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: false,
+          json: () => Promise.resolve({ error: 'Upload failed' }),
+        });
+
+        await expect(uploadApi.uploadImage(mockFile)).rejects.toThrow('Upload failed');
+      });
+    });
+
+    describe('deleteImage', () => {
+      it('deletes an image successfully', async () => {
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({}),
+        });
+
+        await uploadApi.deleteImage('image-123.jpg');
+
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/api/upload/image-123.jpg'),
+          expect.objectContaining({
+            method: 'DELETE',
+            headers: expect.objectContaining({
+              Authorization: 'Bearer test-token',
+            }),
+          }),
+        );
+      });
+
+      it('throws on delete failure', async () => {
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+          ok: false,
+          json: () => Promise.resolve({ error: 'Delete failed' }),
+        });
+
+        await expect(uploadApi.deleteImage('image-123.jpg')).rejects.toThrow('Delete failed');
+      });
     });
   });
 });

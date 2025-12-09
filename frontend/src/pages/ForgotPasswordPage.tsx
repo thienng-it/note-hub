@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { authApi } from '../api/client';
 
 export function ForgotPasswordPage() {
   const [username, setUsername] = useState('');
@@ -10,25 +11,13 @@ export function ForgotPasswordPage() {
   const [resetToken, setResetToken] = useState('');
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-
   const handleSubmitUsername = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Request failed');
-      }
+      const data = await authApi.forgotPassword(username);
 
       if (data.requires_2fa) {
         setStep('2fa');
@@ -52,17 +41,7 @@ export function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password/verify-2fa`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, totp_code: totpCode }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Verification failed');
-      }
+      const data = await authApi.forgotPasswordVerify2FA(username, totpCode);
 
       if (data.reset_token) {
         setResetToken(data.reset_token);

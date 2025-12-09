@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { authApi } from '../api/client';
 
 export function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
@@ -12,8 +13,6 @@ export function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const navigate = useNavigate();
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -37,17 +36,11 @@ export function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, password, password_confirm: passwordConfirm }),
+      await authApi.resetPassword({
+        token,
+        password,
+        password_confirm: passwordConfirm,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Password reset failed');
-      }
 
       setSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
