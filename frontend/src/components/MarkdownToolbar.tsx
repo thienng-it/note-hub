@@ -1,5 +1,3 @@
-import { useRef } from 'react';
-
 interface MarkdownToolbarProps {
   onInsert: (text: string, cursorOffset?: number) => void;
   disabled?: boolean;
