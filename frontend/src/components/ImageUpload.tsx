@@ -45,7 +45,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
         // Use fetch directly for multipart/form-data as apiClient expects JSON
         const token = localStorage.getItem('notehub_access_token');
         const apiUrl = import.meta.env.VITE_API_URL || '';
-        const fetchResponse = await fetch(`${apiUrl}/api/upload/image`, {
+        const fetchResponse = await fetch(`${apiUrl}/api/v1/upload/image`, {
           method: 'POST',
           headers: {
             ...(token && { Authorization: `Bearer ${token}` }),
