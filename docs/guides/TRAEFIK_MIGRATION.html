@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Migration from nginx to Traefik</span>
         </div>
@@ -541,7 +541,7 @@ providers:
     compression:
       compress:
         minResponseBodyBytes: 1024
-    
+
     # Security headers
     security-headers:
       headers:
@@ -554,15 +554,15 @@ providers:
 <pre><code class="language-yaml">labels:
   # Enable Traefik
   - &quot;traefik.enable=true&quot;
-  
+
   # Define router
   - &quot;traefik.http.routers.myservice.rule=PathPrefix(`/api`)&quot;
   - &quot;traefik.http.routers.myservice.entrypoints=web&quot;
   - &quot;traefik.http.routers.myservice.priority=10&quot;
-  
+
   # Define service
   - &quot;traefik.http.services.myservice.loadbalancer.server.port=5000&quot;
-  
+
   # Apply middlewares
   - &quot;traefik.http.routers.myservice.middlewares=compression@file,security-headers@file&quot;
 </code></pre>
@@ -618,7 +618,7 @@ docker compose logs traefik | grep backend
 <pre><code class="language-yaml"># Add connection pooling in traefik.yml
 serversTransport:
   maxIdleConnsPerHost: 100
-  
+
 # Increase timeouts if needed
 forwardingTimeouts:
   dialTimeout: 30s
@@ -728,7 +728,7 @@ docker compose up -d
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

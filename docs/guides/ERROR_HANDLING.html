@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Error Handling Guide</span>
         </div>
@@ -453,13 +453,13 @@ def api_create_resource():
 <pre><code class="language-python">def _process_tags(session: Session, note: Note, tags_str: str) -&gt; None:
     note.tags.clear()
     session.flush()  # Clear associations
-    
+
     tag_names = parse_tags(tags_str)  # Removes duplicates
     for tag_name in tag_names:
         tag = session.execute(
             select(Tag).where(Tag.name == tag_name)
         ).scalar_one_or_none()
-        
+
         if not tag:
             tag = Tag(name=tag_name)
             session.add(tag)
@@ -471,7 +471,7 @@ def api_create_resource():
                 tag = session.execute(
                     select(Tag).where(Tag.name == tag_name)
                 ).scalar_one_or_none()
-        
+
         # Only add if not already attached
         if tag not in note.tags:
             note.tags.append(tag)
@@ -548,7 +548,7 @@ def test_database_error_handling(client, test_user):
     &quot;&quot;&quot;Test handling of database errors.&quot;&quot;&quot;
     with patch(&#39;src.notehub.database.SessionLocal&#39;) as mock_session:
         mock_session.return_value.commit.side_effect = SQLAlchemyError(&quot;DB error&quot;)
-        
+
         response = client.post(&#39;/note/new&#39;, data={...})
         assert b&#39;Database error occurred&#39; in response.data
 </code></pre>
@@ -605,7 +605,7 @@ def test_database_error_handling(client, test_user):
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Traefik Migration Summary</span>
         </div>
@@ -548,7 +548,7 @@ ping:
     compression:
       compress:
         minResponseBodyBytes: 1024
-    
+
     # Security headers
     security-headers:
       headers:
@@ -563,17 +563,17 @@ ping:
     labels:
       # Enable Traefik
       - &quot;traefik.enable=true&quot;
-      
+
       # API routing
       - &quot;traefik.http.routers.backend-api.rule=PathPrefix(`/api`)&quot;
       - &quot;traefik.http.routers.backend-api.entrypoints=web&quot;
       - &quot;traefik.http.routers.backend-api.priority=10&quot;
       - &quot;traefik.http.services.backend-api.loadbalancer.server.port=5000&quot;
-      
+
       # Uploads routing
       - &quot;traefik.http.routers.backend-uploads.rule=PathPrefix(`/uploads`)&quot;
       - &quot;traefik.http.routers.backend-uploads.priority=10&quot;
-      
+
       # Health check routing
       - &quot;traefik.http.routers.backend-health.rule=Path(`/health`)&quot;
       - &quot;traefik.http.routers.backend-health.priority=10&quot;
@@ -831,7 +831,7 @@ ports:
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

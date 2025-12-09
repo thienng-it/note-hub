@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Migration Guide: Legacy to New Architecture</span>
         </div>
@@ -510,7 +510,7 @@ def login():
             user = s.execute(
                 select(User).where(User.username == form.username.data)
             ).scalar_one_or_none()
-            
+
             if user and user.check_password(form.password.data):
                 session[&quot;user_id&quot;] = user.id
                 user.last_login = datetime.now(timezone.utc)
@@ -530,7 +530,7 @@ class AuthService:
         if user and user.check_password(password):
             return user
         return None
-    
+
     @staticmethod
     def update_last_login(session, user):
         user.last_login = datetime.now(timezone.utc)
@@ -567,9 +567,9 @@ def login():
     session = Mock()
     user = Mock()
     user.check_password.return_value = True
-    
+
     session.execute.return_value.scalar_one_or_none.return_value = user
-    
+
     result = AuthService.authenticate_user(session, &quot;admin&quot;, &quot;test&quot;)
     assert result == user
 </code></pre>
@@ -705,7 +705,7 @@ def login():
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>SQL vs NoSQL: Visual Comparison for NoteHub</span>
         </div>
@@ -425,7 +425,7 @@
 <h2>Query Performance Comparison</h2>
 <h3>Scenario 1: Get User&#39;s Notes with Tags</h3>
 <p><strong>SQL Query (Fast):</strong></p>
-<pre><code class="language-sql">SELECT n.*, 
+<pre><code class="language-sql">SELECT n.*,
   GROUP_CONCAT(t.name) as tag_names,
   GROUP_CONCAT(t.id) as tag_ids
 FROM notes n
@@ -495,10 +495,10 @@ await db.tags.updateOne(
 <pre><code class="language-sql">BEGIN TRANSACTION
   -- Check username doesn&#39;t exist
   SELECT id FROM users WHERE username = ?
-  
+
   -- Insert user
   INSERT INTO users (username, password_hash) VALUES (?, ?)
-  
+
   -- Mark invitation used
   UPDATE invitations SET used = 1, used_by_id = ? WHERE token = ?
 COMMIT
@@ -516,21 +516,21 @@ COMMIT
 const session = await db.startSession()
 try {
   session.startTransaction()
-  
+
   // Check user exists
   const exists = await db.users.findOne({ username }, { session })
   if (exists) throw new Error(&#39;User exists&#39;)
-  
+
   // Insert user
   const result = await db.users.insertOne({ username, password_hash }, { session })
-  
+
   // Update invitation
   await db.invitations.updateOne(
     { token },
     { $set: { used: true, used_by_id: result.insertedId } },
     { session }
   )
-  
+
   await session.commitTransaction()
 } catch (error) {
   await session.abortTransaction()
@@ -850,7 +850,7 @@ Complex (shared + tags):           40-80ms
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

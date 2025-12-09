@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>NoSQL Database Investigation for NoteHub</span>
         </div>
@@ -454,19 +454,19 @@ SELECT * FROM tags WHERE name = ?
 <p><strong>SQL Advantage</strong>: Indexed lookups are O(log n), extremely fast</p>
 <h4>2. <strong>Filtered Lists</strong> (30%)</h4>
 <pre><code class="language-sql">-- User&#39;s notes with filters
-SELECT * FROM notes 
+SELECT * FROM notes
 WHERE owner_id = ? AND archived = 0
 ORDER BY pinned DESC, updated_at DESC
 
 -- User&#39;s tasks with status filter
-SELECT * FROM tasks 
+SELECT * FROM tasks
 WHERE owner_id = ? AND completed = 0
 ORDER BY priority, due_date
 </code></pre>
 <p><strong>SQL Advantage</strong>: Compound indexes optimize these queries</p>
 <h4>3. <strong>Complex Joins</strong> (20%)</h4>
 <pre><code class="language-sql">-- Notes with tags (GROUP_CONCAT)
-SELECT n.*, 
+SELECT n.*,
   GROUP_CONCAT(t.name) as tag_names,
   GROUP_CONCAT(t.id) as tag_ids
 FROM notes n
@@ -476,7 +476,7 @@ WHERE n.owner_id = ?
 GROUP BY n.id
 
 -- Notes with sharing info
-SELECT DISTINCT n.* 
+SELECT DISTINCT n.*
 FROM notes n
 LEFT JOIN share_notes sn ON n.id = sn.note_id
 WHERE (n.owner_id = ? OR sn.shared_with_id = ?)
@@ -485,7 +485,7 @@ WHERE (n.owner_id = ? OR sn.shared_with_id = ?)
 <h4>4. <strong>Search Queries</strong> (10%)</h4>
 <pre><code class="language-sql">-- Full-text search
 SELECT * FROM notes
-WHERE owner_id = ? 
+WHERE owner_id = ?
   AND (title LIKE ? OR body LIKE ?)
 </code></pre>
 <p><strong>SQL Limitation</strong>: LIKE queries can be slow on large text fields<br><strong>NoSQL Advantage</strong>: Could benefit from full-text search engines (Elasticsearch)</p>
@@ -920,7 +920,7 @@ CREATE VIRTUAL TABLE notes_fts USING fts5(title, body, content=notes);
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

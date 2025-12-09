@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>Custom Domain SSL Setup Guide</span>
         </div>
@@ -410,7 +410,7 @@ traefik | time=&quot;...&quot; level=info msg=&quot;Certificate obtained for not
   labels:
     # Change from:
     - &quot;traefik.http.routers.frontend.rule=PathPrefix(`/`)&quot;
-    
+
     # To:
     - &quot;traefik.http.routers.frontend.rule=Host(`your-domain.com`) || Host(`www.your-domain.com`)&quot;
 </code></pre>
@@ -420,7 +420,7 @@ traefik | time=&quot;...&quot; level=info msg=&quot;Certificate obtained for not
   labels:
     # Change from:
     - &quot;traefik.http.routers.backend-api.rule=PathPrefix(`/api`)&quot;
-    
+
     # To:
     - &quot;traefik.http.routers.backend-api.rule=(Host(`your-domain.com`) || Host(`www.your-domain.com`)) &amp;&amp; PathPrefix(`/api`)&quot;
 </code></pre>
@@ -631,7 +631,7 @@ docker compose up -d
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>

@@ -306,9 +306,9 @@
 </head>
 <body>
     <header>
-        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <a href="../documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="./documentation.html">Documentation Home</a>
+            <a href="../documentation.html">Documentation Home</a>
             <a href="./INDEX.html">Full Index</a>
             <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
@@ -316,7 +316,7 @@
 
     <main>
         <div class="breadcrumb">
-            <a href="./documentation.html">📚 Documentation</a>
+            <a href="../documentation.html">📚 Documentation</a>
             <span>/</span>
             <span>JWT API Documentation</span>
         </div>
@@ -655,7 +655,7 @@ notes = requests.get(f&#39;{BASE_URL}/notes&#39;, headers=headers).json()
 print(f&quot;Found {len(notes[&#39;notes&#39;])} notes&quot;)
 
 # 4. Create a new note
-new_note = requests.post(f&#39;{BASE_URL}/notes&#39;, 
+new_note = requests.post(f&#39;{BASE_URL}/notes&#39;,
     headers=headers,
     json={
         &#39;title&#39;: &#39;API Created Note&#39;,
@@ -701,9 +701,9 @@ def get_new_token(refresh_token):
         totp_code: totpCode
       })
     });
-    
+
     if (!response.ok) throw new Error(&#39;Login failed&#39;);
-    
+
     const data = await response.json();
     this.accessToken = data.access_token;
     this.refreshToken = data.refresh_token;
@@ -717,7 +717,7 @@ def get_new_token(refresh_token):
         &#39;Authorization&#39;: `Bearer ${this.accessToken}`
       }
     });
-    
+
     if (!response.ok) throw new Error(&#39;Failed to fetch notes&#39;);
     return await response.json();
   }
@@ -731,7 +731,7 @@ def get_new_token(refresh_token):
       },
       body: JSON.stringify(noteData)
     });
-    
+
     if (!response.ok) throw new Error(&#39;Failed to create note&#39;);
     return await response.json();
   }
@@ -756,7 +756,7 @@ console.log(notes);
 
         </article>
 
-        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+        <a href="../documentation.html" class="back-link">← Back to Documentation</a>
     </main>
 </body>
 </html>
