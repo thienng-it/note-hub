@@ -68,7 +68,7 @@ describe('AdminDashboardPage', () => {
 
     // Default fetch mock - successful response
     (global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url) => {
-      if (url.includes('/api/admin/users')) {
+      if (url.includes('/api/v1/admin/users')) {
         return Promise.resolve({
           ok: true,
           json: async () => ({

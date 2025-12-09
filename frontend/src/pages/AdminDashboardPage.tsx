@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { logger } from '../utils/logger';
+import {API_VERSION} from "../api/client.ts";
 
 interface AdminUser {
   id: number;
@@ -46,7 +47,7 @@ export function AdminDashboardPage() {
       const params = new URLSearchParams({ page: String(page) });
       if (searchQuery) params.append('search', searchQuery);
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/users?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/${API_VERSION}/admin/users?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ export function AdminDashboardPage() {
 
     try {
       const token = localStorage.getItem('notehub_access_token');
-      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/disable-2fa`, {
+      const response = await fetch(`${API_BASE_URL}/${API_VERSION}/admin/users/${userId}/disable-2fa`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
