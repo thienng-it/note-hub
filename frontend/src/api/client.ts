@@ -23,8 +23,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 // Use API v1 for new standardized response format
 const API_VERSION = '/api/v1';
 
-// Export API_VERSION for use in other modules
-export { API_VERSION };
+// Export API_VERSION and API_BASE_URL for use in other modules
+export { API_VERSION, API_BASE_URL };
 
 // Token storage
 const TOKEN_KEY = 'notehub_access_token';
@@ -180,7 +180,7 @@ export const authApi = {
     password: string;
     password_confirm: string;
   }): Promise<{ message: string }> {
-    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -200,7 +200,7 @@ export const authApi = {
     reset_token?: string;
     message: string;
   }> {
-    const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username }),
@@ -219,7 +219,7 @@ export const authApi = {
     username: string,
     totpCode: string,
   ): Promise<{ reset_token?: string; message: string }> {
-    const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password/verify-2fa`, {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/forgot-password/verify-2fa`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, totp_code: totpCode }),
@@ -239,7 +239,7 @@ export const authApi = {
     password: string;
     password_confirm: string;
   }): Promise<{ message: string }> {
-    const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

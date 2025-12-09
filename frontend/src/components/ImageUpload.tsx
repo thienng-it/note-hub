@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { uploadApi } from '../api/client';
+import { API_BASE_URL, uploadApi } from '../api/client';
 
 interface ImageUploadProps {
   images: string[];
@@ -127,7 +127,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
               className="relative group rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--bg-tertiary)]"
             >
               <img
-                src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${imagePath}`}
+                src={`${API_BASE_URL}${imagePath}`}
                 alt={`Uploaded image: ${imagePath}`}
                 className="w-full h-32 object-cover"
               />
