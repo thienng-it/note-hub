@@ -160,7 +160,9 @@ validate_drone() {
     fi
     
     local has_domain=false
-    if grep -q "^DRONE_DOMAIN=" .env.drone && ! grep "^DRONE_DOMAIN=$" .env.drone > /dev/null 2>&1; then
+    # Get the last occurrence of DRONE_DOMAIN (in case there are multiple)
+    local domain_value=$(grep "^DRONE_DOMAIN=" .env.drone | tail -1 | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+    if [ -n "$domain_value" ]; then
         has_domain=true
         check_env_var ".env.drone" "DRONE_DOMAIN" "false"
     fi
@@ -172,13 +174,13 @@ validate_drone() {
             print_error "This WILL cause 'certificate not secure' warnings!"
             print_info ""
             print_info "Fix: Add this to .env.drone (match your DRONE_DOMAIN):"
-            local domain=$(grep "^DRONE_DOMAIN=" .env.drone | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+            local domain=$(grep "^DRONE_DOMAIN=" .env.drone | tail -1 | cut -d'=' -f2 | tr -d '"' | tr -d "'")
             print_info "  DRONE_ROUTER_RULE=Host(\`${domain}\`)"
             print_info ""
         else
             # Verify domain and router rule match
-            local domain=$(grep "^DRONE_DOMAIN=" .env.drone | cut -d'=' -f2 | tr -d '"' | tr -d "'")
-            local router=$(grep "^DRONE_ROUTER_RULE=" .env.drone | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+            local domain=$(grep "^DRONE_DOMAIN=" .env.drone | tail -1 | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+            local router=$(grep "^DRONE_ROUTER_RULE=" .env.drone | tail -1 | cut -d'=' -f2 | tr -d '"' | tr -d "'")
             
             if echo "$router" | grep -q "$domain"; then
                 print_ok "DRONE_DOMAIN and DRONE_ROUTER_RULE match"
@@ -207,8 +209,9 @@ validate_monitoring() {
         return 1
     fi
     
-    # Check if DOMAIN is set
-    if ! grep -q "^DOMAIN=" .env || grep "^DOMAIN=$" .env > /dev/null 2>&1; then
+    # Check if DOMAIN is set (use tail -1 to get last occurrence)
+    local domain_value=$(grep "^DOMAIN=" .env 2>/dev/null | tail -1 | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+    if [ -z "$domain_value" ]; then
         print_warning "DOMAIN not set in .env - Grafana will use localhost"
         print_info "For production with monitoring subdomain (e.g., monitoring.notehub.duckdns.org):"
         print_info "  Add to .env: DOMAIN=notehub.duckdns.org"
@@ -219,12 +222,12 @@ validate_monitoring() {
         print_info "    GRAFANA_DOMAIN=monitoring-notehub.duckdns.org"
         print_info "    GRAFANA_ROOT_URL=https://monitoring-notehub.duckdns.org"
     else
-        local domain=$(grep "^DOMAIN=" .env | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+        local domain="$domain_value"
         
         # Check if custom GRAFANA_ROUTER_RULE is set
         if grep -q "^GRAFANA_ROUTER_RULE=Host(" .env; then
             check_host_matcher ".env" "GRAFANA_ROUTER_RULE"
-            local grafana_rule=$(grep "^GRAFANA_ROUTER_RULE=" .env | cut -d'=' -f2)
+            local grafana_rule=$(grep "^GRAFANA_ROUTER_RULE=" .env | tail -1 | cut -d'=' -f2)
             print_info "Grafana will use custom routing: ${grafana_rule}"
         else
             print_ok "Grafana will use default subdomain routing"
@@ -239,16 +242,20 @@ validate_dns() {
     
     local domains=()
     
-    # Collect domains to check
-    if [ -f ".env" ] && grep -q "^DOMAIN=" .env && ! grep "^DOMAIN=$" .env > /dev/null 2>&1; then
-        local domain=$(grep "^DOMAIN=" .env | cut -d'=' -f2 | tr -d '"' | tr -d "'")
-        domains+=("$domain")
-        domains+=("monitoring.$domain")
+    # Collect domains to check (use tail -1 to get last occurrence)
+    if [ -f ".env" ]; then
+        local domain=$(grep "^DOMAIN=" .env 2>/dev/null | tail -1 | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+        if [ -n "$domain" ]; then
+            domains+=("$domain")
+            domains+=("monitoring.$domain")
+        fi
     fi
     
-    if [ -f ".env.drone" ] && grep -q "^DRONE_DOMAIN=" .env.drone && ! grep "^DRONE_DOMAIN=$" .env.drone > /dev/null 2>&1; then
-        local domain=$(grep "^DRONE_DOMAIN=" .env.drone | cut -d'=' -f2 | tr -d '"' | tr -d "'")
-        domains+=("$domain")
+    if [ -f ".env.drone" ]; then
+        local domain=$(grep "^DRONE_DOMAIN=" .env.drone 2>/dev/null | tail -1 | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+        if [ -n "$domain" ]; then
+            domains+=("$domain")
+        fi
     fi
     
     if [ ${#domains[@]} -eq 0 ]; then
