@@ -67,6 +67,8 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 | **Authentication** | JWT + Google OAuth 2.0 (optional) |
 | **API**          | RESTful with JWT authentication     |
 | **Reverse Proxy** | Traefik v2.11 (automatic routing)   |
+| **Monitoring**   | Prometheus + Grafana                |
+| **Logging**      | Winston + Graylog (optional)        |
 | **Deployment**   | Docker + Traefik + Hetzner VPS      |
 | **CI/CD**        | GitHub Actions + GitHub Pages       |
 
@@ -80,6 +82,14 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
   - HTTP to HTTPS redirect with HSTS security headers
   - Modern dashboard and monitoring
   - ⚠️ **Using a custom domain?** See [TROUBLESHOOTING_SSL.md](TROUBLESHOOTING_SSL.md) to fix certificate warnings
+- 📊 **Prometheus + Grafana Monitoring** - Complete observability stack
+  - Real-time application metrics (requests, latency, errors)
+  - System metrics (CPU, memory, disk, network)
+  - Container metrics via cAdvisor
+  - Pre-built Grafana dashboards
+  - Optimized for 2GB RAM VPS (~1GB overhead)
+  - No port conflicts with NoteHub or Drone CI
+  - See [MONITORING_QUICKSTART.md](MONITORING_QUICKSTART.md) for setup
 
 ### Performance Enhancements (December 2024)
 - ⚡ **10x Faster Queries** - Redis caching reduces note list operations from 80ms to 8ms

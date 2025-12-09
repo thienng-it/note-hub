@@ -71,6 +71,10 @@ services:
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--ping=true"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--entrypoints.metrics.address=:8080"
     ports:
       - "80:80"
       - "443:443"
@@ -246,6 +250,10 @@ services:
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--ping=true"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--entrypoints.metrics.address=:8080"
     ports:
       - "80:80"
       - "443:443"
@@ -431,6 +439,10 @@ services:
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--ping=true"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--entrypoints.metrics.address=:8080"
     ports:
       - "80:80"
       - "443:443"

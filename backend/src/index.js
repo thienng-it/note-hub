@@ -131,6 +131,29 @@ const packageJson = require('../package.json');
 app.get('/metrics', metricsEndpoint);
 app.get('/api/metrics', metricsEndpoint);
 
+// Update application metrics periodically
+const { updateApplicationMetrics } = require('./middleware/metrics');
+async function updateMetricsJob() {
+  try {
+    const userCount = await db.queryOne('SELECT COUNT(*) as count FROM users');
+    const notesCount = await db.queryOne('SELECT COUNT(*) as count FROM notes');
+    const tasksCount = await db.queryOne('SELECT COUNT(*) as count FROM tasks');
+
+    updateApplicationMetrics({
+      users: userCount?.count || 0,
+      notes: notesCount?.count || 0,
+      tasks: tasksCount?.count || 0,
+    });
+  } catch (error) {
+    logger.error('Error updating application metrics', { error: error.message });
+  }
+}
+
+// Update metrics every 30 seconds
+setInterval(updateMetricsJob, 30000);
+// Initial update
+updateMetricsJob();
+
 // Shared health check logic
 async function getHealthStatus() {
   const userCount = await db.queryOne(`SELECT COUNT(*) as count FROM users`);
