@@ -47,7 +47,9 @@ describe('Redis Caching', () => {
     jest.clearAllMocks();
 
     const jwt = require('jsonwebtoken');
-    userToken = jwt.sign({ userId: 1, username: 'testuser' }, process.env.JWT_SECRET);
+    userToken = jwt.sign({ user_id: 1, type: 'access' }, process.env.JWT_SECRET, {
+      expiresIn: '24h',
+    });
   });
 
   describe('Notes List Caching', () => {

@@ -73,7 +73,7 @@ describe('Google OAuth', () => {
       const response = await request(app).get('/api/v1/auth/google/status');
 
       expect(response.status).toBe(200);
-      expect(response.body.configured).toBe(true);
+      expect(response.body.enabled).toBe(true);
     });
 
     it('should return false when OAuth env vars missing', async () => {
@@ -86,7 +86,7 @@ describe('Google OAuth', () => {
 
       const response = await request(freshApp).get('/api/v1/auth/google/status');
 
-      expect(response.body.configured).toBe(false);
+      expect(response.body.enabled).toBe(false);
 
       // Restore
       process.env.GOOGLE_CLIENT_ID = originalClientId;
@@ -98,8 +98,8 @@ describe('Google OAuth', () => {
       const response = await request(app).get('/api/v1/auth/google');
 
       expect(response.status).toBe(200);
-      expect(response.body.authUrl).toBeDefined();
-      expect(response.body.authUrl).toContain('accounts.google.com');
+      expect(response.body.auth_url).toBeDefined();
+      expect(response.body.auth_url).toContain('accounts.google.com');
     });
 
     it('should return 503 when OAuth not configured', async () => {

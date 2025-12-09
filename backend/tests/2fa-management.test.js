@@ -36,8 +36,12 @@ describe('2FA Management', () => {
 
     // Generate test tokens
     const jwt = require('jsonwebtoken');
-    userToken = jwt.sign({ userId: 1, username: 'testuser' }, process.env.JWT_SECRET);
-    adminToken = jwt.sign({ userId: 2, username: 'admin', is_admin: true }, process.env.JWT_SECRET);
+    userToken = jwt.sign({ user_id: 1, type: 'access' }, process.env.JWT_SECRET, {
+      expiresIn: '24h',
+    });
+    adminToken = jwt.sign({ user_id: 2, type: 'access' }, process.env.JWT_SECRET, {
+      expiresIn: '24h',
+    });
   });
 
   describe('POST /api/auth/2fa/disable', () => {
