@@ -1,0 +1,178 @@
+# =============================================================================
+# Prometheus Configuration for NoteHub
+# =============================================================================
+#
+# This configuration sets up Prometheus to scrape metrics from:
+#   - NoteHub Backend API (Node.js/Express)
+#   - Traefik Reverse Proxy
+#   - Prometheus itself (self-monitoring)
+#   - Docker Container Metrics (via cAdvisor)
+#   - Node Exporter (system metrics)
+#
+# Optimized for 2GB RAM VPS deployment alongside NoteHub and Drone CI
+# =============================================================================
+
+global:
+  # How frequently to scrape targets by default
+  scrape_interval: 30s
+  
+  # How long until a scrape request times out
+  scrape_timeout: 10s
+  
+  # How frequently to evaluate rules
+  evaluation_interval: 30s
+  
+  # Labels to add to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager)
+  external_labels:
+    monitor: 'notehub-monitoring'
+    environment: 'production'
+
+# Alertmanager configuration (optional - can be added later)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+# rule_files:
+#   - "alerts/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # ==========================================================================
+  # Prometheus Self-Monitoring
+  # ==========================================================================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          component: 'monitoring'
+
+  # ==========================================================================
+  # NoteHub Backend API Metrics
+  # ==========================================================================
+  - job_name: 'notehub-backend'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['notehub-backend:5000']
+        labels:
+          service: 'notehub'
+          component: 'backend'
+          app: 'api'
+    # Only scrape if backend is healthy
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: notehub-backend:5000
+
+  # ==========================================================================
+  # NoteHub Backend API Metrics (MySQL Profile)
+  # ==========================================================================
+  - job_name: 'notehub-backend-mysql'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['notehub-backend-mysql:5000']
+        labels:
+          service: 'notehub'
+          component: 'backend'
+          app: 'api'
+          profile: 'mysql'
+
+  # ==========================================================================
+  # NoteHub Backend API Metrics (Production Profile)
+  # ==========================================================================
+  - job_name: 'notehub-backend-prod'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['notehub-backend-prod:5000']
+        labels:
+          service: 'notehub'
+          component: 'backend'
+          app: 'api'
+          profile: 'production'
+
+  # ==========================================================================
+  # Traefik Reverse Proxy Metrics
+  # ==========================================================================
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['notehub-traefik:8080']
+        labels:
+          service: 'traefik'
+          component: 'proxy'
+          app: 'notehub'
+
+  # ==========================================================================
+  # Traefik Reverse Proxy Metrics (MySQL Profile)
+  # ==========================================================================
+  - job_name: 'traefik-mysql'
+    static_configs:
+      - targets: ['notehub-traefik-mysql:8080']
+        labels:
+          service: 'traefik'
+          component: 'proxy'
+          app: 'notehub'
+          profile: 'mysql'
+
+  # ==========================================================================
+  # Traefik Reverse Proxy Metrics (Production Profile)
+  # ==========================================================================
+  - job_name: 'traefik-prod'
+    static_configs:
+      - targets: ['notehub-traefik-prod:8080']
+        labels:
+          service: 'traefik'
+          component: 'proxy'
+          app: 'notehub'
+          profile: 'production'
+
+  # ==========================================================================
+  # Drone CI Traefik Metrics (if deployed)
+  # ==========================================================================
+  - job_name: 'drone-traefik'
+    static_configs:
+      - targets: ['drone-traefik:8080']
+        labels:
+          service: 'traefik'
+          component: 'proxy'
+          app: 'drone-ci'
+
+  # ==========================================================================
+  # Docker Container Metrics via cAdvisor
+  # ==========================================================================
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'cadvisor'
+          component: 'monitoring'
+          app: 'docker'
+
+  # ==========================================================================
+  # Node Exporter - System Metrics
+  # ==========================================================================
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+          component: 'monitoring'
+          app: 'system'
+
+# =============================================================================
+# Storage Configuration
+# =============================================================================
+# Retention time for metrics data
+# For a 2GB RAM VPS, we keep retention conservative to save disk space
+storage:
+  tsdb:
+    # Keep metrics for 15 days (can be adjusted based on disk space)
+    retention.time: 15d
+    # Maximum size of storage (adjust based on available disk space)
+    retention.size: 5GB

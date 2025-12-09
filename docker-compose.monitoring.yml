@@ -1,0 +1,269 @@
+# =============================================================================
+# Docker Compose for Prometheus and Grafana Monitoring Stack
+# =============================================================================
+#
+# IMPORTANT: Monitoring is INDEPENDENT but INTEGRATED
+#
+# This monitoring stack:
+# - Works alongside NoteHub, Drone CI, and Graylog
+# - Connects to existing services to collect metrics
+# - Uses its own services, configuration, network, and data storage
+# - Can be started, stopped, or removed independently
+# - Is optimized for 2GB RAM VPS deployments
+#
+# When deployed on the same server as NoteHub and Drone CI:
+#   - NoteHub: ports 80/443 (Traefik + frontend)
+#   - Drone CI: ports 8080/8443 (Traefik proxy)
+#   - Graylog: port 9000 (Web UI) - if deployed
+#   - Prometheus: port 9090 (internal, no external exposure by default)
+#   - Grafana: port 3000 (Traefik proxy via monitoring.DOMAIN)
+#   - cAdvisor: internal only (no external port)
+#   - Node Exporter: internal only (no external port)
+#
+# Prerequisites:
+#   1. Docker and Docker Compose installed
+#   2. At least 2GB RAM available (works with NoteHub + Drone CI)
+#   3. NoteHub already deployed (this monitors it)
+#   4. .env file configured (shares with NoteHub)
+#
+# Quick Setup:
+#   1. Ensure .env file exists with DOMAIN and ACME_EMAIL configured
+#   2. Run: docker compose -f docker-compose.monitoring.yml up -d
+#   3. Access Grafana at: https://monitoring.your-domain.com (or http://localhost:3000)
+#   4. Default credentials: admin / admin (change on first login)
+#
+# With NoteHub (default profile):
+#   docker compose up -d
+#   docker compose -f docker-compose.monitoring.yml up -d
+#
+# With NoteHub (MySQL profile):
+#   docker compose --profile mysql up -d
+#   docker compose -f docker-compose.monitoring.yml up -d
+#
+# With NoteHub (production profile):
+#   docker compose --profile production up -d
+#   docker compose -f docker-compose.monitoring.yml up -d
+#
+# Memory Optimization for 2GB RAM VPS:
+#   - Prometheus: Limited to 512MB RAM
+#   - Grafana: Limited to 256MB RAM
+#   - cAdvisor: Limited to 128MB RAM
+#   - Node Exporter: Minimal footprint (~20MB)
+#   - Total monitoring overhead: ~1GB RAM
+#
+# Access:
+#   - Grafana UI: https://monitoring.your-domain.com (via Traefik)
+#   - Prometheus UI: http://localhost:9090 (internal only)
+#   - Metrics endpoints:
+#     - NoteHub Backend: http://notehub-backend:5000/metrics
+#     - Traefik: http://traefik:8080/metrics
+#
+# =============================================================================
+
+services:
+  # ==========================================================================
+  # Prometheus - Metrics Collection and Storage
+  # ==========================================================================
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: notehub-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--storage.tsdb.retention.size=5GB'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    # Prometheus is exposed internally only (no external port by default)
+    # Uncomment the following to expose Prometheus UI externally
+    # ports:
+    #   - "9090:9090"
+    networks:
+      - notehub-network  # Connect to NoteHub network to scrape services
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    # Memory limits for 2GB RAM VPS
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    labels:
+      - "com.notehub.description=Prometheus metrics collector"
+
+  # ==========================================================================
+  # Grafana - Metrics Visualization and Dashboards
+  # ==========================================================================
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: notehub-grafana
+    restart: unless-stopped
+    environment:
+      # Admin credentials (change these in production!)
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      
+      # Server configuration
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN:-localhost}
+      
+      # Database (using SQLite by default for simplicity)
+      - GF_DATABASE_TYPE=sqlite3
+      - GF_DATABASE_PATH=/var/lib/grafana/grafana.db
+      
+      # Session configuration
+      - GF_SESSION_PROVIDER=file
+      
+      # Anonymous access (disable in production)
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      
+      # Disable telemetry
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      
+      # Performance optimization for 2GB RAM VPS
+      - GF_LOG_LEVEL=warn
+      - GF_DATABASE_CACHE_MODE=shared
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks:
+      - notehub-network  # Connect to NoteHub network for Traefik routing
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    # Memory limits for 2GB RAM VPS
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    labels:
+      # Enable Traefik for Grafana
+      - "traefik.enable=true"
+      
+      # HTTP router with subdomain (e.g., monitoring.yourdomain.com)
+      # Fallback to path-based routing (/grafana) if no GRAFANA_DOMAIN is set
+      - "traefik.http.routers.grafana-http.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`) || PathPrefix(`/grafana`)}"
+      - "traefik.http.routers.grafana-http.entrypoints=web"
+      - "traefik.http.routers.grafana-http.priority=10"
+      
+      # HTTPS router with subdomain
+      - "traefik.http.routers.grafana.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`) || PathPrefix(`/grafana`)}"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.priority=10"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      
+      # Middleware for path stripping if using /grafana path
+      - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+      
+      # Service configuration
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      
+      - "com.notehub.description=Grafana metrics dashboard"
+
+  # ==========================================================================
+  # cAdvisor - Docker Container Metrics
+  # ==========================================================================
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: notehub-cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    # cAdvisor is internal only (no external port)
+    networks:
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    # Memory limits for 2GB RAM VPS
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    labels:
+      - "com.notehub.description=Container metrics collector"
+
+  # ==========================================================================
+  # Node Exporter - System Metrics
+  # ==========================================================================
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: notehub-node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/host'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host:ro,rslave
+    # Node Exporter is internal only (no external port)
+    networks:
+      - monitoring-network
+    # Memory limits for 2GB RAM VPS
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+    labels:
+      - "com.notehub.description=System metrics collector"
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  # Connect to existing NoteHub network to access services and Traefik
+  notehub-network:
+    external: true
+  
+  # Dedicated monitoring network for internal communication
+  monitoring-network:
+    name: monitoring-network
+    driver: bridge
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

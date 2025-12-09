@@ -105,6 +105,10 @@ app.use(securityHeadersMiddleware);
 const { requestLogger } = require('./middleware/logging');
 app.use(requestLogger);
 
+// Prometheus metrics middleware
+const { metricsMiddleware, metricsEndpoint } = require('./middleware/metrics');
+app.use(metricsMiddleware);
+
 // Response adapter for backward compatibility
 const { markAsV1, legacyResponseAdapter } = require('./middleware/responseAdapter');
 app.use(legacyResponseAdapter);
@@ -122,6 +126,10 @@ app.use(`${API_VERSION}/upload`, markAsV1, uploadRoutes);
 // Health check endpoints with standardized response
 const responseHandler = require('./utils/responseHandler');
 const packageJson = require('../package.json');
+
+// Prometheus metrics endpoint (must be before other routes to avoid auth)
+app.get('/metrics', metricsEndpoint);
+app.get('/api/metrics', metricsEndpoint);
 
 // Shared health check logic
 async function getHealthStatus() {

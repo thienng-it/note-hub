@@ -1,0 +1,20 @@
+# =============================================================================
+# Grafana Dashboard Provisioning Configuration
+# =============================================================================
+# This configuration tells Grafana where to find dashboard JSON files
+# and how to load them.
+# =============================================================================
+
+apiVersion: 1
+
+providers:
+  - name: 'NoteHub Dashboards'
+    orgId: 1
+    folder: 'NoteHub'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
