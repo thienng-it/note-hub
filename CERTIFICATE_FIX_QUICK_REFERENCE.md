@@ -2,7 +2,40 @@
 
 > **Problem**: Browser shows "Your connection is not private" or "Not Secure" warning for custom domains like `drone-ci-notehub.duckdns.org` or `monitoring-notehub.duckdns.org`
 
-## TL;DR - Quick Fixes
+## Certificate Valid But Still "Not Secure"?
+
+If your certificate is valid (check with `openssl s_client`) but browser still shows "not secure":
+
+### Most Common: Mixed Content
+```bash
+# Check browser console (F12) for "Mixed Content" warnings
+# Fix: Ensure all URLs use https:// not http://
+
+# For Drone CI - check .env.drone:
+DRONE_SERVER_PROTO=https  # Not http!
+DRONE_SERVER_HOST=drone-ci-notehub.duckdns.org  # No http:// prefix!
+
+# For NoteHub - rebuild with correct API URL:
+VITE_API_URL=https://your-domain.com
+docker compose build frontend
+```
+
+### Quick Checks
+```bash
+# 1. Check certificate is valid
+openssl s_client -connect your-domain.com:443 -servername your-domain.com < /dev/null 2>/dev/null | openssl x509 -noout -dates
+
+# 2. Clear browser cache/use incognito mode
+
+# 3. Check for mixed content in browser console (F12)
+
+# 4. Verify protocol settings
+grep SERVER_PROTO .env.drone
+```
+
+See full diagnostics in [CERTIFICATE_TROUBLESHOOTING.md](docs/guides/CERTIFICATE_TROUBLESHOOTING.md#special-case-certificate-is-valid-but-still-shows-not-secure)
+
+## TL;DR - Quick Fixes for Certificate Mismatch Issues
 
 ### For Drone CI (`drone-ci-notehub.duckdns.org`)
 

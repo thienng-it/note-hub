@@ -447,17 +447,216 @@ docker compose up -d
 docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
 ```
 
+## Special Case: Certificate is Valid But Still Shows "Not Secure"
+
+If your certificate is valid (verified with `openssl s_client`) but browsers still show "not secure" warnings, the issue is likely one of the following:
+
+### 1. Mixed Content (Most Common)
+
+**Problem**: Your HTTPS page is loading HTTP resources (images, scripts, stylesheets, API calls).
+
+**How to Check**:
+```bash
+# Open browser developer tools (F12)
+# Go to Console tab
+# Look for "Mixed Content" warnings like:
+# "Mixed Content: The page at 'https://...' was loaded over HTTPS, but requested an insecure resource 'http://...'"
+```
+
+**Fix for NoteHub**:
+```bash
+# Ensure VITE_API_URL uses https:// in frontend
+# Edit frontend/.env or set build arg
+VITE_API_URL=https://your-domain.com
+
+# Rebuild frontend
+docker compose build frontend
+docker compose up -d frontend
+```
+
+**Fix for Drone CI**:
+```bash
+# Ensure DRONE_SERVER_PROTO is https
+# Edit .env.drone
+DRONE_SERVER_PROTO=https
+DRONE_SERVER_HOST=drone-ci-notehub.duckdns.org  # no http:// prefix!
+
+# Restart
+docker compose --env-file .env.drone -f docker-compose.drone.yml restart drone-server
+```
+
+### 2. Certificate Chain Issues
+
+**Problem**: Intermediate certificates are missing.
+
+**How to Check**:
+```bash
+# Check certificate chain
+echo | openssl s_client -connect your-domain.com:443 -servername your-domain.com 2>/dev/null | grep -A5 "Certificate chain"
+
+# Should show:
+# 0 s:CN = your-domain.com
+# 1 s:C = US, O = Let's Encrypt, CN = R3
+# 2 s:C = US, O = Internet Security Research Group, CN = ISRG Root X1
+```
+
+**Fix**: Let's Encrypt/Traefik should automatically include intermediate certificates. If missing:
+```bash
+# Remove and regenerate certificates
+sudo rm -f letsencrypt/acme.json
+sudo rm -f letsencrypt-drone/acme.json
+docker compose restart traefik
+docker compose --env-file .env.drone -f docker-compose.drone.yml restart drone-traefik
+```
+
+### 3. Browser Cache
+
+**Problem**: Browser is using old/cached certificate.
+
+**Fix**:
+```bash
+# Clear browser SSL cache:
+# Chrome: Settings → Privacy → Clear browsing data → Cached images and files
+# Firefox: Settings → Privacy → Cookies and Site Data → Clear Data
+# Or use incognito/private mode to test
+```
+
+### 4. Subdomain Certificate Mismatch
+
+**Problem**: Certificate is for `example.com` but accessing `www.example.com` or vice versa.
+
+**How to Check**:
+```bash
+# Check what domains are in certificate
+echo | openssl s_client -connect your-domain.com:443 -servername your-domain.com 2>/dev/null | openssl x509 -noout -text | grep DNS:
+
+# Should include all domains you're accessing:
+# DNS:drone-ci-notehub.duckdns.org
+```
+
+**Fix**: Ensure `DRONE_ROUTER_RULE` and `DRONE_DOMAIN` match exactly:
+```bash
+# Must match EXACTLY
+DRONE_DOMAIN=drone-ci-notehub.duckdns.org
+DRONE_ROUTER_RULE=Host(`drone-ci-notehub.duckdns.org`)
+# Not: www.drone-ci-notehub.duckdns.org (different!)
+```
+
+### 5. HSTS Preload Issues
+
+**Problem**: Browser has HSTS entry forcing HTTPS, but certificate isn't trusted yet.
+
+**Fix**:
+```bash
+# Chrome: Visit chrome://net-internals/#hsts
+# Enter domain and click "Delete domain security policies"
+
+# Firefox: Clear history for the specific site
+```
+
+### 6. Time/Clock Sync Issues
+
+**Problem**: Server or browser clock is wrong, making certificate appear invalid.
+
+**How to Check**:
+```bash
+# Check server time
+date
+timedatectl status
+
+# Should be accurate within a few minutes
+```
+
+**Fix**:
+```bash
+# Sync server time
+sudo systemctl restart systemd-timesyncd
+# Or
+sudo ntpdate -s time.nist.gov
+```
+
+### Quick Diagnostic Commands
+
+Run these commands to identify the exact issue:
+
+```bash
+# 1. Verify certificate is actually valid
+echo | openssl s_client -connect your-domain.com:443 -servername your-domain.com 2>/dev/null | openssl x509 -noout -dates
+# Should show: notBefore and notAfter dates (current date should be between them)
+
+# 2. Check what's in the certificate
+echo | openssl s_client -connect your-domain.com:443 -servername your-domain.com 2>/dev/null | openssl x509 -noout -text | grep -E "Subject:|DNS:|Issuer:"
+# Should show:
+#   Issuer: C = US, O = Let's Encrypt, CN = R3
+#   Subject: CN = your-domain.com
+#   DNS:your-domain.com
+
+# 3. Test certificate chain (should complete without errors)
+curl -vI https://your-domain.com 2>&1 | grep -E "SSL certificate|subject|issuer|verify"
+# Look for "SSL certificate verify ok" or similar
+
+# 4. Check for mixed content (browser console)
+# Open browser → F12 → Console tab
+# Look for warnings like:
+#   "Mixed Content: The page at 'https://...' was loaded over HTTPS, 
+#    but requested an insecure resource 'http://...'"
+
+# 5. Test in incognito/private mode
+# If it works in incognito, it's a browser cache issue
+# Chrome: Ctrl+Shift+N (Windows) or Cmd+Shift+N (Mac)
+# Firefox: Ctrl+Shift+P (Windows) or Cmd+Shift+P (Mac)
+
+# 6. Check environment variables for protocol settings
+cd /home/runner/work/note-hub/note-hub
+grep -E "SERVER_PROTO|VITE_API_URL" .env .env.drone 2>/dev/null
+# Should show https:// not http://
+
+# 7. Check Traefik is applying security headers
+docker compose logs traefik 2>&1 | grep -i "security-headers" | tail -5
+docker compose --env-file .env.drone -f docker-compose.drone.yml logs drone-traefik 2>&1 | grep -i "security-headers" | tail -5
+```
+
+**Expected Results**:
+- Certificate dates should be valid and current
+- Certificate should be issued by "Let's Encrypt"
+- Certificate should include your domain in Subject/DNS fields
+- No "Mixed Content" warnings in browser console
+- `SERVER_PROTO=https` in configuration files
+- Security headers middleware should be active in Traefik logs
+
+### Still Not Working?
+
+If certificate is valid but still showing "not secure" after checking all above:
+
+1. **Verify with SSL Labs**: Visit https://www.ssllabs.com/ssltest/analyze.html?d=your-domain.com
+   - This will show detailed SSL/TLS configuration issues
+   - Look for "Chain issues" or "Protocol issues"
+
+2. **Check browser-specific issues**:
+   - Try a different browser (Chrome, Firefox, Edge)
+   - Try from a different device/network
+   - Check if antivirus/firewall is intercepting HTTPS
+
+3. **Check for redirect loops**:
+   ```bash
+   curl -L -v https://your-domain.com 2>&1 | grep -E "HTTP|Location"
+   # Should not show infinite redirects
+   ```
+
 ## Need More Help?
 
 1. Check Traefik logs: `docker compose logs traefik`
 2. Check DNS: `nslookup your-domain.com`
 3. Check firewall: `telnet your-domain.com 80`
 4. Review Docker Compose config: `docker compose config`
-5. Create an issue on GitHub with:
+5. Test with SSL Labs: https://www.ssllabs.com/ssltest/
+6. Create an issue on GitHub with:
    - Your domain names (redacted if private)
    - Traefik logs (last 100 lines)
    - Environment variables (redact secrets)
    - DNS lookup results
+   - SSL Labs test results
+   - Browser console errors (F12 → Console)
 
 ## Related Documentation
 

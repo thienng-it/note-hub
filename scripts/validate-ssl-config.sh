@@ -206,8 +206,26 @@ validate_drone() {
         fi
         
         check_env_var ".env.drone" "DRONE_ACME_EMAIL" "false"
-        check_env_var ".env.drone" "DRONE_SERVER_PROTO" "false"
+        
+        # Check DRONE_SERVER_PROTO is https for custom domains
+        local proto=$(extract_env_var ".env.drone" "DRONE_SERVER_PROTO")
+        if [ "$proto" = "http" ]; then
+            print_warning "DRONE_SERVER_PROTO=http but custom domain is configured"
+            print_info "For HTTPS with custom domains, set: DRONE_SERVER_PROTO=https"
+        elif [ "$proto" = "https" ]; then
+            print_ok "DRONE_SERVER_PROTO correctly set to https"
+        fi
+        
         check_env_var ".env.drone" "DRONE_SERVER_HOST" "false"
+        
+        # Check SERVER_HOST doesn't have http:// prefix
+        local host=$(extract_env_var ".env.drone" "DRONE_SERVER_HOST")
+        if echo "$host" | grep -q "http://\|https://"; then
+            print_error "DRONE_SERVER_HOST should NOT include http:// or https:// prefix"
+            print_info "Current value: ${host}"
+            print_info "Should be: ${host#http://}"
+            print_info "Should be: ${host#https://}"
+        fi
     else
         print_info "Drone CI configured for localhost/IP access (no custom domain)"
         print_info "Certificate warnings are expected for localhost deployments"
