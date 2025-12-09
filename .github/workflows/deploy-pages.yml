@@ -66,7 +66,7 @@ jobs:
           cp -r docs/* _site/docs/
           
           # Create a redirect from /docs to /docs/documentation.html
-          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=documentation.html"></head><body></body></html>' > _site/docs/index.html
+          echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=documentation.html"><title>Redirecting to Documentation</title></head><body><p>If you are not redirected automatically, <a href="documentation.html">click here to view the documentation</a>.</p></body></html>' > _site/docs/index.html
           
           echo "✅ GitHub Pages site structure:"
           ls -lah _site/

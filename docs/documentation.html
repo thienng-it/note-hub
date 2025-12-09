@@ -12,6 +12,18 @@
             box-sizing: border-box;
         }
 
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
@@ -266,10 +278,10 @@
 </head>
 <body>
     <header>
-        <div class="logo">📚 NoteHub Documentation</div>
+        <div class="logo" aria-label="NoteHub Documentation Logo">📚 NoteHub Documentation</div>
         <nav>
             <a href="index.html">Home</a>
-            <a href="https://github.com/thienng-it/note-hub" target="_blank">GitHub</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository (opens in new tab)">GitHub</a>
             <a href="INDEX.md">Full Index</a>
         </nav>
     </header>
@@ -280,7 +292,9 @@
             <p class="tagline">Comprehensive guides, API references, and tutorials for NoteHub</p>
             
             <div class="search-container">
-                <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search documentation..." />
+                <label for="searchBox" class="sr-only">Search documentation</label>
+                <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search documentation..." aria-label="Search documentation" />
+                <div id="searchResults" aria-live="polite" aria-atomic="true" class="sr-only"></div>
             </div>
 
             <div class="quick-links">
@@ -542,21 +556,33 @@
     </footer>
 
     <script>
-        // Simple search functionality
+        // Simple search functionality with accessibility
         const searchBox = document.getElementById('searchBox');
         const docCards = document.querySelectorAll('.doc-card');
+        const searchResults = document.getElementById('searchResults');
 
         searchBox.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
+            let visibleCount = 0;
             
             docCards.forEach(card => {
                 const text = card.textContent.toLowerCase();
                 if (text.includes(searchTerm)) {
                     card.style.display = 'block';
+                    visibleCount++;
                 } else {
                     card.style.display = 'none';
                 }
             });
+
+            // Announce results to screen readers
+            if (searchTerm) {
+                searchResults.textContent = visibleCount === 0 
+                    ? 'No results found' 
+                    : `${visibleCount} result${visibleCount === 1 ? '' : 's'} found`;
+            } else {
+                searchResults.textContent = '';
+            }
         });
     </script>
 </body>
