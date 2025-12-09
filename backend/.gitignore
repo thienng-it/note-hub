@@ -15,6 +15,9 @@ coverage/
 data/
 *.db
 
+# Uploads
+uploads/
+
 # Logs
 logs/
 *.log
