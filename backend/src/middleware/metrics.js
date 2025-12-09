@@ -135,24 +135,26 @@ function metricsMiddleware(req, res, next) {
   next();
 }
 
+// Pre-compiled regex patterns for better performance
+const UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+const NUMERIC_ID_REGEX = /\/\d+/g;
+const STATIC_FILE_REGEX = /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/;
+
 /**
  * Normalize route paths to avoid high cardinality in metrics
  * Replace IDs and dynamic parts with placeholders
  */
 function normalizeRoute(path) {
   // Skip static files
-  if (
-    path.startsWith('/uploads/') ||
-    path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/)
-  ) {
+  if (path.startsWith('/uploads/') || STATIC_FILE_REGEX.test(path)) {
     return '/static';
   }
 
   // Replace UUIDs
-  path = path.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, ':id');
+  path = path.replace(UUID_REGEX, ':id');
 
   // Replace numeric IDs
-  path = path.replace(/\/\d+/g, '/:id');
+  path = path.replace(NUMERIC_ID_REGEX, '/:id');
 
   // Common API routes
   if (path.startsWith('/api/v1/')) {

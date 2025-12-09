@@ -62,20 +62,15 @@ scrape_configs:
           service: 'notehub'
           component: 'backend'
           app: 'api'
-    # Only scrape if backend is healthy
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: notehub-backend:5000
 
   # ==========================================================================
   # NoteHub Backend API Metrics (MySQL Profile)
+  # Note: This target will show as down when MySQL profile is not active
   # ==========================================================================
   - job_name: 'notehub-backend-mysql'
     metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
     static_configs:
       - targets: ['notehub-backend-mysql:5000']
         labels:
@@ -86,9 +81,12 @@ scrape_configs:
 
   # ==========================================================================
   # NoteHub Backend API Metrics (Production Profile)
+  # Note: This target will show as down when production profile is not active
   # ==========================================================================
   - job_name: 'notehub-backend-prod'
     metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
     static_configs:
       - targets: ['notehub-backend-prod:5000']
         labels:

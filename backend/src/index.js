@@ -135,14 +135,20 @@ app.get('/api/metrics', metricsEndpoint);
 const { updateApplicationMetrics } = require('./middleware/metrics');
 async function updateMetricsJob() {
   try {
-    const userCount = await db.queryOne('SELECT COUNT(*) as count FROM users');
-    const notesCount = await db.queryOne('SELECT COUNT(*) as count FROM notes');
-    const tasksCount = await db.queryOne('SELECT COUNT(*) as count FROM tasks');
+    // Combine queries for better performance
+    const counts = await db.query(`
+      SELECT 
+        (SELECT COUNT(*) FROM users) as users,
+        (SELECT COUNT(*) FROM notes) as notes,
+        (SELECT COUNT(*) FROM tasks) as tasks
+    `);
+
+    const metrics = counts?.[0] || { users: 0, notes: 0, tasks: 0 };
 
     updateApplicationMetrics({
-      users: userCount?.count || 0,
-      notes: notesCount?.count || 0,
-      tasks: tasksCount?.count || 0,
+      users: metrics.users || 0,
+      notes: metrics.notes || 0,
+      tasks: metrics.tasks || 0,
     });
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });

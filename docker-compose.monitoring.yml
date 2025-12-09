@@ -164,13 +164,14 @@ services:
       - "traefik.enable=true"
       
       # HTTP router with subdomain (e.g., monitoring.yourdomain.com)
-      # Fallback to path-based routing (/grafana) if no GRAFANA_DOMAIN is set
-      - "traefik.http.routers.grafana-http.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`) || PathPrefix(`/grafana`)}"
+      # Use GRAFANA_ROUTER_RULE to customize routing
+      # Default: Host-based for production, localhost for development
+      - "traefik.http.routers.grafana-http.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`)}"
       - "traefik.http.routers.grafana-http.entrypoints=web"
       - "traefik.http.routers.grafana-http.priority=10"
       
       # HTTPS router with subdomain
-      - "traefik.http.routers.grafana.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`) || PathPrefix(`/grafana`)}"
+      - "traefik.http.routers.grafana.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`)}"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.priority=10"
       - "traefik.http.routers.grafana.tls=true"
