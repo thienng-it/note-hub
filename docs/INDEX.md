@@ -84,7 +84,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [TRAEFIK_MIGRATION](guides/TRAEFIK_MIGRATION.md) - Traefik migration guide
 - [TRAEFIK_MIGRATION_SUMMARY](guides/TRAEFIK_MIGRATION_SUMMARY.md) - Traefik migration summary
 - [DOCKER_UPLOAD_FIX](guides/DOCKER_UPLOAD_FIX.md) - Docker upload fix
-- [GRAYLOG_SETUP](guides/GRAYLOG_SETUP.md) - Graylog log aggregation setup
+- [LOKI_SETUP](guides/LOKI_SETUP.md) - Grafana Loki log aggregation setup (replaces Graylog)
 
 ## 🔒 Security
 

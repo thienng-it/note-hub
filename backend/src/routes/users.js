@@ -8,7 +8,7 @@ const db = require('../config/database');
 
 /**
  * GET /api/users/search - Search for users (for share autocomplete)
- * 
+ *
  * Security considerations:
  * - Requires authentication (jwtRequired)
  * - Only returns id and username (no email or sensitive data)
@@ -16,10 +16,10 @@ const db = require('../config/database');
  * - Minimum 2 characters required to prevent full user enumeration
  * - Case-insensitive search for better UX
  * - Excludes current user from results
- * 
+ *
  * Query parameters:
  * - q: Search query (minimum 2 characters)
- * 
+ *
  * Response:
  * - users: Array of {id, username} objects (max 10)
  */
