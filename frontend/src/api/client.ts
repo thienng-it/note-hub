@@ -438,7 +438,7 @@ export const adminApi = {
 export const uploadApi = {
   async uploadImage(
     file: File,
-  ): Promise<{ success: boolean; path: string; filename: string; size: number; mimetype: string }> {
+  ): Promise<{ success: true; path: string; filename: string; size: number; mimetype: string }> {
     const formData = new FormData();
     formData.append('image', file);
 
