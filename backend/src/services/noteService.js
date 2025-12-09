@@ -8,6 +8,7 @@ const elasticsearch = require('../config/elasticsearch');
 const { SEARCH_MIN_LENGTH, CACHE_TTL } = require('../config/constants');
 const { marked } = require('marked');
 const sanitizeHtml = require('sanitize-html');
+const { validateEmail } = require('../utils/common');
 
 class NoteService {
   /**
@@ -54,7 +55,7 @@ class NoteService {
         // Use parameterized query to prevent SQL injection
         const placeholders = validNoteIds.map(() => '?').join(',');
         const sql = `
-          SELECT DISTINCT n.*, 
+          SELECT DISTINCT n.*,
             GROUP_CONCAT(t.name) as tag_names,
             GROUP_CONCAT(t.id) as tag_ids
           FROM notes n
@@ -93,7 +94,7 @@ class NoteService {
     // Special handling for 'shared' view - use INNER JOIN to only get shared notes
     if (viewType === 'shared') {
       sql = `
-        SELECT DISTINCT n.*, 
+        SELECT DISTINCT n.*,
           GROUP_CONCAT(t.name) as tag_names,
           GROUP_CONCAT(t.id) as tag_ids
         FROM notes n
@@ -106,7 +107,7 @@ class NoteService {
     } else {
       // Standard query for other views
       sql = `
-        SELECT DISTINCT n.*, 
+        SELECT DISTINCT n.*,
           GROUP_CONCAT(t.name) as tag_names,
           GROUP_CONCAT(t.id) as tag_ids
         FROM notes n
@@ -204,7 +205,7 @@ class NoteService {
   static async checkNoteAccess(noteId, userId) {
     const note = await db.queryOne(
       `
-      SELECT n.*, 
+      SELECT n.*,
         GROUP_CONCAT(t.name) as tag_names,
         GROUP_CONCAT(t.id) as tag_ids
       FROM notes n
@@ -399,7 +400,7 @@ class NoteService {
   static async getNoteById(noteId) {
     const note = await db.queryOne(
       `
-      SELECT n.*, 
+      SELECT n.*,
         GROUP_CONCAT(t.name) as tag_names,
         GROUP_CONCAT(t.id) as tag_ids
       FROM notes n
@@ -461,7 +462,10 @@ class NoteService {
    * Share a note with another user.
    */
   static async shareNote(noteId, ownerId, sharedWithUsername, canEdit = false) {
-    const sharedWithUser = await db.queryOne(`SELECT * FROM users WHERE username = ?`, [
+    const isEmail = validateEmail(sharedWithUsername);
+    const credentialField = isEmail ? 'email' : 'username';
+
+    const sharedWithUser = await db.queryOne(`SELECT * FROM users WHERE ${credentialField} = ?`, [
       sharedWithUsername,
     ]);
 

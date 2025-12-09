@@ -165,7 +165,7 @@ export function ShareNotePage() {
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
               <i className="glass-i fas fa-user mr-2" aria-hidden="true"></i>
-              Username
+              {t('share.usernamePlaceholder')}
             </label>
             <input
               type="text"
