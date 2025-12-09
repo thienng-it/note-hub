@@ -134,6 +134,7 @@ class Database {
         bio TEXT,
         theme TEXT DEFAULT 'light',
         hidden_notes TEXT,
+        preferred_language TEXT DEFAULT 'en',
         totp_secret TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -342,6 +343,7 @@ class Database {
         bio TEXT,
         theme VARCHAR(20) DEFAULT 'light',
         hidden_notes TEXT,
+        preferred_language VARCHAR(10) DEFAULT 'en',
         totp_secret VARCHAR(32),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -592,6 +594,15 @@ class Database {
         this.db.exec(`ALTER TABLE users ADD COLUMN hidden_notes TEXT`);
       }
 
+      // Add preferred_language column to users table if missing
+      const hasPreferredLanguage = userColumns.some((col) => col.name === 'preferred_language');
+      if (!hasPreferredLanguage) {
+        console.log('🔄 Migrating users table: adding preferred_language column');
+        this.db.exec(`ALTER TABLE users ADD COLUMN preferred_language TEXT DEFAULT 'en'`);
+        // Set default value for existing rows
+        this.db.exec(`UPDATE users SET preferred_language = 'en' WHERE preferred_language IS NULL`);
+      }
+
       console.log('✅ SQLite schema migration completed');
     } catch (error) {
       console.error('⚠️ SQLite migration error (non-fatal):', error.message);
@@ -731,6 +742,7 @@ class Database {
           updated_at: 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
           images: 'TEXT',
           hidden_notes: 'TEXT',
+          preferred_language: "VARCHAR(10) DEFAULT 'en'",
         };
 
         if (!allowedTables.includes(tableName)) {
@@ -766,6 +778,9 @@ class Database {
 
       // Add missing hidden_notes column to users table
       await addColumnIfMissing('users', 'hidden_notes', 'users');
+
+      // Add missing preferred_language column to users table
+      await addColumnIfMissing('users', 'preferred_language', 'users');
 
       console.log('✅ MySQL schema migration completed');
     } catch (error) {
