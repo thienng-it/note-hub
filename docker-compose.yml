@@ -630,6 +630,7 @@ services:
 
 networks:
   notehub-network:
+    name: notehub-network
     driver: bridge
 
 volumes:

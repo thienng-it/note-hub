@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Beautiful Notes App - A modern, feature-rich personal notes application">
-    <title>Note Hub - Beautiful Notes App</title>
+    <meta name="description" content="NoteHub Documentation - NoteHub Documentation Index">
+    <title>NoteHub Documentation Index - NoteHub Documentation</title>
     <style>
         * {
             margin: 0;
@@ -18,16 +18,20 @@
             --secondary: #ec4899;
             --bg: #0f172a;
             --bg-light: #1e293b;
+            --bg-lighter: #334155;
             --text: #f1f5f9;
             --text-muted: #cbd5e1;
             --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.7;
             overflow-x: hidden;
         }
 
@@ -35,10 +39,10 @@
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 1.5rem 2rem;
-            background: rgba(15, 23, 42, 0.8);
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            border-bottom: 1px solid var(--border);
             z-index: 1000;
             display: flex;
             justify-content: space-between;
@@ -46,12 +50,13 @@
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-decoration: none;
         }
 
         nav a {
@@ -59,28 +64,54 @@
             text-decoration: none;
             margin-left: 2rem;
             transition: color 0.3s;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         nav a:hover {
             color: var(--accent);
         }
 
-        .hero {
-            margin-top: 5rem;
-            padding: 6rem 2rem;
-            text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 50%, var(--secondary) 100%);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -88,260 +119,354 @@
             line-height: 1.2;
         }
 
-        .tagline {
-            font-size: 1.3rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
         }
 
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
+        h3 {
+            font-size: 1.5rem;
             margin-top: 2rem;
-            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
         }
 
-        .btn {
-            padding: 0.9rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--accent);
-            border: 2px solid var(--accent);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(34, 211, 238, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .features {
-            padding: 5rem 2rem;
-            background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.05) 100%);
-        }
-
-        .features-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            padding: 2rem;
-            border-radius: 12px;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent);
-            background: rgba(30, 41, 59, 0.8);
-            transform: translateY(-4px);
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.2rem;
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
             margin-bottom: 0.5rem;
-            color: var(--accent);
+            color: var(--text);
         }
 
-        .feature-card p {
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
             color: var(--text-muted);
-            font-size: 0.95rem;
         }
 
-        .demo-section {
-            padding: 5rem 2rem;
-            text-align: center;
+        p {
+            margin-bottom: 1.25rem;
         }
 
-        .demo-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .demo-credentials {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 400px;
-            margin: 2rem auto;
-            backdrop-filter: blur(10px);
-        }
-
-        .credential {
-            margin: 1rem 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        .credential strong {
-            color: var(--accent);
-        }
-
-        footer {
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
-            margin-top: 3rem;
-        }
-
-        footer a {
-            color: var(--accent);
+        a {
+            color: var(--link);
             text-decoration: none;
             transition: color 0.3s;
         }
 
-        footer a:hover {
-            color: var(--primary);
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
+            main {
+                padding: 5rem 1rem 2rem;
             }
 
-            .tagline {
-                font-size: 1.1rem;
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
             }
 
             nav a {
                 margin-left: 1rem;
+                font-size: 0.85rem;
             }
 
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
+            pre {
+                padding: 1rem;
             }
 
-            .btn {
-                width: 100%;
-                max-width: 300px;
+            table {
+                font-size: 0.875rem;
             }
         }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">📝 Note Hub</div>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
         <nav>
-            <a href="#features">Features</a>
-            <a href="#demo">Demo</a>
-            <a href="docs/documentation.html">📚 Docs</a>
-            <a href="https://github.com/thienng-it/note-hub" target="_blank">GitHub</a>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
     </header>
 
     <main>
-        <section class="hero">
-            <h1>Your Beautiful Notes App</h1>
-            <p class="tagline">A modern, secure, and feature-rich personal notes application with React & Node.js</p>
-            <div class="cta-buttons">
-                <a href="https://note-hub.netlify.app" class="btn btn-primary">🚀 Launch App</a>
-                <a href="docs/documentation.html" class="btn btn-primary">📚 Documentation</a>
-                <a href="https://github.com/thienng-it/note-hub" class="btn btn-secondary">View on GitHub</a>
-            </div>
-        </section>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>NoteHub Documentation Index</span>
+        </div>
 
-        <section class="features" id="features">
-            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">✨ Powerful Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📝</div>
-                    <h3>Rich Markdown Editing</h3>
-                    <p>Full markdown support with live preview. Write beautifully formatted notes with ease.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏷️</div>
-                    <h3>Smart Tagging</h3>
-                    <p>Organize notes with tags and filter by them. Find exactly what you need instantly.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h3>Powerful Search</h3>
-                    <p>Search notes by title, content, or tags. Lightning-fast results every time.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⭐</div>
-                    <h3>Favorites & Pinning</h3>
-                    <p>Mark important notes as favorites or pin them for quick access.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>Responsive Design</h3>
-                    <p>Beautiful UI that works perfectly on desktop, tablet, and mobile devices.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌙</div>
-                    <h3>Dark Mode</h3>
-                    <p>Toggle between light and dark themes for comfortable viewing anytime.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔐</div>
-                    <h3>Secure</h3>
-                    <p>CSRF protection, input validation, and HTML sanitization for peace of mind.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Reading Time</h3>
-                    <p>Automatic reading time estimation for every note you create.</p>
-                </div>
-            </div>
-        </section>
+        <article class="content">
+            <h1>NoteHub Documentation Index</h1>
+<p>Welcome to the NoteHub documentation. This index helps you navigate all available documentation.</p>
+<h2>📖 Main Documentation</h2>
+<ul>
+<li><a href="README.md">README</a> - Complete project overview, features, installation, and quick start guide</li>
+<li><a href="BACKEND_IMPROVEMENTS_SUMMARY.md">BACKEND_IMPROVEMENTS_SUMMARY</a> - Backend improvements and enhancements</li>
+<li><a href="UI_IMPROVEMENTS_SUMMARY.md">UI_IMPROVEMENTS_SUMMARY</a> - UI/UX improvements and enhancements</li>
+<li><a href="UI_HIDE_SHOW_FEATURE.md">UI_HIDE_SHOW_FEATURE</a> - Hide/Show feature implementation</li>
+<li><a href="CHANGELOG_ENV_LOGGING.md">CHANGELOG_ENV_LOGGING</a> - Environment and logging changelog</li>
+</ul>
+<h2>🏗️ Architecture</h2>
+<ul>
+<li><a href="architecture/ARCHITECTURE.md">ARCHITECTURE</a> - Complete system design and architecture patterns</li>
+<li><a href="architecture/ARCHITECTURE_IMPROVEMENTS.md">ARCHITECTURE_IMPROVEMENTS</a> - Architecture enhancements and improvements</li>
+<li><a href="architecture/DATABASE_FLOW.md">DATABASE_FLOW</a> - Database schema and data flow</li>
+<li><a href="architecture/DATABASE_PERSISTENCE_FIX.md">DATABASE_PERSISTENCE_FIX</a> - Database persistence fixes and solutions</li>
+<li><a href="database/DATABASE_PERSISTENCE.md">DATABASE_PERSISTENCE</a> - Database persistence documentation</li>
+</ul>
+<h2>🔬 Technical Investigations</h2>
+<ul>
+<li><a href="investigation/NOSQL_INVESTIGATION.md">NOSQL_INVESTIGATION</a> - Comprehensive analysis of NoSQL suitability for NoteHub</li>
+<li><a href="investigation/SQL_VS_NOSQL_COMPARISON.md">SQL_VS_NOSQL_COMPARISON</a> - Visual comparison and performance analysis</li>
+<li><a href="investigation/EXECUTIVE_SUMMARY.md">EXECUTIVE_SUMMARY</a> - Executive summary of technical investigations</li>
+<li><a href="investigation/IMPLEMENTATION_SUMMARY.md">IMPLEMENTATION_SUMMARY</a> - Implementation summary</li>
+</ul>
+<h2>🔌 API Documentation</h2>
+<ul>
+<li><a href="api/API_CHANGELOG.md">API_CHANGELOG</a> - API version history and changes</li>
+<li><a href="api/API_VERSIONING.md">API_VERSIONING</a> - API versioning strategy</li>
+<li><a href="api/JWT_API.md">JWT_API</a> - JWT authentication API documentation</li>
+</ul>
+<h2>📚 Guides</h2>
+<h3>Deployment &amp; Infrastructure</h3>
+<ul>
+<li><a href="guides/HETZNER_DEPLOYMENT.md">HETZNER_DEPLOYMENT</a> - Hetzner deployment guide</li>
+<li><a href="guides/DUAL_DEPLOYMENT_EXAMPLE.md">DUAL_DEPLOYMENT_EXAMPLE</a> - Dual deployment example</li>
+<li><a href="guides/PORT_ALLOCATION.md">PORT_ALLOCATION</a> - Port allocation guide</li>
+<li><a href="guides/ENVIRONMENT_CONFIGURATION.md">ENVIRONMENT_CONFIGURATION</a> - Environment configuration</li>
+</ul>
+<h3>SSL/HTTPS Setup</h3>
+<ul>
+<li><a href="guides/SSL_HTTPS_SETUP.md">SSL_HTTPS_SETUP</a> - SSL/HTTPS setup guide</li>
+<li><a href="guides/SSL_HTTPS_IMPLEMENTATION.md">SSL_HTTPS_IMPLEMENTATION</a> - SSL/HTTPS implementation summary</li>
+<li><a href="guides/SSL_CERTIFICATE_FIX_VERIFICATION.md">SSL_CERTIFICATE_FIX_VERIFICATION</a> - SSL certificate fix verification</li>
+<li><a href="guides/TESTING_SSL_HTTPS.md">TESTING_SSL_HTTPS</a> - Testing SSL/HTTPS implementation</li>
+<li><a href="guides/TROUBLESHOOTING_SSL.md">TROUBLESHOOTING_SSL</a> - SSL troubleshooting guide</li>
+<li><a href="guides/CUSTOM_DOMAIN_SSL_FIX.md">CUSTOM_DOMAIN_SSL_FIX</a> - Custom domain SSL fix</li>
+<li><a href="guides/CUSTOM_DOMAIN_SSL_SETUP.md">CUSTOM_DOMAIN_SSL_SETUP</a> - Custom domain SSL setup</li>
+</ul>
+<h3>Drone CI</h3>
+<ul>
+<li><a href="guides/DRONE_CI_README.md">DRONE_CI_README</a> - Drone CI overview</li>
+<li><a href="guides/DRONE_CI_SETUP.md">DRONE_CI_SETUP</a> - Drone CI setup guide</li>
+<li><a href="guides/DRONE_CI_STANDALONE.md">DRONE_CI_STANDALONE</a> - Standalone Drone CI deployment</li>
+<li><a href="guides/DRONE_CI_IMPLEMENTATION.md">DRONE_CI_IMPLEMENTATION</a> - Drone CI implementation summary</li>
+<li><a href="guides/DRONE_CI_UI.md">DRONE_CI_UI</a> - Drone CI UI implementation</li>
+<li><a href="guides/DRONE_CI_CERTIFICATE_FIX.md">DRONE_CI_CERTIFICATE_FIX</a> - Drone CI certificate fix</li>
+<li><a href="guides/DRONE_CI_TRAEFIK_CUSTOM_DOMAIN.md">DRONE_CI_TRAEFIK_CUSTOM_DOMAIN</a> - Drone CI with Traefik and custom domain</li>
+<li><a href="guides/DRONE_CI_CUSTOM_DOMAIN_SSL_SETUP.md">DRONE_CI_CUSTOM_DOMAIN_SSL_SETUP</a> - Drone CI custom domain SSL setup</li>
+<li><a href="guides/DRONE_RUNNER_CONNECTIVITY_FIX.md">DRONE_RUNNER_CONNECTIVITY_FIX</a> - Drone runner connectivity fix</li>
+<li><a href="guides/DRONE_TRIGGER_FIX.md">DRONE_TRIGGER_FIX</a> - Drone trigger configuration fix</li>
+<li><a href="guides/TROUBLESHOOTING_DRONE_SSL.md">TROUBLESHOOTING_DRONE_SSL</a> - Drone SSL troubleshooting</li>
+</ul>
+<h3>Database &amp; Migration</h3>
+<ul>
+<li><a href="guides/MIGRATION_GUIDE.md">MIGRATION_GUIDE</a> - Database migration guide</li>
+<li><a href="guides/MYSQL_MIGRATION_GUIDE.md">MYSQL_MIGRATION_GUIDE</a> - MySQL-specific migration guide</li>
+<li><a href="guides/MYSQL_MIGRATION_SUMMARY.md">MYSQL_MIGRATION_SUMMARY</a> - MySQL migration summary</li>
+<li><a href="guides/DATABASE_REPLICATION.md">DATABASE_REPLICATION</a> - Database replication guide</li>
+<li><a href="guides/DATABASE_REPLICATION_IMPLEMENTATION.md">DATABASE_REPLICATION_IMPLEMENTATION</a> - Database replication implementation</li>
+</ul>
+<h3>Features &amp; Configuration</h3>
+<ul>
+<li><a href="guides/CACHING_AND_SEARCH.md">CACHING_AND_SEARCH</a> - Caching and search features</li>
+<li><a href="guides/CONFIG.md">CONFIG</a> - Configuration guide</li>
+<li><a href="guides/ERROR_HANDLING.md">ERROR_HANDLING</a> - Error handling guide</li>
+<li><a href="guides/I18N_GUIDE.md">I18N_GUIDE</a> - Internationalization guide</li>
+<li><a href="guides/LOGGING_CONFIGURATION.md">LOGGING_CONFIGURATION</a> - Logging configuration guide</li>
+<li><a href="guides/GOOGLE_SSO_SETUP.md">GOOGLE_SSO_SETUP</a> - Google SSO setup guide</li>
+<li><a href="guides/GOOGLE_OAUTH_TROUBLESHOOTING.md">GOOGLE_OAUTH_TROUBLESHOOTING</a> - Google OAuth troubleshooting</li>
+</ul>
+<h3>Other</h3>
+<ul>
+<li><a href="guides/PERFORMANCE_GUIDE.md">PERFORMANCE_GUIDE</a> - Performance optimization guide</li>
+<li><a href="guides/CONTRIBUTING.md">CONTRIBUTING</a> - Contribution guidelines</li>
+<li><a href="guides/SCRIPTS.md">SCRIPTS</a> - Scripts documentation</li>
+<li><a href="guides/TRAEFIK_MIGRATION.md">TRAEFIK_MIGRATION</a> - Traefik migration guide</li>
+<li><a href="guides/TRAEFIK_MIGRATION_SUMMARY.md">TRAEFIK_MIGRATION_SUMMARY</a> - Traefik migration summary</li>
+<li><a href="guides/DOCKER_UPLOAD_FIX.md">DOCKER_UPLOAD_FIX</a> - Docker upload fix</li>
+<li><a href="guides/GRAYLOG_SETUP.md">GRAYLOG_SETUP</a> - Graylog log aggregation setup</li>
+</ul>
+<h2>🔒 Security</h2>
+<ul>
+<li><a href="security/SECURITY.md">SECURITY</a> - Security best practices and guidelines</li>
+<li><a href="security/SECURITY_ATTACK_PREVENTION.md">SECURITY_ATTACK_PREVENTION</a> - Attack prevention strategies</li>
+<li><a href="security/SECURITY_ENHANCEMENTS.md">SECURITY_ENHANCEMENTS</a> - Security enhancements</li>
+<li><a href="security/PASSWORD_SECURITY_IMPROVEMENTS.md">PASSWORD_SECURITY_IMPROVEMENTS</a> - Password security improvements</li>
+<li><a href="security/2FA_IMPROVEMENTS.md">2FA_IMPROVEMENTS</a> - Two-factor authentication improvements</li>
+<li><a href="security/CAPTCHA_IMPLEMENTATION.md">CAPTCHA_IMPLEMENTATION</a> - CAPTCHA implementation details</li>
+<li><a href="security/CAPTCHA_SETUP.md">CAPTCHA_SETUP</a> - CAPTCHA setup guide</li>
+<li><a href="security/SIMPLE_CAPTCHA_GUIDE.md">SIMPLE_CAPTCHA_GUIDE</a> - Simple CAPTCHA guide</li>
+</ul>
+<h2>🧪 Testing</h2>
+<ul>
+<li><a href="testing/TEST_SUITE_SUMMARY.md">TEST_SUITE_SUMMARY</a> - Test suite summary and coverage</li>
+</ul>
+<h2>💻 Development</h2>
+<ul>
+<li><a href="development/CAPTCHA_ENHANCEMENT_SUMMARY.md">CAPTCHA_ENHANCEMENT_SUMMARY</a> - CAPTCHA enhancement summary</li>
+<li><a href="development/CAPTCHA_IMPLEMENTATION_COMPLETE.md">CAPTCHA_IMPLEMENTATION_COMPLETE</a> - CAPTCHA implementation complete</li>
+<li><a href="development/PERFORMANCE_IMPROVEMENTS.md">PERFORMANCE_IMPROVEMENTS</a> - Performance improvements</li>
+<li><a href="development/PERFORMANCE_NOTES.md">PERFORMANCE_NOTES</a> - Performance notes</li>
+</ul>
+<h2>📋 Project Management</h2>
+<ul>
+<li><a href="project/BRANCH_RULESET.md">BRANCH_RULESET</a> - Git branch rules and workflow</li>
+<li><a href="project/CI_CD.md">CI_CD</a> - CI/CD pipeline documentation</li>
+<li><a href="project/COMPLETED_TASKS.md">COMPLETED_TASKS</a> - Completed tasks and features</li>
+<li><a href="project/ENHANCEMENT_SUMMARY.md">ENHANCEMENT_SUMMARY</a> - Enhancement summaries</li>
+<li><a href="project/FINAL_SUMMARY.md">FINAL_SUMMARY</a> - Project final summary</li>
+<li><a href="project/RELEASE_NOTES.md">RELEASE_NOTES</a> - Release notes and version history</li>
+<li><a href="project/I18N_IMPROVEMENTS.md">I18N_IMPROVEMENTS</a> - i18n improvements and implementation</li>
+<li><a href="project/IMPLEMENTATION_COMPLETE.md">IMPLEMENTATION_COMPLETE</a> - SSL/HTTPS implementation complete</li>
+</ul>
+<h2>📸 Screenshots</h2>
+<ul>
+<li><a href="screenshots/README.md">Screenshots</a> - Application screenshots and visuals</li>
+</ul>
+<hr>
+<h2>Quick Links</h2>
+<ul>
+<li><strong>Getting Started</strong>: <a href="README.md">README</a></li>
+<li><strong>Deployment</strong>: <a href="guides/HETZNER_DEPLOYMENT.md">HETZNER_DEPLOYMENT</a></li>
+<li><strong>Architecture</strong>: <a href="architecture/ARCHITECTURE.md">ARCHITECTURE</a></li>
+<li><strong>API Docs</strong>: <a href="api/JWT_API.md">JWT_API</a> | <a href="api/API_CHANGELOG.md">API_CHANGELOG</a></li>
+<li><strong>Security</strong>: <a href="security/SECURITY.md">SECURITY</a></li>
+<li><strong>Testing</strong>: <a href="testing/TEST_SUITE_SUMMARY.md">TEST_SUITE_SUMMARY</a></li>
+<li><strong>CI/CD</strong>: <a href="project/CI_CD.md">CI_CD</a> | <a href="guides/DRONE_CI_SETUP.md">Drone CI Setup</a></li>
+<li><strong>SSL/HTTPS</strong>: <a href="guides/SSL_HTTPS_SETUP.md">SSL_HTTPS_SETUP</a></li>
+<li><strong>Contributing</strong>: <a href="guides/CONTRIBUTING.md">CONTRIBUTING</a></li>
+</ul>
 
-        <section class="demo-section" id="demo">
-            <h2>Try it Out</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1rem;">Click the button above to launch the app, then use these credentials:</p>
-            <div class="demo-credentials">
-                <div class="credential">
-                    <strong>Username:</strong> admin
-                </div>
-                <div class="credential">
-                    <strong>Password:</strong> change-me
-                </div>
-            </div>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 2rem;">💡 Tip: Change your password after first login!</p>
-        </section>
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
     </main>
-
-    <footer>
-        <p>Made with ❤️ by <a href="https://github.com/thienng-it" target="_blank">thienng-it</a></p>
-        <p style="margin-top: 1rem; font-size: 0.9rem;">© 2025 Note Hub. All rights reserved.</p>
-    </footer>
 </body>
 </html>
