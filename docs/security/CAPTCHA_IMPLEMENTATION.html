@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - CAPTCHA Implementation Summary">
+    <title>CAPTCHA Implementation Summary - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>CAPTCHA Implementation Summary</span>
+        </div>
+
+        <article class="content">
+            <h1>CAPTCHA Implementation Summary</h1>
+<h2>Issue</h2>
+<p>GitHub Issue #14: Add CAPTCHA to prevent bots, crawling, etc.</p>
+<h2>Implementation Date</h2>
+<p>November 23, 2025</p>
+<h2>Overview</h2>
+<p>Successfully integrated Google reCAPTCHA v2 (&quot;I&#39;m not a robot&quot; checkbox) into the Note Hub application to protect against automated bots, brute force attacks, and spam registrations.</p>
+<h2>Changes Made</h2>
+<h3>1. Dependencies</h3>
+<p><strong>File:</strong> <code>requirements.txt</code></p>
+<ul>
+<li>Added <code>Flask-ReCaptcha==0.6.0</code> package for reCAPTCHA integration</li>
+</ul>
+<h3>2. Configuration</h3>
+<p><strong>File:</strong> <code>src/notehub/config.py</code></p>
+<ul>
+<li>Added <code>recaptcha_site_key</code> and <code>recaptcha_secret_key</code> dataclass fields</li>
+<li>Added RECAPTCHA configuration to <code>flask_settings</code>:<ul>
+<li><code>RECAPTCHA_ENABLED</code>: Auto-enabled when keys are present</li>
+<li><code>RECAPTCHA_SITE_KEY</code>: Public site key</li>
+<li><code>RECAPTCHA_SECRET_KEY</code>: Private secret key</li>
+<li><code>RECAPTCHA_THEME</code>: &quot;light&quot; (customizable)</li>
+<li><code>RECAPTCHA_TYPE</code>: &quot;image&quot; (challenge type)</li>
+<li><code>RECAPTCHA_SIZE</code>: &quot;normal&quot; (widget size)</li>
+</ul>
+</li>
+</ul>
+<h3>3. Forms</h3>
+<p><strong>File:</strong> <code>src/notehub/forms.py</code></p>
+<ul>
+<li>Added imports: <code>from flask import current_app</code> and <code>from flask_wtf.recaptcha import RecaptchaField</code></li>
+<li>Added <code>recaptcha = RecaptchaField()</code> to:<ul>
+<li><code>LoginForm</code> - Protects against brute force attacks</li>
+<li><code>RegisterForm</code> - Prevents bot registrations</li>
+<li><code>ForgotPasswordForm</code> - Prevents password reset abuse</li>
+</ul>
+</li>
+</ul>
+<h3>4. Templates</h3>
+<p><strong>Files:</strong> <code>src/templates/login.html</code>, <code>register.html</code>, <code>forgot_password.html</code></p>
+<ul>
+<li>Added conditional CAPTCHA widget rendering:<pre><code class="language-html">{% if config.RECAPTCHA_ENABLED %}
+&lt;div class=&quot;flex justify-center&quot;&gt;{{ form.recaptcha }}&lt;/div&gt;
+{% endif %}
+</code></pre>
+</li>
+<li>Widget is centered and only displayed when CAPTCHA is enabled</li>
+</ul>
+<h3>5. Extensions</h3>
+<p><strong>File:</strong> <code>src/notehub/extensions.py</code></p>
+<ul>
+<li>Added comment documenting that Flask-WTF&#39;s RecaptchaField is automatically configured via Flask config (no additional initialization needed)</li>
+</ul>
+<h3>6. Documentation</h3>
+<p><strong>New Files:</strong></p>
+<ul>
+<li><code>docs/CAPTCHA_SETUP.md</code> - Comprehensive setup guide with:<ul>
+<li>Overview of CAPTCHA integration</li>
+<li>Step-by-step setup instructions</li>
+<li>Configuration examples for various platforms</li>
+<li>Troubleshooting guide</li>
+<li>Security best practices</li>
+<li>Advanced configuration options</li>
+</ul>
+</li>
+<li><code>config/examples/.env.example</code> - Example environment configuration file showing:<ul>
+<li>All available environment variables</li>
+<li>CAPTCHA configuration placeholders</li>
+<li>Usage instructions</li>
+</ul>
+</li>
+</ul>
+<p><strong>Updated File:</strong> <code>README.md</code></p>
+<ul>
+<li>Added CAPTCHA section under Security Features</li>
+<li>Updated environment configuration example</li>
+<li>Added link to detailed CAPTCHA setup guide</li>
+</ul>
+<h2>Features Implemented</h2>
+<h3>Security Protection</h3>
+<ol>
+<li><p><strong>Login Form Protection</strong></p>
+<ul>
+<li>Prevents automated brute force password attacks</li>
+<li>Rate limits login attempts through CAPTCHA verification</li>
+</ul>
+</li>
+<li><p><strong>Registration Protection</strong></p>
+<ul>
+<li>Blocks automated bot registrations</li>
+<li>Ensures only human users can create accounts</li>
+</ul>
+</li>
+<li><p><strong>Password Reset Protection</strong></p>
+<ul>
+<li>Prevents abuse of forgot password functionality</li>
+<li>Protects against password reset enumeration attacks</li>
+</ul>
+</li>
+</ol>
+<h3>Configuration Flexibility</h3>
+<ul>
+<li><strong>Optional Integration</strong>: CAPTCHA is disabled by default</li>
+<li><strong>Environment-Based</strong>: Configured via environment variables</li>
+<li><strong>Graceful Degradation</strong>: Forms work normally when CAPTCHA is not configured</li>
+<li><strong>Platform Agnostic</strong>: Works on any deployment platform (Render, Heroku, Railway, etc.)</li>
+</ul>
+<h3>User Experience</h3>
+<ul>
+<li><strong>Minimal UI Impact</strong>: CAPTCHA widget is centered and unobtrusive</li>
+<li><strong>Responsive Design</strong>: Works on mobile and desktop devices</li>
+<li><strong>Standard Interface</strong>: Uses familiar Google reCAPTCHA v2 checkbox</li>
+</ul>
+<h2>Testing Performed</h2>
+<h3>1. Syntax Validation</h3>
+<p>✓ All Python files pass syntax validation<br>✓ No linting errors detected<br>✓ Forms import correctly</p>
+<h3>2. Application Startup</h3>
+<p>✓ Application starts successfully without CAPTCHA (keys not set)<br>✓ Application starts successfully with CAPTCHA (test keys provided)<br>✓ RECAPTCHA_ENABLED correctly reflects configuration state</p>
+<h3>3. Configuration Testing</h3>
+<p>✓ RECAPTCHA_ENABLED is False when keys are empty<br>✓ RECAPTCHA_ENABLED is True when both keys are set<br>✓ All CAPTCHA configuration options are properly set<br>✓ CSRF protection remains enabled</p>
+<h2>Installation Instructions</h2>
+<h3>For End Users</h3>
+<ol>
+<li><p><strong>Install the package:</strong></p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+</li>
+<li><p><strong>Get reCAPTCHA keys:</strong></p>
+<ul>
+<li>Visit <a href="https://www.google.com/recaptcha/admin">https://www.google.com/recaptcha/admin</a></li>
+<li>Register your site with reCAPTCHA v2 (&quot;I&#39;m not a robot&quot;)</li>
+<li>Copy Site Key and Secret Key</li>
+</ul>
+</li>
+<li><p><strong>Configure environment variables:</strong></p>
+<pre><code class="language-bash">export RECAPTCHA_SITE_KEY=&quot;your_site_key&quot;
+export RECAPTCHA_SECRET_KEY=&quot;your_secret_key&quot;
+</code></pre>
+</li>
+<li><p><strong>Restart the application</strong></p>
+</li>
+</ol>
+<p>For detailed instructions, see <code>docs/CAPTCHA_SETUP.md</code></p>
+<h2>Backward Compatibility</h2>
+<p>✓ <strong>Fully backward compatible</strong></p>
+<ul>
+<li>Existing installations continue to work without CAPTCHA</li>
+<li>No breaking changes to existing functionality</li>
+<li>CAPTCHA is opt-in via configuration</li>
+<li>All existing forms work as before when CAPTCHA is not configured</li>
+</ul>
+<h2>Security Considerations</h2>
+<h3>Protection Layers</h3>
+<ol>
+<li><strong>CSRF Tokens</strong>: All forms already have CSRF protection (unchanged)</li>
+<li><strong>CAPTCHA Validation</strong>: New layer added to prevent automated attacks</li>
+<li><strong>Password Policies</strong>: Existing strong password requirements remain</li>
+<li><strong>2FA Support</strong>: Optional two-factor authentication still available</li>
+</ol>
+<h3>Best Practices</h3>
+<ul>
+<li>Secret keys must be kept private</li>
+<li>Use environment variables (never hardcode keys)</li>
+<li>Register only production domains in reCAPTCHA admin</li>
+<li>Monitor reCAPTCHA analytics for abuse patterns</li>
+<li>Rotate keys periodically</li>
+</ul>
+<h2>Future Enhancements (Optional)</h2>
+<p>Potential improvements for future consideration:</p>
+<ol>
+<li>Support for reCAPTCHA v3 (invisible, score-based)</li>
+<li>Configurable CAPTCHA threshold/difficulty</li>
+<li>Admin dashboard for CAPTCHA analytics</li>
+<li>Rate limiting integration</li>
+<li>IP-based CAPTCHA triggering (only show after X failed attempts)</li>
+</ol>
+<h2>Files Modified</h2>
+<h3>New Files (3)</h3>
+<ul>
+<li><code>docs/CAPTCHA_SETUP.md</code></li>
+<li><code>config/examples/.env.example</code></li>
+<li><code>docs/CAPTCHA_IMPLEMENTATION.md</code> (this file)</li>
+</ul>
+<h3>Modified Files (9)</h3>
+<ul>
+<li><code>requirements.txt</code></li>
+<li><code>src/notehub/config.py</code></li>
+<li><code>src/notehub/forms.py</code></li>
+<li><code>src/notehub/extensions.py</code></li>
+<li><code>src/templates/login.html</code></li>
+<li><code>src/templates/register.html</code></li>
+<li><code>src/templates/forgot_password.html</code></li>
+<li><code>README.md</code></li>
+</ul>
+<h3>Total Changes</h3>
+<ul>
+<li>3 new files created</li>
+<li>9 existing files modified</li>
+<li>0 files deleted</li>
+<li>All changes are non-breaking</li>
+</ul>
+<h2>Verification Steps</h2>
+<p>To verify the implementation:</p>
+<ol>
+<li><p><strong>Without CAPTCHA (default):</strong></p>
+<pre><code class="language-bash">python wsgi.py
+# Visit login page - no CAPTCHA widget shown
+# Forms work normally
+</code></pre>
+</li>
+<li><p><strong>With CAPTCHA enabled:</strong></p>
+<pre><code class="language-bash">export RECAPTCHA_SITE_KEY=&quot;test_key&quot;
+export RECAPTCHA_SECRET_KEY=&quot;test_secret&quot;
+python wsgi.py
+# Visit login page - CAPTCHA widget shown
+# Form submission requires CAPTCHA completion
+</code></pre>
+</li>
+</ol>
+<h2>Support</h2>
+<p>For issues or questions:</p>
+<ol>
+<li>Review <code>docs/CAPTCHA_SETUP.md</code> for setup help</li>
+<li>Check troubleshooting section in documentation</li>
+<li>Verify environment variables are set correctly</li>
+<li>Check Google reCAPTCHA admin panel for errors</li>
+<li>Open a GitHub issue for additional help</li>
+</ol>
+<h2>Conclusion</h2>
+<p>CAPTCHA protection has been successfully integrated into Note Hub, providing robust protection against automated attacks while maintaining backward compatibility and user experience. The implementation is flexible, well-documented, and follows security best practices.</p>
+<hr>
+<p><strong>Implementation Status:</strong> ✅ Complete<br><strong>Testing Status:</strong> ✅ Verified<br><strong>Documentation Status:</strong> ✅ Comprehensive<br><strong>Ready for Deployment:</strong> ✅ Yes</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

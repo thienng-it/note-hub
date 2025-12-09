@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - NoSQL Database Investigation for NoteHub">
+    <title>NoSQL Database Investigation for NoteHub - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>NoSQL Database Investigation for NoteHub</span>
+        </div>
+
+        <article class="content">
+            <h1>NoSQL Database Investigation for NoteHub</h1>
+<h2>Executive Summary</h2>
+<p>This document investigates whether NoSQL databases would be beneficial for the NoteHub application, analyzing current data patterns, query requirements, and potential benefits.</p>
+<p><strong>Recommendation</strong>: <strong>Continue with SQL databases</strong> (SQLite/MySQL). The application&#39;s data model and query patterns are well-suited for relational databases. NoSQL would not provide significant benefits and could introduce unnecessary complexity.</p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#current-architecture-analysis">Current Architecture Analysis</a></li>
+<li><a href="#data-model-analysis">Data Model Analysis</a></li>
+<li><a href="#query-pattern-analysis">Query Pattern Analysis</a></li>
+<li><a href="#nosql-evaluation">NoSQL Evaluation</a></li>
+<li><a href="#sql-vs-nosql-comparison">SQL vs NoSQL Comparison</a></li>
+<li><a href="#recommendation">Recommendation</a></li>
+<li><a href="#future-considerations">Future Considerations</a></li>
+</ol>
+<hr>
+<h2>Current Architecture Analysis</h2>
+<h3>Database Technologies</h3>
+<p><strong>Current Setup:</strong></p>
+<ul>
+<li><strong>Development</strong>: SQLite (file-based, zero-configuration)</li>
+<li><strong>Production</strong>: MySQL 8.0 (cloud or self-hosted)</li>
+<li><strong>ORM</strong>: Sequelize (with legacy direct SQL for some operations)</li>
+<li><strong>Connection Management</strong>: Pooling with health checks</li>
+</ul>
+<h3>Application Characteristics</h3>
+<ul>
+<li><strong>Type</strong>: Personal notes and task management application</li>
+<li><strong>Scale</strong>: Small to medium (typically single-user or small teams)</li>
+<li><strong>Data Volume</strong>: Low to moderate (thousands of notes per user)</li>
+<li><strong>Concurrency</strong>: Low to moderate (personal use, occasional collaboration)</li>
+<li><strong>Complexity</strong>: Moderate relational structure</li>
+</ul>
+<hr>
+<h2>Data Model Analysis</h2>
+<h3>Entity Relationship Structure</h3>
+<pre><code>Users (1) ─────── (N) Notes
+                      │
+                      │ (N)
+                      ▼
+                    Tags (M:N via note_tag junction)
+                      │
+                      │ (N)
+                      ▼
+                  ShareNotes (sharing permissions)
+
+Users (1) ─────── (N) Tasks
+
+Users (1) ─────── (N) Invitations
+
+Users (1) ─────── (N) PasswordResetTokens
+</code></pre>
+<h3>Tables and Relationships</h3>
+<ol>
+<li><p><strong>users</strong> - User accounts</p>
+<ul>
+<li>Primary entity</li>
+<li>Relationships: owns notes, tasks, invitations</li>
+<li>Fields: username (unique), password_hash, email, bio, theme, totp_secret</li>
+</ul>
+</li>
+<li><p><strong>notes</strong> - User notes with markdown</p>
+<ul>
+<li>Belongs to users (owner_id)</li>
+<li>Many-to-many with tags</li>
+<li>Can be shared with other users</li>
+<li>Fields: title, body, pinned, archived, favorite, timestamps</li>
+</ul>
+</li>
+<li><p><strong>tags</strong> - Organization tags</p>
+<ul>
+<li>Shared across all users</li>
+<li>Many-to-many with notes via note_tag junction</li>
+<li>Auto-cleanup when orphaned</li>
+<li>Fields: name (unique), color</li>
+</ul>
+</li>
+<li><p><strong>note_tag</strong> - Junction table</p>
+<ul>
+<li>Links notes and tags</li>
+<li>Composite primary key (note_id, tag_id)</li>
+<li>Cascade deletes</li>
+</ul>
+</li>
+<li><p><strong>share_notes</strong> - Note sharing</p>
+<ul>
+<li>Links notes to shared users</li>
+<li>Permission levels (can_edit)</li>
+<li>Fields: note_id, shared_by_id, shared_with_id, can_edit</li>
+</ul>
+</li>
+<li><p><strong>tasks</strong> - Task management</p>
+<ul>
+<li>Belongs to users (owner_id)</li>
+<li>Independent from notes</li>
+<li>Fields: title, description, completed, due_date, priority</li>
+</ul>
+</li>
+<li><p><strong>invitations</strong> - User invitations</p>
+<ul>
+<li>Token-based system</li>
+<li>One-time use with expiration</li>
+<li>Fields: token, inviter_id, email, message, used, expires_at</li>
+</ul>
+</li>
+<li><p><strong>password_reset_tokens</strong> - Password recovery</p>
+<ul>
+<li>Token-based system</li>
+<li>One-time use with expiration</li>
+<li>Fields: user_id, token, expires_at, used</li>
+</ul>
+</li>
+</ol>
+<h3>Key Relational Characteristics</h3>
+<p>✅ <strong>Strong Relationships</strong>: Multiple foreign keys with referential integrity<br>✅ <strong>Junction Tables</strong>: Many-to-many relationships (note_tag)<br>✅ <strong>Cascade Operations</strong>: Automatic cleanup on deletes<br>✅ <strong>Unique Constraints</strong>: Username, tag names, tokens<br>✅ <strong>Indexes</strong>: Optimized for common queries<br>✅ <strong>Transactions</strong>: Critical for data consistency (user registration, invitation usage)</p>
+<hr>
+<h2>Query Pattern Analysis</h2>
+<h3>Read Operations (90% of queries)</h3>
+<h4>1. <strong>Simple Lookups</strong> (40%)</h4>
+<pre><code class="language-sql">-- User by ID/username
+SELECT * FROM users WHERE id = ?
+SELECT * FROM users WHERE username = ?
+
+-- Task by ID
+SELECT * FROM tasks WHERE id = ? AND owner_id = ?
+
+-- Tag lookup
+SELECT * FROM tags WHERE name = ?
+</code></pre>
+<p><strong>SQL Advantage</strong>: Indexed lookups are O(log n), extremely fast</p>
+<h4>2. <strong>Filtered Lists</strong> (30%)</h4>
+<pre><code class="language-sql">-- User&#39;s notes with filters
+SELECT * FROM notes 
+WHERE owner_id = ? AND archived = 0
+ORDER BY pinned DESC, updated_at DESC
+
+-- User&#39;s tasks with status filter
+SELECT * FROM tasks 
+WHERE owner_id = ? AND completed = 0
+ORDER BY priority, due_date
+</code></pre>
+<p><strong>SQL Advantage</strong>: Compound indexes optimize these queries</p>
+<h4>3. <strong>Complex Joins</strong> (20%)</h4>
+<pre><code class="language-sql">-- Notes with tags (GROUP_CONCAT)
+SELECT n.*, 
+  GROUP_CONCAT(t.name) as tag_names,
+  GROUP_CONCAT(t.id) as tag_ids
+FROM notes n
+LEFT JOIN note_tag nt ON n.id = nt.note_id
+LEFT JOIN tags t ON nt.tag_id = t.id
+WHERE n.owner_id = ?
+GROUP BY n.id
+
+-- Notes with sharing info
+SELECT DISTINCT n.* 
+FROM notes n
+LEFT JOIN share_notes sn ON n.id = sn.note_id
+WHERE (n.owner_id = ? OR sn.shared_with_id = ?)
+</code></pre>
+<p><strong>SQL Advantage</strong>: Efficient joins with proper indexing, GROUP BY aggregations</p>
+<h4>4. <strong>Search Queries</strong> (10%)</h4>
+<pre><code class="language-sql">-- Full-text search
+SELECT * FROM notes
+WHERE owner_id = ? 
+  AND (title LIKE ? OR body LIKE ?)
+</code></pre>
+<p><strong>SQL Limitation</strong>: LIKE queries can be slow on large text fields<br><strong>NoSQL Advantage</strong>: Could benefit from full-text search engines (Elasticsearch)</p>
+<h3>Write Operations (10% of queries)</h3>
+<h4>1. <strong>Simple Inserts</strong> (50%)</h4>
+<pre><code class="language-sql">INSERT INTO notes (title, body, owner_id, ...) VALUES (?, ?, ?, ...)
+INSERT INTO tasks (title, description, owner_id, ...) VALUES (?, ?, ?, ...)
+</code></pre>
+<h4>2. <strong>Updates</strong> (30%)</h4>
+<pre><code class="language-sql">UPDATE notes SET title = ?, body = ?, updated_at = ? WHERE id = ?
+UPDATE tasks SET completed = NOT completed WHERE id = ?
+</code></pre>
+<h4>3. <strong>Complex Transactions</strong> (15%)</h4>
+<pre><code class="language-sql">-- User registration with invitation
+BEGIN TRANSACTION
+  INSERT INTO users (username, password_hash, ...) VALUES (?, ?, ...)
+  UPDATE invitations SET used = 1, used_by_id = ? WHERE token = ?
+COMMIT
+
+-- Tag management with cleanup
+BEGIN TRANSACTION
+  DELETE FROM note_tag WHERE note_id = ?
+  INSERT INTO note_tag (note_id, tag_id) VALUES (?, ?)
+  DELETE FROM tags WHERE id NOT IN (SELECT DISTINCT tag_id FROM note_tag)
+COMMIT
+</code></pre>
+<p><strong>SQL Advantage</strong>: ACID transactions ensure data consistency</p>
+<h4>4. <strong>Deletes with Cascades</strong> (5%)</h4>
+<pre><code class="language-sql">DELETE FROM notes WHERE id = ?
+-- Cascades to note_tag automatically
+-- Triggers cleanup of orphaned tags
+</code></pre>
+<p><strong>SQL Advantage</strong>: Referential integrity with cascades</p>
+<h3>Aggregation Queries (Admin/Stats)</h3>
+<pre><code class="language-sql">-- User statistics
+SELECT COUNT(*) FROM users
+SELECT COUNT(*) FROM users WHERE totp_secret IS NOT NULL
+SELECT COUNT(*) FROM tasks WHERE owner_id = ? AND completed = 1
+
+-- Tag usage
+SELECT t.*, COUNT(nt.note_id) as note_count
+FROM tags t
+INNER JOIN note_tag nt ON t.id = nt.tag_id
+GROUP BY t.id
+</code></pre>
+<p><strong>SQL Advantage</strong>: Built-in aggregation functions (COUNT, GROUP BY)</p>
+<hr>
+<h2>NoSQL Evaluation</h2>
+<h3>NoSQL Database Types</h3>
+<h4>1. Document Databases (MongoDB, CouchDB)</h4>
+<p><strong>Potential Benefits:</strong></p>
+<ul>
+<li>❌ Schema flexibility - Not needed (stable schema)</li>
+<li>❌ Nested documents - Current structure is normalized</li>
+<li>✅ JSON-native - Could simplify API layer</li>
+<li>❌ Horizontal scaling - Not needed for personal notes app</li>
+</ul>
+<p><strong>Challenges:</strong></p>
+<ul>
+<li>❌ No native many-to-many relationships (note_tag)</li>
+<li>❌ Complex queries require aggregation pipeline</li>
+<li>❌ No ACID transactions across collections (MongoDB &lt; 4.0)</li>
+<li>❌ Denormalization leads to data duplication (tags in every note)</li>
+<li>❌ Manual referential integrity</li>
+</ul>
+<p><strong>Example MongoDB Schema:</strong></p>
+<pre><code class="language-javascript">// Notes collection (denormalized)
+{
+  _id: ObjectId,
+  title: &quot;Note title&quot;,
+  body: &quot;Note content&quot;,
+  owner_id: ObjectId,
+  tags: [
+    { id: ObjectId, name: &quot;work&quot;, color: &quot;#3B82F6&quot; },
+    { id: ObjectId, name: &quot;important&quot;, color: &quot;#EF4444&quot; }
+  ],
+  shared_with: [
+    { user_id: ObjectId, username: &quot;john&quot;, can_edit: true }
+  ],
+  pinned: false,
+  archived: false,
+  favorite: false,
+  created_at: ISODate,
+  updated_at: ISODate
+}
+
+// Problem: Tag updates require updating all notes with that tag
+// Problem: Shared user info duplicated across notes
+</code></pre>
+<h4>2. Key-Value Stores (Redis, DynamoDB)</h4>
+<p><strong>Potential Benefits:</strong></p>
+<ul>
+<li>✅ Caching layer - Could complement SQL (not replace)</li>
+<li>✅ Session storage - Alternative to file-based sessions</li>
+<li>❌ Primary database - Too limited for complex queries</li>
+</ul>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>Cache frequently accessed notes</li>
+<li>Store JWT refresh tokens</li>
+<li>Session management</li>
+<li>Rate limiting counters</li>
+</ul>
+<p><strong>Verdict:</strong> Good as <strong>supplement</strong>, not replacement</p>
+<h4>3. Column-Family (Cassandra, HBase)</h4>
+<p><strong>Potential Benefits:</strong></p>
+<ul>
+<li>❌ Time-series data - Not the primary use case</li>
+<li>❌ Write-heavy workloads - App is read-heavy</li>
+<li>❌ Massive scale - Overkill for personal notes</li>
+</ul>
+<p><strong>Verdict:</strong> Not suitable for this application</p>
+<h4>4. Graph Databases (Neo4j, ArangoDB)</h4>
+<p><strong>Potential Benefits:</strong></p>
+<ul>
+<li>✅ Note sharing relationships - Could model well</li>
+<li>❌ Tag relationships - Simple many-to-many, no need for graph</li>
+<li>❌ Complexity - Overkill for current needs</li>
+</ul>
+<p><strong>Verdict:</strong> Interesting but unnecessary</p>
+<hr>
+<h2>SQL vs NoSQL Comparison</h2>
+<h3>Feature Comparison Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>SQL (Current)</th>
+<th>Document NoSQL</th>
+<th>Key-Value NoSQL</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ACID Transactions</strong></td>
+<td>✅ Full support</td>
+<td>⚠️ Limited</td>
+<td>❌ None</td>
+<td><strong>SQL wins</strong> - Critical for user registration, invitations</td>
+</tr>
+<tr>
+<td><strong>Referential Integrity</strong></td>
+<td>✅ Foreign keys</td>
+<td>❌ Manual</td>
+<td>❌ None</td>
+<td><strong>SQL wins</strong> - Prevents orphaned data</td>
+</tr>
+<tr>
+<td><strong>Many-to-Many Relationships</strong></td>
+<td>✅ Junction tables</td>
+<td>❌ Embedded arrays</td>
+<td>❌ N/A</td>
+<td><strong>SQL wins</strong> - note_tag is natural</td>
+</tr>
+<tr>
+<td><strong>Complex Queries</strong></td>
+<td>✅ JOINs, GROUP BY</td>
+<td>⚠️ Aggregation pipeline</td>
+<td>❌ Limited</td>
+<td><strong>SQL wins</strong> - Notes with tags query</td>
+</tr>
+<tr>
+<td><strong>Data Consistency</strong></td>
+<td>✅ Strong</td>
+<td>⚠️ Eventual</td>
+<td>⚠️ Eventual</td>
+<td><strong>SQL wins</strong> - Small scale doesn&#39;t need eventual consistency</td>
+</tr>
+<tr>
+<td><strong>Schema Evolution</strong></td>
+<td>⚠️ Migrations</td>
+<td>✅ Flexible</td>
+<td>❌ N/A</td>
+<td><strong>Draw</strong> - Migrations are fine for stable schema</td>
+</tr>
+<tr>
+<td><strong>Full-Text Search</strong></td>
+<td>⚠️ LIKE limited</td>
+<td>✅ Native indexes</td>
+<td>❌ None</td>
+<td><strong>NoSQL advantage</strong> - But can add Elasticsearch</td>
+</tr>
+<tr>
+<td><strong>Horizontal Scaling</strong></td>
+<td>⚠️ Complex</td>
+<td>✅ Native</td>
+<td>✅ Native</td>
+<td><strong>NoSQL advantage</strong> - But not needed</td>
+</tr>
+<tr>
+<td><strong>Development Speed</strong></td>
+<td>✅ Fast (SQL is universal)</td>
+<td>⚠️ Learning curve</td>
+<td>⚠️ Limited use cases</td>
+<td><strong>SQL wins</strong> - Team familiarity</td>
+</tr>
+<tr>
+<td><strong>Tooling/Debugging</strong></td>
+<td>✅ Excellent</td>
+<td>⚠️ Good</td>
+<td>⚠️ Limited</td>
+<td><strong>SQL wins</strong> - Better ecosystem</td>
+</tr>
+<tr>
+<td><strong>Deployment Simplicity</strong></td>
+<td>✅ SQLite built-in</td>
+<td>❌ Separate service</td>
+<td>⚠️ Separate service</td>
+<td><strong>SQL wins</strong> - SQLite for dev is huge</td>
+</tr>
+</tbody></table>
+<h3>Performance Analysis</h3>
+<h4>Read Performance</h4>
+<ul>
+<li><strong>Simple queries</strong>: SQL and NoSQL comparable (both O(1) with indexes)</li>
+<li><strong>Complex queries</strong>: SQL faster (efficient JOINs vs multiple round trips)</li>
+<li><strong>Aggregations</strong>: SQL faster (built-in vs application logic)</li>
+</ul>
+<h4>Write Performance</h4>
+<ul>
+<li><strong>Simple writes</strong>: Comparable</li>
+<li><strong>Transactional writes</strong>: SQL more reliable (ACID guarantees)</li>
+<li><strong>Bulk writes</strong>: NoSQL could be faster (but not a use case here)</li>
+</ul>
+<h4>Scale Considerations</h4>
+<ul>
+<li><strong>Current scale</strong>: Hundreds to thousands of notes per user</li>
+<li><strong>Query frequency</strong>: Personal use, not high-traffic</li>
+<li><strong>Conclusion</strong>: Performance is not a bottleneck with SQL</li>
+</ul>
+<hr>
+<h2>Recommendation</h2>
+<h3>✅ Continue Using SQL (SQLite/MySQL)</h3>
+<p><strong>Primary Reasons:</strong></p>
+<ol>
+<li><p><strong>Perfect Schema Fit</strong></p>
+<ul>
+<li>Normalized data model with clear relationships</li>
+<li>Many-to-many relationships (notes ↔ tags)</li>
+<li>Foreign key constraints prevent data corruption</li>
+<li>Junction tables are natural and efficient</li>
+</ul>
+</li>
+<li><p><strong>Query Patterns Favor SQL</strong></p>
+<ul>
+<li>90% of queries involve JOINs or aggregations</li>
+<li>Complex filtering on multiple fields</li>
+<li>Tag aggregation with GROUP_CONCAT</li>
+<li>Share note queries need multi-table access</li>
+</ul>
+</li>
+<li><p><strong>Transaction Requirements</strong></p>
+<ul>
+<li>User registration + invitation usage (atomic)</li>
+<li>Note deletion + cascade cleanup</li>
+<li>Tag management with orphan removal</li>
+<li>NoSQL eventual consistency could cause issues</li>
+</ul>
+</li>
+<li><p><strong>Development Velocity</strong></p>
+<ul>
+<li>Team already familiar with SQL</li>
+<li>Excellent tooling (SQL clients, ORMs)</li>
+<li>SQLite enables zero-config development</li>
+<li>No retraining required</li>
+</ul>
+</li>
+<li><p><strong>Operational Simplicity</strong></p>
+<ul>
+<li>SQLite requires no setup for development</li>
+<li>MySQL is mature and well-documented</li>
+<li>Easy backup/restore</li>
+<li>Proven reliability</li>
+</ul>
+</li>
+<li><p><strong>No NoSQL Benefits Apply</strong></p>
+<ul>
+<li>❌ No need for horizontal scaling (personal notes app)</li>
+<li>❌ Schema is stable (not frequently changing)</li>
+<li>❌ No unstructured data (all fields are defined)</li>
+<li>❌ Not dealing with massive write volumes</li>
+</ul>
+</li>
+</ol>
+<h3>⚠️ NoSQL Would Introduce Problems</h3>
+<ol>
+<li><p><strong>Data Duplication</strong></p>
+<ul>
+<li>Tags embedded in notes → tag updates require updating all notes</li>
+<li>Shared user info duplicated → username changes break references</li>
+<li>Wasted storage and update complexity</li>
+</ul>
+</li>
+<li><p><strong>Lost Features</strong></p>
+<ul>
+<li>No automatic cascade deletes</li>
+<li>No referential integrity</li>
+<li>Manual consistency management</li>
+<li>Complex aggregation queries (notes by tag count)</li>
+</ul>
+</li>
+<li><p><strong>Migration Cost</strong></p>
+<ul>
+<li>Rewrite all services</li>
+<li>Rewrite all queries</li>
+<li>Data migration complexity</li>
+<li>Testing overhead</li>
+<li>No clear benefit</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Future Considerations</h2>
+<p>While SQL is the right choice now, here are scenarios where NoSQL could be valuable:</p>
+<h3>Scenario 1: Search Enhancement</h3>
+<p><strong>If</strong>: Users demand powerful full-text search<br><strong>Solution</strong>: Add Elasticsearch as a <strong>supplement</strong> (not replacement)</p>
+<pre><code>SQL (primary data) → Elasticsearch (search index)
+- Keep SQL for CRUD operations
+- Sync to Elasticsearch for search
+- Best of both worlds
+</code></pre>
+<h3>Scenario 2: Caching Layer</h3>
+<p><strong>If</strong>: Performance becomes an issue at scale<br><strong>Solution</strong>: Add Redis as a <strong>cache</strong> layer</p>
+<pre><code>Application → Redis (cache) → SQL (primary)
+- Cache frequently accessed notes
+- Cache user sessions
+- Cache tag lists
+- SQL remains source of truth
+</code></pre>
+<h3>Scenario 3: Real-Time Collaboration</h3>
+<p><strong>If</strong>: Multiple users edit same note simultaneously<br><strong>Solution</strong>: Operational Transform with Redis pub/sub</p>
+<pre><code>SQL (data persistence) + Redis (real-time coordination)
+- SQL stores final state
+- Redis handles real-time updates
+- Websockets for live sync
+</code></pre>
+<h3>Scenario 4: Analytics/Reporting</h3>
+<p><strong>If</strong>: Need complex analytics and reporting<br><strong>Solution</strong>: Add ClickHouse or TimescaleDB for analytics</p>
+<pre><code>SQL (OLTP) → ClickHouse (OLAP)
+- SQL for transactional workload
+- Analytical database for reports
+- Periodic data sync
+</code></pre>
+<h3>What Would Justify NoSQL?</h3>
+<p>None of these apply to NoteHub currently:</p>
+<p>❌ <strong>Massive scale</strong> - Millions of users, billions of notes<br>❌ <strong>Unpredictable schema</strong> - Frequent structure changes<br>❌ <strong>Geographic distribution</strong> - Multi-region deployment<br>❌ <strong>Real-time high writes</strong> - Thousands of writes per second<br>❌ <strong>Unstructured data</strong> - Varied, unpredictable document structures</p>
+<hr>
+<h2>Implementation Notes</h2>
+<h3>Current Optimization Opportunities (Stay with SQL)</h3>
+<ol>
+<li><p><strong>Add Full-Text Search Indexes</strong></p>
+<pre><code class="language-sql">-- MySQL
+ALTER TABLE notes ADD FULLTEXT INDEX ft_notes (title, body);
+
+-- SQLite (requires FTS5 extension)
+CREATE VIRTUAL TABLE notes_fts USING fts5(title, body, content=notes);
+</code></pre>
+</li>
+<li><p><strong>Optimize Frequently Used Queries</strong></p>
+<ul>
+<li>Add composite indexes: <code>(owner_id, archived, pinned)</code></li>
+<li>Consider materialized views for stats</li>
+<li>Use EXPLAIN to identify slow queries</li>
+</ul>
+</li>
+<li><p><strong>Add Query Caching</strong></p>
+<ul>
+<li>Implement application-level caching for read-heavy queries</li>
+<li>Use Redis for cache invalidation</li>
+<li>Cache tag lists, user profiles</li>
+</ul>
+</li>
+<li><p><strong>Connection Pool Tuning</strong></p>
+<ul>
+<li>Current: 10 connections</li>
+<li>Monitor and adjust based on load</li>
+<li>Consider read replicas if needed (MySQL)</li>
+</ul>
+</li>
+</ol>
+<h3>If NoSQL Becomes Necessary (Future)</h3>
+<p><strong>Only consider NoSQL if:</strong></p>
+<ol>
+<li>Scale exceeds 100K+ concurrent users</li>
+<li>Data becomes truly unstructured</li>
+<li>Geographic distribution required</li>
+<li>Write volume exceeds 10K/second</li>
+</ol>
+<p><strong>Migration Path:</strong></p>
+<ol>
+<li>Start with SQL (✅ Current state)</li>
+<li>Add Redis caching layer</li>
+<li>Add Elasticsearch for search</li>
+<li>Consider polyglot persistence (SQL + NoSQL for different needs)</li>
+<li>Full NoSQL migration (only if absolutely necessary)</li>
+</ol>
+<hr>
+<h2>Conclusion</h2>
+<p><strong>NoteHub should continue using SQL databases</strong> (SQLite for development, MySQL for production). The application&#39;s data model, query patterns, and scale requirements are perfectly suited for relational databases. </p>
+<p>NoSQL would introduce unnecessary complexity without providing tangible benefits. The current architecture is:</p>
+<ul>
+<li>✅ Performant for the use case</li>
+<li>✅ Maintainable and well-understood</li>
+<li>✅ Reliable with ACID guarantees</li>
+<li>✅ Simple to develop and deploy</li>
+</ul>
+<p><strong>Recommendation</strong>: Focus on optimizing the current SQL implementation rather than migrating to NoSQL. Consider adding complementary technologies (Redis for caching, Elasticsearch for search) only if specific performance requirements emerge.</p>
+<hr>
+<h2>References</h2>
+<h3>SQL Strengths for This Application</h3>
+<ul>
+<li>ACID transactions for data integrity</li>
+<li>Relational model matches domain naturally</li>
+<li>Excellent JOIN performance with proper indexes</li>
+<li>Mature tooling and ecosystem</li>
+</ul>
+<h3>When to Consider NoSQL</h3>
+<ul>
+<li>Massive scale (100K+ concurrent users)</li>
+<li>Unstructured data</li>
+<li>Geographic distribution</li>
+<li>Specific NoSQL features (time-series, graph traversal)</li>
+</ul>
+<h3>Hybrid Approaches</h3>
+<ul>
+<li>SQL for primary data + Redis for caching</li>
+<li>SQL for primary data + Elasticsearch for search</li>
+<li>SQL for OLTP + ClickHouse for OLAP</li>
+</ul>
+<hr>
+<p><strong>Document Version</strong>: 1.0<br><strong>Date</strong>: 2025-12-04<br><strong>Author</strong>: GitHub Copilot Agent<br><strong>Status</strong>: Investigation Complete</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

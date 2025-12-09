@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Dual Deployment Example: NoteHub + Drone CI">
+    <title>Dual Deployment Example: NoteHub + Drone CI - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Dual Deployment Example: NoteHub + Drone CI</span>
+        </div>
+
+        <article class="content">
+            <h1>Dual Deployment Example: NoteHub + Drone CI</h1>
+<p>This guide demonstrates how to deploy both NoteHub and Drone CI on the same VPS server without conflicts.</p>
+<h2>Quick Setup</h2>
+<h3>Prerequisites</h3>
+<ul>
+<li>VPS with Docker and Docker Compose installed</li>
+<li>4GB RAM minimum (8GB recommended)</li>
+<li>Ports 80 and 8080 available</li>
+</ul>
+<h3>Step 1: Deploy NoteHub</h3>
+<pre><code class="language-bash"># Clone repository
+git clone https://github.com/thienng-it/note-hub.git
+cd note-hub
+
+# Configure NoteHub
+cp .env.example .env
+nano .env  # Set required variables
+
+# Required environment variables for NoteHub:
+# SECRET_KEY=your-secret-key
+# NOTES_ADMIN_PASSWORD=YourSecurePassword123!
+
+# Start NoteHub (uses port 80)
+docker compose up -d
+
+# Wait for services to be healthy
+docker compose ps
+
+# Verify NoteHub is accessible
+curl -I http://localhost
+</code></pre>
+<h3>Step 2: Deploy Drone CI</h3>
+<pre><code class="language-bash"># Still in the note-hub directory
+
+# Configure Drone CI
+cp .env.drone.example .env.drone
+nano .env.drone  # Set GitHub OAuth credentials
+
+# Required environment variables for Drone CI:
+# DRONE_GITHUB_CLIENT_ID=your-github-oauth-client-id
+# DRONE_GITHUB_CLIENT_SECRET=your-github-oauth-client-secret
+# DRONE_SERVER_HOST=your-server:8080
+# DRONE_RPC_SECRET=generate-with-openssl
+# DRONE_POSTGRES_PASSWORD=secure-password
+
+# Generate RPC secret
+openssl rand -hex 16  # Copy to DRONE_RPC_SECRET
+
+# Start Drone CI (uses port 8080)
+docker compose -f docker-compose.drone.yml up -d
+
+# Wait for services to be healthy
+docker compose -f docker-compose.drone.yml ps
+
+# Verify Drone is accessible
+curl -I http://localhost:8080
+</code></pre>
+<h3>Step 3: Verify Both Services</h3>
+<pre><code class="language-bash"># Check all running containers
+docker ps
+
+# Expected output shows:
+# - notehub-frontend (port 80)
+# - notehub-backend
+# - drone-server (port 8080)
+# - drone-runner
+# - drone-db
+
+# Test NoteHub
+curl -I http://localhost:80
+# Expected: HTTP/1.1 200 OK
+
+# Test Drone CI
+curl -I http://localhost:8080
+# Expected: HTTP/1.1 200 OK (or redirect to login)
+
+# Check networks
+docker network ls | grep -E &quot;notehub|drone&quot;
+# Expected:
+# - notehub-network
+# - drone-network
+</code></pre>
+<h2>Automated Setup</h2>
+<p>Use the provided setup script for easier deployment:</p>
+<pre><code class="language-bash"># Setup Drone CI automatically
+./scripts/setup-drone.sh
+
+# The script will:
+# 1. Check prerequisites
+# 2. Create and configure .env.drone
+# 3. Generate secure secrets
+# 4. Validate configuration
+# 5. Optionally start Drone CI
+</code></pre>
+<h2>Service URLs</h2>
+<p>After deployment, access the services at:</p>
+<ul>
+<li><strong>NoteHub</strong>: <a href="http://your-server">http://your-server</a> (port 80)</li>
+<li><strong>Drone CI</strong>: <a href="http://your-server:8080">http://your-server:8080</a> (port 8080)</li>
+</ul>
+<h2>Resource Usage</h2>
+<p>Monitor resource usage with:</p>
+<pre><code class="language-bash"># Real-time resource monitoring
+docker stats
+
+# Expected usage (idle state):
+# notehub-frontend:  ~20MB RAM
+# notehub-backend:   ~200MB RAM
+# drone-server:      ~100MB RAM
+# drone-runner:      ~50MB RAM
+# drone-db:          ~100MB RAM
+# Total:             ~470MB RAM
+</code></pre>
+<h2>Port Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Internal Port</th>
+<th>External Port</th>
+<th>Network</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>notehub-nginx</td>
+<td>80</td>
+<td>80</td>
+<td>notehub-network</td>
+</tr>
+<tr>
+<td>notehub-backend</td>
+<td>5000</td>
+<td>internal</td>
+<td>notehub-network</td>
+</tr>
+<tr>
+<td>drone-traefik</td>
+<td>80 (HTTP), 443 (HTTPS)</td>
+<td>8080, 8443</td>
+<td>drone-network</td>
+</tr>
+<tr>
+<td>drone-server</td>
+<td>80</td>
+<td>internal</td>
+<td>drone-network</td>
+</tr>
+<tr>
+<td>drone-runner</td>
+<td>-</td>
+<td>internal</td>
+<td>drone-network</td>
+</tr>
+<tr>
+<td>drone-db</td>
+<td>5432</td>
+<td>internal</td>
+<td>drone-network</td>
+</tr>
+</tbody></table>
+<p><strong>Architecture</strong>: NoteHub uses nginx as a reverse proxy, while Drone CI uses Traefik for consistency with modern deployment patterns and automatic SSL certificate management.</p>
+<h2>Managing Both Services</h2>
+<h3>Start/Stop Services</h3>
+<pre><code class="language-bash"># Stop NoteHub
+docker compose down
+
+# Stop Drone CI
+docker compose -f docker-compose.drone.yml down
+
+# Start NoteHub
+docker compose up -d
+
+# Start Drone CI
+docker compose -f docker-compose.drone.yml up -d
+
+# Stop everything
+docker compose down
+docker compose -f docker-compose.drone.yml down
+</code></pre>
+<h3>View Logs</h3>
+<pre><code class="language-bash"># NoteHub logs
+docker compose logs -f
+
+# Drone CI logs
+docker compose -f docker-compose.drone.yml logs -f
+
+# Specific service logs
+docker compose logs -f backend
+docker compose -f docker-compose.drone.yml logs -f drone-server
+</code></pre>
+<h3>Update Services</h3>
+<pre><code class="language-bash"># Update NoteHub
+git pull origin main
+docker compose pull
+docker compose up -d
+
+# Update Drone CI
+docker compose -f docker-compose.drone.yml pull
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+<h2>Production Deployment with Reverse Proxy</h2>
+<p>For production, use nginx as a reverse proxy:</p>
+<h3>Install nginx</h3>
+<pre><code class="language-bash">sudo apt update
+sudo apt install nginx certbot python3-certbot-nginx
+</code></pre>
+<h3>Configure nginx</h3>
+<p>Create <code>/etc/nginx/sites-available/apps</code>:</p>
+<pre><code class="language-nginx"># NoteHub - notehub.example.com
+server {
+    listen 80;
+    server_name notehub.example.com;
+    
+    location / {
+        proxy_pass http://localhost:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# Drone CI - drone.example.com
+server {
+    listen 80;
+    server_name drone.example.com;
+    
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # WebSocket support for Drone
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &quot;upgrade&quot;;
+    }
+}
+</code></pre>
+<p>Enable configuration:</p>
+<pre><code class="language-bash">sudo ln -s /etc/nginx/sites-available/apps /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+</code></pre>
+<h3>Enable HTTPS</h3>
+<pre><code class="language-bash"># Get SSL certificates
+sudo certbot --nginx -d notehub.example.com -d drone.example.com
+
+# Auto-renewal is configured automatically
+</code></pre>
+<p>After HTTPS setup:</p>
+<ul>
+<li>NoteHub: <a href="https://notehub.example.com">https://notehub.example.com</a></li>
+<li>Drone CI: <a href="https://drone.example.com">https://drone.example.com</a></li>
+</ul>
+<p>Update Drone configuration:</p>
+<pre><code class="language-bash"># Edit .env.drone
+DRONE_SERVER_HOST=drone.example.com
+DRONE_SERVER_PROTO=https
+
+# Update GitHub OAuth callback URL to:
+# https://drone.example.com/login
+
+# Restart Drone CI
+docker compose -f docker-compose.drone.yml restart
+</code></pre>
+<h2>Backup Strategy</h2>
+<h3>NoteHub Backup</h3>
+<pre><code class="language-bash"># Backup SQLite database
+docker compose exec backend tar czf - /app/data | \
+  cat &gt; notehub-backup-$(date +%Y%m%d).tar.gz
+
+# Backup uploads
+docker compose exec backend tar czf - /app/uploads | \
+  cat &gt; notehub-uploads-$(date +%Y%m%d).tar.gz
+</code></pre>
+<h3>Drone CI Backup</h3>
+<pre><code class="language-bash"># Backup PostgreSQL database
+docker compose -f docker-compose.drone.yml exec -T drone-db \
+  pg_dump -U drone drone &gt; drone-backup-$(date +%Y%m%d).sql
+
+# Backup Drone data
+docker run --rm -v drone-data:/data -v $(pwd):/backup \
+  alpine tar czf /backup/drone-data-$(date +%Y%m%d).tar.gz /data
+</code></pre>
+<h3>Automated Backups</h3>
+<p>Create a backup script <code>/opt/backups/backup.sh</code>:</p>
+<pre><code class="language-bash">#!/bin/bash
+BACKUP_DIR=&quot;/opt/backups&quot;
+DATE=$(date +%Y%m%d)
+
+# NoteHub backup
+cd /opt/note-hub
+docker compose exec -T backend tar czf - /app/data &gt; \
+  $BACKUP_DIR/notehub-data-$DATE.tar.gz
+
+# Drone backup
+docker compose -f docker-compose.drone.yml exec -T drone-db \
+  pg_dump -U drone drone &gt; $BACKUP_DIR/drone-db-$DATE.sql
+
+# Keep only last 7 days
+find $BACKUP_DIR -type f -mtime +7 -delete
+</code></pre>
+<p>Schedule with cron:</p>
+<pre><code class="language-bash"># Run daily at 2 AM
+0 2 * * * /opt/backups/backup.sh
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Port Conflicts</h3>
+<p>If you get &quot;port already in use&quot; errors:</p>
+<pre><code class="language-bash"># Check what&#39;s using the ports
+sudo lsof -i :80
+sudo lsof -i :8080
+
+# Or use ss
+ss -ltn | grep -E &quot;:80 |:8080 &quot;
+</code></pre>
+<h3>Services Won&#39;t Start</h3>
+<pre><code class="language-bash"># Check logs for errors
+docker compose logs
+docker compose -f docker-compose.drone.yml logs
+
+# Check container status
+docker compose ps
+docker compose -f docker-compose.drone.yml ps
+
+# Verify environment variables
+docker compose config
+docker compose -f docker-compose.drone.yml config
+</code></pre>
+<h3>Network Issues</h3>
+<pre><code class="language-bash"># Inspect networks
+docker network inspect notehub-network
+docker network inspect drone-network
+
+# Restart Docker if needed
+sudo systemctl restart docker
+</code></pre>
+<h3>High Resource Usage</h3>
+<pre><code class="language-bash"># Check resource usage
+docker stats
+
+# If Drone runner is using too much during builds:
+# Reduce DRONE_RUNNER_CAPACITY in .env.drone
+DRONE_RUNNER_CAPACITY=1  # Instead of 2
+
+# Restart Drone
+docker compose -f docker-compose.drone.yml restart
+</code></pre>
+<h2>Monitoring</h2>
+<h3>Health Checks</h3>
+<pre><code class="language-bash"># Check service health
+docker compose ps
+docker compose -f docker-compose.drone.yml ps
+
+# All services should show &quot;healthy&quot; status
+</code></pre>
+<h3>Disk Usage</h3>
+<pre><code class="language-bash"># Check Docker disk usage
+docker system df
+
+# Clean up old images
+docker system prune -a
+</code></pre>
+<h3>Logs</h3>
+<pre><code class="language-bash"># Monitor logs in real-time
+docker compose logs -f --tail=100
+docker compose -f docker-compose.drone.yml logs -f --tail=100
+</code></pre>
+<h2>Summary</h2>
+<p>✅ <strong>NoteHub</strong> runs on port 80<br>✅ <strong>Drone CI</strong> runs on port 8080<br>✅ <strong>No conflicts</strong> - both run simultaneously<br>✅ <strong>Separate networks</strong> - complete isolation<br>✅ <strong>Production ready</strong> - with reverse proxy and HTTPS<br>✅ <strong>Easy management</strong> - simple Docker Compose commands</p>
+<h2>Next Steps</h2>
+<ol>
+<li>✅ Deploy both services</li>
+<li>📝 Configure Drone CI for NoteHub repository</li>
+<li>🔄 Set up automated backups</li>
+<li>🔒 Enable HTTPS with Let&#39;s Encrypt</li>
+<li>📊 Configure monitoring and alerts</li>
+</ol>
+<p>For more information:</p>
+<ul>
+<li><a href="HETZNER_DEPLOYMENT.md">NoteHub Deployment Guide</a></li>
+<li><a href="DRONE_CI_SETUP.md">Drone CI Setup Guide</a></li>
+<li><a href="PORT_ALLOCATION.md">Port Allocation Guide</a></li>
+</ul>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

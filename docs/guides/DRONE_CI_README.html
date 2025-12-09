@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Drone CI - Independent CI/CD Platform">
+    <title>Drone CI - Independent CI/CD Platform - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Drone CI - Independent CI/CD Platform</span>
+        </div>
+
+        <article class="content">
+            <h1>Drone CI - Independent CI/CD Platform</h1>
+<blockquote>
+<p><strong>⚠️ IMPORTANT</strong>: Drone CI is a <strong>standalone, independent application</strong>. It does not depend on NoteHub or any other application and can be deployed anywhere.</p>
+</blockquote>
+<h2>Quick Facts</h2>
+<ul>
+<li>✅ <strong>Independent</strong>: Completely standalone application</li>
+<li>✅ <strong>Portable</strong>: Can be deployed on any server with Docker</li>
+<li>✅ <strong>Isolated</strong>: Separate network, configuration, and data storage</li>
+<li>✅ <strong>Flexible</strong>: Works with or without NoteHub present</li>
+<li>✅ <strong>Self-contained</strong>: All services included (Traefik, server, runner, database)</li>
+<li>🔒 <strong>SSL/HTTPS</strong>: Built-in support for custom domains with Let&#39;s Encrypt</li>
+</ul>
+<h2>What is Drone CI?</h2>
+<p>Drone CI is a modern, container-native continuous integration and delivery platform. It automates building, testing, and deploying your code whenever you push changes to GitHub.</p>
+<h3>Key Features</h3>
+<ul>
+<li>🐳 <strong>Container-native</strong>: Every build runs in a fresh Docker container</li>
+<li>🔗 <strong>GitHub Integration</strong>: Automatic repository synchronization</li>
+<li>🚀 <strong>Easy Setup</strong>: Deploy with a single Docker Compose command</li>
+<li>🔒 <strong>Secure</strong>: OAuth authentication with GitHub</li>
+<li>⚡ <strong>Fast</strong>: Parallel pipeline execution</li>
+<li>📊 <strong>Web UI</strong>: Beautiful dashboard for managing builds</li>
+<li>🌐 <strong>Custom Domains</strong>: Built-in SSL/HTTPS support with Let&#39;s Encrypt</li>
+</ul>
+<h2>Independence</h2>
+<p><strong>Drone CI is NOT dependent on NoteHub or any other application.</strong></p>
+<h3>What This Means</h3>
+<ul>
+<li>✅ Can be deployed on a <strong>different server</strong> from other applications</li>
+<li>✅ Can be deployed <strong>without any other applications</strong> present</li>
+<li>✅ Has its <strong>own configuration</strong> (<code>.env.drone</code>)</li>
+<li>✅ Has its <strong>own network</strong> (<code>drone-network</code>)</li>
+<li>✅ Has its <strong>own database</strong> (PostgreSQL)</li>
+<li>✅ Has its <strong>own services</strong> (nginx, server, runner)</li>
+<li>✅ Can be <strong>moved, updated, or removed</strong> independently</li>
+</ul>
+<h3>No Shared Resources</h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Drone CI</th>
+<th>Other Apps</th>
+<th>Shared?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Configuration</td>
+<td><code>.env.drone</code></td>
+<td><code>.env</code></td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td>Network</td>
+<td><code>drone-network</code></td>
+<td><code>other-network</code></td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td>Database</td>
+<td><code>drone-db</code> (PostgreSQL)</td>
+<td>Other databases</td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td>Services</td>
+<td>nginx, server, runner</td>
+<td>Other services</td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td>Ports</td>
+<td>8080</td>
+<td>80, others</td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td>Data Volumes</td>
+<td><code>drone-data</code>, <code>drone-postgres-data</code></td>
+<td>Other volumes</td>
+<td>❌ No</td>
+</tr>
+</tbody></table>
+<h2>Deployment Options</h2>
+<h3>Option 1: Standalone Server</h3>
+<p>Deploy Drone CI on its <strong>own dedicated server</strong>:</p>
+<pre><code class="language-bash"># On a fresh server
+ssh your-ci-server
+
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Deploy Drone CI
+# Option 1: Clone the repository
+git clone https://github.com/thienng-it/note-hub.git
+cd note-hub
+
+# Option 2: Or copy just the Drone CI files to your server:
+# - docker-compose.drone.yml
+# - .env.drone.example
+# - docker/nginx-drone.conf
+# - scripts/setup-drone.sh (optional)
+
+# Configure
+cp .env.drone.example .env.drone
+nano .env.drone  # Set GitHub OAuth credentials
+
+# Deploy
+docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+
+# Access at http://your-ci-server:8080
+</code></pre>
+<h3>Option 2: Same Server (Optional)</h3>
+<p>Deploy alongside other applications on the same server:</p>
+<pre><code class="language-bash"># Can coexist with other applications
+# Uses different port (8080)
+# Uses isolated network
+# No conflicts or dependencies
+</code></pre>
+<h3>Option 3: Cloud Platform</h3>
+<p>Deploy on any cloud provider:</p>
+<pre><code class="language-bash"># AWS EC2, Google Cloud, DigitalOcean, Azure, etc.
+# Same deployment process
+# Completely independent infrastructure
+</code></pre>
+<h2>Quick Start</h2>
+<h3>Prerequisites</h3>
+<ol>
+<li><strong>Server</strong> with Docker and Docker Compose installed</li>
+<li><strong>GitHub Account</strong> for OAuth authentication</li>
+<li><strong>Domain or IP</strong> accessible from the internet (optional)</li>
+</ol>
+<h3>Deployment Steps</h3>
+<ol>
+<li><p><strong>Create GitHub OAuth App</strong> (separate from any other apps):</p>
+<pre><code>Go to: https://github.com/settings/developers
+Click: &quot;New OAuth App&quot;
+Set callback URL: http://your-server:8080/login
+</code></pre>
+</li>
+<li><p><strong>Configure Drone CI</strong>:</p>
+<pre><code class="language-bash">cp .env.drone.example .env.drone
+nano .env.drone
+# Set DRONE_GITHUB_CLIENT_ID
+# Set DRONE_GITHUB_CLIENT_SECRET
+# Set DRONE_SERVER_HOST (your server IP or domain)
+# Set DRONE_RPC_SECRET (generate with: openssl rand -hex 16)
+# Set DRONE_POSTGRES_PASSWORD (strong password)
+</code></pre>
+</li>
+<li><p><strong>Deploy</strong>:</p>
+<pre><code class="language-bash">docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+</code></pre>
+</li>
+<li><p><strong>Access</strong>:</p>
+<pre><code>Open: http://your-server:8080
+Login with GitHub
+</code></pre>
+</li>
+</ol>
+<h2>Custom Domain Setup (Production)</h2>
+<blockquote>
+<p><strong>⚠️ IMPORTANT</strong>: For production deployments with a custom domain (like <code>drone.yourdomain.com</code>), follow these additional steps to enable SSL/HTTPS.</p>
+</blockquote>
+<h3>Quick Custom Domain Setup</h3>
+<pre><code class="language-bash"># 1. Configure domain in .env.drone
+echo &quot;DRONE_DOMAIN=drone.yourdomain.com&quot; &gt;&gt; .env.drone
+echo &quot;DRONE_ACME_EMAIL=admin@yourdomain.com&quot; &gt;&gt; .env.drone
+echo &quot;DRONE_SERVER_PROTO=https&quot; &gt;&gt; .env.drone
+echo &#39;DRONE_ROUTER_RULE=Host(`drone.yourdomain.com`)&#39; &gt;&gt; .env.drone
+sed -i &#39;s/DRONE_SERVER_HOST=.*/DRONE_SERVER_HOST=drone.yourdomain.com/&#39; .env.drone
+
+# 2. Deploy/restart Drone CI
+docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+
+# 3. Access via HTTPS
+# Visit: https://drone.yourdomain.com
+</code></pre>
+<h3>Why Custom Domain Configuration?</h3>
+<p>Without custom domain configuration, Traefik may generate certificates for the wrong domain, causing browser warnings and certificate conflicts. Setting <code>DRONE_ROUTER_RULE</code> ensures:</p>
+<ul>
+<li>✅ Let&#39;s Encrypt generates certificates ONLY for your specific domain</li>
+<li>✅ Prevents certificate conflicts when multiple services share the same server</li>
+<li>✅ Browser shows green padlock (no warnings)</li>
+<li>✅ Automatic HTTPS redirect from HTTP</li>
+<li>✅ Automatic certificate renewal</li>
+<li>✅ Professional SSL/HTTPS setup</li>
+</ul>
+<p><strong>Important:</strong> The <code>DRONE_ROUTER_RULE</code> with Host matcher prevents Drone CI&#39;s Traefik from trying to generate certificates when accessed via other domain names (e.g., your NoteHub domain).</p>
+<h3>Prerequisites for Custom Domains</h3>
+<ol>
+<li><p><strong>DNS A Record</strong>: Point your domain to your server&#39;s IP</p>
+<pre><code class="language-bash">nslookup drone.yourdomain.com
+# Should return your server IP
+</code></pre>
+</li>
+<li><p><strong>Firewall</strong>: Ports 80 and 443 must be accessible</p>
+<pre><code class="language-bash">sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+</code></pre>
+</li>
+<li><p><strong>GitHub OAuth</strong>: Update callback URL to use <code>https://</code></p>
+<pre><code>https://drone.yourdomain.com/login
+</code></pre>
+</li>
+</ol>
+<h3>Detailed Guide</h3>
+<p>For comprehensive setup instructions, troubleshooting, and advanced configuration:</p>
+<ul>
+<li><strong><a href="docs/guides/DRONE_CI_CUSTOM_DOMAIN_SSL_SETUP.md">DRONE_CI_CUSTOM_DOMAIN_SSL_SETUP.md</a></strong> - Complete custom domain guide</li>
+<li><strong><a href="TROUBLESHOOTING_DRONE_SSL.md">TROUBLESHOOTING_DRONE_SSL.md</a></strong> - SSL troubleshooting guide</li>
+</ul>
+<h2>Architecture</h2>
+<p>Drone CI is a complete, self-contained system:</p>
+<pre><code>┌─────────────────────────────────────────┐
+│  Drone CI - Independent System          │
+│                                          │
+│  ┌────────────┐                         │
+│  │  Traefik   │ ← Port 8080/8443        │
+│  └──────┬─────┘   (or 80/443 custom)   │
+│         │                                │
+│  ┌──────▼─────┐                         │
+│  │   Server   │ ← Internal              │
+│  └──────┬─────┘                         │
+│         │                                │
+│  ┌──────▼─────┐                         │
+│  │   Runner   │ ← Internal              │
+│  └──────┬─────┘                         │
+│         │                                │
+│  ┌──────▼─────┐                         │
+│  │ PostgreSQL │ ← Internal              │
+│  └────────────┘                         │
+│                                          │
+│  Network: drone-network (isolated)      │
+│  Config:  .env.drone (independent)      │
+└─────────────────────────────────────────┘
+</code></pre>
+<p>No connections to other applications - completely isolated.</p>
+<h2>Configuration Files</h2>
+<h3>Required Files</h3>
+<ol>
+<li><strong><code>docker-compose.drone.yml</code></strong> - Defines Drone CI services</li>
+<li><strong><code>.env.drone</code></strong> - Configuration variables (create from <code>.env.drone.example</code>)</li>
+<li><strong><code>docker/traefik/drone-dynamic.yml</code></strong> - Traefik middleware configuration</li>
+<li><strong><code>docker-compose.drone.domain.yml</code></strong> - Custom domain configuration (optional)</li>
+</ol>
+<h3>Configuration Variables</h3>
+<p>All configuration is in <strong><code>.env.drone</code></strong> (independent from other apps):</p>
+<pre><code class="language-bash"># GitHub OAuth (separate app)
+DRONE_GITHUB_CLIENT_ID=your-client-id
+DRONE_GITHUB_CLIENT_SECRET=your-client-secret
+
+# Server configuration
+DRONE_SERVER_HOST=your-server:8080
+DRONE_RPC_SECRET=your-unique-secret
+
+# Database (independent)
+DRONE_POSTGRES_PASSWORD=secure-password
+</code></pre>
+<h2>Management</h2>
+<h3>Start Drone CI</h3>
+<pre><code class="language-bash">docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+</code></pre>
+<h3>Stop Drone CI</h3>
+<pre><code class="language-bash">docker compose --env-file .env.drone -f docker-compose.drone.yml down
+</code></pre>
+<h3>View Logs</h3>
+<pre><code class="language-bash">docker compose --env-file .env.drone -f docker-compose.drone.yml logs -f
+</code></pre>
+<h3>Update Drone CI</h3>
+<pre><code class="language-bash">docker compose --env-file .env.drone -f docker-compose.drone.yml pull
+docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
+</code></pre>
+<h3>Backup Data</h3>
+<pre><code class="language-bash"># Backup database
+docker compose -f docker-compose.drone.yml exec -T drone-db \
+  pg_dump -U drone drone &gt; drone-backup.sql
+
+# Backup volumes
+docker run --rm -v drone-data:/data -v $(pwd):/backup \
+  alpine tar czf /backup/drone-data.tar.gz /data
+</code></pre>
+<h2>Port Configuration</h2>
+<p><strong>Default</strong>: Port 8080</p>
+<p><strong>Change Port</strong> (if needed):</p>
+<p>Edit <code>docker-compose.drone.yml</code>:</p>
+<pre><code class="language-yaml">drone-traefik:
+  ports:
+    - &quot;9000:80&quot;  # Change to any available port
+    - &quot;9443:443&quot; # HTTPS port
+</code></pre>
+<p>Update <code>.env.drone</code>:</p>
+<pre><code class="language-bash">DRONE_SERVER_HOST=your-server:9000
+</code></pre>
+<p>Update GitHub OAuth callback URL:</p>
+<pre><code>http://your-server:9000/login
+</code></pre>
+<h2>Using Drone CI</h2>
+<h3>Enable Repository</h3>
+<ol>
+<li>Access Drone UI: <code>http://your-server:8080</code></li>
+<li>Login with GitHub</li>
+<li>Click &quot;Sync&quot; to see your repositories</li>
+<li>Enable repositories you want to build</li>
+</ol>
+<h3>Create Pipeline</h3>
+<p>Create <code>.drone.yml</code> in your repository:</p>
+<pre><code class="language-yaml">kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: test
+    image: node:20
+    commands:
+      - npm install
+      - npm test
+
+  - name: build
+    image: node:20
+    commands:
+      - npm run build
+</code></pre>
+<p>Push to GitHub - Drone CI will automatically build!</p>
+<h2>Documentation</h2>
+<h3>Detailed Guides</h3>
+<ul>
+<li><strong><a href="docs/guides/DRONE_CI_STANDALONE.md">DRONE_CI_STANDALONE.md</a></strong> - Complete independence documentation</li>
+<li><strong><a href="docs/guides/DRONE_CI_SETUP.md">DRONE_CI_SETUP.md</a></strong> - Detailed setup guide</li>
+<li><strong><a href="docs/guides/PORT_ALLOCATION.md">PORT_ALLOCATION.md</a></strong> - Port management</li>
+<li><strong><a href="docs/guides/DUAL_DEPLOYMENT_EXAMPLE.md">DUAL_DEPLOYMENT_EXAMPLE.md</a></strong> - Deploy with other apps (optional)</li>
+</ul>
+<h3>Quick Reference</h3>
+<ul>
+<li><strong>Configuration</strong>: <code>.env.drone.example</code> - See all available settings</li>
+<li><strong>Docker Compose</strong>: <code>docker-compose.drone.yml</code> - Service definitions</li>
+<li><strong>Setup Script</strong>: <code>scripts/setup-drone.sh</code> - Automated setup</li>
+<li><strong>Tests</strong>: <code>tests/test-drone-setup.sh</code> - Validation tests</li>
+</ul>
+<h2>Troubleshooting</h2>
+<h3>Cannot Access UI</h3>
+<p><strong>Problem</strong>: Cannot access <code>http://your-server:8080</code></p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Check firewall: <code>sudo ufw allow 8080/tcp</code></li>
+<li>Check services: <code>docker compose --env-file .env.drone -f docker-compose.drone.yml ps</code></li>
+<li>Check logs: <code>docker compose --env-file .env.drone -f docker-compose.drone.yml logs</code></li>
+</ol>
+<h3>GitHub OAuth Error</h3>
+<p><strong>Problem</strong>: &quot;Invalid OAuth configuration&quot;</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify GitHub OAuth App callback URL matches</li>
+<li>Check credentials in <code>.env.drone</code></li>
+<li>Ensure you created a NEW OAuth App for Drone CI</li>
+</ol>
+<h3>Port Already in Use</h3>
+<p><strong>Problem</strong>: &quot;Port 8080 already in use&quot;</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Check what&#39;s using port: <code>sudo lsof -i :8080</code></li>
+<li>Change Drone CI port (see Port Configuration section)</li>
+</ol>
+<h2>FAQs</h2>
+<p><strong>Q: Can I deploy Drone CI without other applications?</strong><br>A: Yes! Drone CI is completely standalone and doesn&#39;t need any other applications.</p>
+<p><strong>Q: Can I deploy on a different server?</strong><br>A: Yes! Deploy anywhere with Docker - same process.</p>
+<p><strong>Q: Does it share configuration with other apps?</strong><br>A: No! Drone CI uses <code>.env.drone</code> which is completely separate.</p>
+<p><strong>Q: Can I use my existing GitHub OAuth App?</strong><br>A: No, create a NEW GitHub OAuth App specifically for Drone CI.</p>
+<p><strong>Q: What happens if I remove other applications?</strong><br>A: Nothing! Drone CI continues working normally - it&#39;s independent.</p>
+<p><strong>Q: Can I move Drone CI to another server?</strong><br>A: Yes! Backup data, deploy on new server, restore data. See <a href="docs/guides/DRONE_CI_STANDALONE.md">DRONE_CI_STANDALONE.md</a>.</p>
+<h2>Resources</h2>
+<ul>
+<li><strong>Drone CI Documentation</strong>: <a href="https://docs.drone.io/">https://docs.drone.io/</a></li>
+<li><strong>Docker Documentation</strong>: <a href="https://docs.docker.com/">https://docs.docker.com/</a></li>
+<li><strong>GitHub OAuth Apps</strong>: <a href="https://docs.github.com/en/developers/apps/building-oauth-apps">https://docs.github.com/en/developers/apps/building-oauth-apps</a></li>
+</ul>
+<h2>Summary</h2>
+<p>✅ <strong>Standalone</strong> - No dependencies on other applications<br>✅ <strong>Portable</strong> - Deploy anywhere with Docker<br>✅ <strong>Independent</strong> - Separate configuration, network, data<br>✅ <strong>Flexible</strong> - Works alone or alongside other apps<br>✅ <strong>Simple</strong> - Deploy with single Docker Compose command</p>
+<p><strong>Get Started</strong>: See <a href="docs/guides/DRONE_CI_SETUP.md">DRONE_CI_SETUP.md</a> for detailed setup instructions.</p>
+<hr>
+<p><strong>Need Help?</strong> See detailed documentation in <code>docs/guides/</code> directory.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

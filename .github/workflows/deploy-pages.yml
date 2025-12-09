@@ -49,6 +49,12 @@ jobs:
           VITE_API_URL: ""
         run: npm run build
 
+      - name: Install documentation build dependencies
+        run: npm install
+
+      - name: Convert documentation to HTML
+        run: npm run build:docs
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
@@ -61,7 +67,7 @@ jobs:
           # Copy frontend app to root
           cp -r frontend/dist/* _site/
           
-          # Copy all documentation to docs subdirectory
+          # Copy all documentation to docs subdirectory (includes converted HTML files)
           mkdir -p _site/docs
           cp -r docs/* _site/docs/
           
@@ -73,6 +79,9 @@ jobs:
           echo ""
           echo "📚 Documentation structure:"
           ls -lah _site/docs/ | head -20
+          echo ""
+          echo "📄 HTML documentation files created:"
+          find _site/docs -name "*.html" | wc -l
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Migration from nginx to Traefik">
+    <title>Migration from nginx to Traefik - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Migration from nginx to Traefik</span>
+        </div>
+
+        <article class="content">
+            <h1>Migration from nginx to Traefik</h1>
+<p>This guide explains the migration from nginx to Traefik as the reverse proxy for NoteHub.</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#why-traefik">Why Traefik?</a></li>
+<li><a href="#what-changed">What Changed</a></li>
+<li><a href="#migration-steps">Migration Steps</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<h2>Why Traefik?</h2>
+<p>Traefik offers several advantages over nginx for containerized applications:</p>
+<h3>Benefits of Traefik</h3>
+<ul>
+<li><strong>Automatic Service Discovery</strong>: Traefik automatically detects services via Docker labels</li>
+<li><strong>Dynamic Configuration</strong>: No container restarts needed when adding/removing services</li>
+<li><strong>Built-in Let&#39;s Encrypt</strong>: Native ACME protocol support for automatic SSL certificates</li>
+<li><strong>Modern Dashboard</strong>: Real-time monitoring of routes and services</li>
+<li><strong>Better Middleware Support</strong>: Easy configuration for rate limiting, circuit breakers, etc.</li>
+<li><strong>Cloud Native</strong>: Designed specifically for microservices and containers</li>
+<li><strong>Load Balancing</strong>: Built-in support for multiple instances and health checks</li>
+<li><strong>Hot Reloading</strong>: Configuration changes are applied instantly without restarts</li>
+</ul>
+<h3>Comparison: nginx vs Traefik</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>nginx</th>
+<th>Traefik</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Configuration</td>
+<td>Static config files</td>
+<td>Dynamic labels + files</td>
+</tr>
+<tr>
+<td>Service Discovery</td>
+<td>Manual</td>
+<td>Automatic (Docker)</td>
+</tr>
+<tr>
+<td>SSL/TLS</td>
+<td>Manual cert management</td>
+<td>Automatic Let&#39;s Encrypt</td>
+</tr>
+<tr>
+<td>Reload on Change</td>
+<td>Requires restart/reload</td>
+<td>Hot reload</td>
+</tr>
+<tr>
+<td>Container Native</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td>No (need third-party)</td>
+<td>Built-in</td>
+</tr>
+<tr>
+<td>Learning Curve</td>
+<td>Moderate</td>
+<td>Easy for Docker users</td>
+</tr>
+</tbody></table>
+<h2>What Changed</h2>
+<h3>Architecture Changes</h3>
+<p><strong>Before (nginx):</strong></p>
+<pre><code>Client → nginx (port 80) → Frontend Container
+                         → Backend Container (/api, /uploads)
+</code></pre>
+<p><strong>After (Traefik):</strong></p>
+<pre><code>Client → Traefik (port 80) → Frontend Container
+                           → Backend Container (/api, /uploads)
+</code></pre>
+<h3>File Changes</h3>
+<h4>New Files</h4>
+<ul>
+<li><code>docker/traefik/traefik.yml</code> - Traefik static configuration</li>
+<li><code>docker/traefik/dynamic.yml</code> - Traefik dynamic configuration (middlewares)</li>
+<li><code>docker/traefik/drone-dynamic.yml</code> - Traefik configuration for Drone CI</li>
+<li><code>Dockerfile.frontend.traefik</code> - Frontend Dockerfile using static file server instead of nginx</li>
+<li><code>tests/traefik-config.test.sh</code> - Test suite for Traefik configuration</li>
+</ul>
+<h4>Modified Files</h4>
+<ul>
+<li><code>docker-compose.yml</code> - Updated to use Traefik</li>
+<li><code>docker-compose.replication.yml</code> - Updated to use Traefik</li>
+<li><code>docker-compose.drone.yml</code> - Updated to use Traefik</li>
+<li>All service definitions now include Traefik labels</li>
+</ul>
+<h4>Deprecated Files (kept for reference)</h4>
+<ul>
+<li><code>docker/nginx.conf</code> - Old nginx configuration</li>
+<li><code>docker/nginx.conf.template</code> - Old nginx template with variable substitution</li>
+<li><code>docker/nginx-drone.conf</code> - Old nginx configuration for Drone CI</li>
+<li><code>Dockerfile.frontend</code> - Old frontend Dockerfile using nginx</li>
+<li><code>tests/nginx-config.test.sh</code> - Old nginx test suite</li>
+</ul>
+<h3>Service Changes</h3>
+<h4>Traefik Service</h4>
+<p>Each deployment profile now includes a Traefik service:</p>
+<pre><code class="language-yaml">traefik:
+  image: traefik:v2.11
+  ports:
+    - &quot;80:80&quot;
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+  networks:
+    - notehub-network
+</code></pre>
+<h4>Frontend Service</h4>
+<p>Frontend now uses a lightweight static file server with Traefik handling routing:</p>
+<pre><code class="language-yaml">frontend:
+  build:
+    dockerfile: Dockerfile.frontend.traefik
+  labels:
+    - &quot;traefik.enable=true&quot;
+    - &quot;traefik.http.routers.frontend.rule=PathPrefix(`/`)&quot;
+    - &quot;traefik.http.routers.frontend.priority=1&quot;
+    - &quot;traefik.http.services.frontend.loadbalancer.server.port=80&quot;
+</code></pre>
+<h4>Backend Service</h4>
+<p>Backend now uses Traefik labels for routing:</p>
+<pre><code class="language-yaml">backend:
+  labels:
+    - &quot;traefik.enable=true&quot;
+    - &quot;traefik.http.routers.backend-api.rule=PathPrefix(`/api`)&quot;
+    - &quot;traefik.http.routers.backend-uploads.rule=PathPrefix(`/uploads`)&quot;
+    - &quot;traefik.http.routers.backend-health.rule=Path(`/health`)&quot;
+</code></pre>
+<h2>Migration Steps</h2>
+<h3>For Existing Deployments</h3>
+<p>If you have an existing NoteHub deployment with nginx, follow these steps to migrate:</p>
+<h4>Step 1: Backup Current Setup</h4>
+<pre><code class="language-bash"># Stop current services
+docker compose down
+
+# Backup docker-compose files
+cp docker-compose.yml docker-compose.yml.nginx-backup
+
+# Backup data volumes (optional but recommended)
+docker run --rm -v notehub-data:/data -v $(pwd):/backup \
+  alpine tar czf /backup/notehub-data-backup.tar.gz /data
+
+docker run --rm -v notehub-uploads:/uploads -v $(pwd):/backup \
+  alpine tar czf /backup/notehub-uploads-backup.tar.gz /uploads
+</code></pre>
+<h4>Step 2: Update Configuration</h4>
+<pre><code class="language-bash"># Pull latest changes with Traefik configuration
+git pull origin main
+
+# Your existing .env file should work as-is
+# No changes needed to environment variables
+</code></pre>
+<h4>Step 3: Start with Traefik</h4>
+<pre><code class="language-bash"># Development mode
+docker compose up -d
+
+# Production mode
+docker compose --profile production up -d
+
+# MySQL mode
+docker compose --profile mysql up -d
+</code></pre>
+<h4>Step 4: Verify Migration</h4>
+<pre><code class="language-bash"># Check that all services are running
+docker compose ps
+
+# Check Traefik logs
+docker compose logs traefik
+
+# Test the application
+curl http://localhost/api/health
+curl http://localhost/
+</code></pre>
+<h3>For New Deployments</h3>
+<p>New deployments automatically use Traefik. Just follow the standard setup:</p>
+<pre><code class="language-bash"># Clone repository
+git clone https://github.com/thienng-it/note-hub.git
+cd note-hub
+
+# Copy and configure environment
+cp .env.example .env
+nano .env
+
+# Start services
+docker compose up -d
+</code></pre>
+<h2>Configuration</h2>
+<h3>Traefik Static Configuration</h3>
+<p>Located in <code>docker/traefik/traefik.yml</code>:</p>
+<pre><code class="language-yaml"># Entry points
+entryPoints:
+  web:
+    address: &quot;:80&quot;
+
+# Docker provider
+providers:
+  docker:
+    endpoint: &quot;unix:///var/run/docker.sock&quot;
+    exposedByDefault: false
+    network: notehub-network
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+</code></pre>
+<h3>Traefik Dynamic Configuration</h3>
+<p>Located in <code>docker/traefik/dynamic.yml</code>:</p>
+<pre><code class="language-yaml">http:
+  middlewares:
+    # Compression
+    compression:
+      compress:
+        minResponseBodyBytes: 1024
+    
+    # Security headers
+    security-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+</code></pre>
+<h3>Service Labels</h3>
+<p>Services use Docker labels for Traefik configuration:</p>
+<pre><code class="language-yaml">labels:
+  # Enable Traefik
+  - &quot;traefik.enable=true&quot;
+  
+  # Define router
+  - &quot;traefik.http.routers.myservice.rule=PathPrefix(`/api`)&quot;
+  - &quot;traefik.http.routers.myservice.entrypoints=web&quot;
+  - &quot;traefik.http.routers.myservice.priority=10&quot;
+  
+  # Define service
+  - &quot;traefik.http.services.myservice.loadbalancer.server.port=5000&quot;
+  
+  # Apply middlewares
+  - &quot;traefik.http.routers.myservice.middlewares=compression@file,security-headers@file&quot;
+</code></pre>
+<h3>Priority Rules</h3>
+<p>Traefik uses priorities to determine which route matches first:</p>
+<ul>
+<li><strong>Priority 10</strong>: Backend routes (<code>/api</code>, <code>/uploads</code>, <code>/health</code>)</li>
+<li><strong>Priority 1</strong>: Frontend routes (catch-all <code>/</code>)</li>
+</ul>
+<p>Higher priority = checked first.</p>
+<h2>Troubleshooting</h2>
+<h3>Services Not Accessible</h3>
+<p><strong>Problem</strong>: Services start but are not accessible through Traefik.</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="language-bash"># Check Traefik logs
+docker compose logs traefik
+
+# Verify labels are correct
+docker inspect notehub-backend | grep -A 20 Labels
+
+# Ensure services are on the same network
+docker network inspect notehub-network
+</code></pre>
+<h3>Port Conflicts</h3>
+<p><strong>Problem</strong>: Port 80 already in use.</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="language-bash"># Check what&#39;s using port 80
+sudo lsof -i :80
+
+# Stop conflicting service
+sudo systemctl stop apache2  # or nginx
+
+# Or change Traefik port in docker-compose.yml
+ports:
+  - &quot;8080:80&quot;  # Use port 8080 instead
+</code></pre>
+<h3>Backend Routes Not Working</h3>
+<p><strong>Problem</strong>: Frontend loads but API calls fail.</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="language-bash"># Check that backend labels include all routes
+docker compose config | grep -A 5 &quot;backend:&quot;
+
+# Verify backend is healthy
+docker compose ps backend
+curl http://localhost:5000/api/health  # Direct check
+
+# Check Traefik routing
+docker compose logs traefik | grep backend
+</code></pre>
+<h3>Performance Issues</h3>
+<p><strong>Problem</strong>: Slower than nginx.</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="language-yaml"># Add connection pooling in traefik.yml
+serversTransport:
+  maxIdleConnsPerHost: 100
+  
+# Increase timeouts if needed
+forwardingTimeouts:
+  dialTimeout: 30s
+  responseHeaderTimeout: 30s
+</code></pre>
+<h3>SSL/HTTPS Setup</h3>
+<p><strong>SSL/HTTPS is now enabled by default</strong> in all deployment profiles! 🔒</p>
+<p>Traefik automatically:</p>
+<ul>
+<li>Listens on both HTTP (port 80) and HTTPS (port 443)</li>
+<li>Redirects all HTTP traffic to HTTPS</li>
+<li>Obtains SSL certificates from Let&#39;s Encrypt</li>
+<li>Renews certificates automatically before expiration</li>
+</ul>
+<h4>Configuration</h4>
+<p>Set your email for Let&#39;s Encrypt notifications in <code>.env</code>:</p>
+<pre><code class="language-bash"># .env file
+ACME_EMAIL=your-email@yourdomain.com
+</code></pre>
+<h4>Requirements for Production</h4>
+<p>For Let&#39;s Encrypt to issue certificates, your setup must meet these requirements:</p>
+<ol>
+<li><strong>Valid Domain</strong>: Your domain must point to your server&#39;s public IP</li>
+<li><strong>Open Ports</strong>: Ports 80 and 443 must be accessible from the internet</li>
+<li><strong>Valid Email</strong>: Set <code>ACME_EMAIL</code> to receive certificate notifications</li>
+</ol>
+<h4>Development/Localhost</h4>
+<p>For local development, SSL still works but:</p>
+<ul>
+<li>Self-signed certificates are used (browsers show warnings)</li>
+<li>Let&#39;s Encrypt cannot validate localhost domains</li>
+<li>Use <code>http://localhost</code> or accept the browser warning for <code>https://localhost</code></li>
+</ul>
+<h4>Certificate Storage</h4>
+<p>Certificates are stored in:</p>
+<ul>
+<li><code>./letsencrypt/acme.json</code> - Main NoteHub deployments</li>
+<li><code>./letsencrypt-drone/acme.json</code> - Drone CI deployment</li>
+</ul>
+<p>⚠️ <strong>Important</strong>: </p>
+<ul>
+<li>These files are automatically excluded from Git</li>
+<li>Back them up to preserve your certificates</li>
+<li>Never edit these files manually</li>
+</ul>
+<h4>Ports</h4>
+<p>All Traefik services now expose both HTTP and HTTPS:</p>
+<ul>
+<li><strong>NoteHub</strong>: HTTP 80 → HTTPS 443</li>
+<li><strong>Drone CI</strong>: HTTP 8080 → HTTPS 8443</li>
+</ul>
+<h4>Disabling SSL (Not Recommended)</h4>
+<p>If you need to disable SSL for testing:</p>
+<ol>
+<li><p>Remove HTTPS configuration from Traefik command:</p>
+<ul>
+<li>Remove <code>--entrypoints.websecure.address=:443</code></li>
+<li>Remove all <code>--certificatesresolvers.*</code> lines</li>
+<li>Remove <code>--entrypoints.web.http.redirections.*</code> lines</li>
+</ul>
+</li>
+<li><p>Remove port 443 mapping:</p>
+<ul>
+<li>Change <code>ports: [&quot;80:80&quot;, &quot;443:443&quot;]</code> to <code>ports: [&quot;80:80&quot;]</code></li>
+</ul>
+</li>
+<li><p>Update service labels to use <code>web</code> instead of <code>websecure</code>:</p>
+<ul>
+<li>Change <code>entrypoints=websecure</code> to <code>entrypoints=web</code></li>
+<li>Remove <code>tls=true</code> and <code>tls.certresolver=letsencrypt</code> labels</li>
+</ul>
+</li>
+</ol>
+<h3>Debugging Tips</h3>
+<pre><code class="language-bash"># Enable debug logging
+docker compose down
+# Edit docker-compose.yml, add to traefik command:
+# - &quot;--log.level=DEBUG&quot;
+docker compose up -d
+
+# View all Traefik routes
+docker compose exec traefik traefik healthcheck --ping
+
+# Check Traefik configuration
+docker compose exec traefik cat /etc/traefik/traefik.yml
+docker compose exec traefik cat /etc/traefik/dynamic/dynamic.yml
+</code></pre>
+<h2>Additional Resources</h2>
+<ul>
+<li><a href="https://doc.traefik.io/traefik/">Traefik Documentation</a></li>
+<li><a href="https://doc.traefik.io/traefik/providers/docker/">Docker Provider Guide</a></li>
+<li><a href="https://doc.traefik.io/traefik/middlewares/overview/">Traefik Middleware Reference</a></li>
+<li><a href="https://doc.traefik.io/traefik/https/acme/">Let&#39;s Encrypt Setup</a></li>
+</ul>
+<h2>Rollback to nginx</h2>
+<p>If you need to rollback to nginx:</p>
+<pre><code class="language-bash"># Stop Traefik-based services
+docker compose down
+
+# Restore nginx configuration
+cp docker-compose.yml.nginx-backup docker-compose.yml
+
+# Start with nginx
+docker compose up -d
+</code></pre>
+<p>Note: Traefik is recommended for new deployments due to its advantages in container environments.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

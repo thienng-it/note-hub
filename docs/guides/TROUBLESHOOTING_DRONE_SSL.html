@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Troubleshooting Drone CI SSL/HTTPS with Custom Domains">
+    <title>Troubleshooting Drone CI SSL/HTTPS with Custom Domains - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Troubleshooting Drone CI SSL/HTTPS with Custom Domains</span>
+        </div>
+
+        <article class="content">
+            <h1>Troubleshooting Drone CI SSL/HTTPS with Custom Domains</h1>
+<blockquote>
+<p><strong>Quick Fix</strong>: If you&#39;re seeing &quot;not secure&quot; warnings or certificate issuance errors when accessing Drone CI via a custom domain, you need to apply the domain configuration.</p>
+</blockquote>
+<h2>Known Issues &amp; Fixes</h2>
+<h3>Issue: TLS-ALPN-01 Challenge Failures</h3>
+<p><strong>Error Message:</strong></p>
+<pre><code>error: 403 :: urn:ietf:params:acme:error:unauthorized :: Incorrect validation certificate for tls-alpn-01 challenge
+</code></pre>
+<p><strong>Solution:</strong><br>This has been fixed in the latest version. The Drone CI configuration now uses HTTP-01 challenge instead of TLS-ALPN-01, which is more reliable and avoids conflicts with other services. If you&#39;re still experiencing this:</p>
+<ol>
+<li>Pull the latest configuration: <code>git pull</code></li>
+<li>Restart Drone CI: <code>docker compose -f docker-compose.drone.yml down &amp;&amp; docker compose -f docker-compose.drone.yml up -d</code></li>
+<li>Remove old certificates if needed: <code>sudo rm -f letsencrypt-drone/acme.json</code></li>
+</ol>
+<p>The HTTP-01 challenge uses port 80 for validation, which is more reliable than the TLS-ALPN-01 challenge on port 443.</p>
+<h2>Quick Fix (3 Commands)</h2>
+<pre><code class="language-bash"># 1. Set your domain in .env.drone
+echo &quot;DRONE_DOMAIN=drone.yourdomain.com&quot; &gt;&gt; .env.drone
+echo &quot;DRONE_ACME_EMAIL=admin@yourdomain.com&quot; &gt;&gt; .env.drone
+echo &quot;DRONE_SERVER_PROTO=https&quot; &gt;&gt; .env.drone
+sed -i &#39;s/DRONE_SERVER_HOST=.*/DRONE_SERVER_HOST=drone.yourdomain.com/&#39; .env.drone
+
+# 2. Apply domain configuration
+cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+
+# 3. Restart Drone CI
+docker compose -f docker-compose.drone.yml down
+docker compose -f docker-compose.drone.yml up -d
+
+# 4. Monitor certificate issuance (wait 30-60 seconds)
+docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i certificate
+</code></pre>
+<h2>Why This Happens</h2>
+<p>When you access Drone CI via a custom domain (like <code>drone.yourdomain.com</code>), but the Traefik configuration doesn&#39;t explicitly specify the domain using a <code>Host()</code> matcher, Let&#39;s Encrypt cannot determine which domain to issue certificates for. This results in:</p>
+<ul>
+<li>❌ Browser warnings: &quot;Your connection is not private&quot;</li>
+<li>❌ Certificate issued for wrong domain or IP address</li>
+<li>❌ SSL/TLS errors in API clients</li>
+</ul>
+<h2>The Solution</h2>
+<p>The <code>docker-compose.drone.domain.yml</code> file adds explicit Host() rules to Traefik router configuration, ensuring Let&#39;s Encrypt issues certificates for your specific domain.</p>
+<p><strong>Default router rule</strong> (works for localhost/IP but NOT custom domains):</p>
+<pre><code class="language-yaml">- &quot;traefik.http.routers.drone-server.rule=PathPrefix(`/`)&quot;
+</code></pre>
+<p><strong>With domain override</strong> (works for custom domains):</p>
+<pre><code class="language-yaml">- &quot;traefik.http.routers.drone-server.rule=Host(`drone.yourdomain.com`)&quot;
+</code></pre>
+<h2>Detailed Setup Instructions</h2>
+<h3>Prerequisites</h3>
+<ol>
+<li><p><strong>DNS Configuration</strong>: Your domain must point to your server</p>
+<pre><code class="language-bash"># Verify DNS is working
+nslookup drone.yourdomain.com
+
+# Should return your server&#39;s IP address
+</code></pre>
+</li>
+<li><p><strong>Firewall Configuration</strong>: Ports 80 and 443 must be accessible</p>
+<pre><code class="language-bash"># Test port 80 (HTTP - required for Let&#39;s Encrypt challenge)
+telnet drone.yourdomain.com 80
+
+# Test port 443 (HTTPS)
+telnet drone.yourdomain.com 443
+
+# If blocked, open ports:
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+</code></pre>
+</li>
+<li><p><strong>GitHub OAuth Configuration</strong>: Update callback URL</p>
+<ul>
+<li>Go to <a href="https://github.com/settings/developers">https://github.com/settings/developers</a></li>
+<li>Find your Drone CI OAuth App</li>
+<li>Update callback URL to: <code>https://drone.yourdomain.com/login</code></li>
+<li>Note: Use <code>https://</code> not <code>http://</code> for custom domains</li>
+</ul>
+</li>
+</ol>
+<h3>Step-by-Step Setup</h3>
+<h4>1. Configure Domain Variables</h4>
+<p>Edit <code>.env.drone</code>:</p>
+<pre><code class="language-bash"># Set your custom domain (without http:// or https://)
+DRONE_DOMAIN=drone.yourdomain.com
+
+# Set email for Let&#39;s Encrypt notifications
+DRONE_ACME_EMAIL=admin@yourdomain.com
+
+# IMPORTANT: Use https for custom domains
+DRONE_SERVER_PROTO=https
+
+# Server host should match your domain (without port)
+DRONE_SERVER_HOST=drone.yourdomain.com
+
+# Keep other settings unchanged
+DRONE_GITHUB_CLIENT_ID=your-client-id
+DRONE_GITHUB_CLIENT_SECRET=your-client-secret
+DRONE_RPC_SECRET=your-rpc-secret
+# ... rest of config
+</code></pre>
+<h4>2. Apply Domain Configuration</h4>
+<pre><code class="language-bash"># Copy domain configuration as override file
+cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+
+# The override file is automatically applied when you run docker compose
+</code></pre>
+<h4>3. Restart Drone CI</h4>
+<pre><code class="language-bash"># Stop existing containers
+docker compose -f docker-compose.drone.yml down
+
+# Start with new configuration
+docker compose -f docker-compose.drone.yml up -d
+
+# Verify services are running
+docker compose -f docker-compose.drone.yml ps
+</code></pre>
+<h4>4. Monitor Certificate Issuance</h4>
+<pre><code class="language-bash"># Watch Traefik logs for certificate activity
+docker compose -f docker-compose.drone.yml logs -f drone-traefik
+
+# Look for messages like:
+# - &quot;Serving default certificate&quot;
+# - &quot;Requesting certificate for drone.yourdomain.com&quot;
+# - &quot;Certificate obtained successfully&quot;
+</code></pre>
+<h4>5. Verify SSL Certificate</h4>
+<p>After 30-60 seconds, test your site:</p>
+<pre><code class="language-bash"># Check certificate in browser
+# Visit: https://drone.yourdomain.com
+# Look for green padlock icon
+
+# Check certificate via command line
+echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.yourdomain.com 2&gt;/dev/null | openssl x509 -noout -text | grep -A2 &quot;Issuer:&quot;
+
+# Should show &quot;Let&#39;s Encrypt&quot; as issuer
+</code></pre>
+<h2>Common Issues and Solutions</h2>
+<h3>Issue 0: TLS-ALPN-01 Challenge Validation Errors</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Error in Traefik logs: &quot;Incorrect validation certificate for tls-alpn-01 challenge&quot;</li>
+<li>Error code 403 from ACME (Let&#39;s Encrypt)</li>
+<li>Certificate validation fails during issuance</li>
+</ul>
+<p><strong>Root Cause:</strong><br>The TLS-ALPN-01 challenge can fail when:</p>
+<ul>
+<li>Multiple Traefik instances are running on the same server</li>
+<li>Port 443 has conflicts or routing issues</li>
+<li>Docker networking interferes with TLS validation</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<p>This issue has been fixed in the current version by switching to HTTP-01 challenge. To apply the fix:</p>
+<ol>
+<li><p><strong>Pull latest configuration</strong>:</p>
+<pre><code class="language-bash">cd /path/to/note-hub
+git pull origin main
+</code></pre>
+</li>
+<li><p><strong>Remove old certificates</strong>:</p>
+<pre><code class="language-bash"># Stop Traefik
+docker compose -f docker-compose.drone.yml stop drone-traefik
+
+# Remove certificate file to force re-issuance
+sudo rm -f letsencrypt-drone/acme.json
+</code></pre>
+</li>
+<li><p><strong>Restart with updated configuration</strong>:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+</li>
+<li><p><strong>Monitor certificate issuance</strong>:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i &quot;certificate\|acme&quot;
+</code></pre>
+</li>
+</ol>
+<p><strong>Why HTTP-01 is Better:</strong></p>
+<ul>
+<li>Uses port 80 for validation (more reliable)</li>
+<li>No conflicts with TLS on port 443</li>
+<li>Recommended by Let&#39;s Encrypt for most use cases</li>
+<li>Works better with multiple services</li>
+</ul>
+<h3>Issue 1: Certificate Not Issued</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Traefik logs show &quot;default certificate&quot; being served</li>
+<li>Browser shows invalid certificate</li>
+<li>Certificate is self-signed</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Verify DNS is correct</strong>:</p>
+<pre><code class="language-bash">nslookup drone.yourdomain.com
+# Must return your server&#39;s IP
+</code></pre>
+</li>
+<li><p><strong>Check ports are accessible</strong>:</p>
+<pre><code class="language-bash"># From another machine or online tool
+telnet drone.yourdomain.com 80
+telnet drone.yourdomain.com 443
+</code></pre>
+</li>
+<li><p><strong>Check Traefik configuration</strong>:</p>
+<pre><code class="language-bash"># Verify DRONE_DOMAIN is set
+docker compose -f docker-compose.drone.yml exec drone-traefik env | grep ACME_EMAIL
+
+# Should show your configured email
+</code></pre>
+</li>
+<li><p><strong>Check Let&#39;s Encrypt rate limits</strong>:</p>
+<ul>
+<li>Let&#39;s Encrypt limits: 5 certificates per domain per week</li>
+<li>Use staging server for testing (see below)</li>
+</ul>
+</li>
+</ol>
+<h3>Issue 2: Wrong Certificate Issued</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Certificate is for different domain (IP address, wrong subdomain)</li>
+<li>Browser shows certificate mismatch warning</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Remove existing certificate and retry</strong>:</p>
+<pre><code class="language-bash"># Stop Traefik
+docker compose -f docker-compose.drone.yml stop drone-traefik
+
+# Remove certificate file
+sudo rm -f letsencrypt-drone/acme.json
+
+# Restart everything
+docker compose -f docker-compose.drone.yml up -d
+
+# Monitor certificate issuance
+docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i certificate
+</code></pre>
+</li>
+<li><p><strong>Verify domain configuration</strong>:</p>
+<pre><code class="language-bash"># Check that DRONE_DOMAIN matches the domain you&#39;re accessing
+grep DRONE_DOMAIN .env.drone
+
+# Should match exactly (no http://, no port)
+</code></pre>
+</li>
+<li><p><strong>Check override file is applied</strong>:</p>
+<pre><code class="language-bash"># View final configuration
+DRONE_DOMAIN=drone.yourdomain.com docker compose -f docker-compose.drone.yml config | grep &quot;Host(&quot;
+
+# Should show: Host(`drone.yourdomain.com`)
+</code></pre>
+</li>
+</ol>
+<h3>Issue 3: Port Conflicts</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Cannot access Drone CI on ports 80/443</li>
+<li>Ports already in use error</li>
+<li>Conflict with NoteHub or other applications</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<p>Drone CI uses ports 8080/8443 by default to avoid conflicts. However, for custom domains with SSL, you need ports 80/443:</p>
+<ol>
+<li><p><strong>If running alongside NoteHub</strong>:</p>
+<ul>
+<li>NoteHub uses ports 80/443</li>
+<li>Drone CI should use ports 8080/8443</li>
+<li>You cannot have both on the same domain</li>
+<li>Use subdomain: <code>drone.yourdomain.com</code> vs <code>yourdomain.com</code></li>
+</ul>
+</li>
+<li><p><strong>Update port mapping</strong> (if needed):<br>Edit <code>docker-compose.drone.yml</code>:</p>
+<pre><code class="language-yaml">drone-traefik:
+  ports:
+    - &quot;80:80&quot;      # For Let&#39;s Encrypt HTTP challenge
+    - &quot;443:443&quot;    # For HTTPS
+</code></pre>
+</li>
+<li><p><strong>For multiple domains on same server</strong>:</p>
+<ul>
+<li>Use different subdomains</li>
+<li>Both apps can share ports 80/443 if properly configured</li>
+<li>Traefik will route based on domain name</li>
+</ul>
+</li>
+</ol>
+<h3>Issue 4: Let&#39;s Encrypt Rate Limit Exceeded</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Error: &quot;too many certificates already issued&quot;</li>
+<li>Certificate not being issued after multiple attempts</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Use Let&#39;s Encrypt staging server for testing</strong>:</p>
+<p>Edit <code>docker-compose.drone.yml</code>, add to Traefik command section:</p>
+<pre><code class="language-yaml">drone-traefik:
+  command:
+    # ... existing commands ...
+    - &quot;--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory&quot;
+</code></pre>
+</li>
+<li><p><strong>Wait for rate limit to reset</strong>:</p>
+<ul>
+<li>Rate limit: 5 certificates per domain per week</li>
+<li>Reset: 7 days from first issuance</li>
+<li>Monitor at: <a href="https://crt.sh/?q=yourdomain.com">https://crt.sh/?q=yourdomain.com</a></li>
+</ul>
+</li>
+<li><p><strong>Use staging certificates for testing</strong>:</p>
+<ul>
+<li>Staging server has higher rate limits</li>
+<li>Certificates won&#39;t be trusted by browsers (expected)</li>
+<li>Switch to production server once configuration is confirmed</li>
+</ul>
+</li>
+</ol>
+<h3>Issue 5: HTTP to HTTPS Redirect Not Working</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>HTTP (port 80) accessible but doesn&#39;t redirect to HTTPS</li>
+<li>Users can access unsecured version</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<p>This is configured by default in Traefik. Verify configuration:</p>
+<pre><code class="language-bash"># Check if redirect is configured
+docker compose -f docker-compose.drone.yml config | grep -A5 &quot;redirections&quot;
+
+# Should see:
+# - &quot;--entrypoints.web.http.redirections.entrypoint.to=websecure&quot;
+# - &quot;--entrypoints.web.http.redirections.entrypoint.scheme=https&quot;
+# - &quot;--entrypoints.web.http.redirections.entrypoint.permanent=true&quot;
+</code></pre>
+<h3>Issue 6: Changes Not Taking Effect</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Updated configuration but still seeing old behavior</li>
+<li>Certificate not updating after changes</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Ensure override file is being used</strong>:</p>
+<pre><code class="language-bash"># Check if docker-compose.drone.override.yml exists
+ls -la docker-compose.drone.override.yml
+
+# If not, copy it:
+cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+</code></pre>
+</li>
+<li><p><strong>Force recreate containers</strong>:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml down
+docker compose -f docker-compose.drone.yml up -d --force-recreate
+</code></pre>
+</li>
+<li><p><strong>Clear Docker&#39;s label cache</strong>:</p>
+<pre><code class="language-bash"># Restart Docker daemon
+sudo systemctl restart docker
+
+# Restart containers
+docker compose -f docker-compose.drone.yml restart
+</code></pre>
+</li>
+</ol>
+<h2>Multiple Domains Support</h2>
+<p>To support multiple domains for Drone CI:</p>
+<ol>
+<li><p><strong>Edit the override file</strong> (<code>docker-compose.drone.override.yml</code>):</p>
+<pre><code class="language-yaml">services:
+  drone-server:
+    labels:
+      - &quot;traefik.http.routers.drone-server.rule=Host(`drone.domain1.com`) || Host(`ci.domain2.com`) || Host(`build.domain3.com`)&quot;
+</code></pre>
+</li>
+<li><p><strong>Update GitHub OAuth</strong>:</p>
+<ul>
+<li>Add multiple callback URLs in GitHub OAuth App (if supported)</li>
+<li>Or use a single primary domain</li>
+</ul>
+</li>
+<li><p><strong>DNS Configuration</strong>:</p>
+<ul>
+<li>Add A records for all domains pointing to your server</li>
+<li>Ensure all domains are accessible</li>
+</ul>
+</li>
+<li><p><strong>Restart Drone CI</strong>:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml down
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+</li>
+</ol>
+<p>Let&#39;s Encrypt will issue a certificate that covers all specified domains (Subject Alternative Names).</p>
+<h2>Testing Your Configuration</h2>
+<h3>1. Test DNS Resolution</h3>
+<pre><code class="language-bash"># Should return your server IP
+nslookup drone.yourdomain.com
+dig drone.yourdomain.com +short
+</code></pre>
+<h3>2. Test Port Accessibility</h3>
+<pre><code class="language-bash"># HTTP (should redirect to HTTPS)
+curl -I http://drone.yourdomain.com
+
+# HTTPS (should work)
+curl -I https://drone.yourdomain.com
+</code></pre>
+<h3>3. Test Certificate</h3>
+<pre><code class="language-bash"># Check certificate issuer (should be Let&#39;s Encrypt)
+echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.yourdomain.com 2&gt;/dev/null | openssl x509 -noout -issuer
+
+# Check certificate domain (should match your domain)
+echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.yourdomain.com 2&gt;/dev/null | openssl x509 -noout -subject
+
+# Check certificate expiration
+echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.yourdomain.com 2&gt;/dev/null | openssl x509 -noout -dates
+</code></pre>
+<h3>4. Test in Browser</h3>
+<ol>
+<li>Visit <code>https://drone.yourdomain.com</code></li>
+<li>Check for green padlock icon</li>
+<li>Click padlock → Certificate</li>
+<li>Verify:<ul>
+<li>Issued by: Let&#39;s Encrypt</li>
+<li>Issued to: drone.yourdomain.com</li>
+<li>Valid dates</li>
+</ul>
+</li>
+</ol>
+<h2>Advanced Configuration</h2>
+<h3>Custom Certificate Storage Location</h3>
+<p>By default, certificates are stored in <code>./letsencrypt-drone/acme.json</code>. To change:</p>
+<pre><code class="language-yaml"># docker-compose.drone.yml
+drone-traefik:
+  volumes:
+    - ./my-custom-path:/letsencrypt
+</code></pre>
+<h3>Certificate Backup</h3>
+<pre><code class="language-bash"># Backup certificate file
+cp letsencrypt-drone/acme.json letsencrypt-drone/acme.json.backup
+
+# Restore certificate file
+cp letsencrypt-drone/acme.json.backup letsencrypt-drone/acme.json
+docker compose -f docker-compose.drone.yml restart drone-traefik
+</code></pre>
+<h3>Using Wildcard Certificates</h3>
+<p>Wildcard certificates require DNS challenge (not HTTP challenge). Edit Traefik configuration:</p>
+<pre><code class="language-yaml">drone-traefik:
+  command:
+    - &quot;--certificatesresolvers.letsencrypt.acme.dnschallenge=true&quot;
+    - &quot;--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare&quot;
+  environment:
+    - CF_API_EMAIL=your-cloudflare-email
+    - CF_API_KEY=your-cloudflare-api-key
+</code></pre>
+<h2>Logs and Debugging</h2>
+<h3>View Traefik Logs</h3>
+<pre><code class="language-bash"># All logs
+docker compose -f docker-compose.drone.yml logs drone-traefik
+
+# Follow logs (real-time)
+docker compose -f docker-compose.drone.yml logs -f drone-traefik
+
+# Filter for certificate-related logs
+docker compose -f docker-compose.drone.yml logs drone-traefik | grep -i certificate
+
+# Filter for errors
+docker compose -f docker-compose.drone.yml logs drone-traefik | grep -i error
+</code></pre>
+<h3>Enable Debug Logging</h3>
+<p>Edit <code>docker-compose.drone.yml</code>:</p>
+<pre><code class="language-yaml">drone-traefik:
+  command:
+    # ... existing commands ...
+    - &quot;--log.level=DEBUG&quot;
+</code></pre>
+<p>Then restart:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml restart drone-traefik
+</code></pre>
+<h3>Check Certificate File</h3>
+<pre><code class="language-bash"># View certificate file (if exists)
+sudo cat letsencrypt-drone/acme.json | jq &#39;.letsencrypt.Certificates&#39;
+
+# Check file permissions (should be 600)
+ls -la letsencrypt-drone/acme.json
+</code></pre>
+<h2>Security Best Practices</h2>
+<ol>
+<li><p><strong>Use Strong Passwords</strong>:</p>
+<ul>
+<li>PostgreSQL password in <code>.env.drone</code></li>
+<li>RPC secret should be randomly generated</li>
+</ul>
+</li>
+<li><p><strong>Keep Software Updated</strong>:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml pull
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+</li>
+<li><p><strong>Monitor Certificate Expiration</strong>:</p>
+<ul>
+<li>Let&#39;s Encrypt certificates expire after 90 days</li>
+<li>Traefik automatically renews at ~30 days before expiration</li>
+<li>Monitor renewal: <code>docker compose -f docker-compose.drone.yml logs drone-traefik | grep renewal</code></li>
+</ul>
+</li>
+<li><p><strong>Backup Configuration</strong>:</p>
+<pre><code class="language-bash"># Backup critical files
+cp .env.drone .env.drone.backup
+cp letsencrypt-drone/acme.json letsencrypt-drone/acme.json.backup
+</code></pre>
+</li>
+<li><p><strong>Use HSTS Headers</strong> (already configured):</p>
+<ul>
+<li>Forces browsers to use HTTPS</li>
+<li>Configured in <code>docker/traefik/drone-dynamic.yml</code></li>
+</ul>
+</li>
+</ol>
+<h2>Getting Help</h2>
+<p>If you&#39;re still experiencing issues:</p>
+<ol>
+<li><p><strong>Check documentation</strong>:</p>
+<ul>
+<li><a href="DRONE_CI_README.md">DRONE_CI_README.md</a> - Overview and basic setup</li>
+<li><a href="docs/guides/CUSTOM_DOMAIN_SSL_SETUP.md">docs/guides/CUSTOM_DOMAIN_SSL_SETUP.md</a> - NoteHub guide (similar concepts)</li>
+</ul>
+</li>
+<li><p><strong>Collect diagnostic information</strong>:</p>
+<pre><code class="language-bash"># System information
+docker --version
+docker compose version
+
+# Service status
+docker compose -f docker-compose.drone.yml ps
+
+# Recent logs
+docker compose -f docker-compose.drone.yml logs --tail=100 drone-traefik
+
+# Network configuration
+docker network ls
+docker network inspect drone-network
+
+# DNS resolution
+nslookup drone.yourdomain.com
+
+# Port accessibility
+telnet drone.yourdomain.com 80
+telnet drone.yourdomain.com 443
+</code></pre>
+</li>
+<li><p><strong>Common resources</strong>:</p>
+<ul>
+<li>Traefik documentation: <a href="https://doc.traefik.io/traefik/">https://doc.traefik.io/traefik/</a></li>
+<li>Let&#39;s Encrypt docs: <a href="https://letsencrypt.org/docs/">https://letsencrypt.org/docs/</a></li>
+<li>Drone CI docs: <a href="https://docs.drone.io/">https://docs.drone.io/</a></li>
+</ul>
+</li>
+</ol>
+<h2>Summary</h2>
+<p>✅ <strong>For Custom Domains</strong>:</p>
+<ol>
+<li>Set <code>DRONE_DOMAIN</code>, <code>DRONE_ACME_EMAIL</code>, <code>DRONE_SERVER_PROTO=https</code> in <code>.env.drone</code></li>
+<li>Copy <code>docker-compose.drone.domain.yml</code> to <code>docker-compose.drone.override.yml</code></li>
+<li>Restart Drone CI: <code>docker compose -f docker-compose.drone.yml up -d</code></li>
+<li>Wait 30-60 seconds for certificate issuance</li>
+<li>Access via <code>https://drone.yourdomain.com</code></li>
+</ol>
+<p>✅ <strong>For Localhost/IP Access</strong>:</p>
+<ul>
+<li>No changes needed</li>
+<li>Browser warnings are expected (self-signed certificate)</li>
+<li>Use for development/testing only</li>
+</ul>
+<hr>
+<p><strong>Last Updated</strong>: December 2025<br><strong>Traefik Version</strong>: v2.11<br><strong>Let&#39;s Encrypt</strong>: ACME v2 (HTTP-01 Challenge)</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

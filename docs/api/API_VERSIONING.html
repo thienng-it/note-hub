@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - API Versioning and Response Format">
+    <title>API Versioning and Response Format - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>API Versioning and Response Format</span>
+        </div>
+
+        <article class="content">
+            <h1>API Versioning and Response Format</h1>
+<h2>Overview</h2>
+<p>The NoteHub API now supports versioned endpoints with a standardized response format. This provides a consistent, predictable API experience while maintaining backward compatibility with existing integrations.</p>
+<h2>API Versions</h2>
+<h3>Version 1 (v1) - Current</h3>
+<p>All v1 endpoints are prefixed with <code>/api/v1/</code>:</p>
+<ul>
+<li><code>/api/v1/auth/*</code> - Authentication endpoints</li>
+<li><code>/api/v1/notes/*</code> - Notes management</li>
+<li><code>/api/v1/tasks/*</code> - Task management</li>
+<li><code>/api/v1/profile/*</code> - User profile</li>
+<li><code>/api/v1/admin/*</code> - Admin operations</li>
+<li><code>/api/v1/ai/*</code> - AI features</li>
+<li><code>/api/v1/health</code> - Health check</li>
+</ul>
+<h3>Legacy (Unversioned) - Deprecated</h3>
+<p>Legacy endpoints at <code>/api/*</code> (without version prefix) are still supported for backward compatibility but may be removed in future versions. New integrations should use v1 endpoints.</p>
+<h2>Response Format</h2>
+<h3>Success Response (v1)</h3>
+<p>All successful responses follow this structure:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: true,
+  &quot;message&quot;: &quot;Operation completed successfully&quot;,
+  &quot;data&quot;: {
+    // Response data here
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<p><strong>Fields:</strong></p>
+<ul>
+<li><code>success</code>: Boolean indicating success (always <code>true</code> for successful responses)</li>
+<li><code>message</code>: Human-readable success message</li>
+<li><code>data</code>: The actual response data</li>
+<li><code>meta</code>: Metadata about the response<ul>
+<li><code>timestamp</code>: ISO 8601 timestamp of the response</li>
+<li><code>version</code>: API version used</li>
+<li><code>requestId</code>: Unique identifier for request tracking and debugging</li>
+</ul>
+</li>
+</ul>
+<h3>Error Response (v1)</h3>
+<p>All error responses follow this structure:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Error description&quot;,
+    &quot;code&quot;: &quot;ERROR_CODE&quot;,
+    &quot;details&quot;: {
+      // Additional error details (optional)
+    }
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<p><strong>Fields:</strong></p>
+<ul>
+<li><code>success</code>: Boolean indicating failure (always <code>false</code> for errors)</li>
+<li><code>error</code>: Error information<ul>
+<li><code>message</code>: Human-readable error message</li>
+<li><code>code</code>: Machine-readable error code for programmatic handling</li>
+<li><code>details</code>: Additional context about the error (optional)</li>
+</ul>
+</li>
+<li><code>meta</code>: Same metadata as success responses</li>
+</ul>
+<h3>Error Codes</h3>
+<p>Common error codes include:</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>HTTP Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>VALIDATION_ERROR</code></td>
+<td>400</td>
+<td>Request validation failed</td>
+</tr>
+<tr>
+<td><code>UNAUTHORIZED</code></td>
+<td>401</td>
+<td>Authentication required or invalid credentials</td>
+</tr>
+<tr>
+<td><code>FORBIDDEN</code></td>
+<td>403</td>
+<td>Insufficient permissions</td>
+</tr>
+<tr>
+<td><code>NOT_FOUND</code></td>
+<td>404</td>
+<td>Resource not found</td>
+</tr>
+<tr>
+<td><code>INTERNAL_ERROR</code></td>
+<td>500</td>
+<td>Server error</td>
+</tr>
+<tr>
+<td><code>SERVICE_UNAVAILABLE</code></td>
+<td>503</td>
+<td>Service temporarily unavailable</td>
+</tr>
+</tbody></table>
+<h3>Validation Errors</h3>
+<p>Validation errors provide detailed information about what failed:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Validation failed&quot;,
+    &quot;code&quot;: &quot;VALIDATION_ERROR&quot;,
+    &quot;details&quot;: {
+      &quot;field&quot;: &quot;email&quot;,
+      &quot;message&quot;: &quot;Invalid email format&quot;
+    }
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<h2>Examples</h2>
+<h3>Login Success (v1)</h3>
+<pre><code class="language-bash">curl -X POST https://api.example.com/api/v1/auth/login \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#39;{&quot;username&quot;:&quot;user&quot;,&quot;password&quot;:&quot;pass&quot;}&#39;
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: true,
+  &quot;message&quot;: &quot;Login successful&quot;,
+  &quot;data&quot;: {
+    &quot;access_token&quot;: &quot;eyJhbGc...&quot;,
+    &quot;refresh_token&quot;: &quot;eyJhbGc...&quot;,
+    &quot;token_type&quot;: &quot;Bearer&quot;,
+    &quot;expires_in&quot;: 86400,
+    &quot;user&quot;: {
+      &quot;id&quot;: 1,
+      &quot;username&quot;: &quot;user&quot;,
+      &quot;email&quot;: &quot;user@example.com&quot;,
+      &quot;has_2fa&quot;: false
+    }
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<h3>Login Error (v1)</h3>
+<pre><code class="language-bash">curl -X POST https://api.example.com/api/v1/auth/login \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#39;{&quot;username&quot;:&quot;user&quot;,&quot;password&quot;:&quot;wrong&quot;}&#39;
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Invalid credentials&quot;,
+    &quot;code&quot;: &quot;UNAUTHORIZED&quot;
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<h3>Validation Error (v1)</h3>
+<pre><code class="language-bash">curl -X POST https://api.example.com/api/v1/auth/register \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#39;{&quot;username&quot;:&quot;ab&quot;,&quot;password&quot;:&quot;test&quot;}&#39;
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Validation failed&quot;,
+    &quot;code&quot;: &quot;VALIDATION_ERROR&quot;,
+    &quot;details&quot;: {
+      &quot;field&quot;: &quot;username&quot;,
+      &quot;message&quot;: &quot;username must be at least 3 characters long&quot;
+    }
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<h2>Backward Compatibility</h2>
+<p>Legacy endpoints (<code>/api/*</code>) continue to work with the original response format:</p>
+<pre><code class="language-json">{
+  &quot;access_token&quot;: &quot;eyJhbGc...&quot;,
+  &quot;user&quot;: { ... }
+}
+</code></pre>
+<p>Or for errors:</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Error message&quot;
+}
+</code></pre>
+<h2>Migration Guide</h2>
+<h3>Updating Existing Integrations</h3>
+<p>To migrate from legacy to v1 endpoints:</p>
+<ol>
+<li><p><strong>Update endpoint URLs</strong>: Change <code>/api/</code> to <code>/api/v1/</code></p>
+<pre><code class="language-diff">- POST /api/auth/login
++ POST /api/v1/auth/login
+</code></pre>
+</li>
+<li><p><strong>Update response handling</strong>: Access data through the new structure</p>
+<pre><code class="language-diff">- const token = response.access_token;
++ const token = response.data.access_token;
+</code></pre>
+</li>
+<li><p><strong>Update error handling</strong>: Check the <code>success</code> field and use error codes</p>
+<pre><code class="language-javascript">if (!response.success) {
+  console.error(`Error ${response.error.code}: ${response.error.message}`);
+  if (response.error.details) {
+    console.error(&#39;Details:&#39;, response.error.details);
+  }
+}
+</code></pre>
+</li>
+<li><p><strong>Use request IDs for debugging</strong>: Log the <code>requestId</code> from responses</p>
+<pre><code class="language-javascript">console.log(&#39;Request ID:&#39;, response.meta.requestId);
+</code></pre>
+</li>
+</ol>
+<h2>Security Headers</h2>
+<p>All API responses include security headers:</p>
+<ul>
+<li><code>X-Request-ID</code>: Unique identifier for the request</li>
+<li><code>X-API-Version</code>: API version used (e.g., &quot;v1&quot;)</li>
+<li><code>X-Content-Type-Options</code>: nosniff</li>
+<li><code>X-Frame-Options</code>: SAMEORIGIN</li>
+<li><code>X-XSS-Protection</code>: 1; mode=block</li>
+<li><code>Strict-Transport-Security</code>: max-age=31536000; includeSubDomains (production only)</li>
+</ul>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Always use v1 endpoints</strong> for new integrations</li>
+<li><strong>Check the <code>success</code> field</strong> before processing responses</li>
+<li><strong>Use error codes</strong> for programmatic error handling</li>
+<li><strong>Log request IDs</strong> for debugging and support</li>
+<li><strong>Handle validation errors</strong> by displaying <code>details</code> to users</li>
+<li><strong>Set appropriate timeouts</strong> and implement retry logic for network errors</li>
+<li><strong>Include version in API client</strong> libraries and SDKs</li>
+</ol>
+<h2>Future Versions</h2>
+<p>When a new API version is released:</p>
+<ul>
+<li>New version will be available at <code>/api/v2/*</code></li>
+<li>v1 endpoints will continue to work for at least 12 months</li>
+<li>Deprecation notices will be provided 6 months in advance</li>
+<li>Migration guides will be published with each new version</li>
+</ul>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

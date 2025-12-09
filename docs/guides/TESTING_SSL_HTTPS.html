@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Testing SSL/HTTPS Implementation">
+    <title>Testing SSL/HTTPS Implementation - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Testing SSL/HTTPS Implementation</span>
+        </div>
+
+        <article class="content">
+            <h1>Testing SSL/HTTPS Implementation</h1>
+<p>This document provides testing instructions for the SSL/HTTPS implementation in NoteHub.</p>
+<h2>Pre-Deployment Testing</h2>
+<h3>1. Configuration Validation</h3>
+<p>All configuration files have been validated:</p>
+<pre><code class="language-bash"># Traefik configuration files
+✓ docker/traefik/traefik.yml - YAML syntax valid
+✓ docker/traefik/dynamic.yml - YAML syntax valid
+✓ docker/traefik/drone-dynamic.yml - YAML syntax valid
+
+# Docker Compose files
+✓ docker-compose.yml - YAML syntax valid
+✓ docker-compose.replication.yml - YAML syntax valid
+✓ docker-compose.drone.yml - YAML syntax valid
+</code></pre>
+<h3>2. Service Configuration</h3>
+<p>Updated services:</p>
+<ul>
+<li><strong>6 Traefik services</strong> across 3 Docker Compose files</li>
+<li><strong>18 backend/frontend services</strong> with HTTPS labels</li>
+<li><strong>6 port 443 mappings</strong> for HTTPS traffic</li>
+</ul>
+<h2>Local Testing (Development)</h2>
+<h3>Test 1: Basic Deployment</h3>
+<pre><code class="language-bash"># Setup environment
+cp .env.example .env
+nano .env  # Set NOTES_ADMIN_PASSWORD
+
+# Start services
+docker compose up -d
+
+# Check services are running
+docker compose ps
+</code></pre>
+<p><strong>Expected Results:</strong></p>
+<ul>
+<li>All services should be <code>healthy</code></li>
+<li>Traefik should be listening on ports 80 and 443</li>
+</ul>
+<h3>Test 2: HTTP to HTTPS Redirect</h3>
+<pre><code class="language-bash"># Test HTTP redirect
+curl -I http://localhost
+
+# Expected output:
+# HTTP/1.1 301 Moved Permanently
+# Location: https://localhost/
+</code></pre>
+<h3>Test 3: HTTPS Access (Self-Signed Certificate)</h3>
+<pre><code class="language-bash"># Access HTTPS with self-signed cert (ignore verification)
+curl -I -k https://localhost
+
+# Expected output:
+# HTTP/2 200
+# strict-transport-security: max-age=31536000; includeSubDomains
+</code></pre>
+<h3>Test 4: Browser Access</h3>
+<ol>
+<li>Open browser to <code>http://localhost</code></li>
+<li>Should automatically redirect to <code>https://localhost</code></li>
+<li>Browser will show security warning (expected for localhost)</li>
+<li>Accept the warning and proceed</li>
+<li>Verify application loads correctly</li>
+</ol>
+<h3>Test 5: Security Headers</h3>
+<pre><code class="language-bash"># Check security headers
+curl -I -k https://localhost | grep -i &quot;strict-transport-security\|x-frame-options\|x-content-type&quot;
+
+# Expected headers:
+# strict-transport-security: max-age=31536000; includeSubDomains
+# x-frame-options: SAMEORIGIN
+# x-content-type-options: nosniff
+</code></pre>
+<h3>Test 6: Certificate Storage</h3>
+<pre><code class="language-bash"># Verify certificate directory exists
+ls -la letsencrypt/
+
+# After first HTTPS request, check for certificate file
+# (Will be empty for localhost, but directory should exist)
+</code></pre>
+<h2>Production Testing (With Domain)</h2>
+<h3>Prerequisites</h3>
+<p>Before testing in production:</p>
+<ol>
+<li>Register a domain name</li>
+<li>Point domain to your server&#39;s public IP</li>
+<li>Ensure ports 80 and 443 are open</li>
+<li>Wait for DNS propagation</li>
+</ol>
+<h3>Test 1: Production Deployment</h3>
+<pre><code class="language-bash"># Configure environment
+cp .env.example .env
+nano .env
+
+# Set these variables:
+# SECRET_KEY=&lt;strong-random-key&gt;
+# DATABASE_URL=mysql://user:pass@host:3306/db
+# NOTES_ADMIN_PASSWORD=&lt;secure-password&gt;
+# ACME_EMAIL=admin@yourdomain.com
+
+# Deploy
+docker compose --profile production up -d
+
+# Monitor Traefik logs for certificate issuance
+docker compose logs -f traefik-prod
+</code></pre>
+<p><strong>Expected Log Output:</strong></p>
+<pre><code>traefik-prod | time=&quot;...&quot; level=info msg=&quot;Retrieving ACME certificates...&quot;
+traefik-prod | time=&quot;...&quot; level=info msg=&quot;Obtaining certificate for yourdomain.com&quot;
+traefik-prod | time=&quot;...&quot; level=info msg=&quot;Certificate obtained for yourdomain.com&quot;
+</code></pre>
+<h3>Test 2: Verify Certificate Issuance</h3>
+<pre><code class="language-bash"># Check certificate file was created
+ls -la letsencrypt/acme.json
+
+# File should exist and have content (not empty)
+wc -c letsencrypt/acme.json
+</code></pre>
+<h3>Test 3: Test Domain Access</h3>
+<pre><code class="language-bash"># Test HTTP redirect
+curl -I http://yourdomain.com
+
+# Expected:
+# HTTP/1.1 301 Moved Permanently
+# Location: https://yourdomain.com/
+
+# Test HTTPS access
+curl -I https://yourdomain.com
+
+# Expected:
+# HTTP/2 200
+# (Valid certificate, no warnings)
+</code></pre>
+<h3>Test 4: Verify Let&#39;s Encrypt Certificate</h3>
+<pre><code class="language-bash"># Check certificate details
+openssl s_client -connect yourdomain.com:443 -servername yourdomain.com &lt; /dev/null 2&gt;/dev/null | openssl x509 -noout -text
+
+# Verify:
+# - Issuer: Let&#39;s Encrypt
+# - Subject: CN=yourdomain.com
+# - Valid dates (should be valid for 90 days)
+</code></pre>
+<h3>Test 5: Browser Verification</h3>
+<ol>
+<li>Open browser to <code>http://yourdomain.com</code></li>
+<li>Should redirect to <code>https://yourdomain.com</code></li>
+<li>Check for green padlock/secure indicator</li>
+<li>Click padlock to view certificate details</li>
+<li>Verify:<ul>
+<li>Certificate is valid</li>
+<li>Issued by Let&#39;s Encrypt</li>
+<li>Domain matches</li>
+</ul>
+</li>
+</ol>
+<h3>Test 6: Security Headers in Production</h3>
+<pre><code class="language-bash"># Check all security headers
+curl -I https://yourdomain.com
+
+# Expected headers:
+# strict-transport-security: max-age=31536000; includeSubDomains
+# x-frame-options: SAMEORIGIN
+# x-content-type-options: nosniff
+# x-xss-protection: 1; mode=block
+# referrer-policy: strict-origin-when-cross-origin
+# content-security-policy: upgrade-insecure-requests
+</code></pre>
+<h2>Testing MySQL Profile</h2>
+<pre><code class="language-bash"># Set MySQL credentials in .env
+nano .env
+
+# Start MySQL profile
+docker compose --profile mysql up -d
+
+# Test HTTPS access
+curl -I -k https://localhost
+</code></pre>
+<h2>Testing Replication Profiles</h2>
+<h3>MySQL Replication</h3>
+<pre><code class="language-bash"># Start MySQL replication
+docker compose -f docker-compose.replication.yml --profile mysql-replication up -d
+
+# Check Traefik service
+docker compose -f docker-compose.replication.yml ps traefik-mysql-replication
+
+# Test HTTPS
+curl -I -k https://localhost
+</code></pre>
+<h3>SQLite Replication</h3>
+<pre><code class="language-bash"># Start SQLite replication
+docker compose -f docker-compose.replication.yml --profile sqlite-replication up -d
+
+# Check Traefik service
+docker compose -f docker-compose.replication.yml ps traefik-sqlite-replication
+
+# Test HTTPS
+curl -I -k https://localhost
+</code></pre>
+<h2>Testing Drone CI</h2>
+<pre><code class="language-bash"># Configure Drone environment
+cp .env.drone.example .env.drone
+nano .env.drone
+
+# Start Drone CI
+docker compose -f docker-compose.drone.yml up -d
+
+# Verify Drone uses different ports
+# HTTP: 8080, HTTPS: 8443
+
+# Test HTTP redirect
+curl -I http://localhost:8080
+
+# Expected:
+# HTTP/1.1 301 Moved Permanently
+# Location: https://localhost:8443/
+
+# Test HTTPS access
+curl -I -k https://localhost:8443
+</code></pre>
+<h2>Troubleshooting Tests</h2>
+<h3>Test Certificate Renewal</h3>
+<pre><code class="language-bash"># Force certificate renewal (for testing only)
+docker compose stop traefik
+rm letsencrypt/acme.json
+docker compose start traefik
+
+# Monitor logs
+docker compose logs -f traefik
+</code></pre>
+<h3>Test with Invalid Domain</h3>
+<pre><code class="language-bash"># Try with non-existent domain (should fail gracefully)
+# Edit .env to use invalid domain
+ACME_EMAIL=test@invalid-domain-12345.com
+
+# Restart
+docker compose restart traefik
+
+# Check logs for error messages
+docker compose logs traefik | grep -i &quot;error\|failed&quot;
+</code></pre>
+<h3>Test Port Conflicts</h3>
+<pre><code class="language-bash"># Check if ports are available
+sudo lsof -i :80
+sudo lsof -i :443
+
+# If ports in use, stop conflicting services
+sudo systemctl stop nginx apache2
+</code></pre>
+<h2>Validation Checklist</h2>
+<h3>Configuration</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> All YAML files are syntactically valid</li>
+<li><input checked="" disabled="" type="checkbox"> All Traefik services configured with SSL</li>
+<li><input checked="" disabled="" type="checkbox"> All service labels updated for HTTPS</li>
+<li><input checked="" disabled="" type="checkbox"> Certificate storage directories created</li>
+<li><input checked="" disabled="" type="checkbox"> .gitignore updated to exclude certificates</li>
+</ul>
+<h3>Documentation</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Comprehensive SSL/HTTPS setup guide created</li>
+<li><input checked="" disabled="" type="checkbox"> Traefik migration guide updated</li>
+<li><input checked="" disabled="" type="checkbox"> README updated with HTTPS information</li>
+<li><input checked="" disabled="" type="checkbox"> Implementation summary documented</li>
+<li><input checked="" disabled="" type="checkbox"> .env.example updated with SSL config</li>
+</ul>
+<h3>Security</h3>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> HSTS enabled (1-year max-age)</li>
+<li><input checked="" disabled="" type="checkbox"> HSTS preload disabled by default (with warnings)</li>
+<li><input checked="" disabled="" type="checkbox"> CSP upgrade-insecure-requests configured</li>
+<li><input checked="" disabled="" type="checkbox"> All security headers consistent across services</li>
+<li><input checked="" disabled="" type="checkbox"> Certificate files excluded from Git</li>
+</ul>
+<h3>Functionality</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Local deployment tested (manual testing required)</li>
+<li><input disabled="" type="checkbox"> HTTP to HTTPS redirect verified</li>
+<li><input disabled="" type="checkbox"> Self-signed certificates work for localhost</li>
+<li><input disabled="" type="checkbox"> Production deployment tested (requires domain)</li>
+<li><input disabled="" type="checkbox"> Let&#39;s Encrypt certificate obtained</li>
+<li><input disabled="" type="checkbox"> Certificate auto-renewal verified</li>
+<li><input disabled="" type="checkbox"> All deployment profiles tested</li>
+</ul>
+<h2>Performance Tests</h2>
+<h3>Test 1: SSL Handshake Time</h3>
+<pre><code class="language-bash"># Measure SSL handshake performance
+curl -w &quot;@-&quot; -o /dev/null -s https://yourdomain.com &lt;&lt; &#39;EOF&#39;
+    time_namelookup:  %{time_namelookup}\n
+       time_connect:  %{time_connect}\n
+    time_appconnect:  %{time_appconnect}\n
+      time_redirect:  %{time_redirect}\n
+   time_pretransfer:  %{time_pretransfer}\n
+      time_starttransfer:  %{time_starttransfer}\n
+          time_total:  %{time_total}\n
+EOF
+</code></pre>
+<h3>Test 2: HTTP/2 Support</h3>
+<pre><code class="language-bash"># Verify HTTP/2 is enabled
+curl -I --http2 https://yourdomain.com | grep &quot;HTTP/2&quot;
+
+# Expected: HTTP/2 200
+</code></pre>
+<h3>Test 3: Compression</h3>
+<pre><code class="language-bash"># Test gzip compression
+curl -H &quot;Accept-Encoding: gzip,deflate&quot; -I https://yourdomain.com
+
+# Should see: Content-Encoding: gzip
+</code></pre>
+<h2>Security Tests</h2>
+<h3>Test 1: SSL Labs Scan</h3>
+<p>For production deployments, run SSL Labs scan:</p>
+<ol>
+<li>Go to <a href="https://www.ssllabs.com/ssltest/">https://www.ssllabs.com/ssltest/</a></li>
+<li>Enter your domain</li>
+<li>Wait for analysis</li>
+<li>Expected grade: A or A+</li>
+</ol>
+<h3>Test 2: Security Headers Check</h3>
+<p>Use securityheaders.com:</p>
+<ol>
+<li>Go to <a href="https://securityheaders.com">https://securityheaders.com</a></li>
+<li>Enter your domain</li>
+<li>Verify all headers are present</li>
+<li>Expected grade: A or better</li>
+</ol>
+<h3>Test 3: Certificate Transparency</h3>
+<p>Check certificate is logged:</p>
+<ol>
+<li>Go to <a href="https://crt.sh">https://crt.sh</a></li>
+<li>Search for your domain</li>
+<li>Verify Let&#39;s Encrypt certificate is listed</li>
+</ol>
+<h2>Load Testing</h2>
+<h3>Test 1: Concurrent HTTPS Connections</h3>
+<pre><code class="language-bash"># Install Apache Bench if not available
+sudo apt-get install apache2-utils
+
+# Test with 100 concurrent requests
+ab -n 1000 -c 100 https://yourdomain.com/
+
+# Check:
+# - Time per request
+# - Failed requests (should be 0)
+# - Requests per second
+</code></pre>
+<h3>Test 2: SSL Session Resumption</h3>
+<pre><code class="language-bash"># Test with session resumption
+openssl s_client -connect yourdomain.com:443 -reconnect -no_ticket
+
+# Check for &quot;Reused, TLSv1.3&quot;
+</code></pre>
+<h2>Monitoring</h2>
+<h3>Continuous Monitoring Tests</h3>
+<pre><code class="language-bash"># Monitor certificate expiration
+while true; do
+  echo &quot;Checking certificate expiration...&quot;
+  echo | openssl s_client -connect yourdomain.com:443 -servername yourdomain.com 2&gt;/dev/null | \
+    openssl x509 -noout -dates
+  sleep 3600  # Check every hour
+done
+</code></pre>
+<h3>Log Monitoring</h3>
+<pre><code class="language-bash"># Monitor for SSL/TLS errors
+docker compose logs -f traefik | grep -i &quot;tls\|ssl\|certificate\|acme&quot;
+</code></pre>
+<h2>Test Results Documentation</h2>
+<p>Document your test results:</p>
+<pre><code>Test Date: ___________
+Tester: ___________
+Environment: [ ] Development [ ] Staging [ ] Production
+
+Configuration Tests:
+[ ] YAML validation passed
+[ ] Docker Compose validation passed
+[ ] Service health checks passed
+
+Functional Tests:
+[ ] HTTP to HTTPS redirect working
+[ ] HTTPS access successful
+[ ] Certificate obtained (production)
+[ ] Security headers present
+[ ] All deployment profiles tested
+
+Performance Tests:
+[ ] SSL handshake &lt; 200ms
+[ ] HTTP/2 enabled
+[ ] Compression working
+
+Security Tests:
+[ ] SSL Labs grade: ___
+[ ] Security headers grade: ___
+[ ] Certificate transparency verified
+
+Issues Found:
+_________________________________
+_________________________________
+_________________________________
+
+Notes:
+_________________________________
+_________________________________
+_________________________________
+</code></pre>
+<h2>Support</h2>
+<p>If tests fail, consult:</p>
+<ul>
+<li><a href="docs/guides/SSL_HTTPS_SETUP.md">SSL/HTTPS Setup Guide</a> - Troubleshooting section</li>
+<li><a href="docs/guides/TRAEFIK_MIGRATION.md">Traefik Migration Guide</a> - SSL/HTTPS section</li>
+<li>Traefik logs: <code>docker compose logs traefik</code></li>
+</ul>
+<h2>Next Steps After Testing</h2>
+<ol>
+<li>✅ Complete all validation tests</li>
+<li>✅ Document test results</li>
+<li>✅ Fix any issues found</li>
+<li>✅ Re-test after fixes</li>
+<li>✅ Deploy to production</li>
+<li>✅ Monitor for 24-48 hours</li>
+<li>✅ Verify automatic certificate renewal (after 60 days)</li>
+</ol>
+<hr>
+<p><strong>Testing Status</strong>: Ready for manual testing ✅<br><strong>Last Updated</strong>: December 8, 2024</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

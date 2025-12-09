@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Security Enhancements">
+    <title>Security Enhancements - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Security Enhancements</span>
+        </div>
+
+        <article class="content">
+            <h1>Security Enhancements</h1>
+<h2>Overview</h2>
+<p>This document describes the recent security improvements made to the NoteHub backend service, including request tracking, enhanced headers, input validation, and error handling improvements.</p>
+<h2>Request ID Tracking</h2>
+<h3>Purpose</h3>
+<p>Every API request is assigned a unique identifier (UUID v4) for tracking, debugging, and security auditing.</p>
+<h3>Implementation</h3>
+<ul>
+<li><strong>Header</strong>: Request ID is returned in the <code>X-Request-ID</code> response header</li>
+<li><strong>Logs</strong>: All log entries include the request ID for correlation</li>
+<li><strong>Responses</strong>: Request ID is included in the response metadata for v1 endpoints</li>
+</ul>
+<h3>Usage</h3>
+<p><strong>Client-side tracking:</strong></p>
+<pre><code class="language-javascript">const response = await fetch(&#39;/api/v1/auth/login&#39;, {
+  method: &#39;POST&#39;,
+  headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+  body: JSON.stringify({ username, password })
+});
+
+// Get request ID from header
+const requestId = response.headers.get(&#39;X-Request-ID&#39;);
+
+// Or from response body (v1 only)
+const data = await response.json();
+console.log(&#39;Request ID:&#39;, data.meta.requestId);
+</code></pre>
+<p><strong>Server-side logging:</strong></p>
+<pre><code class="language-javascript">[2025-12-05 16:00:00] INFO: API Request {
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;path&quot;: &quot;/api/v1/auth/login&quot;,
+  &quot;statusCode&quot;: 200,
+  &quot;duration&quot;: &quot;150ms&quot;,
+  &quot;ip&quot;: &quot;192.168.1.1&quot;,
+  &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+}
+</code></pre>
+<h3>Benefits</h3>
+<ol>
+<li><strong>Debugging</strong>: Trace a single request through logs across microservices</li>
+<li><strong>Support</strong>: Users can provide request ID when reporting issues</li>
+<li><strong>Monitoring</strong>: Track request flows and identify bottlenecks</li>
+<li><strong>Security</strong>: Audit trail for security investigations</li>
+</ol>
+<h2>Security Headers</h2>
+<h3>Enhanced HTTP Headers</h3>
+<p>The API now includes comprehensive security headers on all responses:</p>
+<table>
+<thead>
+<tr>
+<th>Header</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>X-API-Version</code></td>
+<td>v1</td>
+<td>Indicates API version for client compatibility</td>
+</tr>
+<tr>
+<td><code>X-Request-ID</code></td>
+<td>UUID</td>
+<td>Unique request identifier</td>
+</tr>
+<tr>
+<td><code>X-Content-Type-Options</code></td>
+<td>nosniff</td>
+<td>Prevents MIME type sniffing attacks</td>
+</tr>
+<tr>
+<td><code>X-DNS-Prefetch-Control</code></td>
+<td>off</td>
+<td>Disables DNS prefetching for privacy</td>
+</tr>
+<tr>
+<td><code>X-Download-Options</code></td>
+<td>noopen</td>
+<td>Prevents IE from opening files directly</td>
+</tr>
+<tr>
+<td><code>X-Frame-Options</code></td>
+<td>SAMEORIGIN</td>
+<td>Prevents clickjacking attacks</td>
+</tr>
+<tr>
+<td><code>X-XSS-Protection</code></td>
+<td>1; mode=block</td>
+<td>Enables XSS filter in older browsers</td>
+</tr>
+<tr>
+<td><code>Strict-Transport-Security</code></td>
+<td>max-age=31536000; includeSubDomains</td>
+<td>Forces HTTPS (production only)</td>
+</tr>
+<tr>
+<td><code>Content-Security-Policy</code></td>
+<td>(see below)</td>
+<td>Prevents XSS and injection attacks</td>
+</tr>
+</tbody></table>
+<h3>Content Security Policy (CSP)</h3>
+<pre><code>default-src &#39;self&#39;;
+script-src &#39;self&#39; &#39;unsafe-inline&#39;;
+style-src &#39;self&#39; &#39;unsafe-inline&#39;;
+img-src &#39;self&#39; data: https:;
+connect-src &#39;self&#39;;
+font-src &#39;self&#39;;
+object-src &#39;none&#39;;
+media-src &#39;self&#39;;
+frame-src &#39;none&#39;;
+</code></pre>
+<p>This policy:</p>
+<ul>
+<li>Restricts resources to same origin</li>
+<li>Allows inline scripts/styles for SPA compatibility</li>
+<li>Permits images from data URLs and HTTPS</li>
+<li>Blocks objects (Flash, Java applets)</li>
+<li>Prevents iframe embedding</li>
+</ul>
+<h2>Input Validation</h2>
+<h3>Validation Middleware</h3>
+<p>New validation middleware provides consistent input checking:</p>
+<pre><code class="language-javascript">const { validateRequiredFields, validateEmail, validateLength, sanitizeStrings } = require(&#39;../middleware/validation&#39;);
+
+// Example usage
+router.post(&#39;/register&#39;,
+  sanitizeStrings([&#39;username&#39;, &#39;email&#39;]),           // Trim whitespace
+  validateRequiredFields([&#39;username&#39;, &#39;password&#39;]), // Check required
+  validateLength(&#39;username&#39;, { min: 3, max: 50 }), // Length check
+  validateEmail(&#39;email&#39;),                          // Email format
+  async (req, res) =&gt; {
+    // Request has been validated
+  }
+);
+</code></pre>
+<h3>Available Validators</h3>
+<h4>validateRequiredFields(fields)</h4>
+<p>Checks that specified fields are present in request body.</p>
+<pre><code class="language-javascript">validateRequiredFields([&#39;username&#39;, &#39;password&#39;, &#39;email&#39;])
+</code></pre>
+<h4>validateEmail(fieldName)</h4>
+<p>Validates email format using regex.</p>
+<pre><code class="language-javascript">validateEmail(&#39;email&#39;)
+</code></pre>
+<h4>validateLength(fieldName, options)</h4>
+<p>Validates string length with min/max constraints.</p>
+<pre><code class="language-javascript">validateLength(&#39;username&#39;, { min: 3, max: 50 })
+validateLength(&#39;password&#39;, { min: 12 })
+</code></pre>
+<h4>sanitizeStrings(fields)</h4>
+<p>Trims whitespace from string fields.</p>
+<pre><code class="language-javascript">sanitizeStrings([&#39;username&#39;, &#39;email&#39;, &#39;bio&#39;])
+</code></pre>
+<h3>Validation Responses</h3>
+<p>Validation errors return a standardized format:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Validation failed&quot;,
+    &quot;code&quot;: &quot;VALIDATION_ERROR&quot;,
+    &quot;details&quot;: {
+      &quot;field&quot;: &quot;email&quot;,
+      &quot;message&quot;: &quot;Invalid email format&quot;
+    }
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<h2>Rate Limiting</h2>
+<h3>API Rate Limits</h3>
+<p>Rate limiting protects against abuse:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint Type</th>
+<th>Window</th>
+<th>Max Requests</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>API routes (<code>/api/*</code>)</td>
+<td>15 minutes</td>
+<td>100</td>
+</tr>
+<tr>
+<td>Static files</td>
+<td>15 minutes</td>
+<td>500</td>
+</tr>
+</tbody></table>
+<h3>Rate Limit Headers</h3>
+<p>Responses include rate limit information:</p>
+<pre><code>X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1638360000
+</code></pre>
+<h3>Rate Limit Exceeded Response</h3>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;Too many requests, please try again later&quot;
+}
+</code></pre>
+<p><strong>HTTP Status</strong>: 429 Too Many Requests</p>
+<h2>Error Handling</h2>
+<h3>Standardized Error Codes</h3>
+<p>All errors use consistent codes for programmatic handling:</p>
+<pre><code class="language-javascript">// Authentication errors
+UNAUTHORIZED           // Invalid credentials or token
+REQUIRES_2FA          // 2FA code required
+FORBIDDEN             // Insufficient permissions
+
+// Validation errors
+VALIDATION_ERROR      // Input validation failed
+
+// Resource errors
+NOT_FOUND             // Resource not found
+
+// Server errors
+INTERNAL_ERROR        // Unexpected server error
+SERVICE_UNAVAILABLE   // Service temporarily down
+</code></pre>
+<h3>Error Response Structure</h3>
+<pre><code class="language-json">{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Human-readable error message&quot;,
+    &quot;code&quot;: &quot;MACHINE_READABLE_CODE&quot;,
+    &quot;details&quot;: {
+      // Optional additional context
+    }
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<h3>Error Logging</h3>
+<p>All errors are logged with context:</p>
+<pre><code class="language-javascript">logger.error(&#39;Server error:&#39;, {
+  error: err.message,
+  stack: err.stack,
+  path: req.path,
+  method: req.method,
+  requestId: res.locals.requestId
+});
+</code></pre>
+<h2>Authentication Improvements</h2>
+<h3>Enhanced JWT Validation</h3>
+<ul>
+<li>Validates token format before processing</li>
+<li>Returns specific error messages</li>
+<li>Uses standardized error responses</li>
+<li>Includes request ID in auth failures</li>
+</ul>
+<h3>Example Auth Error</h3>
+<pre><code class="language-json">{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Invalid authorization header format&quot;,
+    &quot;code&quot;: &quot;UNAUTHORIZED&quot;
+  },
+  &quot;meta&quot;: {
+    &quot;timestamp&quot;: &quot;2025-12-05T16:00:00.000Z&quot;,
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+  }
+}
+</code></pre>
+<h2>Logging Improvements</h2>
+<h3>Structured Logging</h3>
+<p>All logs now include:</p>
+<ul>
+<li>Request ID for correlation</li>
+<li>HTTP method and path</li>
+<li>Status code and duration</li>
+<li>Client IP address</li>
+<li>User agent (when relevant)</li>
+</ul>
+<h3>Log Levels</h3>
+<p>Logs are categorized by severity:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Status Codes</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>INFO</td>
+<td>200-299</td>
+<td>Successful operations</td>
+</tr>
+<tr>
+<td>WARN</td>
+<td>400-499</td>
+<td>Client errors (bad requests)</td>
+</tr>
+<tr>
+<td>ERROR</td>
+<td>500-599</td>
+<td>Server errors</td>
+</tr>
+</tbody></table>
+<h3>Example Log Entries</h3>
+<pre><code>[2025-12-05 16:00:00] INFO: API Request {
+  &quot;method&quot;: &quot;GET&quot;,
+  &quot;path&quot;: &quot;/api/v1/notes&quot;,
+  &quot;statusCode&quot;: 200,
+  &quot;duration&quot;: &quot;45ms&quot;,
+  &quot;ip&quot;: &quot;192.168.1.1&quot;,
+  &quot;requestId&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;
+}
+
+[2025-12-05 16:00:05] WARN: API Request - Client Error {
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;path&quot;: &quot;/api/v1/auth/login&quot;,
+  &quot;statusCode&quot;: 401,
+  &quot;duration&quot;: &quot;12ms&quot;,
+  &quot;ip&quot;: &quot;192.168.1.1&quot;,
+  &quot;requestId&quot;: &quot;660e8400-e29b-41d4-a716-446655440001&quot;
+}
+
+[2025-12-05 16:00:10] ERROR: API Request - Server Error {
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;path&quot;: &quot;/api/v1/notes&quot;,
+  &quot;statusCode&quot;: 500,
+  &quot;duration&quot;: &quot;250ms&quot;,
+  &quot;ip&quot;: &quot;192.168.1.1&quot;,
+  &quot;requestId&quot;: &quot;770e8400-e29b-41d4-a716-446655440002&quot;
+}
+</code></pre>
+<h2>Best Practices</h2>
+<h3>For Developers</h3>
+<ol>
+<li><strong>Always use validation middleware</strong> for user input</li>
+<li><strong>Return standardized errors</strong> using the response handler</li>
+<li><strong>Log errors with request IDs</strong> for debugging</li>
+<li><strong>Include security headers</strong> on all responses</li>
+<li><strong>Sanitize input</strong> before processing</li>
+<li><strong>Use error codes</strong> for programmatic error handling</li>
+</ol>
+<h3>For Clients</h3>
+<ol>
+<li><strong>Store request IDs</strong> when errors occur</li>
+<li><strong>Check <code>success</code> field</strong> before processing responses</li>
+<li><strong>Handle rate limits</strong> with exponential backoff</li>
+<li><strong>Use error codes</strong> for automated error handling</li>
+<li><strong>Log security-relevant events</strong> (auth failures, etc.)</li>
+</ol>
+<h3>For Operations</h3>
+<ol>
+<li><strong>Monitor request IDs</strong> across distributed systems</li>
+<li><strong>Alert on error rate thresholds</strong></li>
+<li><strong>Review security logs</strong> regularly</li>
+<li><strong>Update rate limits</strong> based on usage patterns</li>
+<li><strong>Rotate logs</strong> and maintain audit trails</li>
+</ol>
+<h2>Security Checklist</h2>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Request ID tracking implemented</li>
+<li><input checked="" disabled="" type="checkbox"> Security headers configured</li>
+<li><input checked="" disabled="" type="checkbox"> Input validation middleware created</li>
+<li><input checked="" disabled="" type="checkbox"> Rate limiting enabled</li>
+<li><input checked="" disabled="" type="checkbox"> Error handling standardized</li>
+<li><input checked="" disabled="" type="checkbox"> Authentication errors improved</li>
+<li><input checked="" disabled="" type="checkbox"> Structured logging implemented</li>
+<li><input checked="" disabled="" type="checkbox"> CSP policy configured</li>
+<li><input checked="" disabled="" type="checkbox"> HTTPS enforced in production</li>
+<li><input checked="" disabled="" type="checkbox"> JWT validation enhanced</li>
+</ul>
+<h2>Future Improvements</h2>
+<p>Planned security enhancements:</p>
+<ol>
+<li><strong>API Key Authentication</strong>: Alternative to JWT for service-to-service auth</li>
+<li><strong>IP Whitelisting</strong>: Restrict admin endpoints to trusted IPs</li>
+<li><strong>Audit Log Export</strong>: Export security events for compliance</li>
+<li><strong>Advanced Rate Limiting</strong>: Per-user and per-endpoint limits</li>
+<li><strong>Security Headers Reporting</strong>: CSP violation reporting</li>
+<li><strong>Request Signature Validation</strong>: HMAC-based request signing</li>
+<li><strong>Automated Security Scanning</strong>: Regular vulnerability assessments</li>
+</ol>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

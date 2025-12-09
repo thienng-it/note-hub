@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Real-Time Database Monitoring & User Management Tools">
+    <title>Real-Time Database Monitoring & User Management Tools - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Real-Time Database Monitoring & User Management Tools</span>
+        </div>
+
+        <article class="content">
+            <h1>Real-Time Database Monitoring &amp; User Management Tools</h1>
+<p>This directory contains powerful scripts for monitoring, testing, and managing user accounts in real-time.</p>
+<h2>📁 Directory Structure</h2>
+<pre><code>scripts/
+├── monitoring/               # Real-time monitoring and user management tools
+│   ├── demo_realtime_user_creation.py
+│   ├── monitor_db_realtime.py
+│   ├── user_dashboard.py
+│   ├── cleanup_test_users.py
+│   └── test_create_user.py
+├── verify_password_policy.py # Password policy verification
+├── quick_test.sh            # Quick testing script
+└── README.md                # This file
+</code></pre>
+<h2>🚀 Quick Start</h2>
+<h3>Setup</h3>
+<pre><code class="language-bash"># Install dependencies (only needed once)
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+</code></pre>
+<h3>Test Real-Time Updates</h3>
+<pre><code class="language-bash"># Run the interactive demo
+python scripts/monitoring/demo_realtime_user_creation.py
+</code></pre>
+<h2>📋 Available Scripts</h2>
+<h3>1. <strong>demo_realtime_user_creation.py</strong> 🎬</h3>
+<p>Interactive demonstration that shows real-time database updates.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/demo_realtime_user_creation.py
+</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Shows initial database state</li>
+<li>Creates 3 test users with real-time feedback</li>
+<li>Displays updated database state</li>
+<li>Provides before/after comparison</li>
+</ul>
+<p><strong>Perfect for:</strong> Understanding how user creation works and verifying real-time updates.</p>
+<hr>
+<h3>2. <strong>monitor_db_realtime.py</strong> 👀</h3>
+<p>Continuously watches the database for new user accounts.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/monitor_db_realtime.py
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Checks database every 2 seconds</li>
+<li>Instantly displays new users with full details</li>
+<li>Shows periodic heartbeat (every 10 checks)</li>
+<li>Displays final statistics on exit</li>
+</ul>
+<p><strong>Use case:</strong> Run this in one terminal, then create users in another terminal or via the web interface. Watch the monitor detect them instantly!</p>
+<hr>
+<h3>3. <strong>user_dashboard.py</strong> 📊</h3>
+<p>Comprehensive user account statistics and activity dashboard.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/user_dashboard.py
+</code></pre>
+<p><strong>Shows:</strong></p>
+<ul>
+<li>Total user count and percentages</li>
+<li>Email and 2FA adoption rates</li>
+<li>Recent registrations (last 10)</li>
+<li>Active users (last 7 days)</li>
+<li>Growth metrics (today/week/month)</li>
+<li>Security status warnings</li>
+</ul>
+<p><strong>Perfect for:</strong> Getting a quick overview of your user base.</p>
+<hr>
+<h3>4. <strong>test_create_user.py</strong> ✨</h3>
+<p>Create a single test user account.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/test_create_user.py &lt;username&gt; &lt;password&gt;
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/test_create_user.py newuser &quot;SecurePassword123!@#&quot;
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Enforces password policy</li>
+<li>Checks for duplicate usernames</li>
+<li>Shows immediate confirmation</li>
+<li>Perfect for testing with the monitor</li>
+</ul>
+<hr>
+<h3>5. <strong>cleanup_test_users.py</strong> 🧹</h3>
+<p>Clean up test users from the database.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-bash"># Dry run to see what would be deleted
+python scripts/monitoring/cleanup_test_users.py --dry-run
+
+# Interactive cleanup
+python scripts/monitoring/cleanup_test_users.py
+
+# Remove all test* users
+python scripts/monitoring/cleanup_test_users.py --all
+</code></pre>
+<hr>
+<h3>6. <strong>verify_password_policy.py</strong> 🔒</h3>
+<p>Verify password policy enforcement.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-bash">python scripts/verify_password_policy.py
+</code></pre>
+<hr>
+<h3>7. <strong>quick_test.sh</strong> ⚡</h3>
+<p>Quick testing script for the entire workflow.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-bash">bash scripts/quick_test.sh
+</code></pre>
+<hr>
+<h2>🎯 Real-Time Monitoring Demo</h2>
+<h3>Two-Terminal Method</h3>
+<p><strong>Terminal 1 - Monitor:</strong></p>
+<pre><code class="language-bash">python scripts/monitoring/monitor_db_realtime.py
+</code></pre>
+<p><strong>Terminal 2 - Create Users:</strong></p>
+<pre><code class="language-bash"># Method A: Use the test script
+python scripts/monitoring/test_create_user.py alice &quot;AlicePassword123!@#&quot;
+python scripts/monitoring/test_create_user.py bob &quot;BobSecure456!@#&quot;
+
+# Method B: Run the automated demo
+python scripts/monitoring/demo_realtime_user_creation.py
+
+# Method C: Start your Flask app and register via browser
+python wsgi.py
+</code></pre>
+<p>Watch Terminal 1 instantly detect each new user! ⚡</p>
+<hr>
+<h2>🔧 Enhanced Features</h2>
+<h3>Audit Logging</h3>
+<p>The system now includes comprehensive audit logging:</p>
+<ul>
+<li><strong>User Creation Logging</strong>: Every password set operation is logged</li>
+<li><strong>Database Event Tracking</strong>: SQLAlchemy events capture all user inserts/updates</li>
+<li><strong>Timestamps</strong>: All operations include precise timestamps</li>
+</ul>
+<p>Check the application logs to see detailed audit trails.</p>
+<hr>
+<h2>📊 Use Cases</h2>
+<h3>For Development</h3>
+<ul>
+<li><strong>Verify Registration Flow</strong>: Ensure user creation works correctly</li>
+<li><strong>Test Database Transactions</strong>: Confirm commits happen properly</li>
+<li><strong>Debug Issues</strong>: Watch database state change in real-time</li>
+</ul>
+<h3>For Production Monitoring</h3>
+<ul>
+<li><strong>User Growth Tracking</strong>: See registration patterns</li>
+<li><strong>Security Audits</strong>: Check 2FA adoption rates</li>
+<li><strong>Activity Monitoring</strong>: Track login patterns</li>
+</ul>
+<h3>For Testing</h3>
+<ul>
+<li><strong>Create Test Data</strong>: Quickly populate database with users</li>
+<li><strong>Verify Real-Time Updates</strong>: Confirm application responsiveness</li>
+<li><strong>Performance Testing</strong>: Watch database performance under load</li>
+</ul>
+<hr>
+<h2>🛡️ Password Policy Requirements</h2>
+<p>All scripts enforce these password requirements:</p>
+<ul>
+<li>Minimum 12 characters</li>
+<li>At least 1 lowercase letter</li>
+<li>At least 1 uppercase letter</li>
+<li>At least 1 digit</li>
+<li>At least 1 special character (!@#$%^&amp;*)</li>
+</ul>
+<p><strong>Valid Example:</strong> <code>&quot;SecurePassword123!@#&quot;</code></p>
+<hr>
+<h2>💡 Tips &amp; Tricks</h2>
+<h3>Quick Health Check</h3>
+<pre><code class="language-bash"># See current state
+python scripts/monitoring/user_dashboard.py
+
+# Create a test user
+python scripts/monitoring/test_create_user.py healthcheck &quot;HealthCheck123!@#&quot;
+
+# Verify it appears
+python scripts/monitoring/user_dashboard.py
+</code></pre>
+<h3>Continuous Monitoring</h3>
+<pre><code class="language-bash"># Keep monitor running in background
+python scripts/monitoring/monitor_db_realtime.py &amp;
+
+# Or use tmux/screen for persistent sessions
+tmux new -s dbmonitor
+python scripts/monitoring/monitor_db_realtime.py
+# Detach with Ctrl+B, D
+</code></pre>
+<h3>Database Location</h3>
+<p>All scripts automatically use the database configured in your <code>.env</code> file or default to <code>notes.db</code>.</p>
+<hr>
+<h2>🎉 Summary</h2>
+<p>You now have a complete suite of tools to:</p>
+<ol>
+<li>✅ Monitor database in real-time</li>
+<li>✅ Create test users easily</li>
+<li>✅ View comprehensive statistics</li>
+<li>✅ Audit user activity</li>
+<li>✅ Verify real-time updates work perfectly</li>
+</ol>
+<p><strong>The database updates happen instantly after each <code>session.commit()</code> - no delays, no caching issues!</strong></p>
+<p>Enjoy your enhanced NoteHub application! 🚀</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

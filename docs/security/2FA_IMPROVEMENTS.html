@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Two-Factor Authentication (2FA) Improvements">
+    <title>Two-Factor Authentication (2FA) Improvements - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Two-Factor Authentication (2FA) Improvements</span>
+        </div>
+
+        <article class="content">
+            <h1>Two-Factor Authentication (2FA) Improvements</h1>
+<h2>Overview</h2>
+<p>Enhanced 2FA management to improve user experience and provide administrative controls.</p>
+<hr>
+<h2>Changes Implemented</h2>
+<h3>1. Simplified 2FA Disabling Process</h3>
+<p><strong>Before:</strong></p>
+<ul>
+<li>Required OTP code to disable 2FA</li>
+<li>User needed authenticator app access</li>
+<li>Friction for users wanting to disable 2FA</li>
+</ul>
+<p><strong>After:</strong></p>
+<ul>
+<li>No OTP code required for disabling</li>
+<li>User authenticated via JWT token</li>
+<li>Streamlined user experience</li>
+</ul>
+<p><strong>Security Rationale:</strong></p>
+<ul>
+<li>User already authenticated (valid JWT token)</li>
+<li>JWT proves user identity</li>
+<li>Disabling 2FA reduces security but is user&#39;s choice</li>
+<li>OTP requirement created support burden (lost devices, etc.)</li>
+<li>Security logging provides audit trail</li>
+</ul>
+<h3>2. Admin 2FA Management</h3>
+<p><strong>New Feature:</strong></p>
+<ul>
+<li>Admins can disable 2FA for users</li>
+<li>Useful for account recovery scenarios</li>
+<li>Full audit logging</li>
+</ul>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>User lost authenticator device</li>
+<li>User unable to access account</li>
+<li>Account recovery assistance</li>
+<li>Emergency access scenarios</li>
+</ul>
+<hr>
+<h2>API Changes</h2>
+<h3>User 2FA Disable (Updated)</h3>
+<p><strong>Endpoint:</strong> <code>POST /api/auth/2fa/disable</code></p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-json">{
+  &quot;totp_code&quot;: &quot;123456&quot;  // Required
+}
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-json">{
+  // No body required - JWT token authentication only
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;message&quot;: &quot;2FA disabled successfully&quot;,
+  &quot;has_2fa&quot;: false
+}
+</code></pre>
+<p><strong>Security:</strong></p>
+<ul>
+<li>Requires valid JWT token (user must be logged in)</li>
+<li>Action logged for audit trail</li>
+<li>Simpler UX without compromising security</li>
+</ul>
+<hr>
+<h3>Admin 2FA Disable (New)</h3>
+<p><strong>Endpoint:</strong> <code>POST /api/admin/users/:userId/disable-2fa</code></p>
+<p><strong>Authentication:</strong></p>
+<ul>
+<li>Requires admin JWT token</li>
+<li>Admin role verified via middleware</li>
+</ul>
+<p><strong>Request:</strong></p>
+<pre><code class="language-bash">POST /api/admin/users/123/disable-2fa
+Authorization: Bearer &lt;admin_jwt_token&gt;
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;message&quot;: &quot;2FA disabled successfully for user john_doe&quot;,
+  &quot;user&quot;: {
+    &quot;id&quot;: 123,
+    &quot;username&quot;: &quot;john_doe&quot;,
+    &quot;has_2fa&quot;: false
+  }
+}
+</code></pre>
+<p><strong>Error Cases:</strong></p>
+<ul>
+<li>400: Invalid user ID</li>
+<li>404: User not found</li>
+<li>400: 2FA not enabled for user</li>
+<li>401: Not authenticated</li>
+<li>403: Not admin user</li>
+</ul>
+<hr>
+<h2>Security Logging</h2>
+<h3>User 2FA Disable</h3>
+<pre><code>[SECURITY] 2FA disabled by user ID: 123
+</code></pre>
+<p><strong>Logged Information:</strong></p>
+<ul>
+<li>Timestamp (automatic)</li>
+<li>User ID</li>
+<li>Action type</li>
+</ul>
+<p><strong>Privacy Note:</strong> Only user IDs are logged (not usernames) to protect user privacy and comply with data protection regulations (GDPR, CCPA).</p>
+<h3>Admin 2FA Disable</h3>
+<pre><code>[SECURITY AUDIT] Admin ID: 1 disabled 2FA for user ID: 123
+</code></pre>
+<p><strong>Logged Information:</strong></p>
+<ul>
+<li>Timestamp (automatic)</li>
+<li>Admin user ID</li>
+<li>Target user ID</li>
+<li>Action type</li>
+</ul>
+<p><strong>Privacy Note:</strong> User IDs can be cross-referenced with the database when needed for audits, but logs themselves don&#39;t contain PII (Personally Identifiable Information).</p>
+<p><strong>Audit Trail Purpose:</strong></p>
+<ul>
+<li>Compliance requirements</li>
+<li>Security incident investigation</li>
+<li>Abuse detection</li>
+<li>User support</li>
+</ul>
+<hr>
+<h2>User Experience Flow</h2>
+<h3>User Disabling Own 2FA</h3>
+<p><strong>Old Flow:</strong></p>
+<ol>
+<li>Navigate to Profile/Settings</li>
+<li>Click &quot;Disable 2FA&quot;</li>
+<li>Get authenticator app</li>
+<li>Find current OTP code</li>
+<li>Enter OTP code</li>
+<li>Submit</li>
+</ol>
+<p><strong>New Flow:</strong></p>
+<ol>
+<li>Navigate to Profile/Settings</li>
+<li>Click &quot;Disable 2FA&quot;</li>
+<li>Confirm action</li>
+<li>Done</li>
+</ol>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>50% fewer steps</li>
+<li>No authenticator app required</li>
+<li>Faster completion</li>
+<li>Lower support burden</li>
+</ul>
+<hr>
+<h3>Admin Disabling User 2FA</h3>
+<p><strong>Flow:</strong></p>
+<ol>
+<li>Admin logs in</li>
+<li>Navigate to Admin Panel → Users</li>
+<li>Find user (search/list)</li>
+<li>Click &quot;Disable 2FA&quot; action</li>
+<li>Confirm action</li>
+<li>2FA disabled + audit log created</li>
+</ol>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>User lost device</li>
+<li>User locked out</li>
+<li>Emergency access</li>
+<li>Support request</li>
+</ul>
+<hr>
+<h2>Security Considerations</h2>
+<h3>Why Remove OTP Requirement?</h3>
+<p><strong>Reasoning:</strong></p>
+<ol>
+<li><p><strong>User Already Authenticated</strong></p>
+<ul>
+<li>Valid JWT token proves identity</li>
+<li>Token issued after password + optional 2FA login</li>
+<li>Same level of authentication</li>
+</ul>
+</li>
+<li><p><strong>Usability vs Security Tradeoff</strong></p>
+<ul>
+<li>Disabling 2FA inherently reduces security</li>
+<li>Additional OTP doesn&#39;t prevent determined user</li>
+<li>Created support burden (lost devices)</li>
+</ul>
+</li>
+<li><p><strong>Industry Practices</strong></p>
+<ul>
+<li>Many services allow 2FA disable without OTP</li>
+<li>Focus on strong initial authentication</li>
+<li>Audit logging for accountability</li>
+</ul>
+</li>
+</ol>
+<h3>Remaining Security Measures</h3>
+<p><strong>Still Protected:</strong></p>
+<ul>
+<li>✅ JWT authentication required</li>
+<li>✅ Session-based access control</li>
+<li>✅ Security event logging</li>
+<li>✅ Admin actions logged separately</li>
+<li>✅ Password required for login</li>
+<li>✅ Rate limiting on endpoints</li>
+</ul>
+<h3>Admin Powers and Checks</h3>
+<p><strong>Admin Abilities:</strong></p>
+<ul>
+<li>Can disable any user&#39;s 2FA</li>
+<li>Full audit trail logged</li>
+<li>Cannot see user&#39;s TOTP secret</li>
+<li>Cannot enable 2FA for users</li>
+</ul>
+<p><strong>Protection Against Abuse:</strong></p>
+<ul>
+<li>All actions logged with admin ID</li>
+<li>Regular audit log reviews recommended</li>
+<li>Consider multi-admin approval for production</li>
+<li>Monitor for patterns of abuse</li>
+</ul>
+<hr>
+<h2>Implementation Details</h2>
+<h3>Database Changes</h3>
+<p>No database schema changes required. Uses existing <code>totp_secret</code> field:</p>
+<ul>
+<li>Set to NULL when 2FA disabled</li>
+<li>Presence indicates 2FA enabled</li>
+</ul>
+<h3>Code Changes</h3>
+<p><strong>Files Modified:</strong></p>
+<ol>
+<li><p><code>backend/src/routes/auth.js</code></p>
+<ul>
+<li>Updated <code>/2fa/disable</code> endpoint</li>
+<li>Removed OTP code requirement</li>
+<li>Added security logging</li>
+</ul>
+</li>
+<li><p><code>backend/src/routes/admin.js</code></p>
+<ul>
+<li>Added <code>/admin/users/:userId/disable-2fa</code> endpoint</li>
+<li>Admin role verification</li>
+<li>Audit logging</li>
+</ul>
+</li>
+</ol>
+<p><strong>No Breaking Changes:</strong></p>
+<ul>
+<li>API response format compatible</li>
+<li>Frontend adjustments needed but not breaking</li>
+</ul>
+<hr>
+<h2>Frontend Integration</h2>
+<h3>User Profile Component</h3>
+<p><strong>Update Disable 2FA Button:</strong></p>
+<pre><code class="language-javascript">// Before
+const disable2FA = async () =&gt; {
+  const code = prompt(&#39;Enter 2FA code:&#39;);
+  await api.post(&#39;/auth/2fa/disable&#39;, { totp_code: code });
+};
+
+// After
+const disable2FA = async () =&gt; {
+  if (confirm(&#39;Disable 2FA for your account?&#39;)) {
+    await api.post(&#39;/auth/2fa/disable&#39;);
+    // Update UI
+  }
+};
+</code></pre>
+<h3>Admin Panel Component</h3>
+<p><strong>New 2FA Disable Action:</strong></p>
+<pre><code class="language-javascript">const adminDisable2FA = async (userId, username) =&gt; {
+  if (confirm(`Disable 2FA for user ${username}?`)) {
+    try {
+      await api.post(`/admin/users/${userId}/disable-2fa`);
+      // Refresh user list
+      // Show success message
+    } catch (error) {
+      // Handle errors
+    }
+  }
+};
+</code></pre>
+<p><strong>Add to User Actions:</strong></p>
+<ul>
+<li>Show &quot;Disable 2FA&quot; button only if user has 2FA enabled</li>
+<li>Display confirmation dialog</li>
+<li>Update user list after action</li>
+<li>Show success/error notifications</li>
+</ul>
+<hr>
+<h2>Testing</h2>
+<h3>Manual Testing</h3>
+<p><strong>User 2FA Disable:</strong></p>
+<pre><code class="language-bash"># 1. Enable 2FA for test user
+POST /api/auth/2fa/enable
+{
+  &quot;secret&quot;: &quot;...&quot;,
+  &quot;totp_code&quot;: &quot;123456&quot;
+}
+
+# 2. Login to get JWT
+POST /api/auth/login
+{
+  &quot;username&quot;: &quot;testuser&quot;,
+  &quot;password&quot;: &quot;TestPass123&quot;,
+  &quot;totp_code&quot;: &quot;123456&quot;
+}
+
+# 3. Disable 2FA (no OTP needed)
+POST /api/auth/2fa/disable
+Authorization: Bearer &lt;jwt_token&gt;
+
+# Expected: Success without OTP code
+</code></pre>
+<p><strong>Admin 2FA Disable:</strong></p>
+<pre><code class="language-bash"># 1. Login as admin
+POST /api/auth/login
+{
+  &quot;username&quot;: &quot;admin&quot;,
+  &quot;password&quot;: &quot;AdminPass123&quot;
+}
+
+# 2. Disable user&#39;s 2FA
+POST /api/admin/users/123/disable-2fa
+Authorization: Bearer &lt;admin_jwt_token&gt;
+
+# Expected: Success + audit log entry
+</code></pre>
+<h3>Automated Tests</h3>
+<pre><code class="language-javascript">describe(&#39;2FA Disable&#39;, () =&gt; {
+  test(&#39;User can disable own 2FA without OTP&#39;, async () =&gt; {
+    // Setup: Enable 2FA
+    // Action: Call disable endpoint without OTP
+    // Assert: 2FA disabled, totp_secret is NULL
+  });
+
+  test(&#39;Admin can disable user 2FA&#39;, async () =&gt; {
+    // Setup: User with 2FA, admin token
+    // Action: Admin disables user 2FA
+    // Assert: 2FA disabled, audit log created
+  });
+
+  test(&#39;Non-admin cannot disable other user 2FA&#39;, async () =&gt; {
+    // Setup: Regular user token
+    // Action: Try to disable other user&#39;s 2FA
+    // Assert: 403 Forbidden error
+  });
+});
+</code></pre>
+<hr>
+<h2>Monitoring</h2>
+<h3>Key Metrics</h3>
+<ol>
+<li><p><strong>2FA Disable Events</strong></p>
+<ul>
+<li>Track frequency</li>
+<li>Monitor for unusual patterns</li>
+<li>Alert on mass disables</li>
+</ul>
+</li>
+<li><p><strong>Admin Actions</strong></p>
+<ul>
+<li>Count admin 2FA disables</li>
+<li>Identify admins performing actions</li>
+<li>Alert on excessive use</li>
+</ul>
+</li>
+<li><p><strong>Account Security</strong></p>
+<ul>
+<li>% users with 2FA enabled</li>
+<li>2FA enable/disable ratio</li>
+<li>Track trends over time</li>
+</ul>
+</li>
+</ol>
+<h3>Log Analysis</h3>
+<pre><code class="language-bash"># Count 2FA disable events (last 24h)
+grep &quot;[SECURITY] 2FA disabled&quot; logs.txt | wc -l
+
+# Count admin 2FA disables
+grep &quot;[SECURITY AUDIT].*disabled 2FA&quot; logs.txt | wc -l
+
+# List admin actions
+grep &quot;[SECURITY AUDIT]&quot; logs.txt | tail -20
+</code></pre>
+<hr>
+<h2>Best Practices</h2>
+<h3>For Users</h3>
+<ul>
+<li>✅ Use strong password with 2FA enabled</li>
+<li>✅ Backup TOTP secret when enabling</li>
+<li>✅ Use authenticator app (not SMS)</li>
+<li>⚠️ Think carefully before disabling 2FA</li>
+</ul>
+<h3>For Admins</h3>
+<ul>
+<li>✅ Only disable 2FA when necessary</li>
+<li>✅ Verify user identity before action</li>
+<li>✅ Document reason in support ticket</li>
+<li>✅ Encourage user to re-enable after recovery</li>
+</ul>
+<h3>For Operators</h3>
+<ul>
+<li>✅ Monitor audit logs regularly</li>
+<li>✅ Alert on unusual patterns</li>
+<li>✅ Review admin actions periodically</li>
+<li>✅ Maintain log retention for compliance</li>
+</ul>
+<hr>
+<h2>Migration Guide</h2>
+<h3>Deployment Steps</h3>
+<ol>
+<li><p><strong>Deploy Backend Changes</strong></p>
+<pre><code class="language-bash">git pull origin main
+cd backend
+npm install
+npm restart
+</code></pre>
+</li>
+<li><p><strong>Update Frontend</strong> (if needed)</p>
+<ul>
+<li>Remove OTP input from disable 2FA form</li>
+<li>Add admin 2FA disable button</li>
+<li>Update API calls</li>
+</ul>
+</li>
+<li><p><strong>Test Functionality</strong></p>
+<ul>
+<li>Test user 2FA disable</li>
+<li>Test admin 2FA disable</li>
+<li>Verify logging</li>
+</ul>
+</li>
+<li><p><strong>Monitor Logs</strong></p>
+<ul>
+<li>Check for errors</li>
+<li>Verify logging works</li>
+<li>Monitor usage patterns</li>
+</ul>
+</li>
+</ol>
+<h3>Rollback Plan</h3>
+<p>If issues arise:</p>
+<pre><code class="language-bash">git revert &lt;commit_hash&gt;
+# Redeploy previous version
+# No data migration needed
+</code></pre>
+<hr>
+<h2>Future Enhancements</h2>
+<h3>Short Term</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Add 2FA disable cooldown (prevent rapid toggle)</li>
+<li><input disabled="" type="checkbox"> Email notification on 2FA changes</li>
+<li><input disabled="" type="checkbox"> Frontend UI updates</li>
+<li><input disabled="" type="checkbox"> Admin panel 2FA management page</li>
+<li><input disabled="" type="checkbox"> Implement proper logging framework (winston, pino)</li>
+</ul>
+<h3>Medium Term</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Multi-admin approval for sensitive actions</li>
+<li><input disabled="" type="checkbox"> Automatic 2FA re-enable prompts</li>
+<li><input disabled="" type="checkbox"> 2FA recovery codes</li>
+<li><input disabled="" type="checkbox"> Backup authentication methods</li>
+</ul>
+<h3>Long Term</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Hardware security key support (FIDO2)</li>
+<li><input disabled="" type="checkbox"> Biometric authentication</li>
+<li><input disabled="" type="checkbox"> Risk-based authentication</li>
+<li><input disabled="" type="checkbox"> Anomaly detection</li>
+</ul>
+<hr>
+<p><strong>Document Version:</strong> 1.0<br><strong>Date:</strong> 2025-12-04<br><strong>Status:</strong> Implemented</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

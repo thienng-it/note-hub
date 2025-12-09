@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Graylog Setup and Integration Guide">
+    <title>Graylog Setup and Integration Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Graylog Setup and Integration Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Graylog Setup and Integration Guide</h1>
+<h2>Overview</h2>
+<p>This guide explains how to set up Graylog log aggregation system alongside NoteHub and Drone CI on the same VPS server. Graylog provides centralized log management, powerful search capabilities, and real-time monitoring.</p>
+<h2>Architecture</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                        VPS Server                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
+│  │   NoteHub    │  │   Drone CI   │  │   Graylog    │    │
+│  │  Port 80/443 │  │ Port 8080/8443│  │  Port 9000   │    │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘    │
+│         │                  │                  │             │
+│         │    GELF Logs     │    GELF Logs    │             │
+│         └──────────────────┴─────────────────►             │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐ │
+│  │                Graylog Components                    │ │
+│  │  ┌─────────┐  ┌──────────┐  ┌──────────────────┐  │ │
+│  │  │ Graylog │  │ MongoDB  │  │   OpenSearch     │  │ │
+│  │  │ Server  │  │ Metadata │  │   Log Storage    │  │ │
+│  │  └─────────┘  └──────────┘  └──────────────────┘  │ │
+│  └──────────────────────────────────────────────────────┘ │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2>Port Allocation</h2>
+<p>All three applications can run on the same VPS without port conflicts:</p>
+<ul>
+<li><strong>NoteHub</strong>: Ports 80/443 (HTTP/HTTPS)</li>
+<li><strong>Drone CI</strong>: Ports 8080/8443 (HTTP/HTTPS)</li>
+<li><strong>Graylog</strong>: <ul>
+<li>Port 9000 (Web UI)</li>
+<li>Port 12201 (GELF UDP/TCP for log input)</li>
+<li>Internal: MongoDB (27017), OpenSearch (9200)</li>
+</ul>
+</li>
+</ul>
+<h2>Prerequisites</h2>
+<ul>
+<li>Docker and Docker Compose installed</li>
+<li>At least 4GB RAM available for Graylog stack</li>
+<li>(Recommended) 8GB+ total RAM for running all three applications</li>
+</ul>
+<h2>Quick Start</h2>
+<h3>1. Configuration</h3>
+<p>Copy the example environment file and configure it:</p>
+<pre><code class="language-bash">cp .env.graylog.example .env.graylog
+</code></pre>
+<p>Edit <code>.env.graylog</code> and configure the following required variables:</p>
+<h4>Generate Password Secret (96 characters)</h4>
+<pre><code class="language-bash"># Option 1: Using pwgen (if installed)
+pwgen -N 1 -s 96
+
+# Option 2: Using openssl
+openssl rand -base64 96 | tr -d &#39;\n&#39;
+</code></pre>
+<p>Copy the output and set it as <code>GRAYLOG_PASSWORD_SECRET</code> in <code>.env.graylog</code>.</p>
+<h4>Generate Root Password Hash</h4>
+<p>Choose a strong admin password and generate its SHA2 hash:</p>
+<pre><code class="language-bash"># Replace &quot;your-admin-password&quot; with your actual password
+echo -n &quot;your-admin-password&quot; | shasum -a 256
+</code></pre>
+<p>Copy the hash (first part of the output) and set it as <code>GRAYLOG_ROOT_PASSWORD_SHA2</code>.</p>
+<h4>Set MongoDB and OpenSearch Passwords</h4>
+<p>Update these variables with strong passwords:</p>
+<ul>
+<li><code>GRAYLOG_MONGODB_PASSWORD</code></li>
+<li><code>GRAYLOG_OPENSEARCH_PASSWORD</code></li>
+</ul>
+<h4>Configure External URI</h4>
+<p>Set the external URI for accessing Graylog:</p>
+<pre><code class="language-bash"># For localhost testing
+GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+
+# For production with IP
+GRAYLOG_HTTP_EXTERNAL_URI=http://your-server-ip:9000/
+
+# For production with domain
+GRAYLOG_HTTP_EXTERNAL_URI=http://logs.yourdomain.com:9000/
+</code></pre>
+<h3>2. Deploy Graylog</h3>
+<p>Start the Graylog stack:</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml up -d
+</code></pre>
+<p>Check the status:</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml ps
+</code></pre>
+<p>View logs:</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml logs -f
+</code></pre>
+<h3>3. Access Graylog UI</h3>
+<ol>
+<li>Open your browser and navigate to: <code>http://your-server:9000</code></li>
+<li>Log in with:<ul>
+<li>Username: <code>admin</code> (or the value you set in <code>GRAYLOG_ROOT_USERNAME</code>)</li>
+<li>Password: The password you used to generate the SHA2 hash</li>
+</ul>
+</li>
+</ol>
+<h3>4. Configure GELF Input</h3>
+<p>To receive logs from NoteHub and other applications:</p>
+<ol>
+<li>In Graylog UI, go to <strong>System → Inputs</strong></li>
+<li>Select <strong>GELF UDP</strong> or <strong>GELF TCP</strong> from the dropdown</li>
+<li>Click <strong>Launch new input</strong></li>
+<li>Configure the input:<ul>
+<li><strong>Title</strong>: <code>NoteHub Logs</code> (or any descriptive name)</li>
+<li><strong>Bind address</strong>: <code>0.0.0.0</code></li>
+<li><strong>Port</strong>: <code>12201</code></li>
+<li>Leave other settings as default</li>
+</ul>
+</li>
+<li>Click <strong>Save</strong></li>
+</ol>
+<p>The input should now show as &quot;RUNNING&quot; with a green indicator.</p>
+<h2>Integrating NoteHub with Graylog</h2>
+<h3>Backend Integration</h3>
+<p>NoteHub backend is already configured to support Graylog integration. To enable it:</p>
+<ol>
+<li>Edit your NoteHub <code>.env</code> file:</li>
+</ol>
+<pre><code class="language-bash"># Enable Graylog integration
+GRAYLOG_ENABLED=true
+GRAYLOG_HOST=localhost
+GRAYLOG_PORT=12201
+GRAYLOG_PROTOCOL=udp
+GRAYLOG_FACILITY=notehub-backend
+</code></pre>
+<ol start="2">
+<li>Restart NoteHub backend:</li>
+</ol>
+<pre><code class="language-bash">docker compose restart backend
+</code></pre>
+<ol start="3">
+<li>Verify logs are being sent:<ul>
+<li>Go to Graylog UI → <strong>Search</strong></li>
+<li>You should see logs from NoteHub appearing</li>
+<li>Use filters like <code>application:notehub-backend</code> to search</li>
+</ul>
+</li>
+</ol>
+<h3>Log Format</h3>
+<p>NoteHub sends structured logs to Graylog with the following fields:</p>
+<ul>
+<li><strong>timestamp</strong>: When the log was created</li>
+<li><strong>level</strong>: Log level (info, warn, error, debug)</li>
+<li><strong>message</strong>: Log message</li>
+<li><strong>application</strong>: <code>notehub-backend</code></li>
+<li><strong>environment</strong>: <code>development</code> or <code>production</code></li>
+<li><strong>version</strong>: Application version</li>
+<li><strong>method</strong>: HTTP method (for API requests)</li>
+<li><strong>path</strong>: Request path</li>
+<li><strong>statusCode</strong>: HTTP status code</li>
+<li><strong>duration</strong>: Request duration</li>
+<li><strong>userId</strong>: User ID (when authenticated)</li>
+</ul>
+<h3>Example Graylog Searches</h3>
+<pre><code># All NoteHub logs
+application:notehub-backend
+
+# All errors
+application:notehub-backend AND level:error
+
+# All API requests
+application:notehub-backend AND method:*
+
+# Slow requests (over 1 second)
+application:notehub-backend AND duration:&gt;1000
+
+# Failed API requests
+application:notehub-backend AND statusCode:&gt;=400
+
+# Authentication events
+application:notehub-backend AND message:*Auth*
+</code></pre>
+<h2>Integrating Drone CI with Graylog</h2>
+<p>Drone CI logs can also be sent to Graylog using Docker logging drivers or by configuring the Drone server to use a GELF logging driver.</p>
+<h3>Option 1: Docker GELF Logging Driver</h3>
+<p>Update your <code>docker-compose.drone.yml</code> to add GELF logging:</p>
+<pre><code class="language-yaml">services:
+  drone-server:
+    # ... existing configuration ...
+    logging:
+      driver: gelf
+      options:
+        gelf-address: &quot;udp://localhost:12201&quot;
+        tag: &quot;drone-server&quot;
+</code></pre>
+<h3>Option 2: View Docker Container Logs in Graylog</h3>
+<p>You can configure Docker daemon to send all container logs to Graylog by editing <code>/etc/docker/daemon.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;log-driver&quot;: &quot;gelf&quot;,
+  &quot;log-opts&quot;: {
+    &quot;gelf-address&quot;: &quot;udp://localhost:12201&quot;,
+    &quot;tag&quot;: &quot;{{.Name}}&quot;
+  }
+}
+</code></pre>
+<p>Restart Docker daemon:</p>
+<pre><code class="language-bash">sudo systemctl restart docker
+</code></pre>
+<h2>Management Operations</h2>
+<h3>Start Graylog</h3>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml up -d
+</code></pre>
+<h3>Stop Graylog</h3>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml down
+</code></pre>
+<h3>Restart Graylog</h3>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml restart
+</code></pre>
+<h3>View Logs</h3>
+<pre><code class="language-bash"># All services
+docker compose --env-file .env.graylog -f docker-compose.graylog.yml logs -f
+
+# Specific service
+docker compose --env-file .env.graylog -f docker-compose.graylog.yml logs -f graylog
+</code></pre>
+<h3>Remove Graylog (with data cleanup)</h3>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml down -v
+</code></pre>
+<p>⚠️ <strong>Warning</strong>: The <code>-v</code> flag removes all volumes including stored logs!</p>
+<h3>Backup Graylog Data</h3>
+<pre><code class="language-bash"># Create backup directory
+mkdir -p graylog-backup
+
+# Backup MongoDB (metadata)
+docker compose --env-file .env.graylog -f docker-compose.graylog.yml exec graylog-mongodb \
+  mongodump --out=/tmp/backup --authenticationDatabase=admin \
+  --username=graylog --password=${GRAYLOG_MONGODB_PASSWORD}
+
+docker cp graylog-mongodb:/tmp/backup ./graylog-backup/mongodb
+
+# Backup Graylog configuration
+docker compose --env-file .env.graylog -f docker-compose.graylog.yml exec graylog \
+  tar czf /tmp/graylog-data.tar.gz /usr/share/graylog/data
+
+docker cp graylog:/tmp/graylog-data.tar.gz ./graylog-backup/
+</code></pre>
+<h2>Resource Management</h2>
+<h3>Recommended Resources</h3>
+<p>Minimum for Graylog stack:</p>
+<ul>
+<li><strong>RAM</strong>: 4GB</li>
+<li><strong>CPU</strong>: 2 cores</li>
+<li><strong>Disk</strong>: 20GB (more for log storage)</li>
+</ul>
+<p>Recommended for full stack (NoteHub + Drone + Graylog):</p>
+<ul>
+<li><strong>RAM</strong>: 8GB</li>
+<li><strong>CPU</strong>: 4 cores</li>
+<li><strong>Disk</strong>: 50GB+</li>
+</ul>
+<h3>Optimize Performance</h3>
+<ol>
+<li><p><strong>Limit log retention</strong>: Configure index rotation in Graylog</p>
+<ul>
+<li>System → Indices → Configure rotation strategy</li>
+<li>Recommend: 30 days retention for general logs</li>
+</ul>
+</li>
+<li><p><strong>Adjust processing threads</strong>: In <code>.env.graylog</code></p>
+<pre><code class="language-bash">GRAYLOG_PROCESSBUFFER_PROCESSORS=5
+GRAYLOG_OUTPUTBUFFER_PROCESSORS=3
+</code></pre>
+</li>
+<li><p><strong>Monitor OpenSearch disk usage</strong>:</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml exec graylog-opensearch \
+  curl -X GET &quot;localhost:9200/_cat/indices?v&quot;
+</code></pre>
+</li>
+</ol>
+<h2>Troubleshooting</h2>
+<h3>Graylog Won&#39;t Start</h3>
+<p><strong>Check logs</strong>:</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml logs graylog
+</code></pre>
+<p><strong>Common issues</strong>:</p>
+<ol>
+<li><strong>Password secret too short</strong>: Must be at least 96 characters</li>
+<li><strong>Invalid root password hash</strong>: Regenerate SHA2 hash correctly</li>
+<li><strong>MongoDB connection failed</strong>: Check MongoDB is healthy</li>
+<li><strong>OpenSearch not ready</strong>: Wait 1-2 minutes for OpenSearch to start</li>
+</ol>
+<h3>Cannot Connect to Graylog UI</h3>
+<ol>
+<li><p><strong>Check service is running</strong>:</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml ps
+</code></pre>
+</li>
+<li><p><strong>Check health status</strong>:</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml exec graylog \
+  curl -f http://localhost:9000/api/system/lbstatus
+</code></pre>
+</li>
+<li><p><strong>Verify external URI</strong>: Must match how you access Graylog</p>
+<pre><code class="language-bash"># Check configured URI
+docker compose --env-file .env.graylog -f docker-compose.graylog.yml exec graylog \
+  env | grep GRAYLOG_HTTP_EXTERNAL_URI
+</code></pre>
+</li>
+</ol>
+<h3>Logs Not Appearing</h3>
+<ol>
+<li><p><strong>Verify input is running</strong>: System → Inputs (should show green &quot;RUNNING&quot;)</p>
+</li>
+<li><p><strong>Check NoteHub backend logs</strong>:</p>
+<pre><code class="language-bash">docker compose logs backend | grep -i graylog
+</code></pre>
+</li>
+<li><p><strong>Test GELF input manually</strong>:</p>
+<pre><code class="language-bash"># Install gelf-logger
+npm install -g gelf-logger
+
+# Send test message
+echo &#39;{&quot;short_message&quot;:&quot;Test message&quot;,&quot;host&quot;:&quot;test&quot;,&quot;level&quot;:1}&#39; | \
+  gelf-logger --host localhost --port 12201
+</code></pre>
+</li>
+<li><p><strong>Check Graylog system logs</strong>: System → Overview → System → Logs</p>
+</li>
+</ol>
+<h3>High Resource Usage</h3>
+<ol>
+<li><p><strong>Check OpenSearch heap size</strong>: Default is 1GB</p>
+<pre><code class="language-bash"># Edit docker-compose.graylog.yml
+# Increase: OPENSEARCH_JAVA_OPTS=-Xms2g -Xmx2g
+</code></pre>
+</li>
+<li><p><strong>Enable index optimization</strong>: System → Indices</p>
+<ul>
+<li>Set up rotation (daily/weekly)</li>
+<li>Configure retention (delete old indices)</li>
+</ul>
+</li>
+<li><p><strong>Monitor resource usage</strong>:</p>
+<pre><code class="language-bash">docker stats graylog graylog-opensearch graylog-mongodb
+</code></pre>
+</li>
+</ol>
+<h2>Security Considerations</h2>
+<ol>
+<li><strong>Use strong passwords</strong>: All passwords should be strong and unique</li>
+<li><strong>Enable HTTPS</strong>: Use reverse proxy (nginx/Traefik) for production</li>
+<li><strong>Firewall rules</strong>: Restrict access to Graylog ports</li>
+<li><strong>Regular updates</strong>: Keep Graylog stack updated</li>
+<li><strong>Backup regularly</strong>: Backup MongoDB and Graylog configuration</li>
+<li><strong>Monitor access</strong>: Review user access logs regularly</li>
+</ol>
+<h2>Advanced Configuration</h2>
+<h3>Custom Inputs</h3>
+<p>Graylog supports many input types:</p>
+<ul>
+<li><strong>GELF</strong> (Graylog Extended Log Format) - Recommended for structured logs</li>
+<li><strong>Syslog</strong> - For traditional syslog messages</li>
+<li><strong>Raw/Plaintext</strong> - For unstructured text logs</li>
+<li><strong>JSON</strong> - For JSON formatted logs</li>
+<li><strong>AWS Logs</strong> - For AWS CloudWatch logs</li>
+</ul>
+<h3>Alerts and Notifications</h3>
+<ol>
+<li>Go to <strong>Alerts → Event Definitions</strong></li>
+<li>Click <strong>Create Event Definition</strong></li>
+<li>Configure conditions (e.g., error rate threshold)</li>
+<li>Add notifications (email, Slack, PagerDuty)</li>
+</ol>
+<h3>Dashboards</h3>
+<ol>
+<li>Go to <strong>Dashboards</strong></li>
+<li>Click <strong>Create dashboard</strong></li>
+<li>Add widgets:<ul>
+<li><strong>Search result count</strong>: Show log volume</li>
+<li><strong>Quick values</strong>: Show top values for fields</li>
+<li><strong>Field histogram</strong>: Visualize numeric fields</li>
+<li><strong>Statistics</strong>: Show aggregations</li>
+</ul>
+</li>
+</ol>
+<h3>Extractors</h3>
+<p>Create extractors to parse unstructured logs:</p>
+<ol>
+<li>Go to <strong>System → Inputs</strong></li>
+<li>Select your input</li>
+<li>Click <strong>Manage extractors</strong></li>
+<li>Create extractors using regex or Grok patterns</li>
+</ol>
+<h2>Integration Examples</h2>
+<h3>Example 1: Custom Application Logging</h3>
+<p>For any Node.js application using Winston:</p>
+<pre><code class="language-javascript">const winston = require(&#39;winston&#39;);
+const WinstonGraylog2 = require(&#39;winston-graylog2&#39;);
+
+const logger = winston.createLogger({
+  level: &#39;info&#39;,
+  transports: [
+    new winston.transports.Console(),
+    new WinstonGraylog2({
+      graylog: {
+        servers: [{ host: &#39;localhost&#39;, port: 12201 }],
+        facility: &#39;my-app&#39;,
+      },
+      staticMeta: { environment: &#39;production&#39; },
+    }),
+  ],
+});
+
+logger.info(&#39;Application started&#39;);
+</code></pre>
+<h3>Example 2: Docker Container Logs</h3>
+<p>For individual containers:</p>
+<pre><code class="language-yaml">services:
+  my-app:
+    image: my-app:latest
+    logging:
+      driver: gelf
+      options:
+        gelf-address: &quot;udp://localhost:12201&quot;
+        tag: &quot;my-app&quot;
+</code></pre>
+<h2>Additional Resources</h2>
+<ul>
+<li><a href="https://docs.graylog.org/">Graylog Documentation</a></li>
+<li><a href="https://docs.graylog.org/docs/gelf">GELF Specification</a></li>
+<li><a href="https://github.com/Buzut/winston-graylog2">Winston Graylog2 Transport</a></li>
+<li><a href="https://opensearch.org/docs/">OpenSearch Documentation</a></li>
+</ul>
+<h2>Support</h2>
+<p>For issues specific to:</p>
+<ul>
+<li><strong>Graylog configuration</strong>: Check Graylog documentation</li>
+<li><strong>NoteHub integration</strong>: Check this repository&#39;s issues</li>
+<li><strong>Resource constraints</strong>: Review resource management section above</li>
+</ul>
+<h2>Summary</h2>
+<p>Graylog provides powerful centralized logging capabilities for NoteHub and other applications running on your VPS. With proper configuration, it enables:</p>
+<ul>
+<li><strong>Centralized log management</strong>: All logs in one place</li>
+<li><strong>Powerful search</strong>: Full-text search with filters</li>
+<li><strong>Real-time monitoring</strong>: Live log streams and dashboards</li>
+<li><strong>Alerting</strong>: Get notified of critical events</li>
+<li><strong>Log retention</strong>: Configurable storage and rotation</li>
+</ul>
+<p>The setup is designed to coexist peacefully with NoteHub (port 80/443) and Drone CI (port 8080/8443) on the same VPS server.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

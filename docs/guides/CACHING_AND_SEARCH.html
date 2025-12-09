@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Caching and Search Enhancement Guide">
+    <title>Caching and Search Enhancement Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Caching and Search Enhancement Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Caching and Search Enhancement Guide</h1>
+<h2>Overview</h2>
+<p>NoteHub supports optional Redis caching and Elasticsearch full-text search to enhance performance. Both are <strong>optional</strong> - the application works without them using SQL-only mode.</p>
+<hr>
+<h2>Performance Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>SQL Only</th>
+<th>With Redis</th>
+<th>With Elasticsearch</th>
+<th>With Both</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>List Notes</strong></td>
+<td>50-100ms</td>
+<td>5-10ms (10x faster)</td>
+<td>50-100ms</td>
+<td>5-10ms</td>
+</tr>
+<tr>
+<td><strong>Search Notes</strong></td>
+<td>100-200ms</td>
+<td>100-200ms</td>
+<td>20-40ms (5x faster)</td>
+<td>20-40ms</td>
+</tr>
+<tr>
+<td><strong>Get Tags</strong></td>
+<td>30-50ms</td>
+<td>2-5ms (10x faster)</td>
+<td>30-50ms</td>
+<td>2-5ms</td>
+</tr>
+<tr>
+<td><strong>Overall UX</strong></td>
+<td>Good</td>
+<td>Excellent</td>
+<td>Good</td>
+<td>Excellent</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Redis Caching</h2>
+<h3>Benefits</h3>
+<ul>
+<li><strong>10x faster</strong> queries for frequently accessed data</li>
+<li>Reduces database load</li>
+<li>Improves response times for list and filter operations</li>
+<li>Minimal configuration required</li>
+</ul>
+<h3>What Gets Cached</h3>
+<ul>
+<li>User&#39;s notes list (by view type, search, tags)</li>
+<li>User&#39;s tags list</li>
+<li>Cache TTL: 10 minutes for notes, 30 minutes for tags</li>
+<li>Auto-invalidation on create/update/delete</li>
+</ul>
+<h3>Setup</h3>
+<h4>1. Local Redis (Development)</h4>
+<p><strong>Install Redis:</strong></p>
+<pre><code class="language-bash"># macOS
+brew install redis
+brew services start redis
+
+# Ubuntu/Debian
+sudo apt-get install redis-server
+sudo systemctl start redis
+
+# Docker
+docker run -d -p 6379:6379 redis:7-alpine
+</code></pre>
+<p><strong>Configure NoteHub:</strong></p>
+<pre><code class="language-bash"># .env file
+REDIS_HOST=localhost
+REDIS_PORT=6379
+</code></pre>
+<p><strong>Start Application:</strong></p>
+<pre><code class="language-bash">cd backend
+npm install
+npm start
+</code></pre>
+<p>You should see:</p>
+<pre><code>🔴 Connected to Redis: localhost
+✅ Redis ready
+</code></pre>
+<h4>2. Redis Cloud (Production)</h4>
+<p><strong>Free Options:</strong></p>
+<ul>
+<li><a href="https://redis.com/try-free/">Redis Cloud</a> - 30MB free</li>
+<li><a href="https://upstash.com/">Upstash</a> - 10,000 requests/day free</li>
+</ul>
+<p><strong>Configure:</strong></p>
+<pre><code class="language-bash"># .env file
+REDIS_URL=redis://user:password@your-redis-host:port
+</code></pre>
+<h4>3. Docker Compose (Development)</h4>
+<p>Add to <code>docker-compose.yml</code>:</p>
+<pre><code class="language-yaml">services:
+  redis:
+    image: redis:7-alpine
+    container_name: notehub-redis
+    restart: unless-stopped
+    ports:
+      - &quot;6379:6379&quot;
+    networks:
+      - notehub-network
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;redis-cli&quot;, &quot;ping&quot;]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    environment:
+      - REDIS_HOST=redis  # Use container name
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
+</code></pre>
+<h3>Verification</h3>
+<p>Check if caching is working:</p>
+<pre><code class="language-bash"># 1. Make a request
+curl http://localhost:5000/api/notes
+
+# 2. Check Redis
+redis-cli
+&gt; KEYS notes:*
+&gt; GET &quot;notes:user:1:all::&quot;
+</code></pre>
+<h3>Monitoring</h3>
+<p>Monitor cache hit rate:</p>
+<pre><code class="language-bash">redis-cli INFO stats | grep hit
+</code></pre>
+<p>Ideal hit rate: &gt;80% for production</p>
+<hr>
+<h2>Elasticsearch Full-Text Search</h2>
+<h3>Benefits</h3>
+<ul>
+<li><strong>5x faster</strong> full-text search</li>
+<li>Better search relevance (fuzzy matching, stemming)</li>
+<li>Search ranking and scoring</li>
+<li>Supports complex queries</li>
+</ul>
+<h3>What Gets Indexed</h3>
+<ul>
+<li>Note title (boosted 2x in relevance)</li>
+<li>Note body</li>
+<li>Tags</li>
+<li>Metadata (owner, flags, timestamps)</li>
+</ul>
+<h3>Setup</h3>
+<h4>1. Local Elasticsearch (Development)</h4>
+<p><strong>Install Elasticsearch:</strong></p>
+<pre><code class="language-bash"># Docker (recommended)
+docker run -d \
+  --name elasticsearch \
+  -p 9200:9200 \
+  -e &quot;discovery.type=single-node&quot; \
+  -e &quot;xpack.security.enabled=false&quot; \
+  elasticsearch:8.11.0
+
+# Wait for startup (30-60 seconds)
+curl http://localhost:9200
+</code></pre>
+<p><strong>Configure NoteHub:</strong></p>
+<pre><code class="language-bash"># .env file
+ELASTICSEARCH_NODE=http://localhost:9200
+</code></pre>
+<p><strong>Start Application:</strong></p>
+<pre><code class="language-bash">cd backend
+npm install
+npm start
+</code></pre>
+<p>You should see:</p>
+<pre><code>🔍 Connected to Elasticsearch: http://localhost:9200
+✅ Created Elasticsearch index: notehub-notes
+</code></pre>
+<h4>2. Elasticsearch Cloud (Production)</h4>
+<p><strong>Options:</strong></p>
+<ul>
+<li><a href="https://cloud.elastic.co/">Elastic Cloud</a> - 14-day trial</li>
+<li><a href="https://aws.amazon.com/opensearch-service/">AWS OpenSearch</a> - Free tier</li>
+</ul>
+<p><strong>Configure:</strong></p>
+<pre><code class="language-bash"># .env file
+ELASTICSEARCH_NODE=https://your-cloud-id.es.io:9243
+ELASTICSEARCH_USERNAME=elastic
+ELASTICSEARCH_PASSWORD=your-password
+
+# OR use API key (recommended)
+ELASTICSEARCH_API_KEY=your-api-key
+</code></pre>
+<h4>3. Docker Compose (Development)</h4>
+<p>Add to <code>docker-compose.yml</code>:</p>
+<pre><code class="language-yaml">services:
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: notehub-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - &quot;ES_JAVA_OPTS=-Xms512m -Xmx512m&quot;
+    ports:
+      - &quot;9200:9200&quot;
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - notehub-network
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:9200&quot;]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  backend:
+    environment:
+      - ELASTICSEARCH_NODE=http://elasticsearch:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+volumes:
+  es-data:
+    driver: local
+</code></pre>
+<h3>Initial Data Sync</h3>
+<p>After setting up Elasticsearch, existing notes need to be indexed:</p>
+<p><strong>Option 1: Automatic (on first search)</strong></p>
+<ul>
+<li>Elasticsearch auto-indexes as notes are created/updated</li>
+<li>Existing notes indexed on first search</li>
+</ul>
+<p><strong>Option 2: Manual Bulk Index (recommended)</strong></p>
+<pre><code class="language-javascript">// Create script: scripts/index_notes.js
+const db = require(&#39;../src/config/database&#39;);
+const elasticsearch = require(&#39;../src/config/elasticsearch&#39;);
+
+async function indexAllNotes() {
+  await db.connect();
+  await elasticsearch.connect();
+
+  const notes = await db.query(&#39;SELECT * FROM notes&#39;);
+  console.log(`Indexing ${notes.length} notes...`);
+
+  await elasticsearch.bulkIndexNotes(notes);
+  console.log(&#39;✅ All notes indexed&#39;);
+
+  await db.close();
+  await elasticsearch.close();
+}
+
+indexAllNotes();
+</code></pre>
+<p>Run it:</p>
+<pre><code class="language-bash">node scripts/index_notes.js
+</code></pre>
+<h3>Verification</h3>
+<p>Check if search is working:</p>
+<pre><code class="language-bash"># 1. Check index exists
+curl http://localhost:9200/notehub-notes
+
+# 2. Test search
+curl -X POST http://localhost:9200/notehub-notes/_search \
+  -H &#39;Content-Type: application/json&#39; \
+  -d &#39;{&quot;query&quot;: {&quot;match&quot;: {&quot;title&quot;: &quot;test&quot;}}}&#39;
+
+# 3. Use API endpoint
+curl &quot;http://localhost:5000/api/notes?search=meeting&quot;
+</code></pre>
+<hr>
+<h2>Complete Setup: Both Redis + Elasticsearch</h2>
+<h3>Docker Compose (Recommended)</h3>
+<pre><code class="language-yaml">version: &#39;3.8&#39;
+
+services:
+  # Backend with caching and search
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+    environment:
+      - REDIS_HOST=redis
+      - ELASTICSEARCH_NODE=http://elasticsearch:9200
+    depends_on:
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+
+  # Redis cache
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;redis-cli&quot;, &quot;ping&quot;]
+
+  # Elasticsearch search
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:9200&quot;]
+</code></pre>
+<p>Start everything:</p>
+<pre><code class="language-bash">docker compose up -d
+</code></pre>
+<hr>
+<h2>Configuration Options</h2>
+<h3>Redis</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>REDIS_URL</code></td>
+<td>Complete Redis URL</td>
+<td>-</td>
+<td><code>redis://localhost:6379</code></td>
+</tr>
+<tr>
+<td><code>REDIS_HOST</code></td>
+<td>Redis hostname</td>
+<td><code>localhost</code></td>
+<td><code>redis</code></td>
+</tr>
+<tr>
+<td><code>REDIS_PORT</code></td>
+<td>Redis port</td>
+<td><code>6379</code></td>
+<td><code>6379</code></td>
+</tr>
+<tr>
+<td><code>REDIS_PASSWORD</code></td>
+<td>Redis password</td>
+<td>-</td>
+<td><code>secret</code></td>
+</tr>
+<tr>
+<td><code>REDIS_DB</code></td>
+<td>Redis database number</td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+</tr>
+</tbody></table>
+<h3>Elasticsearch</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ELASTICSEARCH_NODE</code></td>
+<td>ES endpoint</td>
+<td>-</td>
+<td><code>http://localhost:9200</code></td>
+</tr>
+<tr>
+<td><code>ELASTICSEARCH_USERNAME</code></td>
+<td>Basic auth username</td>
+<td>-</td>
+<td><code>elastic</code></td>
+</tr>
+<tr>
+<td><code>ELASTICSEARCH_PASSWORD</code></td>
+<td>Basic auth password</td>
+<td>-</td>
+<td><code>changeme</code></td>
+</tr>
+<tr>
+<td><code>ELASTICSEARCH_API_KEY</code></td>
+<td>API key (preferred)</td>
+<td>-</td>
+<td><code>base64-key</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Redis Connection Issues</h3>
+<p><strong>Problem:</strong> <code>Redis connection failed</code></p>
+<pre><code class="language-bash"># Check if Redis is running
+redis-cli ping
+# Should respond: PONG
+
+# Check port
+netstat -an | grep 6379
+
+# Check logs
+docker logs notehub-redis
+</code></pre>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Verify <code>REDIS_HOST</code> and <code>REDIS_PORT</code> are correct</li>
+<li>Check if Redis requires password</li>
+<li>App continues without cache if Redis unavailable</li>
+</ul>
+<h3>Elasticsearch Connection Issues</h3>
+<p><strong>Problem:</strong> <code>Elasticsearch connection failed</code></p>
+<pre><code class="language-bash"># Check if ES is running
+curl http://localhost:9200
+# Should return JSON with cluster info
+
+# Check logs
+docker logs notehub-elasticsearch
+</code></pre>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Wait 30-60 seconds for ES startup</li>
+<li>Verify <code>ELASTICSEARCH_NODE</code> is correct</li>
+<li>Check ES version compatibility (8.x recommended)</li>
+<li>App uses SQL LIKE search if ES unavailable</li>
+</ul>
+<h3>Cache Invalidation Issues</h3>
+<p><strong>Problem:</strong> Stale data in cache</p>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-bash"># Manual cache clear
+redis-cli FLUSHDB
+
+# Or delete specific keys
+redis-cli DEL &quot;notes:user:1:all::&quot;
+</code></pre>
+<h3>Search Not Working</h3>
+<p><strong>Problem:</strong> Search returns no results</p>
+<p><strong>Check index:</strong></p>
+<pre><code class="language-bash">curl http://localhost:9200/notehub-notes/_search
+</code></pre>
+<p><strong>Re-index all notes:</strong></p>
+<pre><code class="language-bash">node scripts/index_notes.js
+</code></pre>
+<hr>
+<h2>Performance Tuning</h2>
+<h3>Redis Memory</h3>
+<pre><code class="language-redis"># Check memory usage
+redis-cli INFO memory
+
+# Set max memory (in docker-compose.yml)
+command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+</code></pre>
+<h3>Elasticsearch Heap</h3>
+<pre><code class="language-yaml"># In docker-compose.yml
+environment:
+  - &quot;ES_JAVA_OPTS=-Xms1g -Xmx1g&quot;  # 1GB heap
+</code></pre>
+<h3>Cache TTL Tuning</h3>
+<p>Edit <code>backend/src/services/noteService.js</code>:</p>
+<pre><code class="language-javascript">// Short TTL for frequently changing data
+await cache.set(cacheKey, notes, 300); // 5 minutes
+
+// Long TTL for static data
+await cache.set(cacheKey, tags, 3600); // 1 hour
+</code></pre>
+<hr>
+<h2>Monitoring</h2>
+<h3>Redis Monitoring</h3>
+<pre><code class="language-bash"># Real-time stats
+redis-cli --stat
+
+# Slow log
+redis-cli SLOWLOG GET 10
+
+# Key space analysis
+redis-cli --bigkeys
+</code></pre>
+<h3>Elasticsearch Monitoring</h3>
+<pre><code class="language-bash"># Cluster health
+curl http://localhost:9200/_cluster/health?pretty
+
+# Index stats
+curl http://localhost:9200/notehub-notes/_stats?pretty
+
+# Search performance
+curl http://localhost:9200/notehub-notes/_search?pretty
+</code></pre>
+<hr>
+<h2>Cost Estimation</h2>
+<h3>Free Tier Options</h3>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Provider</th>
+<th>Free Tier</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Redis</td>
+<td>Redis Cloud</td>
+<td>30MB</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Upstash</td>
+<td>10K requests/day</td>
+</tr>
+<tr>
+<td>Elasticsearch</td>
+<td>Elastic Cloud</td>
+<td>14-day trial</td>
+</tr>
+<tr>
+<td>Elasticsearch</td>
+<td>AWS OpenSearch</td>
+<td>750 hours/month (1 year)</td>
+</tr>
+</tbody></table>
+<h3>Self-Hosted (VPS)</h3>
+<table>
+<thead>
+<tr>
+<th>Resources</th>
+<th>Redis</th>
+<th>Elasticsearch</th>
+<th>Both</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>RAM</strong></td>
+<td>256MB</td>
+<td>1GB</td>
+<td>1.5GB</td>
+</tr>
+<tr>
+<td><strong>Disk</strong></td>
+<td>100MB</td>
+<td>2GB</td>
+<td>2.5GB</td>
+</tr>
+<tr>
+<td><strong>CPU</strong></td>
+<td>0.1 core</td>
+<td>0.5 core</td>
+<td>0.5 core</td>
+</tr>
+</tbody></table>
+<p><strong>Recommended VPS:</strong></p>
+<ul>
+<li>Hetzner CX21: €4.5/month (2GB RAM)</li>
+<li>DigitalOcean Basic: $6/month (1GB RAM)</li>
+<li>Linode Nanode: $5/month (1GB RAM)</li>
+</ul>
+<hr>
+<h2>Production Checklist</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Redis configured with password</li>
+<li><input disabled="" type="checkbox"> Elasticsearch secured (enable xpack.security)</li>
+<li><input disabled="" type="checkbox"> Firewall rules (Redis: 6379, ES: 9200)</li>
+<li><input disabled="" type="checkbox"> Backups configured</li>
+<li><input disabled="" type="checkbox"> Monitoring alerts set up</li>
+<li><input disabled="" type="checkbox"> SSL/TLS enabled for external connections</li>
+<li><input disabled="" type="checkbox"> Resource limits set (memory, CPU)</li>
+<li><input disabled="" type="checkbox"> Log rotation configured</li>
+</ul>
+<hr>
+<h2>Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Development</strong></td>
+<td>Local Docker (Redis + ES)</td>
+</tr>
+<tr>
+<td><strong>Small Production (&lt;100 users)</strong></td>
+<td>Skip both, SQL-only is fine</td>
+</tr>
+<tr>
+<td><strong>Medium Production (100-1K users)</strong></td>
+<td>Add Redis caching only</td>
+</tr>
+<tr>
+<td><strong>Large Production (&gt;1K users)</strong></td>
+<td>Add both Redis + Elasticsearch</td>
+</tr>
+<tr>
+<td><strong>Cost-Conscious</strong></td>
+<td>Redis only (bigger impact, lower cost)</td>
+</tr>
+<tr>
+<td><strong>Search-Heavy</strong></td>
+<td>Elasticsearch only</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>Last Updated:</strong> 2025-12-04<br><strong>Version:</strong> 1.0</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

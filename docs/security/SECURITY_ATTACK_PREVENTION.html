@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Attack Prevention & Security Guide">
+    <title>Attack Prevention & Security Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Attack Prevention & Security Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Attack Prevention &amp; Security Guide</h1>
+<p>This document explains the comprehensive security measures implemented in NoteHub to protect against common web attacks including brute force, DDoS, bot attacks, and more.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#security-layers">Security Layers</a></li>
+<li><a href="#rate-limiting">Rate Limiting</a></li>
+<li><a href="#recaptcha-integration">reCAPTCHA Integration</a></li>
+<li><a href="#csrf-protection">CSRF Protection</a></li>
+<li><a href="#password-policies">Password Policies</a></li>
+<li><a href="#two-factor-authentication-2fa">Two-Factor Authentication (2FA)</a></li>
+<li><a href="#jwt-token-security">JWT Token Security</a></li>
+<li><a href="#configuration-guide">Configuration Guide</a></li>
+<li><a href="#monitoring--logging">Monitoring &amp; Logging</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ul>
+<hr>
+<h2>Overview</h2>
+<p>NoteHub implements a <strong>defense-in-depth</strong> security strategy with multiple layers of protection:</p>
+<ol>
+<li><strong>Rate Limiting</strong> - Prevents brute force and DDoS attacks</li>
+<li><strong>reCAPTCHA</strong> - Blocks automated bots</li>
+<li><strong>CSRF Protection</strong> - Prevents cross-site request forgery</li>
+<li><strong>Strong Password Policies</strong> - Enforces secure passwords</li>
+<li><strong>2FA Support</strong> - Optional second factor authentication</li>
+<li><strong>JWT Token Security</strong> - Secure API authentication</li>
+<li><strong>Database Security</strong> - Parameterized queries prevent SQL injection</li>
+</ol>
+<hr>
+<h2>Security Layers</h2>
+<h3>Layer 1: Rate Limiting ✅ <strong>ACTIVE</strong></h3>
+<p><strong>Purpose</strong>: Prevent brute force attacks, credential stuffing, and DDoS.</p>
+<p><strong>Implementation</strong>: Flask-Limiter with IP-based tracking</p>
+<p><strong>Protected Endpoints</strong>:</p>
+<ul>
+<li><code>/login</code> - 10 attempts per minute</li>
+<li><code>/register</code> - 5 attempts per hour</li>
+<li><code>/verify-2fa</code> - 5 attempts per minute</li>
+<li><code>/forgot-password</code> - 3 attempts per hour</li>
+<li><code>/reset-password/&lt;token&gt;</code> - 5 attempts per hour</li>
+<li><code>/api/auth/login</code> - 10 attempts per minute</li>
+<li>All other routes - 200 per day, 50 per hour (default)</li>
+</ul>
+<p><strong>How it works</strong>:</p>
+<pre><code class="language-python">from flask_limiter import Limiter
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=[&quot;200 per day&quot;, &quot;50 per hour&quot;],
+    storage_uri=&quot;memory://&quot;,  # Use Redis in production
+)
+
+@app.route(&quot;/login&quot;, methods=[&quot;POST&quot;])
+@limiter.limit(&quot;10 per minute&quot;)
+def login():
+    # Login logic
+    pass
+</code></pre>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>✅ Blocks rapid-fire login attempts</li>
+<li>✅ Prevents account enumeration</li>
+<li>✅ Protects against DDoS attacks</li>
+<li>✅ Automatic IP blocking on limit exceed</li>
+</ul>
+<p><strong>Response when rate limited</strong>:</p>
+<pre><code>HTTP 429 Too Many Requests
+Retry-After: 60
+
+{
+  &quot;error&quot;: &quot;Too many requests. Please try again later.&quot;
+}
+</code></pre>
+<hr>
+<h3>Layer 2: reCAPTCHA (Optional) 🔧 <strong>CONFIGURABLE</strong></h3>
+<p><strong>Purpose</strong>: Distinguish humans from bots, prevent automated attacks.</p>
+<p><strong>Implementation</strong>: Google reCAPTCHA v2 via Flask-WTF</p>
+<p><strong>Protected Forms</strong>:</p>
+<ul>
+<li>Login form</li>
+<li>Registration form</li>
+<li>Forgot password form</li>
+</ul>
+<p><strong>How it works</strong>:<br>The application conditionally includes reCAPTCHA based on configuration:</p>
+<pre><code class="language-python"># In forms.py
+class LoginForm(FlaskForm):
+    username = StringField(&quot;Username&quot;, validators=[DataRequired()])
+    password = PasswordField(&quot;Password&quot;, validators=[DataRequired()])
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if current_app.config.get(&#39;RECAPTCHA_ENABLED&#39;, False):
+            self.recaptcha = RecaptchaField()
+</code></pre>
+<pre><code class="language-html">&lt;!-- In templates --&gt;
+{% if config.RECAPTCHA_ENABLED %}
+&lt;div class=&quot;flex justify-center&quot;&gt;
+    {{ form.recaptcha }}
+&lt;/div&gt;
+{% endif %}
+</code></pre>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>✅ Blocks automated bot attacks</li>
+<li>✅ Prevents credential stuffing</li>
+<li>✅ Reduces spam registrations</li>
+<li>✅ Machine learning-based detection</li>
+<li>✅ No degradation when disabled</li>
+</ul>
+<hr>
+<h3>Layer 3: CSRF Protection ✅ <strong>ACTIVE</strong></h3>
+<p><strong>Purpose</strong>: Prevent cross-site request forgery attacks.</p>
+<p><strong>Implementation</strong>: Flask-WTF CSRFProtect</p>
+<p><strong>How it works</strong>:</p>
+<pre><code class="language-python">from flask_wtf import CSRFProtect
+
+csrf = CSRFProtect()
+csrf.init_app(app)
+</code></pre>
+<p>Every form includes a CSRF token:</p>
+<pre><code class="language-html">&lt;form method=&quot;POST&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;{{ csrf_token() }}&quot;/&gt;
+    &lt;!-- form fields --&gt;
+&lt;/form&gt;
+</code></pre>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>✅ Prevents unauthorized form submissions</li>
+<li>✅ Blocks CSRF attacks</li>
+<li>✅ Automatic token generation</li>
+<li>✅ Session-based validation</li>
+</ul>
+<hr>
+<h3>Layer 4: Password Policies ✅ <strong>ACTIVE</strong></h3>
+<p><strong>Purpose</strong>: Enforce strong passwords to prevent easy brute force.</p>
+<p><strong>Requirements</strong>:</p>
+<ul>
+<li>Minimum 12 characters</li>
+<li>At least 1 uppercase letter</li>
+<li>At least 1 lowercase letter</li>
+<li>At least 1 digit</li>
+<li>At least 1 special character</li>
+</ul>
+<p><strong>Implementation</strong>:</p>
+<pre><code class="language-python">def password_policy_errors(password: str) -&gt; list[str]:
+    &quot;&quot;&quot;Validate password against security policy.&quot;&quot;&quot;
+    errors = []
+    
+    if len(password) &lt; 12:
+        errors.append(&quot;Password must be at least 12 characters long&quot;)
+    
+    if not re.search(r&#39;[A-Z]&#39;, password):
+        errors.append(&quot;Password must contain at least one uppercase letter&quot;)
+    
+    # ... additional checks
+    
+    return errors
+</code></pre>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>✅ Significantly harder to crack</li>
+<li>✅ Reduces brute force success rate</li>
+<li>✅ Industry-standard compliance</li>
+</ul>
+<hr>
+<h3>Layer 5: Two-Factor Authentication (2FA) ✅ <strong>OPTIONAL</strong></h3>
+<p><strong>Purpose</strong>: Add second authentication factor for high-value accounts.</p>
+<p><strong>Implementation</strong>: TOTP (Time-based One-Time Password) via pyotp</p>
+<p><strong>How it works</strong>:</p>
+<ol>
+<li>User enables 2FA in profile</li>
+<li>Scan QR code with authenticator app (Google Authenticator, Authy, etc.)</li>
+<li>Login requires username/password + 6-digit code</li>
+<li>Codes expire every 30 seconds</li>
+</ol>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>✅ Even if password is compromised, account is protected</li>
+<li>✅ Rate-limited 2FA verification (5 attempts/minute)</li>
+<li>✅ Optional per-user basis</li>
+<li>✅ Compatible with standard authenticator apps</li>
+</ul>
+<hr>
+<h3>Layer 6: JWT Token Security ✅ <strong>ACTIVE</strong></h3>
+<p><strong>Purpose</strong>: Secure API authentication with automatic expiration.</p>
+<p><strong>Implementation</strong>: PyJWT with HS256 algorithm</p>
+<p><strong>Token Types</strong>:</p>
+<ul>
+<li><strong>Access Token</strong>: 1 hour expiration</li>
+<li><strong>Refresh Token</strong>: 30 days expiration</li>
+</ul>
+<p><strong>Security Features</strong>:</p>
+<ul>
+<li>✅ Token expiration</li>
+<li>✅ Digital signatures (cannot be forged)</li>
+<li>✅ Bearer token format validation</li>
+<li>✅ User ID embedded in token</li>
+<li>✅ Automatic invalidation on expiry</li>
+</ul>
+<p><strong>Usage</strong>:</p>
+<pre><code class="language-bash"># Login
+curl -X POST http://localhost:5000/api/auth/login \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#39;{&quot;username&quot;: &quot;user&quot;, &quot;password&quot;: &quot;pass&quot;}&#39;
+
+# Use token
+curl -X GET http://localhost:5000/api/notes \
+  -H &quot;Authorization: Bearer &lt;access_token&gt;&quot;
+</code></pre>
+<hr>
+<h2>Configuration Guide</h2>
+<h3>Enabling reCAPTCHA</h3>
+<p><strong>Step 1: Get reCAPTCHA keys</strong></p>
+<ol>
+<li>Visit <a href="https://www.google.com/recaptcha/admin">Google reCAPTCHA Admin</a></li>
+<li>Register your site</li>
+<li>Choose reCAPTCHA v2 (Checkbox)</li>
+<li>Add your domain(s)</li>
+<li>Get Site Key and Secret Key</li>
+</ol>
+<p><strong>Step 2: Configure environment variables</strong></p>
+<p>Create a <code>.env</code> file or set environment variables:</p>
+<pre><code class="language-bash"># .env file
+RECAPTCHA_SITE_KEY=your_site_key_here
+RECAPTCHA_SECRET_KEY=your_secret_key_here
+</code></pre>
+<p>Or export them:</p>
+<pre><code class="language-bash">export RECAPTCHA_SITE_KEY=&quot;your_site_key_here&quot;
+export RECAPTCHA_SECRET_KEY=&quot;your_secret_key_here&quot;
+</code></pre>
+<p><strong>Step 3: Restart application</strong></p>
+<pre><code class="language-bash"># Development
+flask run
+
+# Production
+gunicorn src.notehub:app
+</code></pre>
+<p><strong>Verification</strong>:</p>
+<p>Visit the login or registration page. You should see the reCAPTCHA checkbox:</p>
+<pre><code>☐ I&#39;m not a robot
+</code></pre>
+<p><strong>Disabling reCAPTCHA</strong>:</p>
+<p>Simply unset or remove the environment variables:</p>
+<pre><code class="language-bash">unset RECAPTCHA_SITE_KEY
+unset RECAPTCHA_SECRET_KEY
+</code></pre>
+<p>The forms will automatically hide the reCAPTCHA field.</p>
+<hr>
+<h3>Configuring Rate Limits</h3>
+<p><strong>For Development (Default)</strong>:</p>
+<p>Uses in-memory storage. Configuration in <code>extensions.py</code>:</p>
+<pre><code class="language-python">limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=[&quot;200 per day&quot;, &quot;50 per hour&quot;],
+    storage_uri=&quot;memory://&quot;,
+)
+</code></pre>
+<p><strong>For Production (Recommended)</strong>:</p>
+<p>Use Redis for distributed rate limiting:</p>
+<pre><code class="language-python"># Install Redis
+pip install redis
+
+# Update extensions.py
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=[&quot;200 per day&quot;, &quot;50 per hour&quot;],
+    storage_uri=&quot;redis://localhost:6379/0&quot;,
+)
+</code></pre>
+<p><strong>Custom Limits per Route</strong>:</p>
+<pre><code class="language-python">@app.route(&quot;/api/sensitive-endpoint&quot;, methods=[&quot;POST&quot;])
+@limiter.limit(&quot;1 per hour&quot;)
+def sensitive_endpoint():
+    pass
+</code></pre>
+<p><strong>Whitelist IPs</strong> (optional):</p>
+<pre><code class="language-python">limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=[&quot;200 per day&quot;],
+    exempt_when=lambda: request.remote_addr in [&#39;127.0.0.1&#39;, &#39;::1&#39;]
+)
+</code></pre>
+<hr>
+<h3>JWT Configuration</h3>
+<p>JWT settings in <code>services/jwt_service.py</code>:</p>
+<pre><code class="language-python">class JWTService:
+    SECRET_KEY = os.getenv(&quot;JWT_SECRET_KEY&quot;, &quot;your-secret-key&quot;)
+    ALGORITHM = &quot;HS256&quot;
+    ACCESS_TOKEN_EXPIRE = 3600  # 1 hour
+    REFRESH_TOKEN_EXPIRE = 86400 * 30  # 30 days
+</code></pre>
+<p><strong>Customizing expiration</strong>:</p>
+<pre><code class="language-bash">export JWT_SECRET_KEY=&quot;your-strong-secret-key&quot;
+export JWT_ACCESS_TOKEN_EXPIRE=7200  # 2 hours
+export JWT_REFRESH_TOKEN_EXPIRE=604800  # 7 days
+</code></pre>
+<hr>
+<h2>Monitoring &amp; Logging</h2>
+<h3>Rate Limit Monitoring</h3>
+<p><strong>Log rate limit violations</strong>:</p>
+<pre><code class="language-python">@app.after_request
+def log_rate_limits(response):
+    if response.status_code == 429:
+        app.logger.warning(
+            f&quot;Rate limit exceeded: {request.remote_addr} &quot;
+            f&quot;on {request.path}&quot;
+        )
+    return response
+</code></pre>
+<p><strong>Check current limits</strong> (for debugging):</p>
+<pre><code class="language-python">from flask_limiter.util import get_remote_address
+
+print(limiter.current_limit)
+print(limiter.remaining)
+print(limiter.reset_time)
+</code></pre>
+<h3>Login Attempt Monitoring</h3>
+<p><strong>Track failed logins</strong>:</p>
+<pre><code class="language-python"># In auth_routes.py
+if not user:
+    app.logger.warning(
+        f&quot;Failed login attempt: {form.username.data} &quot;
+        f&quot;from {request.remote_addr}&quot;
+    )
+    flash(&quot;Invalid username or password.&quot;, &quot;error&quot;)
+</code></pre>
+<h3>Security Event Logging</h3>
+<p><strong>Log security events</strong>:</p>
+<pre><code class="language-python"># Successful login
+app.logger.info(f&quot;✅ Login successful: {user.username} from {request.remote_addr}&quot;)
+
+# 2FA verification
+app.logger.info(f&quot;✅ 2FA verified: {user.username}&quot;)
+
+# Password reset
+app.logger.warning(f&quot;⚠️ Password reset requested: {user.username}&quot;)
+</code></pre>
+<p><strong>Review logs</strong>:</p>
+<pre><code class="language-bash"># View logs
+tail -f logs/notehub.log | grep -E &quot;Failed|Rate limit|⚠️&quot;
+</code></pre>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Production Deployment</h3>
+<p>✅ <strong>Enable reCAPTCHA</strong> in production<br>✅ <strong>Use Redis</strong> for rate limiting (distributed)<br>✅ <strong>Monitor</strong> rate limit violations<br>✅ <strong>Set strong</strong> JWT secret keys<br>✅ <strong>Use HTTPS</strong> (required for secure cookies)<br>✅ <strong>Enable</strong> security headers (HSTS, CSP)</p>
+<h3>2. Rate Limit Strategy</h3>
+<p>For sensitive endpoints:</p>
+<ul>
+<li><strong>Login</strong>: 10 per minute (prevents brute force)</li>
+<li><strong>Registration</strong>: 5 per hour (prevents spam)</li>
+<li><strong>2FA</strong>: 5 per minute (6 codes, 30 seconds each)</li>
+<li><strong>Password Reset</strong>: 3 per hour (prevents abuse)</li>
+<li><strong>API</strong>: 100 per hour (prevents abuse)</li>
+</ul>
+<h3>3. reCAPTCHA Strategy</h3>
+<p><strong>When to enable</strong>:</p>
+<ul>
+<li>✅ Public-facing production site</li>
+<li>✅ Experiencing bot attacks</li>
+<li>✅ High-value or sensitive data</li>
+</ul>
+<p><strong>When to disable</strong>:</p>
+<ul>
+<li>✅ Development/testing</li>
+<li>✅ Internal/private networks</li>
+<li>✅ API-only usage</li>
+<li>✅ Better UX desired</li>
+</ul>
+<h3>4. Password Policy</h3>
+<p><strong>Enforce</strong>:</p>
+<ul>
+<li>✅ Minimum 12 characters</li>
+<li>✅ Complexity requirements</li>
+<li>✅ No common passwords</li>
+<li>✅ No username in password</li>
+</ul>
+<p><strong>Recommend</strong>:</p>
+<ul>
+<li>✅ Password managers</li>
+<li>✅ Regular password changes</li>
+<li>✅ Unique passwords per site</li>
+<li>✅ Enable 2FA</li>
+</ul>
+<h3>5. 2FA Recommendation</h3>
+<p><strong>Who should use 2FA</strong>:</p>
+<ul>
+<li>✅ Administrators</li>
+<li>✅ Users with sensitive data</li>
+<li>✅ Shared accounts</li>
+<li>✅ High-risk environments</li>
+</ul>
+<p><strong>Backup codes</strong>:<br>Consider implementing backup codes for 2FA recovery.</p>
+<h3>6. JWT Best Practices</h3>
+<p>✅ <strong>Short-lived access tokens</strong> (1 hour)<br>✅ <strong>Longer refresh tokens</strong> (30 days)<br>✅ <strong>Rotate tokens</strong> on refresh<br>✅ <strong>Secure storage</strong> on client (not localStorage)<br>✅ <strong>HTTPS only</strong> for token transmission</p>
+<hr>
+<h2>Attack Scenarios &amp; Defenses</h2>
+<h3>Scenario 1: Brute Force Login Attack</h3>
+<p><strong>Attack</strong>: Attacker tries thousands of password combinations.</p>
+<p><strong>Defense</strong>:</p>
+<ol>
+<li>✅ Rate limiting: Max 10 attempts per minute</li>
+<li>✅ Exponential backoff after multiple failures</li>
+<li>✅ reCAPTCHA: Blocks automated attempts</li>
+<li>✅ Strong passwords: Harder to guess</li>
+<li>✅ 2FA: Even correct password won&#39;t work</li>
+</ol>
+<p><strong>Result</strong>: Attack blocked after 10 attempts, IP rate-limited.</p>
+<hr>
+<h3>Scenario 2: Credential Stuffing</h3>
+<p><strong>Attack</strong>: Attacker uses leaked credentials from other sites.</p>
+<p><strong>Defense</strong>:</p>
+<ol>
+<li>✅ Rate limiting: Slows down mass attempts</li>
+<li>✅ reCAPTCHA: Blocks automated tools</li>
+<li>✅ Unique passwords: Credential reuse fails</li>
+<li>✅ 2FA: Second factor required</li>
+<li>✅ Monitoring: Alerts on unusual activity</li>
+</ol>
+<p><strong>Result</strong>: Mass attempts blocked by rate limiter and reCAPTCHA.</p>
+<hr>
+<h3>Scenario 3: DDoS Attack</h3>
+<p><strong>Attack</strong>: Flood server with requests to overwhelm resources.</p>
+<p><strong>Defense</strong>:</p>
+<ol>
+<li>✅ Rate limiting: Max 200 requests/day per IP</li>
+<li>✅ Default limits: 50 per hour per IP</li>
+<li>✅ Cloudflare/CDN: Additional layer</li>
+<li>✅ Auto-scaling: Handle legitimate traffic spikes</li>
+</ol>
+<p><strong>Result</strong>: Attack traffic rate-limited, legitimate users unaffected.</p>
+<hr>
+<h3>Scenario 4: Bot Account Creation</h3>
+<p><strong>Attack</strong>: Automated bots create spam accounts.</p>
+<p><strong>Defense</strong>:</p>
+<ol>
+<li>✅ Rate limiting: Max 5 registrations per hour per IP</li>
+<li>✅ reCAPTCHA: Blocks bot scripts</li>
+<li>✅ Email verification: Requires valid email (if enabled)</li>
+<li>✅ Strong passwords: Prevents weak accounts</li>
+</ol>
+<p><strong>Result</strong>: Bots blocked by reCAPTCHA, rate limiter prevents mass creation.</p>
+<hr>
+<h3>Scenario 5: Password Reset Abuse</h3>
+<p><strong>Attack</strong>: Attacker floods password reset to annoy users.</p>
+<p><strong>Defense</strong>:</p>
+<ol>
+<li>✅ Rate limiting: Max 3 resets per hour</li>
+<li>✅ reCAPTCHA: Blocks automated requests</li>
+<li>✅ Token expiration: 1-hour validity</li>
+<li>✅ 2FA: Required if enabled</li>
+<li>✅ No user enumeration: Same message for all users</li>
+</ol>
+<p><strong>Result</strong>: Reset abuse prevented by strict rate limiting.</p>
+<hr>
+<h3>Scenario 6: API Abuse</h3>
+<p><strong>Attack</strong>: Excessive API calls to scrape data or DoS.</p>
+<p><strong>Defense</strong>:</p>
+<ol>
+<li>✅ JWT expiration: Tokens expire after 1 hour</li>
+<li>✅ Rate limiting: Per-user API limits</li>
+<li>✅ Authentication required: No anonymous access</li>
+<li>✅ Monitoring: Track usage patterns</li>
+</ol>
+<p><strong>Result</strong>: Abuse detected and blocked by rate limiter.</p>
+<hr>
+<h2>Security Checklist</h2>
+<h3>Before Deployment</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Enable reCAPTCHA in production</li>
+<li><input disabled="" type="checkbox"> Configure Redis for rate limiting</li>
+<li><input disabled="" type="checkbox"> Set strong JWT secret keys</li>
+<li><input disabled="" type="checkbox"> Enable HTTPS/TLS</li>
+<li><input disabled="" type="checkbox"> Review rate limit settings</li>
+<li><input disabled="" type="checkbox"> Test all security measures</li>
+<li><input disabled="" type="checkbox"> Set up monitoring/logging</li>
+<li><input disabled="" type="checkbox"> Document security procedures</li>
+<li><input disabled="" type="checkbox"> Train users on 2FA</li>
+<li><input disabled="" type="checkbox"> Create incident response plan</li>
+</ul>
+<h3>Regular Maintenance</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Review security logs weekly</li>
+<li><input disabled="" type="checkbox"> Monitor rate limit violations</li>
+<li><input disabled="" type="checkbox"> Check for failed login patterns</li>
+<li><input disabled="" type="checkbox"> Update dependencies monthly</li>
+<li><input disabled="" type="checkbox"> Review and rotate JWT secrets</li>
+<li><input disabled="" type="checkbox"> Test security measures quarterly</li>
+<li><input disabled="" type="checkbox"> Update documentation</li>
+<li><input disabled="" type="checkbox"> Train new users</li>
+</ul>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>&quot;I&#39;m getting rate limited&quot;</h3>
+<p><strong>Solution 1</strong>: Wait for the rate limit to reset</p>
+<ul>
+<li>Check <code>Retry-After</code> header</li>
+<li>Wait the specified time</li>
+<li>Try again</li>
+</ul>
+<p><strong>Solution 2</strong>: Check if IP is correct</p>
+<ul>
+<li>Verify <code>X-Forwarded-For</code> headers</li>
+<li>Configure proxy settings</li>
+<li>Whitelist internal IPs</li>
+</ul>
+<p><strong>Solution 3</strong>: Adjust rate limits</p>
+<pre><code class="language-python">@limiter.limit(&quot;20 per minute&quot;)  # Increase limit
+def login():
+    pass
+</code></pre>
+<h3>&quot;reCAPTCHA not showing&quot;</h3>
+<p><strong>Check 1</strong>: Verify environment variables</p>
+<pre><code class="language-bash">echo $RECAPTCHA_SITE_KEY
+echo $RECAPTCHA_SECRET_KEY
+</code></pre>
+<p><strong>Check 2</strong>: Verify config</p>
+<pre><code class="language-python">print(app.config.get(&#39;RECAPTCHA_ENABLED&#39;))
+</code></pre>
+<p><strong>Check 3</strong>: Check browser console for errors</p>
+<h3>&quot;Rate limiter not working&quot;</h3>
+<p><strong>Check 1</strong>: Verify limiter is initialized</p>
+<pre><code class="language-python">limiter.init_app(app)
+</code></pre>
+<p><strong>Check 2</strong>: Check decorator placement</p>
+<pre><code class="language-python">@app.route(&quot;/login&quot;)
+@limiter.limit(&quot;10 per minute&quot;)  # Must be after route decorator
+def login():
+    pass
+</code></pre>
+<p><strong>Check 3</strong>: Verify storage backend</p>
+<pre><code class="language-python"># For production, use Redis
+storage_uri=&quot;redis://localhost:6379/0&quot;
+</code></pre>
+<hr>
+<h2>Performance Impact</h2>
+<h3>Rate Limiting</h3>
+<p><strong>Memory usage</strong>: ~1MB per 10,000 tracked IPs (in-memory)<br><strong>CPU impact</strong>: Negligible (&lt;1% overhead)<br><strong>Latency</strong>: &lt;1ms per request</p>
+<h3>reCAPTCHA</h3>
+<p><strong>User experience</strong>: ~2-5 seconds per challenge<br><strong>Server impact</strong>: Negligible (verification done by Google)<br><strong>Success rate</strong>: ~99% for humans, ~0.1% for bots</p>
+<h3>Overall</h3>
+<p><strong>Impact on legitimate users</strong>: Minimal<br><strong>Protection level</strong>: High<br><strong>Cost</strong>: Free (reCAPTCHA v2 is free)</p>
+<hr>
+<h2>Summary</h2>
+<p>NoteHub implements <strong>6 layers of security</strong> to protect against attacks:</p>
+<ol>
+<li>✅ <strong>Rate Limiting</strong> - Active, prevents brute force and DDoS</li>
+<li>🔧 <strong>reCAPTCHA</strong> - Configurable, blocks bots when enabled</li>
+<li>✅ <strong>CSRF Protection</strong> - Active, prevents CSRF attacks</li>
+<li>✅ <strong>Password Policies</strong> - Active, enforces strong passwords</li>
+<li>✅ <strong>2FA Support</strong> - Available, optional per user</li>
+<li>✅ <strong>JWT Security</strong> - Active, secure API authentication</li>
+</ol>
+<p><strong>Protection Level</strong>: ⭐⭐⭐⭐⭐ Excellent</p>
+<p><strong>Ease of Use</strong>: ⭐⭐⭐⭐⭐ Simple configuration</p>
+<p><strong>Performance Impact</strong>: ⭐⭐⭐⭐⭐ Negligible</p>
+<hr>
+<h2>References</h2>
+<ul>
+<li><a href="https://flask-limiter.readthedocs.io/">Flask-Limiter Documentation</a></li>
+<li><a href="https://developers.google.com/recaptcha">reCAPTCHA Documentation</a></li>
+<li><a href="https://owasp.org/">OWASP Security Guidelines</a></li>
+<li><a href="https://tools.ietf.org/html/rfc8725">JWT Best Practices</a></li>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">CSRF Prevention Cheat Sheet</a></li>
+</ul>
+<hr>
+<p><strong>Last Updated</strong>: 2024-11-23<br><strong>Version</strong>: 2.0<br><strong>Status</strong>: Production Ready ✅</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

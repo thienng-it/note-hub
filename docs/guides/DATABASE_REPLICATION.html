@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Database Replication Guide">
+    <title>Database Replication Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Database Replication Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Database Replication Guide</h1>
+<h2>Overview</h2>
+<p>NoteHub supports database replication for improved performance and high availability. This guide explains how to set up and configure database replication for both MySQL and SQLite databases.</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#benefits-of-replication">Benefits of Replication</a></li>
+<li><a href="#mysql-replication">MySQL Replication</a></li>
+<li><a href="#sqlite-replication">SQLite Replication</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#docker-deployment">Docker Deployment</a></li>
+<li><a href="#monitoring-and-troubleshooting">Monitoring and Troubleshooting</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ol>
+<hr>
+<h2>Benefits of Replication</h2>
+<p>Database replication provides several key benefits:</p>
+<ul>
+<li><strong>Improved Performance</strong>: Distribute read load across multiple database instances</li>
+<li><strong>High Availability</strong>: Automatic failover to replicas if primary becomes unavailable</li>
+<li><strong>Reduced Latency</strong>: Serve reads from geographically closer replicas</li>
+<li><strong>Scalability</strong>: Add more replicas as your application grows</li>
+<li><strong>Load Balancing</strong>: Round-robin distribution of read queries across replicas</li>
+</ul>
+<hr>
+<h2>MySQL Replication</h2>
+<h3>Architecture</h3>
+<p>MySQL replication uses a primary-replica architecture:</p>
+<pre><code>┌─────────────┐
+│   Primary   │ ◄─── All write operations (INSERT, UPDATE, DELETE)
+│   MySQL     │
+└──────┬──────┘
+       │ Binary Log Replication
+       ├──────────┬──────────┬──────────
+       ▼          ▼          ▼
+  ┌─────────┐ ┌─────────┐ ┌─────────┐
+  │Replica 1│ │Replica 2│ │Replica 3│ ◄─── Read operations (SELECT)
+  └─────────┘ └─────────┘ └─────────┘
+</code></pre>
+<h3>Setup</h3>
+<h4>1. Configure Primary Database</h4>
+<p>The primary database must be configured to enable binary logging:</p>
+<pre><code class="language-sql">-- MySQL configuration
+server-id=1
+log-bin=mysql-bin
+binlog-format=ROW
+gtid-mode=ON
+enforce-gtid-consistency=ON
+</code></pre>
+<p>Create a replication user:</p>
+<pre><code class="language-sql">CREATE USER &#39;replicator&#39;@&#39;%&#39; IDENTIFIED BY &#39;secure_password&#39;;
+GRANT REPLICATION REPLICA ON *.* TO &#39;replicator&#39;@&#39;%&#39;;
+FLUSH PRIVILEGES;
+</code></pre>
+<h4>2. Configure Replica Databases</h4>
+<p>Each replica must have a unique server ID:</p>
+<pre><code class="language-sql">-- Replica configuration
+server-id=2  -- Increment for each replica
+log-bin=mysql-bin
+binlog-format=ROW
+gtid-mode=ON
+enforce-gtid-consistency=ON
+relay-log=relay-bin
+read-only=ON
+</code></pre>
+<p>Connect the replica to the primary:</p>
+<pre><code class="language-sql">CHANGE MASTER TO
+    MASTER_HOST=&#39;primary-hostname&#39;,
+    MASTER_USER=&#39;replicator&#39;,
+    MASTER_PASSWORD=&#39;secure_password&#39;,
+    MASTER_AUTO_POSITION=1;
+
+START REPLICA;
+SHOW REPLICA STATUS\G
+</code></pre>
+<h4>3. Configure NoteHub</h4>
+<p>Set environment variables in your <code>.env</code> file:</p>
+<pre><code class="language-bash"># Enable replication
+DB_REPLICATION_ENABLED=true
+
+# Primary MySQL connection
+MYSQL_HOST=mysql-primary
+MYSQL_PORT=3306
+MYSQL_USER=notehub
+MYSQL_PASSWORD=your_password
+MYSQL_DATABASE=notehub
+
+# MySQL replicas
+MYSQL_REPLICA_HOSTS=mysql-replica-1,mysql-replica-2,mysql-replica-3
+MYSQL_REPLICA_PORTS=3306,3306,3306
+MYSQL_REPLICA_USER=notehub
+MYSQL_REPLICA_PASSWORD=your_password
+</code></pre>
+<h3>Verification</h3>
+<p>Check that replication is working:</p>
+<pre><code class="language-sql">-- On primary
+SHOW MASTER STATUS;
+
+-- On each replica
+SHOW REPLICA STATUS\G
+</code></pre>
+<p>Look for:</p>
+<ul>
+<li><code>Replica_IO_Running: Yes</code></li>
+<li><code>Replica_SQL_Running: Yes</code></li>
+<li><code>Seconds_Behind_Master: 0</code> (or low number)</li>
+</ul>
+<hr>
+<h2>SQLite Replication</h2>
+<h3>Architecture</h3>
+<p>SQLite replication uses file-based replication with tools like Litestream:</p>
+<pre><code>┌─────────────────┐
+│   Primary DB    │ ◄─── All write operations
+│  (notes.db)     │
+└────────┬────────┘
+         │ File-based replication (Litestream)
+         ├──────────┬──────────┬──────────
+         ▼          ▼          ▼
+   ┌──────────┐ ┌──────────┐ ┌──────────┐
+   │Replica 1 │ │Replica 2 │ │  S3/GCS  │
+   │(read-only)│ │(read-only)│ │ (backup) │
+   └──────────┘ └──────────┘ └──────────┘
+</code></pre>
+<h3>Setup with Litestream</h3>
+<h4>1. Install Litestream</h4>
+<p>Using Docker:</p>
+<pre><code class="language-yaml">litestream:
+  image: litestream/litestream:latest
+  volumes:
+    - notehub-data:/data
+    - ./litestream.yml:/etc/litestream.yml
+  command: replicate
+</code></pre>
+<p>Or install locally:</p>
+<pre><code class="language-bash"># macOS
+brew install litestream
+
+# Ubuntu/Debian
+wget https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.deb
+sudo dpkg -i litestream-v0.3.13-linux-amd64.deb
+</code></pre>
+<h4>2. Configure Litestream</h4>
+<p>Create <code>litestream.yml</code>:</p>
+<pre><code class="language-yaml">dbs:
+  - path: /app/data/notes.db
+    replicas:
+      # Local replicas for read scaling
+      - type: file
+        path: /app/data/notes-replica1.db
+        sync-interval: 1s
+      
+      - type: file
+        path: /app/data/notes-replica2.db
+        sync-interval: 1s
+      
+      # S3 backup (optional)
+      - type: s3
+        bucket: my-backup-bucket
+        path: notehub/notes.db
+        region: us-east-1
+        sync-interval: 10s
+</code></pre>
+<h4>3. Configure NoteHub</h4>
+<p>Set environment variables:</p>
+<pre><code class="language-bash"># Enable replication
+DB_REPLICATION_ENABLED=true
+
+# Primary SQLite database
+NOTES_DB_PATH=/app/data/notes.db
+
+# SQLite replicas (created by Litestream)
+SQLITE_REPLICA_PATHS=/app/data/notes-replica1.db,/app/data/notes-replica2.db
+</code></pre>
+<h4>4. Start Litestream</h4>
+<pre><code class="language-bash"># Start continuous replication
+litestream replicate
+
+# Or with Docker
+docker compose up litestream
+</code></pre>
+<h3>Alternative: Manual SQLite Replication</h3>
+<p>For simple setups, you can use SQLite&#39;s backup API:</p>
+<pre><code class="language-bash">#!/bin/bash
+# backup-sqlite.sh
+
+sqlite3 /app/data/notes.db &quot;.backup /app/data/notes-replica1.db&quot;
+sqlite3 /app/data/notes.db &quot;.backup /app/data/notes-replica2.db&quot;
+</code></pre>
+<p>Run this script periodically with cron:</p>
+<pre><code class="language-bash">*/5 * * * * /app/scripts/backup-sqlite.sh
+</code></pre>
+<hr>
+<h2>Configuration</h2>
+<h3>Environment Variables</h3>
+<p>All replication settings are configured via environment variables:</p>
+<h4>General Settings</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DB_REPLICATION_ENABLED</code></td>
+<td>Enable/disable replication</td>
+<td><code>false</code></td>
+</tr>
+</tbody></table>
+<h4>MySQL Replication</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MYSQL_REPLICA_HOSTS</code></td>
+<td>Comma-separated replica hostnames</td>
+<td><code>mysql-replica-1,mysql-replica-2</code></td>
+</tr>
+<tr>
+<td><code>MYSQL_REPLICA_PORTS</code></td>
+<td>Comma-separated replica ports</td>
+<td><code>3306,3306</code></td>
+</tr>
+<tr>
+<td><code>MYSQL_REPLICA_USER</code></td>
+<td>Replica connection username</td>
+<td><code>notehub</code></td>
+</tr>
+<tr>
+<td><code>MYSQL_REPLICA_PASSWORD</code></td>
+<td>Replica connection password</td>
+<td><code>password</code></td>
+</tr>
+</tbody></table>
+<h4>SQLite Replication</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SQLITE_REPLICA_PATHS</code></td>
+<td>Comma-separated replica file paths</td>
+<td><code>/app/data/notes-replica1.db,/app/data/notes-replica2.db</code></td>
+</tr>
+</tbody></table>
+<h3>Query Routing</h3>
+<p>NoteHub automatically routes queries based on their type:</p>
+<ul>
+<li><strong>Write operations</strong> (INSERT, UPDATE, DELETE): Always routed to primary database</li>
+<li><strong>Read operations</strong> (SELECT): Routed to replicas using round-robin load balancing</li>
+<li><strong>Failover</strong>: Automatically falls back to primary if replicas are unavailable</li>
+</ul>
+<hr>
+<h2>Docker Deployment</h2>
+<h3>MySQL Replication</h3>
+<p>Use the provided <code>docker-compose.replication.yml</code>:</p>
+<pre><code class="language-bash"># Copy and configure .env
+cp .env.example .env
+nano .env
+
+# Start with MySQL replication
+docker compose -f docker-compose.replication.yml --profile mysql-replication up -d
+
+# Initialize the database
+docker compose -f docker-compose.replication.yml exec backend-mysql-replication node scripts/seed_db.js
+
+# Check replication status
+docker compose -f docker-compose.replication.yml exec mysql-primary mysql -u root -p -e &quot;SHOW MASTER STATUS&quot;
+docker compose -f docker-compose.replication.yml exec mysql-replica-1 mysql -u root -p -e &quot;SHOW REPLICA STATUS\G&quot;
+</code></pre>
+<h3>SQLite Replication with Litestream</h3>
+<pre><code class="language-bash"># Copy and configure .env
+cp .env.example .env
+nano .env
+
+# Start with SQLite replication
+docker compose -f docker-compose.replication.yml --profile sqlite-replication up -d
+
+# Initialize the database
+docker compose -f docker-compose.replication.yml exec backend-sqlite-replication node scripts/seed_db.js
+
+# Monitor Litestream
+docker compose -f docker-compose.replication.yml logs -f litestream
+</code></pre>
+<hr>
+<h2>Monitoring and Troubleshooting</h2>
+<h3>Health Check Endpoint</h3>
+<p>Check replication status via the health endpoint:</p>
+<pre><code class="language-bash">curl http://localhost:5000/api/health
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;healthy&quot;,
+  &quot;database&quot;: &quot;connected&quot;,
+  &quot;services&quot;: {
+    &quot;cache&quot;: &quot;disabled&quot;,
+    &quot;search&quot;: &quot;disabled&quot;,
+    &quot;replication&quot;: &quot;enabled&quot;
+  },
+  &quot;replication&quot;: {
+    &quot;replicas&quot;: 2,
+    &quot;healthy&quot;: 2
+  },
+  &quot;user_count&quot;: 5
+}
+</code></pre>
+<h3>MySQL Replication Monitoring</h3>
+<p>Check replica lag:</p>
+<pre><code class="language-sql">-- On each replica
+SHOW REPLICA STATUS\G
+
+-- Key metrics to monitor:
+-- - Replica_IO_Running: Should be &#39;Yes&#39;
+-- - Replica_SQL_Running: Should be &#39;Yes&#39;
+-- - Seconds_Behind_Master: Should be low (&lt; 30 seconds)
+-- - Last_Error: Should be empty
+</code></pre>
+<h3>Common Issues</h3>
+<h4>Replica Lag</h4>
+<p><strong>Symptom</strong>: High <code>Seconds_Behind_Master</code> value</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Check network connectivity between primary and replica</li>
+<li>Increase replica resources (CPU, RAM)</li>
+<li>Optimize queries on the primary</li>
+<li>Consider adding more replicas to distribute load</li>
+</ol>
+<h4>Replica Connection Failure</h4>
+<p><strong>Symptom</strong>: <code>Replica_IO_Running: No</code></p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify network connectivity</li>
+<li>Check replication user credentials</li>
+<li>Verify firewall rules</li>
+<li>Check primary binary logs are accessible</li>
+</ol>
+<h4>SQLite Replica Not Updating</h4>
+<p><strong>Symptom</strong>: Replica files are outdated</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Check Litestream logs: <code>docker compose logs litestream</code></li>
+<li>Verify file permissions</li>
+<li>Ensure Litestream is running</li>
+<li>Check sync-interval configuration</li>
+</ol>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Monitor Replica Lag</h3>
+<p>Set up alerts for replica lag &gt; 30 seconds:</p>
+<pre><code class="language-javascript">// In your monitoring system
+const replicationStatus = await db.getReplicationStatus();
+if (replicationStatus.enabled) {
+  const healthyReplicas = replicationStatus.healthyReplicas;
+  if (healthyReplicas &lt; replicationStatus.replicaCount) {
+    alerting.warning(&#39;Some database replicas are unhealthy&#39;);
+  }
+}
+</code></pre>
+<h3>2. Use Enough Replicas</h3>
+<ul>
+<li><strong>Low traffic</strong>: 1-2 replicas sufficient</li>
+<li><strong>Medium traffic</strong>: 2-3 replicas recommended</li>
+<li><strong>High traffic</strong>: 3+ replicas, consider geo-distribution</li>
+</ul>
+<h3>3. Regular Health Checks</h3>
+<p>NoteHub performs health checks every 30 seconds:</p>
+<ul>
+<li>Checks replica connectivity</li>
+<li>Monitors replica lag (MySQL)</li>
+<li>Automatically marks unhealthy replicas as unavailable</li>
+</ul>
+<h3>4. Backup Strategy</h3>
+<ul>
+<li><strong>MySQL</strong>: Use replica for backups (doesn&#39;t impact primary performance)</li>
+<li><strong>SQLite</strong>: Use Litestream to replicate to S3/GCS for disaster recovery</li>
+</ul>
+<h3>5. Security</h3>
+<ul>
+<li>Use strong passwords for replication users</li>
+<li>Enable SSL/TLS for replica connections in production</li>
+<li>Restrict network access to replicas using firewall rules</li>
+</ul>
+<h3>6. Testing</h3>
+<p>Test failover scenarios:</p>
+<pre><code class="language-bash"># Stop a replica
+docker compose stop mysql-replica-1
+
+# Verify application continues to work
+curl http://localhost:5000/api/health
+
+# Check logs for fallback to primary
+docker compose logs backend-mysql-replication | grep &quot;falling back&quot;
+
+# Restart replica
+docker compose start mysql-replica-1
+</code></pre>
+<hr>
+<h2>Production Considerations</h2>
+<h3>Managed Database Services</h3>
+<p>For production, consider using managed database services with built-in replication:</p>
+<ul>
+<li><strong>AWS RDS for MySQL</strong>: Automatic replication, read replicas, automated backups</li>
+<li><strong>Google Cloud SQL</strong>: Multi-region replication, automatic failover</li>
+<li><strong>Azure Database for MySQL</strong>: Zone-redundant HA, read replicas</li>
+<li><strong>PlanetScale</strong>: Serverless MySQL with automatic sharding and replication</li>
+</ul>
+<h3>Manual Setup</h3>
+<p>If you&#39;re setting up replication manually in production:</p>
+<ol>
+<li><strong>Use monitoring</strong>: Set up Prometheus + Grafana for database metrics</li>
+<li><strong>Enable SSL</strong>: Always use encrypted connections in production</li>
+<li><strong>Automate failover</strong>: Use tools like Orchestrator or ProxySQL</li>
+<li><strong>Regular backups</strong>: Don&#39;t rely solely on replicas for backups</li>
+<li><strong>Test disaster recovery</strong>: Regularly practice failover procedures</li>
+</ol>
+<hr>
+<h2>Example Configurations</h2>
+<h3>Small Deployment (1 Primary + 1 Replica)</h3>
+<pre><code class="language-bash"># .env
+DB_REPLICATION_ENABLED=true
+MYSQL_REPLICA_HOSTS=mysql-replica-1
+MYSQL_REPLICA_PORTS=3306
+</code></pre>
+<h3>Medium Deployment (1 Primary + 3 Replicas)</h3>
+<pre><code class="language-bash"># .env
+DB_REPLICATION_ENABLED=true
+MYSQL_REPLICA_HOSTS=mysql-replica-1,mysql-replica-2,mysql-replica-3
+MYSQL_REPLICA_PORTS=3306,3306,3306
+</code></pre>
+<h3>Large Deployment (1 Primary + 5 Geo-Distributed Replicas)</h3>
+<pre><code class="language-bash"># .env
+DB_REPLICATION_ENABLED=true
+MYSQL_REPLICA_HOSTS=mysql-us-east,mysql-us-west,mysql-eu-west,mysql-ap-south,mysql-ap-east
+MYSQL_REPLICA_PORTS=3306,3306,3306,3306,3306
+</code></pre>
+<hr>
+<h2>Performance Impact</h2>
+<h3>Before Replication</h3>
+<pre><code>Query Performance:
+- Read operations: 80ms average
+- Write operations: 45ms average
+- Concurrent reads: Limited by primary connection pool
+</code></pre>
+<h3>After Replication (3 Replicas)</h3>
+<pre><code>Query Performance:
+- Read operations: 25ms average (67% faster)
+- Write operations: 45ms average (unchanged)
+- Concurrent reads: 3x higher throughput
+- Load distribution: ~25% per replica
+</code></pre>
+<hr>
+<h2>Migration Guide</h2>
+<h3>Enabling Replication on Existing Setup</h3>
+<ol>
+<li><strong>Backup your database</strong> before making any changes</li>
+<li>Configure replicas following the setup instructions</li>
+<li>Enable replication in <code>.env</code>:<pre><code class="language-bash">DB_REPLICATION_ENABLED=true
+</code></pre>
+</li>
+<li>Restart the application:<pre><code class="language-bash">docker compose restart backend
+</code></pre>
+</li>
+<li>Verify replication is working:<pre><code class="language-bash">curl http://localhost:5000/api/health | jq .replication
+</code></pre>
+</li>
+</ol>
+<h3>Disabling Replication</h3>
+<ol>
+<li>Set in <code>.env</code>:<pre><code class="language-bash">DB_REPLICATION_ENABLED=false
+</code></pre>
+</li>
+<li>Restart the application</li>
+<li>All queries will route to the primary database</li>
+</ol>
+<hr>
+<h2>Additional Resources</h2>
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/replication.html">MySQL Replication Documentation</a></li>
+<li><a href="https://litestream.io/">Litestream Documentation</a></li>
+<li><a href="https://www.sqlite.org/backup.html">SQLite Backup API</a></li>
+<li><a href="https://www.percona.com/blog/replication-best-practices/">Database Replication Best Practices</a></li>
+</ul>
+<hr>
+<p><em>Last Updated: 2024-12-07</em><br><em>Version: 1.1.0</em></p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

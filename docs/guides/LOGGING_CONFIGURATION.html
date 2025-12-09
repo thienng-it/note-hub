@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Logging Configuration Guide">
+    <title>Logging Configuration Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Logging Configuration Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Logging Configuration Guide</h1>
+<p>This guide explains how logging is configured in NoteHub for both backend and frontend.</p>
+<h2>Overview</h2>
+<p>NoteHub uses structured logging with different log levels to provide better observability and debugging capabilities. The logging system is environment-aware and can be configured through environment variables.</p>
+<h2>Backend Logging (Winston)</h2>
+<p>The backend uses <a href="https://github.com/winstonjs/winston">Winston</a>, a popular Node.js logging library that supports multiple transports and formats.</p>
+<h3>Configuration</h3>
+<p>Configure logging through environment variables in your <code>.env</code> file:</p>
+<pre><code class="language-bash"># Log level: debug, info, warn, error, or silent
+LOG_LEVEL=info
+
+# Log format: json, simple, or detailed
+LOG_FORMAT=simple
+</code></pre>
+<h3>Log Levels</h3>
+<ul>
+<li><strong><code>debug</code></strong>: Detailed information for debugging (only shown in development)</li>
+<li><strong><code>info</code></strong>: General informational messages (default for development)</li>
+<li><strong><code>warn</code></strong>: Warning messages for potentially harmful situations</li>
+<li><strong><code>error</code></strong>: Error events (default for production)</li>
+<li><strong><code>silent</code></strong>: Disable all logging</li>
+</ul>
+<h3>Log Formats</h3>
+<h4>Simple Format (Development Default)</h4>
+<p>Human-readable format with timestamps:</p>
+<pre><code>[2025-12-05 10:34:22] INFO: API Request {&quot;method&quot;:&quot;GET&quot;,&quot;path&quot;:&quot;/api/notes&quot;,&quot;statusCode&quot;:200}
+</code></pre>
+<h4>JSON Format (Production Default)</h4>
+<p>Machine-readable structured JSON:</p>
+<pre><code class="language-json">{
+  &quot;level&quot;: &quot;info&quot;,
+  &quot;message&quot;: &quot;API Request&quot;,
+  &quot;method&quot;: &quot;GET&quot;,
+  &quot;path&quot;: &quot;/api/notes&quot;,
+  &quot;statusCode&quot;: 200,
+  &quot;timestamp&quot;: &quot;2025-12-05 10:34:22&quot;
+}
+</code></pre>
+<h4>Detailed Format (Debugging)</h4>
+<p>Verbose format with pretty-printed metadata:</p>
+<pre><code>[2025-12-05 10:34:22] INFO: API Request
+  Meta: {
+    &quot;method&quot;: &quot;GET&quot;,
+    &quot;path&quot;: &quot;/api/notes&quot;,
+    &quot;statusCode&quot;: 200
+  }
+</code></pre>
+<h3>Usage in Backend Code</h3>
+<p>Import and use the logger:</p>
+<pre><code class="language-javascript">const logger = require(&#39;./config/logger&#39;);
+
+// Basic logging
+logger.info(&#39;Server started&#39;, { port: 5000 });
+logger.warn(&#39;Rate limit exceeded&#39;, { ip: &#39;192.168.1.1&#39; });
+logger.error(&#39;Database connection failed&#39;, { error: err.message });
+logger.debug(&#39;Processing request&#39;, { userId: 123 });
+
+// Convenience methods for common patterns
+logger.api(&#39;GET&#39;, &#39;/api/notes&#39;, 200, 45); // method, path, status, duration
+logger.auth(&#39;login&#39;, userId, { email: &#39;user@example.com&#39; });
+logger.security(&#39;failed_login_attempt&#39;, { ip: &#39;192.168.1.1&#39; });
+logger.db(&#39;SELECT&#39;, &#39;notes&#39;, 12); // operation, table, duration
+</code></pre>
+<h3>Request Logging Middleware</h3>
+<p>All API requests are automatically logged by the request logging middleware. It logs:</p>
+<ul>
+<li>HTTP method and path</li>
+<li>Response status code</li>
+<li>Request duration</li>
+<li>Client IP and User-Agent</li>
+</ul>
+<p>Health check requests (<code>/api/health</code>) are not logged in production to reduce noise.</p>
+<h3>Production File Logging</h3>
+<p>To enable file-based logging in production, set:</p>
+<pre><code class="language-bash">LOG_FILE_PATH=/var/log/notehub/app.log
+</code></pre>
+<p>This will write logs to a rotating file (max 10MB, 5 files kept).</p>
+<h2>Frontend Logging (TypeScript)</h2>
+<p>The frontend uses a custom TypeScript logger utility that provides environment-aware logging.</p>
+<h3>Configuration</h3>
+<p>Configure frontend logging through Vite environment variables:</p>
+<pre><code class="language-bash"># In .env or .env.local
+VITE_LOG_LEVEL=info
+</code></pre>
+<h3>Log Levels</h3>
+<p>Same as backend: <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>, <code>silent</code></p>
+<ul>
+<li><strong>Development</strong>: Defaults to <code>info</code> level</li>
+<li><strong>Production</strong>: Defaults to <code>error</code> level (only errors shown)</li>
+</ul>
+<h3>Usage in Frontend Code</h3>
+<p>Import and use the logger:</p>
+<pre><code class="language-typescript">import { logger } from &#39;../utils/logger&#39;;
+
+// Basic logging
+logger.info(&#39;Component mounted&#39;, { componentName: &#39;NotesPage&#39; });
+logger.warn(&#39;API call slow&#39;, { duration: &#39;2000ms&#39; });
+logger.error(&#39;Failed to load data&#39;, new Error(&#39;Network error&#39;));
+logger.debug(&#39;State updated&#39;, { newState: state });
+
+// Convenience methods
+logger.api(&#39;GET&#39;, &#39;/api/notes&#39;, 200, 45);
+logger.action(&#39;note_created&#39;, { noteId: 123 });
+logger.navigation(&#39;/notes&#39;, &#39;/notes/edit/123&#39;);
+</code></pre>
+<h3>Frontend Logger Features</h3>
+<ol>
+<li><strong>Environment-aware</strong>: Automatically adjusts verbosity based on development/production mode</li>
+<li><strong>Structured</strong>: Logs include timestamps and context objects</li>
+<li><strong>Type-safe</strong>: Full TypeScript support with proper types</li>
+<li><strong>Silent in production</strong>: Error-only logging in production builds</li>
+<li><strong>Zero console noise</strong>: Debug logs are completely hidden in production</li>
+</ol>
+<h2>Docker Compose Logging</h2>
+<p>When running in Docker, logs are output to stdout/stderr and can be viewed with:</p>
+<pre><code class="language-bash"># View all logs
+docker compose logs -f
+
+# View backend logs only
+docker compose logs -f backend
+
+# View last 100 lines
+docker compose logs --tail=100 backend
+</code></pre>
+<h2>Best Practices</h2>
+<h3>Backend</h3>
+<ol>
+<li><p><strong>Use appropriate log levels</strong>:</p>
+<ul>
+<li><code>error</code>: Unexpected errors that need attention</li>
+<li><code>warn</code>: Potential issues that should be monitored</li>
+<li><code>info</code>: Important state changes and events</li>
+<li><code>debug</code>: Detailed debugging information</li>
+</ul>
+</li>
+<li><p><strong>Include context</strong>: Always add relevant context objects</p>
+<pre><code class="language-javascript">// Good
+logger.error(&#39;User login failed&#39;, { userId, reason: &#39;invalid_password&#39; });
+
+// Bad
+logger.error(&#39;Login failed&#39;);
+</code></pre>
+</li>
+<li><p><strong>Don&#39;t log sensitive data</strong>: Never log passwords, tokens, or PII</p>
+<pre><code class="language-javascript">// Bad
+logger.info(&#39;User data&#39;, { password: &#39;...&#39; });
+
+// Good
+logger.info(&#39;User authenticated&#39;, { userId: user.id });
+</code></pre>
+</li>
+<li><p><strong>Use structured logging</strong>: Pass objects for metadata instead of string concatenation</p>
+<pre><code class="language-javascript">// Good
+logger.info(&#39;Note created&#39;, { noteId, userId, title });
+
+// Bad
+logger.info(&#39;Note &#39; + noteId + &#39; created by user &#39; + userId);
+</code></pre>
+</li>
+</ol>
+<h3>Frontend</h3>
+<ol>
+<li><strong>Minimize production logs</strong>: Keep production logs to errors only</li>
+<li><strong>Use debug for development</strong>: Verbose development logs should use <code>debug</code> level</li>
+<li><strong>Log user actions</strong>: Track important user actions for analytics</li>
+<li><strong>Include error details</strong>: Always pass the error object to <code>logger.error()</code></li>
+</ol>
+<h2>Environment-Specific Configuration</h2>
+<h3>Development</h3>
+<pre><code class="language-bash">LOG_LEVEL=info
+LOG_FORMAT=simple
+</code></pre>
+<ul>
+<li>Verbose logging</li>
+<li>Human-readable format</li>
+<li>All log levels visible</li>
+</ul>
+<h3>Production</h3>
+<pre><code class="language-bash">LOG_LEVEL=error
+LOG_FORMAT=json
+LOG_FILE_PATH=/var/log/notehub/app.log
+</code></pre>
+<ul>
+<li>Error-only logging</li>
+<li>Machine-readable JSON</li>
+<li>Logs saved to file for analysis</li>
+</ul>
+<h3>Debugging</h3>
+<pre><code class="language-bash">LOG_LEVEL=debug
+LOG_FORMAT=detailed
+</code></pre>
+<ul>
+<li>Maximum verbosity</li>
+<li>Detailed format with full context</li>
+<li>All internal operations visible</li>
+</ul>
+<h2>Monitoring and Analysis</h2>
+<h3>Development</h3>
+<p>Use the console to view logs in real-time during development.</p>
+<h3>Production</h3>
+<ol>
+<li><strong>Docker logs</strong>: <code>docker compose logs</code></li>
+<li><strong>File logs</strong>: Analyze <code>/var/log/notehub/app.log</code></li>
+<li><strong>Log aggregation</strong>: Send JSON logs to services like:<ul>
+<li><strong>Graylog</strong> (recommended - see <a href="../../GRAYLOG_SETUP.md">Graylog Setup Guide</a>)</li>
+<li>ELK Stack (Elasticsearch, Logstash, Kibana)</li>
+<li>Splunk</li>
+<li>Datadog</li>
+<li>CloudWatch</li>
+</ul>
+</li>
+</ol>
+<h4>Graylog Integration (Recommended)</h4>
+<p>NoteHub includes built-in support for Graylog, a powerful open-source log aggregation platform.</p>
+<p><strong>Quick Setup:</strong></p>
+<ol>
+<li><p>Deploy Graylog stack (see <a href="../../GRAYLOG_SETUP.md">GRAYLOG_SETUP.md</a>):</p>
+<pre><code class="language-bash">docker compose --env-file .env.graylog -f docker-compose.graylog.yml up -d
+</code></pre>
+</li>
+<li><p>Enable Graylog in NoteHub&#39;s <code>.env</code>:</p>
+<pre><code class="language-bash">GRAYLOG_ENABLED=true
+GRAYLOG_HOST=localhost
+GRAYLOG_PORT=12201
+GRAYLOG_PROTOCOL=udp
+GRAYLOG_FACILITY=notehub-backend
+</code></pre>
+</li>
+<li><p>Restart NoteHub backend:</p>
+<pre><code class="language-bash">docker compose restart backend
+</code></pre>
+</li>
+</ol>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Real-time log streaming and search</li>
+<li>Powerful filtering and aggregation</li>
+<li>Custom dashboards and alerts</li>
+<li>Runs on the same VPS (port 9000)</li>
+<li>No external dependencies or costs</li>
+</ul>
+<p>For complete setup instructions, see <a href="../../GRAYLOG_SETUP.md">Graylog Setup Guide</a>.</p>
+<h3>Example: Viewing errors only</h3>
+<pre><code class="language-bash"># In development
+docker compose logs backend | grep ERROR
+
+# From log file
+grep &#39;&quot;level&quot;:&quot;error&quot;&#39; /var/log/notehub/app.log | jq
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>No logs appearing</h3>
+<ol>
+<li>Check <code>LOG_LEVEL</code> is not set to <code>silent</code></li>
+<li>Verify logger is imported correctly</li>
+<li>Ensure console transport is enabled</li>
+</ol>
+<h3>Too much logging in production</h3>
+<ol>
+<li>Set <code>LOG_LEVEL=error</code> in production <code>.env</code></li>
+<li>Consider disabling health check logging (already done by default)</li>
+</ol>
+<h3>Logs missing context</h3>
+<p>Make sure to pass context objects:</p>
+<pre><code class="language-javascript">logger.info(&#39;Event occurred&#39;, { eventId, userId, details });
+</code></pre>
+<h2>Migration from console.log</h2>
+<p>To migrate existing code:</p>
+<ol>
+<li><strong>Backend</strong>: Replace <code>console.log</code> with <code>logger.info</code> or <code>logger.debug</code></li>
+<li><strong>Frontend</strong>: Import <code>logger</code> and use appropriate methods</li>
+<li><strong>Error logging</strong>: Replace <code>console.error</code> with <code>logger.error</code></li>
+</ol>
+<h3>Example Migration</h3>
+<p>Before:</p>
+<pre><code class="language-javascript">console.log(&#39;Server started on port&#39;, PORT);
+console.error(&#39;Database error:&#39;, err);
+</code></pre>
+<p>After:</p>
+<pre><code class="language-javascript">logger.info(&#39;Server started&#39;, { port: PORT });
+logger.error(&#39;Database error&#39;, { error: err.message, stack: err.stack });
+</code></pre>
+<h2>References</h2>
+<ul>
+<li><a href="https://github.com/winstonjs/winston">Winston Documentation</a></li>
+<li><a href="https://vitejs.dev/guide/env-and-mode.html">Vite Environment Variables</a></li>
+<li><a href="https://12factor.net/logs">12-Factor App: Logs</a></li>
+</ul>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

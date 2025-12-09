@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Internationalization (i18n) Guide">
+    <title>Internationalization (i18n) Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Internationalization (i18n) Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Internationalization (i18n) Guide</h1>
+<p>NoteHub supports multiple languages through the react-i18next library, providing a seamless multilingual experience for users worldwide.</p>
+<h2>Supported Languages</h2>
+<ul>
+<li><strong>English (en)</strong> 🇬🇧 - Default language</li>
+<li><strong>German (de)</strong> 🇩🇪 - Deutsch</li>
+<li><strong>Vietnamese (vi)</strong> 🇻🇳 - Tiếng Việt</li>
+<li><strong>Japanese (ja)</strong> 🇯🇵 - 日本語</li>
+</ul>
+<h2>Features</h2>
+<ul>
+<li><strong>Automatic Language Detection</strong>: The application automatically detects the user&#39;s browser language</li>
+<li><strong>Persistent Selection</strong>: Selected language is saved in browser&#39;s localStorage</li>
+<li><strong>Easy Language Switching</strong>: Users can change language via the language selector dropdown</li>
+<li><strong>Comprehensive Coverage</strong>: All user-facing text is translated including:<ul>
+<li>Authentication pages (Login, Register, Password Reset)</li>
+<li>Navigation menus</li>
+<li>Notes and Tasks management</li>
+<li>Profile settings</li>
+<li>Admin dashboard</li>
+<li>Error messages and notifications</li>
+</ul>
+</li>
+</ul>
+<h2>How to Use</h2>
+<h3>For Users</h3>
+<ol>
+<li><strong>On Login Page</strong>: Click the language selector at the top of the page</li>
+<li><strong>After Login</strong>: Click the language selector in the sidebar (desktop) or header (mobile)</li>
+<li><strong>Select Language</strong>: Choose from English, German, Vietnamese, or Japanese</li>
+<li>Your selection will be automatically saved and persist across sessions</li>
+</ol>
+<h3>For Developers</h3>
+<h4>Using Translations in Components</h4>
+<pre><code class="language-tsx">import { useTranslation } from &#39;react-i18next&#39;;
+
+function MyComponent() {
+  const { t } = useTranslation();
+  
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{t(&#39;app.name&#39;)}&lt;/h1&gt;
+      &lt;p&gt;{t(&#39;app.tagline&#39;)}&lt;/p&gt;
+      &lt;button&gt;{t(&#39;common.save&#39;)}&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h4>Translation Key Structure</h4>
+<p>Translation keys follow a hierarchical structure:</p>
+<pre><code>{
+  &quot;app&quot;: {
+    &quot;name&quot;: &quot;NoteHub&quot;,
+    &quot;tagline&quot;: &quot;Secure note-taking for everyone&quot;
+  },
+  &quot;auth&quot;: {
+    &quot;login&quot;: {
+      &quot;title&quot;: &quot;Welcome back! Sign in to continue&quot;,
+      &quot;username&quot;: &quot;Username or Email&quot;,
+      // ... more keys
+    }
+  },
+  &quot;notes&quot;: { /* ... */ },
+  &quot;tasks&quot;: { /* ... */ },
+  &quot;profile&quot;: { /* ... */ }
+}
+</code></pre>
+<h4>Adding a New Language</h4>
+<ol>
+<li>Create a new JSON file in <code>frontend/src/i18n/locales/</code> (e.g., <code>fr.json</code> for French)</li>
+<li>Copy the structure from <code>en.json</code> and translate all values</li>
+<li>Import and add the language in <code>frontend/src/i18n/index.ts</code>:</li>
+</ol>
+<pre><code class="language-typescript">import frTranslations from &#39;./locales/fr.json&#39;;
+
+const resources = {
+  en: { translation: enTranslations },
+  de: { translation: deTranslations },
+  vi: { translation: viTranslations },
+  ja: { translation: jaTranslations },
+  fr: { translation: frTranslations }, // Add new language
+};
+</code></pre>
+<ol start="4">
+<li>Add the language option in <code>frontend/src/components/LanguageSelector.tsx</code>:</li>
+</ol>
+<pre><code class="language-typescript">const languages = [
+  { code: &#39;en&#39;, name: &#39;English&#39;, flag: &#39;🇬🇧&#39; },
+  { code: &#39;de&#39;, name: &#39;Deutsch&#39;, flag: &#39;🇩🇪&#39; },
+  { code: &#39;vi&#39;, name: &#39;Tiếng Việt&#39;, flag: &#39;🇻🇳&#39; },
+  { code: &#39;ja&#39;, name: &#39;日本語&#39;, flag: &#39;🇯🇵&#39; },
+  { code: &#39;fr&#39;, name: &#39;Français&#39;, flag: &#39;🇫🇷&#39; }, // Add new language
+];
+</code></pre>
+<h4>Adding New Translation Keys</h4>
+<ol>
+<li>Add the key to all language files (<code>en.json</code>, <code>de.json</code>, <code>vi.json</code>, <code>ja.json</code>)</li>
+<li>Use the key in your component with the <code>t()</code> function</li>
+</ol>
+<p>Example:</p>
+<pre><code class="language-json">// In en.json
+{
+  &quot;myFeature&quot;: {
+    &quot;title&quot;: &quot;My New Feature&quot;,
+    &quot;description&quot;: &quot;This is a new feature&quot;
+  }
+}
+</code></pre>
+<pre><code class="language-tsx">// In your component
+&lt;h1&gt;{t(&#39;myFeature.title&#39;)}&lt;/h1&gt;
+&lt;p&gt;{t(&#39;myFeature.description&#39;)}&lt;/p&gt;
+</code></pre>
+<h2>Technical Details</h2>
+<h3>Libraries Used</h3>
+<ul>
+<li><strong>i18next</strong>: Core i18n framework</li>
+<li><strong>react-i18next</strong>: React bindings for i18next</li>
+<li><strong>i18next-browser-languagedetector</strong>: Automatic language detection plugin</li>
+</ul>
+<h3>Configuration</h3>
+<p>The i18n configuration is in <code>frontend/src/i18n/index.ts</code>:</p>
+<pre><code class="language-typescript">i18n
+  .use(LanguageDetector) // Detect user language
+  .use(initReactI18next) // Pass i18n instance to react-i18next
+  .init({
+    resources,
+    fallbackLng: &#39;en&#39;, // Fallback to English if translation missing
+    debug: false,
+    interpolation: {
+      escapeValue: false, // React already escapes values
+    },
+    detection: {
+      order: [&#39;localStorage&#39;, &#39;navigator&#39;],
+      caches: [&#39;localStorage&#39;],
+    },
+  });
+</code></pre>
+<h3>Language Detection Priority</h3>
+<ol>
+<li><strong>localStorage</strong>: Previously selected language</li>
+<li><strong>navigator</strong>: Browser&#39;s language setting</li>
+</ol>
+<h3>Storage</h3>
+<p>The selected language is stored in the browser&#39;s localStorage under the key <code>i18nextLng</code>.</p>
+<h2>Testing</h2>
+<p>All tests are configured to work with i18n. The test setup (<code>frontend/src/test/setup.ts</code>) automatically imports the i18n configuration.</p>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Always use translation keys</strong>: Never hardcode user-facing text</li>
+<li><strong>Keep keys descriptive</strong>: Use hierarchical keys that describe the context</li>
+<li><strong>Maintain consistency</strong>: Ensure all language files have the same keys</li>
+<li><strong>Test translations</strong>: Verify translations in all supported languages</li>
+<li><strong>Use interpolation for dynamic content</strong>: <pre><code class="language-tsx">t(&#39;welcome.message&#39;, { username: user.name })
+</code></pre>
+</li>
+</ol>
+<h2>Screenshots</h2>
+<h3>English (Default)</h3>
+<p><img src="https://github.com/user-attachments/assets/1efb1cb3-5b6d-49eb-8575-f443d5e458bf" alt="English Login Page"></p>
+<h3>German</h3>
+<p><img src="https://github.com/user-attachments/assets/3ffa9df3-8519-4b2b-beed-3d2e043323bb" alt="German Login Page"></p>
+<h3>Vietnamese</h3>
+<p><img src="https://github.com/user-attachments/assets/3b457dce-c411-4adb-8e36-374fd1cfc02e" alt="Vietnamese Login Page"></p>
+<h3>Japanese</h3>
+<p><img src="https://github.com/user-attachments/assets/42f3d141-5621-4931-a55e-73dc37ea6f0b" alt="Japanese Login Page"></p>
+<h2>Future Enhancements</h2>
+<p>Potential improvements for the i18n system:</p>
+<ul>
+<li>Add more languages (Spanish, French, Chinese, etc.)</li>
+<li>Backend API translation support</li>
+<li>Date and time formatting per locale</li>
+<li>Number and currency formatting</li>
+<li>Right-to-left (RTL) language support</li>
+<li>Translation management system for easier updates</li>
+</ul>
+<h2>Support</h2>
+<p>If you encounter any issues with translations or want to contribute new languages, please:</p>
+<ol>
+<li>Check existing translation files for reference</li>
+<li>Open an issue on GitHub</li>
+<li>Submit a pull request with your translations</li>
+</ol>
+<h2>References</h2>
+<ul>
+<li><a href="https://react.i18next.com/">react-i18next Documentation</a></li>
+<li><a href="https://www.i18next.com/">i18next Documentation</a></li>
+</ul>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

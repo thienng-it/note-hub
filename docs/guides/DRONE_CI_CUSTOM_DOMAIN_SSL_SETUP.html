@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Drone CI Custom Domain SSL/HTTPS Setup Guide">
+    <title>Drone CI Custom Domain SSL/HTTPS Setup Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Drone CI Custom Domain SSL/HTTPS Setup Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Drone CI Custom Domain SSL/HTTPS Setup Guide</h1>
+<p>This guide covers setting up Drone CI with a custom domain and automatic SSL/HTTPS certificates using Let&#39;s Encrypt and Traefik.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#detailed-setup">Detailed Setup</a></li>
+<li><a href="#configuration-options">Configuration Options</a></li>
+<li><a href="#multiple-domains">Multiple Domains</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#security-best-practices">Security Best Practices</a></li>
+</ul>
+<h2>Overview</h2>
+<p>By default, Drone CI is configured to run on <code>localhost:8080</code> without SSL. For production deployments with a custom domain (like <code>drone.yourdomain.com</code>), you need to:</p>
+<ol>
+<li>Configure DNS to point your domain to your server</li>
+<li>Set domain configuration in <code>.env.drone</code></li>
+<li>Apply domain-specific Traefik routing rules</li>
+<li>Let Traefik automatically obtain and manage SSL certificates from Let&#39;s Encrypt</li>
+</ol>
+<p>This guide walks you through the entire process.</p>
+<h2>Prerequisites</h2>
+<h3>1. Domain Name</h3>
+<p>You need a domain or subdomain that you control. Examples:</p>
+<ul>
+<li><code>drone.yourdomain.com</code></li>
+<li><code>ci.example.com</code></li>
+<li><code>build.mycompany.com</code></li>
+</ul>
+<h3>2. DNS Configuration</h3>
+<p>Create an A record pointing your domain to your server&#39;s IP address:</p>
+<pre><code>Type: A
+Name: drone (or ci, or build)
+Value: Your server&#39;s IP address (e.g., 203.0.113.42)
+TTL: 300 (or default)
+</code></pre>
+<p><strong>Verify DNS</strong>:</p>
+<pre><code class="language-bash"># Should return your server&#39;s IP
+nslookup drone.yourdomain.com
+</code></pre>
+<h3>3. Firewall Configuration</h3>
+<p>Ports 80 and 443 must be accessible from the internet:</p>
+<pre><code class="language-bash"># If using UFW
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw reload
+
+# If using firewalld
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+
+# Verify ports are open
+telnet drone.yourdomain.com 80
+telnet drone.yourdomain.com 443
+</code></pre>
+<h3>4. GitHub OAuth App</h3>
+<p>You need a GitHub OAuth App for Drone CI authentication. If you haven&#39;t created one yet:</p>
+<ol>
+<li>Go to <a href="https://github.com/settings/developers">https://github.com/settings/developers</a></li>
+<li>Click &quot;New OAuth App&quot;</li>
+<li>Set:<ul>
+<li><strong>Application name</strong>: Drone CI (or your preference)</li>
+<li><strong>Homepage URL</strong>: <code>https://drone.yourdomain.com</code></li>
+<li><strong>Authorization callback URL</strong>: <code>https://drone.yourdomain.com/login</code> (note: use <code>https://</code>)</li>
+</ul>
+</li>
+<li>Click &quot;Register application&quot;</li>
+<li>Copy the Client ID and Client Secret</li>
+</ol>
+<p><strong>Important</strong>: Use <code>https://</code> in the callback URL for custom domains with SSL.</p>
+<h2>Quick Start</h2>
+<p>For those who want to get up and running quickly:</p>
+<pre><code class="language-bash"># 1. Configure domain in .env.drone
+cat &gt;&gt; .env.drone &lt;&lt;EOF
+DRONE_DOMAIN=drone.yourdomain.com
+DRONE_ACME_EMAIL=admin@yourdomain.com
+DRONE_SERVER_PROTO=https
+DRONE_SERVER_HOST=drone.yourdomain.com
+EOF
+
+# 2. Apply domain configuration
+cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+
+# 3. Deploy Drone CI
+docker compose -f docker-compose.drone.yml up -d
+
+# 4. Monitor certificate issuance (wait 30-60 seconds)
+docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i certificate
+
+# 5. Access your Drone CI instance
+# Visit: https://drone.yourdomain.com
+</code></pre>
+<h2>Detailed Setup</h2>
+<h3>Step 1: Configure Environment Variables</h3>
+<p>Edit your <code>.env.drone</code> file (create from <code>.env.drone.example</code> if needed):</p>
+<pre><code class="language-bash"># Copy example if starting fresh
+cp .env.drone.example .env.drone
+
+# Edit with your favorite editor
+nano .env.drone
+</code></pre>
+<p>Set these <strong>required</strong> variables:</p>
+<pre><code class="language-bash"># =============================================================================
+# GitHub OAuth (from prerequisites step)
+# =============================================================================
+DRONE_GITHUB_CLIENT_ID=your-github-client-id-here
+DRONE_GITHUB_CLIENT_SECRET=your-github-client-secret-here
+
+# =============================================================================
+# Server Configuration - IMPORTANT for custom domains
+# =============================================================================
+# Your domain (without http:// or https://)
+DRONE_SERVER_HOST=drone.yourdomain.com
+
+# Use https for custom domains with SSL
+DRONE_SERVER_PROTO=https
+
+# =============================================================================
+# Custom Domain Configuration - NEW for SSL/HTTPS
+# =============================================================================
+# Your domain name (must match DRONE_SERVER_HOST)
+DRONE_DOMAIN=drone.yourdomain.com
+
+# Email for Let&#39;s Encrypt notifications
+DRONE_ACME_EMAIL=admin@yourdomain.com
+
+# =============================================================================
+# Security
+# =============================================================================
+# Generate with: openssl rand -hex 16
+DRONE_RPC_SECRET=your-randomly-generated-secret-here
+
+# Strong password for PostgreSQL
+DRONE_POSTGRES_PASSWORD=your-secure-database-password-here
+
+# =============================================================================
+# Database Configuration (can leave as defaults)
+# =============================================================================
+DRONE_POSTGRES_USER=drone
+DRONE_POSTGRES_DB=drone
+</code></pre>
+<p><strong>Important Notes</strong>:</p>
+<ul>
+<li><code>DRONE_SERVER_HOST</code> and <code>DRONE_DOMAIN</code> should match your domain (without protocol or port)</li>
+<li>Use <code>DRONE_SERVER_PROTO=https</code> for custom domains</li>
+<li><code>DRONE_ACME_EMAIL</code> is used by Let&#39;s Encrypt for certificate expiration notifications</li>
+<li>Never commit <code>.env.drone</code> to version control (it&#39;s already in <code>.gitignore</code>)</li>
+</ul>
+<h3>Step 2: Apply Domain Configuration</h3>
+<p>Copy the domain-specific configuration as an override file:</p>
+<pre><code class="language-bash">cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+</code></pre>
+<p><strong>What this does</strong>:</p>
+<ul>
+<li>The override file adds <code>Host()</code> matchers to Traefik router rules</li>
+<li>This ensures Let&#39;s Encrypt issues certificates for your specific domain</li>
+<li>Without this, certificates may be issued for the server&#39;s IP address, causing browser warnings</li>
+</ul>
+<p><strong>The override file will</strong>:</p>
+<ul>
+<li>Be automatically applied when you run <code>docker compose -f docker-compose.drone.yml</code></li>
+<li>Not be committed to Git (it&#39;s in <code>.gitignore</code>)</li>
+<li>Override only the necessary labels in the base configuration</li>
+</ul>
+<h3>Step 3: Deploy Drone CI</h3>
+<p>If this is a fresh deployment:</p>
+<pre><code class="language-bash"># Deploy all services
+docker compose -f docker-compose.drone.yml up -d
+
+# Verify all services are running
+docker compose -f docker-compose.drone.yml ps
+</code></pre>
+<p>If you&#39;re updating an existing deployment:</p>
+<pre><code class="language-bash"># Stop existing services
+docker compose -f docker-compose.drone.yml down
+
+# Deploy with new configuration
+docker compose -f docker-compose.drone.yml up -d
+
+# Or force recreate if needed
+docker compose -f docker-compose.drone.yml up -d --force-recreate
+</code></pre>
+<h3>Step 4: Monitor Certificate Issuance</h3>
+<p>Traefik will automatically request an SSL certificate from Let&#39;s Encrypt. This usually takes 30-60 seconds.</p>
+<p><strong>Monitor the process</strong>:</p>
+<pre><code class="language-bash"># Watch Traefik logs for certificate-related activity
+docker compose -f docker-compose.drone.yml logs -f drone-traefik | grep -i certificate
+
+# You should see messages like:
+# - &quot;Requesting certificate for drone.yourdomain.com&quot;
+# - &quot;Certificate obtained successfully&quot;
+</code></pre>
+<p><strong>If you see errors</strong>:</p>
+<ul>
+<li>Check that DNS is configured correctly: <code>nslookup drone.yourdomain.com</code></li>
+<li>Check that ports 80 and 443 are accessible from the internet</li>
+<li>See <a href="#troubleshooting">Troubleshooting</a> section below</li>
+</ul>
+<h3>Step 5: Verify SSL Certificate</h3>
+<p>After certificate issuance, verify everything is working:</p>
+<h4>Browser Test</h4>
+<ol>
+<li><p>Visit <code>https://drone.yourdomain.com</code></p>
+</li>
+<li><p>You should see:</p>
+<ul>
+<li>✅ Green padlock icon in address bar</li>
+<li>✅ No certificate warnings</li>
+<li>✅ Drone CI login page</li>
+</ul>
+</li>
+<li><p>Click the padlock icon and view certificate details:</p>
+<ul>
+<li><strong>Issued by</strong>: Let&#39;s Encrypt</li>
+<li><strong>Issued to</strong>: drone.yourdomain.com</li>
+<li><strong>Valid</strong>: Check that dates are current</li>
+</ul>
+</li>
+</ol>
+<h4>Command Line Test</h4>
+<pre><code class="language-bash"># Test HTTPS connection
+curl -I https://drone.yourdomain.com
+
+# Should return:
+# HTTP/2 200
+# (no certificate errors)
+
+# Test certificate details
+echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.yourdomain.com 2&gt;/dev/null | openssl x509 -noout -text | grep -E &quot;(Issuer|Subject):&quot;
+
+# Should show:
+# Issuer: C = US, O = Let&#39;s Encrypt, CN = R3
+# Subject: CN = drone.yourdomain.com
+
+# Test certificate expiration
+echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.yourdomain.com 2&gt;/dev/null | openssl x509 -noout -dates
+
+# Shows certificate valid dates (90 days from issuance)
+</code></pre>
+<h3>Step 6: Login and Configure Drone</h3>
+<ol>
+<li>Visit <code>https://drone.yourdomain.com</code></li>
+<li>Click &quot;Login with GitHub&quot;</li>
+<li>Authorize the OAuth application</li>
+<li>You&#39;ll be redirected back to Drone CI</li>
+<li>Click &quot;Sync&quot; to synchronize your repositories</li>
+<li>Enable repositories you want to build</li>
+</ol>
+<p><strong>First-time admin setup</strong>:</p>
+<p>To automatically create an admin user, add to <code>.env.drone</code> before first start:</p>
+<pre><code class="language-bash"># Format: username:your-github-username,admin:true
+DRONE_USER_CREATE=username:yourgithubusername,admin:true
+</code></pre>
+<h2>Configuration Options</h2>
+<h3>Basic Configuration</h3>
+<p><strong>Minimal required configuration</strong>:</p>
+<pre><code class="language-bash"># .env.drone
+DRONE_DOMAIN=drone.yourdomain.com
+DRONE_ACME_EMAIL=admin@yourdomain.com
+DRONE_SERVER_PROTO=https
+DRONE_SERVER_HOST=drone.yourdomain.com
+DRONE_GITHUB_CLIENT_ID=your-client-id
+DRONE_GITHUB_CLIENT_SECRET=your-client-secret
+DRONE_RPC_SECRET=your-rpc-secret
+DRONE_POSTGRES_PASSWORD=your-db-password
+</code></pre>
+<h3>Advanced Configuration</h3>
+<h4>User Management</h4>
+<pre><code class="language-bash"># Create admin user automatically
+DRONE_USER_CREATE=username:yourgithubusername,admin:true
+
+# Close registration (require admin approval)
+DRONE_REGISTRATION_CLOSED=true
+</code></pre>
+<h4>Runner Configuration</h4>
+<pre><code class="language-bash"># Number of concurrent builds
+DRONE_RUNNER_CAPACITY=2
+
+# Runner name (useful with multiple runners)
+DRONE_RUNNER_NAME=primary-runner
+</code></pre>
+<h4>Logging and Debugging</h4>
+<pre><code class="language-bash"># Enable debug logs (useful for troubleshooting)
+DRONE_LOGS_DEBUG=true
+DRONE_LOGS_TRACE=false
+
+# Enable runner debug logs
+DRONE_DEBUG=true
+DRONE_TRACE=false
+</code></pre>
+<h2>Multiple Domains</h2>
+<p>To support multiple domains for the same Drone CI instance:</p>
+<h3>Option 1: Edit Override File</h3>
+<p>Edit <code>docker-compose.drone.override.yml</code>:</p>
+<pre><code class="language-yaml">services:
+  drone-server:
+    labels:
+      # Support multiple domains
+      - &quot;traefik.http.routers.drone-server.rule=Host(`drone.domain1.com`) || Host(`ci.domain2.com`) || Host(`build.domain3.com`)&quot;
+</code></pre>
+<h3>Option 2: Subdomain + Root Domain</h3>
+<p>Support both <code>drone.yourdomain.com</code> and <code>yourdomain.com</code>:</p>
+<pre><code class="language-yaml">services:
+  drone-server:
+    labels:
+      - &quot;traefik.http.routers.drone-server.rule=Host(`yourdomain.com`) || Host(`drone.yourdomain.com`)&quot;
+</code></pre>
+<h3>DNS Configuration</h3>
+<p>For each domain, create an A record:</p>
+<pre><code>Type: A
+Name: drone (or ci, or build)
+Value: Your server&#39;s IP
+TTL: 300
+</code></pre>
+<h3>GitHub OAuth</h3>
+<p>Update your GitHub OAuth App:</p>
+<ul>
+<li>Use the primary domain in the callback URL</li>
+<li>Or create separate OAuth apps for each domain</li>
+</ul>
+<h3>Certificate</h3>
+<p>Let&#39;s Encrypt will issue a certificate with Subject Alternative Names (SAN) covering all specified domains.</p>
+<h2>Troubleshooting</h2>
+<h3>Issue: Certificate Not Issued</h3>
+<p><strong>Symptoms</strong>: Browser shows &quot;not secure&quot; or certificate errors.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Check DNS</strong>:</p>
+<pre><code class="language-bash">nslookup drone.yourdomain.com
+# Must return your server&#39;s IP
+</code></pre>
+</li>
+<li><p><strong>Check ports are accessible</strong>:</p>
+<pre><code class="language-bash">telnet drone.yourdomain.com 80
+telnet drone.yourdomain.com 443
+# Both should connect successfully
+</code></pre>
+</li>
+<li><p><strong>Check Traefik logs</strong>:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml logs drone-traefik | grep -i certificate
+# Look for error messages
+</code></pre>
+</li>
+<li><p><strong>Verify domain configuration</strong>:</p>
+<pre><code class="language-bash">grep DRONE_DOMAIN .env.drone
+# Must match the domain you&#39;re accessing
+</code></pre>
+</li>
+<li><p><strong>Try removing and regenerating certificate</strong>:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml stop drone-traefik
+sudo rm -f letsencrypt-drone/acme.json
+docker compose -f docker-compose.drone.yml start drone-traefik
+docker compose -f docker-compose.drone.yml logs -f drone-traefik
+</code></pre>
+</li>
+</ol>
+<p>For more troubleshooting, see <a href="../../TROUBLESHOOTING_DRONE_SSL.md">TROUBLESHOOTING_DRONE_SSL.md</a>.</p>
+<h3>Issue: Port Conflicts</h3>
+<p><strong>Symptoms</strong>: &quot;Port already in use&quot; error when starting Drone CI.</p>
+<p><strong>Solutions</strong>:</p>
+<p>Drone CI uses ports 8080/8443 by default. For custom domains with SSL on standard ports, edit <code>docker-compose.drone.yml</code>:</p>
+<pre><code class="language-yaml">drone-traefik:
+  ports:
+    - &quot;80:80&quot;      # Standard HTTP port
+    - &quot;443:443&quot;    # Standard HTTPS port
+</code></pre>
+<p><strong>Note</strong>: If running NoteHub on the same server:</p>
+<ul>
+<li>NoteHub uses ports 80/443 for its domain (e.g., <code>yourdomain.com</code>)</li>
+<li>Drone CI can use ports 80/443 for its domain (e.g., <code>drone.yourdomain.com</code>)</li>
+<li>Traefik routes based on domain name, no conflicts</li>
+</ul>
+<h3>Issue: Let&#39;s Encrypt Rate Limit</h3>
+<p><strong>Symptoms</strong>: &quot;too many certificates already issued&quot; error.</p>
+<p><strong>Solution</strong>: Use Let&#39;s Encrypt staging server for testing.</p>
+<p>Edit <code>docker-compose.drone.yml</code>:</p>
+<pre><code class="language-yaml">drone-traefik:
+  command:
+    # ... existing commands ...
+    - &quot;--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory&quot;
+</code></pre>
+<p><strong>Note</strong>: Staging certificates won&#39;t be trusted by browsers (expected for testing).</p>
+<p>Once configuration is confirmed, remove the staging server line and recreate:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml down
+# Remove the staging server line from docker-compose.drone.yml
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+<h2>Security Best Practices</h2>
+<h3>1. Strong Secrets</h3>
+<p>Generate strong secrets for all sensitive values:</p>
+<pre><code class="language-bash"># RPC secret
+openssl rand -hex 16
+
+# PostgreSQL password
+openssl rand -base64 32
+</code></pre>
+<h3>2. Keep Software Updated</h3>
+<pre><code class="language-bash"># Pull latest images
+docker compose -f docker-compose.drone.yml pull
+
+# Recreate with new images
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+<h3>3. Monitor Certificate Expiration</h3>
+<p>Let&#39;s Encrypt certificates expire after 90 days but are automatically renewed by Traefik at ~30 days before expiration.</p>
+<p><strong>Monitor renewal</strong>:</p>
+<pre><code class="language-bash"># Check logs for renewal activity
+docker compose -f docker-compose.drone.yml logs drone-traefik | grep -i renew
+
+# Check certificate expiration date
+echo | openssl s_client -connect drone.yourdomain.com:443 -servername drone.yourdomain.com 2&gt;/dev/null | openssl x509 -noout -dates
+</code></pre>
+<h3>4. Backup Critical Files</h3>
+<pre><code class="language-bash"># Backup configuration
+cp .env.drone .env.drone.backup
+
+# Backup certificate
+cp letsencrypt-drone/acme.json letsencrypt-drone/acme.json.backup
+
+# Backup database (if needed)
+docker compose -f docker-compose.drone.yml exec -T drone-db \
+  pg_dump -U drone drone &gt; drone-db-backup.sql
+</code></pre>
+<h3>5. Restrict Access</h3>
+<pre><code class="language-bash"># Close registration
+echo &quot;DRONE_REGISTRATION_CLOSED=true&quot; &gt;&gt; .env.drone
+
+# Create admin user
+echo &quot;DRONE_USER_CREATE=username:yourgithubusername,admin:true&quot; &gt;&gt; .env.drone
+
+# Restart to apply
+docker compose -f docker-compose.drone.yml restart drone-server
+</code></pre>
+<h3>6. HSTS Headers</h3>
+<p>HSTS (HTTP Strict Transport Security) is already configured in <code>docker/traefik/drone-dynamic.yml</code>:</p>
+<pre><code class="language-yaml">security-headers-drone:
+  headers:
+    stsSeconds: 31536000  # 1 year
+    stsIncludeSubdomains: true
+    forceSTSHeader: true
+</code></pre>
+<p>This forces browsers to always use HTTPS for your domain.</p>
+<h2>Migration from HTTP to HTTPS</h2>
+<p>If you have an existing Drone CI deployment on HTTP and want to migrate to HTTPS:</p>
+<h3>1. Update GitHub OAuth Callback URL</h3>
+<ol>
+<li>Go to <a href="https://github.com/settings/developers">https://github.com/settings/developers</a></li>
+<li>Find your Drone CI OAuth App</li>
+<li>Update callback URL from <code>http://</code> to <code>https://</code></li>
+<li>Example: <code>http://drone.yourdomain.com/login</code> → <code>https://drone.yourdomain.com/login</code></li>
+</ol>
+<h3>2. Update Configuration</h3>
+<pre><code class="language-bash"># Edit .env.drone
+sed -i &#39;s/DRONE_SERVER_PROTO=http/DRONE_SERVER_PROTO=https/&#39; .env.drone
+
+# Add domain configuration
+echo &quot;DRONE_DOMAIN=drone.yourdomain.com&quot; &gt;&gt; .env.drone
+echo &quot;DRONE_ACME_EMAIL=admin@yourdomain.com&quot; &gt;&gt; .env.drone
+</code></pre>
+<h3>3. Apply Domain Configuration</h3>
+<pre><code class="language-bash">cp docker-compose.drone.domain.yml docker-compose.drone.override.yml
+</code></pre>
+<h3>4. Restart Drone CI</h3>
+<pre><code class="language-bash">docker compose -f docker-compose.drone.yml down
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+<h3>5. Verify Migration</h3>
+<pre><code class="language-bash"># Test HTTPS
+curl -I https://drone.yourdomain.com
+
+# Test HTTP redirect
+curl -I http://drone.yourdomain.com
+# Should return 301 or 308 redirect to https://
+</code></pre>
+<h2>Port Configuration Reference</h2>
+<h3>Default Configuration (No Custom Domain)</h3>
+<pre><code class="language-yaml">drone-traefik:
+  ports:
+    - &quot;8080:80&quot;   # HTTP on port 8080
+    - &quot;8443:443&quot;  # HTTPS on port 8443
+</code></pre>
+<p>Access via: <code>http://localhost:8080</code> or <code>http://your-server-ip:8080</code></p>
+<h3>Custom Domain Configuration</h3>
+<pre><code class="language-yaml">drone-traefik:
+  ports:
+    - &quot;80:80&quot;     # Standard HTTP port
+    - &quot;443:443&quot;   # Standard HTTPS port
+</code></pre>
+<p>Access via: <code>https://drone.yourdomain.com</code></p>
+<h3>Running Alongside NoteHub</h3>
+<ul>
+<li>NoteHub: ports 80/443, domain <code>yourdomain.com</code></li>
+<li>Drone CI: ports 80/443, domain <code>drone.yourdomain.com</code></li>
+<li>Both can coexist on same server</li>
+<li>Traefik routes by domain name</li>
+</ul>
+<h2>Complete Example Configuration</h2>
+<p>Here&#39;s a complete example <code>.env.drone</code> for a production deployment:</p>
+<pre><code class="language-bash"># =============================================================================
+# GitHub OAuth (from GitHub OAuth App)
+# =============================================================================
+DRONE_GITHUB_CLIENT_ID=abcdef1234567890abcd
+DRONE_GITHUB_CLIENT_SECRET=abcdef1234567890abcdef1234567890abcdef12
+
+# =============================================================================
+# Server Configuration (Custom Domain)
+# =============================================================================
+DRONE_SERVER_HOST=drone.yourdomain.com
+DRONE_SERVER_PROTO=https
+
+# =============================================================================
+# Custom Domain Configuration
+# =============================================================================
+DRONE_DOMAIN=drone.yourdomain.com
+DRONE_ACME_EMAIL=admin@yourdomain.com
+
+# =============================================================================
+# Security
+# =============================================================================
+DRONE_RPC_SECRET=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+DRONE_POSTGRES_PASSWORD=SuperSecurePassword123!ForDroneDatabase
+
+# =============================================================================
+# Database
+# =============================================================================
+DRONE_POSTGRES_USER=drone
+DRONE_POSTGRES_DB=drone
+
+# =============================================================================
+# User Management
+# =============================================================================
+DRONE_USER_CREATE=username:yourgithubusername,admin:true
+DRONE_REGISTRATION_CLOSED=true
+
+# =============================================================================
+# Runner Configuration
+# =============================================================================
+DRONE_RUNNER_CAPACITY=2
+DRONE_RUNNER_NAME=production-runner
+
+# =============================================================================
+# Logging (disabled in production)
+# =============================================================================
+DRONE_LOGS_DEBUG=false
+DRONE_LOGS_TRACE=false
+DRONE_DEBUG=false
+DRONE_TRACE=false
+</code></pre>
+<h2>Summary</h2>
+<p>✅ <strong>Prerequisites</strong>:</p>
+<ul>
+<li>Domain name with DNS A record</li>
+<li>Ports 80 and 443 accessible</li>
+<li>GitHub OAuth App configured</li>
+</ul>
+<p>✅ <strong>Setup Steps</strong>:</p>
+<ol>
+<li>Configure <code>.env.drone</code> with domain settings</li>
+<li>Copy <code>docker-compose.drone.domain.yml</code> to <code>docker-compose.drone.override.yml</code></li>
+<li>Deploy with <code>docker compose -f docker-compose.drone.yml up -d</code></li>
+<li>Wait for certificate issuance (30-60 seconds)</li>
+<li>Access via <code>https://drone.yourdomain.com</code></li>
+</ol>
+<p>✅ <strong>Benefits</strong>:</p>
+<ul>
+<li>Automatic SSL certificate from Let&#39;s Encrypt</li>
+<li>Automatic certificate renewal</li>
+<li>Professional HTTPS setup</li>
+<li>Browser shows green padlock</li>
+<li>Secure connection for all traffic</li>
+</ul>
+<h2>Additional Resources</h2>
+<ul>
+<li><a href="../../TROUBLESHOOTING_DRONE_SSL.md">TROUBLESHOOTING_DRONE_SSL.md</a> - Comprehensive troubleshooting guide</li>
+<li><a href="../../DRONE_CI_README.md">DRONE_CI_README.md</a> - Overview and basic setup</li>
+<li><a href="https://doc.traefik.io/traefik/">Traefik Documentation</a> - Official Traefik docs</li>
+<li><a href="https://letsencrypt.org/docs/">Let&#39;s Encrypt Documentation</a> - Certificate authority docs</li>
+<li><a href="https://docs.drone.io/">Drone CI Documentation</a> - Official Drone docs</li>
+</ul>
+<hr>
+<p><strong>Last Updated</strong>: December 2025<br><strong>Tested With</strong>: Traefik v2.11, Drone 2.x<br><strong>Certificate Authority</strong>: Let&#39;s Encrypt (ACME v2)</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

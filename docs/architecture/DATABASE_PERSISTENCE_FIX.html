@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Database Persistence Fix - Summary">
+    <title>Database Persistence Fix - Summary - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Database Persistence Fix - Summary</span>
+        </div>
+
+        <article class="content">
+            <h1>Database Persistence Fix - Summary</h1>
+<h2>The Problem</h2>
+<p>You experienced data loss on Render where:</p>
+<ol>
+<li>✅ New accounts could be registered</li>
+<li>✅ Accounts appeared in local <code>notes.db</code> during development</li>
+<li>❌ After Render redeployment, all registered accounts disappeared</li>
+</ol>
+<h2>Root Cause</h2>
+<p><strong>Render uses ephemeral file systems.</strong> Without persistent disk configuration, the entire filesystem (including your SQLite database) is wiped clean on every:</p>
+<ul>
+<li>Code deployment</li>
+<li>Container restart</li>
+<li>Platform maintenance</li>
+<li>Auto-scaling events</li>
+</ul>
+<h2>The Solution</h2>
+<h3>1. Updated <code>render.yaml</code> Configuration</h3>
+<pre><code class="language-yaml">disk:
+  name: notehub-data # Unique disk identifier
+  mountPath: /var/data # Where disk is mounted
+  sizeGB: 1 # Disk size (1GB free tier)
+</code></pre>
+<p><strong>Environment variable updated:</strong></p>
+<pre><code class="language-yaml">- key: NOTES_DB_PATH
+  value: /var/data/notes.db # Database on persistent disk!
+</code></pre>
+<h3>2. Enhanced Database Initialization</h3>
+<p>Added comprehensive logging in <code>database.py</code>:</p>
+<ul>
+<li>✅ Shows exact database file path on startup</li>
+<li>✅ Verifies directory exists and is writable</li>
+<li>✅ Checks if database file already exists (persistence proof)</li>
+<li>✅ Displays file size for monitoring</li>
+<li>✅ Warns about non-persistent paths</li>
+</ul>
+<h3>3. Configuration Validation</h3>
+<p>Added <code>__post_init__</code> to <code>config.py</code>:</p>
+<ul>
+<li>⚠️ Warns if using default <code>notes.db</code> path in production</li>
+<li>📊 Logs database configuration on startup</li>
+</ul>
+<h3>4. Health Check Endpoint</h3>
+<p>New endpoint: <code>/admin/health</code></p>
+<p>Returns JSON with:</p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;healthy&quot;,
+  &quot;database&quot;: {
+    &quot;path&quot;: &quot;/var/data/notes.db&quot;,
+    &quot;exists&quot;: true,
+    &quot;size_mb&quot;: 0.15,
+    &quot;likely_persistent&quot;: true,
+    &quot;writable&quot;: true
+  },
+  &quot;disk&quot;: {
+    &quot;total_gb&quot;: 1.0,
+    &quot;free_gb&quot;: 0.98,
+    &quot;available_gb&quot;: 0.98
+  },
+  &quot;stats&quot;: {
+    &quot;total_users&quot;: 5
+  },
+  &quot;warnings&quot;: []
+}
+</code></pre>
+<h2>How to Verify the Fix</h2>
+<h3>Step 1: Check Render Dashboard</h3>
+<ol>
+<li>Go to your service on Render</li>
+<li>Click &quot;Disks&quot; tab</li>
+<li>Verify <code>notehub-data</code> disk exists and is mounted at <code>/var/data</code></li>
+<li>If missing, add manually:<ul>
+<li>Name: <code>notehub-data</code></li>
+<li>Mount Path: <code>/var/data</code></li>
+<li>Size: 1 GB</li>
+</ul>
+</li>
+</ol>
+<h3>Step 2: Check Environment Variables</h3>
+<ol>
+<li>Go to &quot;Environment&quot; tab</li>
+<li>Verify: <code>NOTES_DB_PATH=/var/data/notes.db</code></li>
+<li>If wrong, update and redeploy</li>
+</ol>
+<h3>Step 3: Check Startup Logs</h3>
+<p>After deployment, look for these log lines:</p>
+<pre><code>✅ Database path configured: /var/data/notes.db
+🗄️  Database file path: /var/data/notes.db
+📁 Database directory: /var/data
+✅ Database directory is writable: /var/data
+✅ Existing database found: /var/data/notes.db (150000 bytes)
+</code></pre>
+<p>OR for first deployment:</p>
+<pre><code>🆕 New database will be created: /var/data/notes.db
+</code></pre>
+<h3>Step 4: Use Health Check Endpoint</h3>
+<pre><code class="language-bash">curl https://your-app.onrender.com/admin/health
+</code></pre>
+<p>Verify:</p>
+<ul>
+<li>✅ <code>&quot;likely_persistent&quot;: true</code></li>
+<li>✅ <code>&quot;writable&quot;: true</code></li>
+<li>✅ <code>warnings</code> array is empty</li>
+</ul>
+<h3>Step 5: Test Data Persistence</h3>
+<p><strong>The ultimate test:</strong></p>
+<ol>
+<li>Register a new test account (e.g., <code>testuser123</code>)</li>
+<li>Log out</li>
+<li>Trigger a redeployment:<ul>
+<li>Push a small change to GitHub, OR</li>
+<li>Click &quot;Manual Deploy&quot; in Render dashboard</li>
+</ul>
+</li>
+<li>Wait for deployment to complete</li>
+<li>Try logging in with <code>testuser123</code></li>
+<li>✅ <strong>SUCCESS:</strong> Login works = data is persistent!</li>
+<li>❌ <strong>FAILURE:</strong> Login fails = disk not properly configured</li>
+</ol>
+<h2>What Changed</h2>
+<h3>Files Modified</h3>
+<ol>
+<li><p><strong>render.yaml</strong></p>
+<ul>
+<li>Changed disk name to <code>notehub-data</code></li>
+<li>Changed mount path to <code>/var/data</code></li>
+<li>Updated <code>NOTES_DB_PATH</code> to match</li>
+<li>Added comments about persistence</li>
+</ul>
+</li>
+<li><p><strong>src/notehub/database.py</strong></p>
+<ul>
+<li>Enhanced logging for database path</li>
+<li>Added directory writability checks</li>
+<li>Added file existence detection</li>
+<li>Added file size reporting</li>
+</ul>
+</li>
+<li><p><strong>src/notehub/config.py</strong></p>
+<ul>
+<li>Added <code>__post_init__</code> validation</li>
+<li>Added warning for default paths in production</li>
+<li>Added configuration logging</li>
+</ul>
+</li>
+<li><p><strong>src/notehub/routes_modules/admin_routes.py</strong></p>
+<ul>
+<li>Added <code>/admin/health</code> endpoint</li>
+<li>Database persistence verification</li>
+<li>Disk space reporting</li>
+<li>Warning system for misconfigurations</li>
+</ul>
+</li>
+<li><p><strong>DEPLOYMENT.md</strong></p>
+<ul>
+<li>Added critical warnings about persistence</li>
+<li>Added troubleshooting guide</li>
+<li>Added verification checklist</li>
+<li>Added health check documentation</li>
+</ul>
+</li>
+</ol>
+<h2>Common Issues &amp; Solutions</h2>
+<h3>Issue 1: Disk Not Mounted</h3>
+<p><strong>Symptom:</strong> Logs show <code>/var/data</code> doesn&#39;t exist</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Render Dashboard → Your Service → Disks</li>
+<li>Add disk manually</li>
+<li>Redeploy</li>
+</ol>
+<h3>Issue 2: Wrong Database Path</h3>
+<p><strong>Symptom:</strong> <code>likely_persistent: false</code> in health check</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Check <code>NOTES_DB_PATH</code> environment variable</li>
+<li>Should be <code>/var/data/notes.db</code></li>
+<li>Update and redeploy</li>
+</ol>
+<h3>Issue 3: Permission Issues</h3>
+<p><strong>Symptom:</strong> <code>&quot;writable&quot;: false</code> in health check</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Check Render Shell: <code>ls -la /var/data</code></li>
+<li>Should show drwxr-xr-x permissions</li>
+<li>Contact Render support if issue persists</li>
+</ol>
+<h3>Issue 4: Data Still Lost</h3>
+<p><strong>Symptom:</strong> Even with disk, data disappears</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Verify disk is actually attached (Disks tab)</li>
+<li>Check if disk size is exceeded (1GB limit on free tier)</li>
+<li>Verify logs show correct path on startup</li>
+<li>Check for database corruption (rare)</li>
+</ol>
+<h2>Why SQLite + Persistent Disk?</h2>
+<p>✅ <strong>Pros:</strong></p>
+<ul>
+<li>Simple setup, no external database needed</li>
+<li>Works well for small to medium traffic</li>
+<li>Free tier supports persistent disks</li>
+<li>Easy backups (single file)</li>
+<li>No connection management overhead</li>
+</ul>
+<p>⚠️ <strong>Limitations:</strong></p>
+<ul>
+<li>Single instance only (no horizontal scaling)</li>
+<li>1GB size limit on free tier</li>
+<li>Write locks can be bottleneck under heavy load</li>
+<li>Backups require manual download</li>
+</ul>
+<p><strong>For production at scale, consider PostgreSQL:</strong></p>
+<ul>
+<li>Render offers managed PostgreSQL</li>
+<li>Better for multiple instances</li>
+<li>Stronger concurrency handling</li>
+<li>Automatic backups</li>
+</ul>
+<h2>Next Steps</h2>
+<ol>
+<li>✅ Deploy the updated configuration</li>
+<li>✅ Verify health endpoint shows persistence</li>
+<li>✅ Test with account creation and redeployment</li>
+<li>✅ Monitor <code>/admin/health</code> regularly</li>
+<li>✅ Set up periodic database backups</li>
+<li>Consider PostgreSQL if scaling beyond 10,000+ users</li>
+</ol>
+<h2>Questions?</h2>
+<p>If you still experience issues after these fixes:</p>
+<ol>
+<li>Check Render logs for database path</li>
+<li>Run health check endpoint</li>
+<li>Verify disk in Render dashboard</li>
+<li>Check startup logs for warnings</li>
+<li>Test persistence with the 5-step verification</li>
+</ol>
+<p><strong>The database will now persist across deployments!</strong> 🎉</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

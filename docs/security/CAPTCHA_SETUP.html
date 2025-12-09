@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - CAPTCHA Setup Guide">
+    <title>CAPTCHA Setup Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>CAPTCHA Setup Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>CAPTCHA Setup Guide</h1>
+<p>This document explains how to configure and use CAPTCHA protection in the Note Hub application to prevent bots, automated attacks, and spam.</p>
+<h2>Overview</h2>
+<p>CAPTCHA (Completely Automated Public Turing test to tell Computers and Humans Apart) has been integrated into the following forms:</p>
+<ul>
+<li><strong>Login Form</strong> - Protects against brute force attacks</li>
+<li><strong>Registration Form</strong> - Prevents automated bot registrations</li>
+<li><strong>Forgot Password Form</strong> - Protects against password reset abuse</li>
+</ul>
+<h2>Features</h2>
+<ul>
+<li>Uses Google reCAPTCHA v2 (&quot;I&#39;m not a robot&quot; checkbox)</li>
+<li>Conditionally enabled based on configuration</li>
+<li>Works seamlessly with existing CSRF protection</li>
+<li>Minimal UI impact with centered widget placement</li>
+<li>Graceful degradation when not configured</li>
+</ul>
+<h2>Setup Instructions</h2>
+<h3>1. Get reCAPTCHA API Keys</h3>
+<ol>
+<li>Visit <a href="https://www.google.com/recaptcha/admin">Google reCAPTCHA Admin</a></li>
+<li>Sign in with your Google account</li>
+<li>Click <strong>&quot;+&quot;</strong> or <strong>&quot;Create&quot;</strong> to register a new site</li>
+<li>Fill in the form:<ul>
+<li><strong>Label</strong>: Choose a name for your site (e.g., &quot;Note Hub Production&quot;)</li>
+<li><strong>reCAPTCHA type</strong>: Select <strong>&quot;reCAPTCHA v2&quot;</strong> → <strong>&quot;I&#39;m not a robot&quot; Checkbox</strong></li>
+<li><strong>Domains</strong>: Add your domain(s)<ul>
+<li>For local development: <code>localhost</code>, <code>127.0.0.1</code></li>
+<li>For production: <code>yourdomain.com</code>, <code>www.yourdomain.com</code></li>
+</ul>
+</li>
+<li>Accept the reCAPTCHA Terms of Service</li>
+</ul>
+</li>
+<li>Click <strong>&quot;Submit&quot;</strong></li>
+<li>Copy your <strong>Site Key</strong> and <strong>Secret Key</strong></li>
+</ol>
+<h3>2. Configure Environment Variables</h3>
+<p>Add the following environment variables to your deployment environment:</p>
+<pre><code class="language-bash"># Google reCAPTCHA Keys
+RECAPTCHA_SITE_KEY=your_site_key_here
+RECAPTCHA_SECRET_KEY=your_secret_key_here
+</code></pre>
+<h4>For Local Development (.env file)</h4>
+<p>Create or update your <code>.env</code> file:</p>
+<pre><code class="language-bash"># .env
+FLASK_SECRET=your_flask_secret_key
+RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
+</code></pre>
+<h4>For Render.com Deployment</h4>
+<ol>
+<li>Go to your Render dashboard</li>
+<li>Select your web service</li>
+<li>Navigate to <strong>&quot;Environment&quot;</strong> tab</li>
+<li>Add environment variables:<ul>
+<li><code>RECAPTCHA_SITE_KEY</code>: Your site key</li>
+<li><code>RECAPTCHA_SECRET_KEY</code>: Your secret key</li>
+</ul>
+</li>
+</ol>
+<h4>For Other Platforms</h4>
+<ul>
+<li><strong>Heroku</strong>: Use <code>heroku config:set RECAPTCHA_SITE_KEY=xxx RECAPTCHA_SECRET_KEY=xxx</code></li>
+<li><strong>Railway</strong>: Add variables in the Variables tab</li>
+<li><strong>Docker</strong>: Pass via <code>-e</code> flag or <code>docker-compose.yml</code> environment section</li>
+</ul>
+<h3>3. Install Dependencies</h3>
+<p>The required package is already added to <code>requirements.txt</code>:</p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<p>This installs <code>Flask-ReCaptcha==0.4.2</code> which provides the reCAPTCHA integration.</p>
+<h3>4. Restart Your Application</h3>
+<p>After setting environment variables, restart your application for changes to take effect:</p>
+<pre><code class="language-bash"># For local development
+python wsgi.py
+
+# For production (if using gunicorn)
+gunicorn wsgi:app
+</code></pre>
+<h2>Verification</h2>
+<h3>Check if CAPTCHA is Enabled</h3>
+<ol>
+<li>Open your application in a browser</li>
+<li>Navigate to the login page (<code>/login</code>)</li>
+<li>If configured correctly, you should see the reCAPTCHA widget (&quot;I&#39;m not a robot&quot; checkbox)</li>
+<li>If not configured, the form will work without CAPTCHA (fallback behavior)</li>
+</ol>
+<h3>Test CAPTCHA Validation</h3>
+<ol>
+<li>Try submitting a form without completing the CAPTCHA</li>
+<li>You should see a validation error</li>
+<li>Complete the CAPTCHA and submit again</li>
+<li>The form should process successfully</li>
+</ol>
+<h2>Configuration Options</h2>
+<p>The application uses the following reCAPTCHA settings (configurable in <code>src/notehub/config.py</code>):</p>
+<pre><code class="language-python">RECAPTCHA_ENABLED: bool        # Auto-enabled if keys are present
+RECAPTCHA_SITE_KEY: str        # Public key from Google
+RECAPTCHA_SECRET_KEY: str      # Private key from Google
+RECAPTCHA_THEME: &quot;light&quot;       # Widget theme (light/dark)
+RECAPTCHA_TYPE: &quot;image&quot;        # Challenge type (image/audio)
+RECAPTCHA_SIZE: &quot;normal&quot;       # Widget size (normal/compact)
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>CAPTCHA Not Showing</h3>
+<p><strong>Problem</strong>: The reCAPTCHA widget doesn&#39;t appear on forms.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify environment variables are set correctly</li>
+<li>Check that both <code>RECAPTCHA_SITE_KEY</code> and <code>RECAPTCHA_SECRET_KEY</code> are non-empty</li>
+<li>Restart the application after setting variables</li>
+<li>Check browser console for JavaScript errors</li>
+</ol>
+<h3>&quot;Invalid site key&quot; Error</h3>
+<p><strong>Problem</strong>: reCAPTCHA shows an error message.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify the site key matches what you copied from Google</li>
+<li>Ensure your domain is registered in the reCAPTCHA admin panel</li>
+<li>For local development, add <code>localhost</code> and <code>127.0.0.1</code> to allowed domains</li>
+</ol>
+<h3>CAPTCHA Validation Fails</h3>
+<p><strong>Problem</strong>: Form submission fails even after completing CAPTCHA.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify secret key is correct</li>
+<li>Check server logs for validation errors</li>
+<li>Ensure your server can connect to Google&#39;s reCAPTCHA API</li>
+<li>Check firewall rules if behind a corporate network</li>
+</ol>
+<h3>CAPTCHA Not Required</h3>
+<p><strong>Problem</strong>: Forms submit without CAPTCHA validation.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>This is expected behavior when <code>RECAPTCHA_ENABLED=False</code></li>
+<li>Set both <code>RECAPTCHA_SITE_KEY</code> and <code>RECAPTCHA_SECRET_KEY</code> to enable</li>
+<li>Check that <code>config.RECAPTCHA_ENABLED</code> returns <code>True</code> in your template</li>
+</ol>
+<h2>Security Considerations</h2>
+<h3>Best Practices</h3>
+<ol>
+<li><strong>Keep Secret Key Private</strong>: Never commit your secret key to version control</li>
+<li><strong>Use Environment Variables</strong>: Always load keys from environment variables</li>
+<li><strong>Rotate Keys Periodically</strong>: Generate new keys if compromised</li>
+<li><strong>Monitor Usage</strong>: Check reCAPTCHA analytics for suspicious patterns</li>
+<li><strong>Domain Restrictions</strong>: Only allow your actual domains in reCAPTCHA settings</li>
+</ol>
+<h3>Additional Protection</h3>
+<p>CAPTCHA works alongside other security measures:</p>
+<ul>
+<li>CSRF tokens (always enabled)</li>
+<li>Password policies (12+ characters, complexity requirements)</li>
+<li>2FA support for enhanced account security</li>
+<li>Rate limiting (recommended for production)</li>
+</ul>
+<h2>Development vs Production</h2>
+<h3>Development Environment</h3>
+<p>For local development, you can:</p>
+<ul>
+<li>Use test keys from Google (won&#39;t validate but allows testing)</li>
+<li>Leave CAPTCHA disabled by not setting environment variables</li>
+<li>Use localhost in domain settings</li>
+</ul>
+<h3>Production Environment</h3>
+<p>For production, you <strong>must</strong>:</p>
+<ul>
+<li>Use real reCAPTCHA keys</li>
+<li>Set environment variables properly</li>
+<li>Register your actual domain</li>
+<li>Monitor CAPTCHA analytics for abuse</li>
+</ul>
+<h2>Advanced Configuration</h2>
+<h3>Custom Theme</h3>
+<p>To change the CAPTCHA theme, modify <code>src/notehub/config.py</code>:</p>
+<pre><code class="language-python">&quot;RECAPTCHA_THEME&quot;: &quot;dark&quot;,  # Change to &quot;dark&quot; for dark theme
+</code></pre>
+<h3>Invisible reCAPTCHA</h3>
+<p>To use invisible reCAPTCHA (v2 invisible):</p>
+<ol>
+<li>Register a new site with &quot;Invisible reCAPTCHA&quot; type</li>
+<li>Update form templates to use invisible widget</li>
+<li>Requires JavaScript changes for submission</li>
+</ol>
+<h2>Support</h2>
+<p>For issues related to:</p>
+<ul>
+<li><strong>reCAPTCHA Service</strong>: Visit <a href="https://support.google.com/recaptcha">reCAPTCHA Help Center</a></li>
+<li><strong>Flask-ReCaptcha</strong>: Check <a href="https://github.com/mardix/flask-recaptcha">GitHub Issues</a></li>
+<li><strong>Note Hub Application</strong>: Open an issue in the repository</li>
+</ul>
+<h2>References</h2>
+<ul>
+<li><a href="https://developers.google.com/recaptcha">Google reCAPTCHA Documentation</a></li>
+<li><a href="https://github.com/mardix/flask-recaptcha">Flask-ReCaptcha GitHub</a></li>
+<li><a href="https://flask-wtf.readthedocs.io/">Flask-WTF Documentation</a></li>
+</ul>
+<hr>
+<p>Last Updated: November 23, 2025</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

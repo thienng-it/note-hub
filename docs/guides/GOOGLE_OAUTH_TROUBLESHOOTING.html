@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Google OAuth Troubleshooting Guide">
+    <title>Google OAuth Troubleshooting Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Google OAuth Troubleshooting Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Google OAuth Troubleshooting Guide</h1>
+<p>Complete guide to resolving common Google OAuth SSO issues in NoteHub.</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#common-errors">Common Errors</a></li>
+<li><a href="#docker-deployment-issues">Docker Deployment Issues</a></li>
+<li><a href="#development-environment-issues">Development Environment Issues</a></li>
+<li><a href="#production-deployment-issues">Production Deployment Issues</a></li>
+<li><a href="#testing-and-verification">Testing and Verification</a></li>
+</ol>
+<hr>
+<h2>Common Errors</h2>
+<h3>Error: &quot;Google Sign-In is temporarily unavailable&quot;</h3>
+<p><strong>Symptom:</strong></p>
+<ul>
+<li>Clicking &quot;Sign in with Google&quot; button shows error message</li>
+<li>Browser console shows API error</li>
+</ul>
+<p><strong>Causes and Solutions:</strong></p>
+<h4>1. Google OAuth Not Configured</h4>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash"># Verify environment variables are set
+docker exec notehub-backend printenv | grep GOOGLE
+</code></pre>
+<p><strong>Solution:</strong><br>Add these to your <code>.env</code> file:</p>
+<pre><code class="language-bash">GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback  # For Docker
+</code></pre>
+<p>Then restart:</p>
+<pre><code class="language-bash">docker compose down
+docker compose up -d
+</code></pre>
+<h4>2. Incorrect Redirect URI</h4>
+<p><strong>Check backend logs:</strong></p>
+<pre><code class="language-bash">docker logs notehub-backend | grep OAuth
+</code></pre>
+<p>Look for:</p>
+<pre><code>⚠️  Google OAuth not configured - SSO disabled
+</code></pre>
+<p><strong>Solution:</strong><br>The <code>GOOGLE_REDIRECT_URI</code> must match your deployment environment:</p>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Port</th>
+<th>Redirect URI</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Docker</td>
+<td>80</td>
+<td><code>http://localhost/auth/google/callback</code></td>
+</tr>
+<tr>
+<td>Dev (npm)</td>
+<td>3000</td>
+<td><code>http://localhost:3000/auth/google/callback</code></td>
+</tr>
+<tr>
+<td>Production</td>
+<td>443</td>
+<td><code>https://yourdomain.com/auth/google/callback</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h3>Error: &quot;redirect_uri_mismatch&quot;</h3>
+<p><strong>Symptom:</strong></p>
+<ul>
+<li>Google OAuth page shows: &quot;Error 400: redirect_uri_mismatch&quot;</li>
+</ul>
+<p><strong>Cause:</strong><br>The redirect URI in your <code>.env</code> file doesn&#39;t match what&#39;s configured in Google Cloud Console.</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li><p><strong>Check your current redirect URI:</strong></p>
+<pre><code class="language-bash"># In Docker
+docker exec notehub-backend printenv GOOGLE_REDIRECT_URI
+
+# Should output: http://localhost/auth/google/callback
+</code></pre>
+</li>
+<li><p><strong>Add to Google Cloud Console:</strong></p>
+<ul>
+<li>Go to <a href="https://console.cloud.google.com/">Google Cloud Console</a></li>
+<li>Navigate to: APIs &amp; Services &gt; Credentials</li>
+<li>Click your OAuth 2.0 Client ID</li>
+<li>Under &quot;Authorized redirect URIs&quot;, click &quot;ADD URI&quot;</li>
+<li>Add: <code>http://localhost/auth/google/callback</code></li>
+<li>Click &quot;SAVE&quot;</li>
+</ul>
+</li>
+<li><p><strong>Add ALL environments you&#39;ll use:</strong></p>
+<pre><code>http://localhost/auth/google/callback           (Docker)
+http://localhost:3000/auth/google/callback      (Development)
+https://yourdomain.com/auth/google/callback     (Production)
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2>Docker Deployment Issues</h2>
+<h3>Issue: OAuth works in development but not in Docker</h3>
+<p><strong>Problem:</strong></p>
+<ul>
+<li>Development uses port 3000</li>
+<li>Docker uses port 80</li>
+<li>Redirect URIs are different</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ol>
+<li><p><strong>Update <code>.env</code> for Docker:</strong></p>
+<pre><code class="language-bash"># Docker deployment (port 80)
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+</code></pre>
+</li>
+<li><p><strong>Add Docker redirect URI to Google Cloud Console:</strong></p>
+<ul>
+<li>Add: <code>http://localhost/auth/google/callback</code></li>
+</ul>
+</li>
+<li><p><strong>Restart Docker containers:</strong></p>
+<pre><code class="language-bash">docker compose down
+docker compose up -d
+</code></pre>
+</li>
+<li><p><strong>Verify configuration:</strong></p>
+<pre><code class="language-bash"># Check backend logs for OAuth status
+docker logs notehub-backend | tail -20
+
+# Should see: &quot;🔐 Google OAuth configured - SSO enabled&quot;
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Cannot access <a href="http://localhost:3000/auth/google/callback">http://localhost:3000/auth/google/callback</a></h3>
+<p><strong>Problem:</strong><br>Google is redirecting to port 3000, but Docker runs on port 80.</p>
+<p><strong>Cause:</strong><br>Your <code>GOOGLE_REDIRECT_URI</code> is still set to development port.</p>
+<p><strong>Solution:</strong><br>Update <code>.env</code>:</p>
+<pre><code class="language-bash"># Change from:
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
+
+# To:
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+</code></pre>
+<p>Restart:</p>
+<pre><code class="language-bash">docker compose restart backend
+</code></pre>
+<hr>
+<h2>Development Environment Issues</h2>
+<h3>Issue: OAuth not working with npm run dev</h3>
+<p><strong>Problem:</strong><br>Development server runs on port 3000, not port 80.</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li><p><strong>Use development redirect URI:</strong></p>
+<pre><code class="language-bash"># .env for development
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
+</code></pre>
+</li>
+<li><p><strong>Add to Google Cloud Console:</strong></p>
+<ul>
+<li>Add: <code>http://localhost:3000/auth/google/callback</code></li>
+</ul>
+</li>
+<li><p><strong>Restart development server:</strong></p>
+<pre><code class="language-bash">cd backend &amp;&amp; npm run dev
+cd frontend &amp;&amp; npm run dev
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2>Production Deployment Issues</h2>
+<h3>Issue: OAuth not working in production</h3>
+<p><strong>Problem:</strong><br>Using HTTP redirect URI in production (HTTPS required).</p>
+<p><strong>Solution:</strong></p>
+<ol>
+<li><p><strong>Update <code>.env</code> for production:</strong></p>
+<pre><code class="language-bash">GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=https://yourdomain.com/auth/google/callback
+</code></pre>
+</li>
+<li><p><strong>Add to Google Cloud Console:</strong></p>
+<ul>
+<li>Add: <code>https://yourdomain.com/auth/google/callback</code></li>
+<li>Note: Must use HTTPS in production</li>
+</ul>
+</li>
+<li><p><strong>Verify SSL certificate:</strong></p>
+<pre><code class="language-bash">curl -I https://yourdomain.com
+# Should return 200 OK with valid certificate
+</code></pre>
+</li>
+</ol>
+<h3>Issue: &quot;The request is missing a required parameter: redirect_uri&quot;</h3>
+<p><strong>Problem:</strong><br><code>GOOGLE_REDIRECT_URI</code> environment variable is not set.</p>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-bash"># Add to .env
+GOOGLE_REDIRECT_URI=https://yourdomain.com/auth/google/callback
+
+# Restart
+docker compose restart backend
+</code></pre>
+<hr>
+<h2>Testing and Verification</h2>
+<h3>1. Check Backend Status</h3>
+<pre><code class="language-bash"># Check if Google OAuth is enabled
+curl http://localhost/api/auth/google/status
+
+# Should return: {&quot;enabled&quot;: true}
+</code></pre>
+<h3>2. Test Authorization URL</h3>
+<pre><code class="language-bash"># Get Google OAuth URL
+curl http://localhost/api/auth/google
+
+# Should return: {&quot;auth_url&quot;: &quot;https://accounts.google.com/o/oauth2/...&quot;}
+</code></pre>
+<h3>3. Check Backend Logs</h3>
+<pre><code class="language-bash"># Docker
+docker logs notehub-backend --tail 50
+
+# Look for:
+# ✅ &quot;🔐 Google OAuth configured - SSO enabled&quot;
+# ❌ &quot;⚠️  Google OAuth not configured - SSO disabled&quot;
+</code></pre>
+<h3>4. Test Full OAuth Flow</h3>
+<ol>
+<li><strong>Click &quot;Sign in with Google&quot;</strong> on login page</li>
+<li><strong>Check browser Network tab</strong> (F12)<ul>
+<li>Look for <code>/api/auth/google</code> request</li>
+<li>Should return <code>auth_url</code></li>
+</ul>
+</li>
+<li><strong>After Google login</strong>:<ul>
+<li>Browser should redirect to <code>/auth/google/callback?code=...</code></li>
+<li>Should then redirect to <code>/</code> (home page)</li>
+<li>You should be logged in</li>
+</ul>
+</li>
+</ol>
+<h3>5. Verify Environment Variables</h3>
+<pre><code class="language-bash"># Docker
+docker exec notehub-backend env | grep GOOGLE
+
+# Should show:
+# GOOGLE_CLIENT_ID=...
+# GOOGLE_CLIENT_SECRET=...
+# GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+</code></pre>
+<hr>
+<h2>Quick Reference</h2>
+<h3>Configuration Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Port</th>
+<th>URL</th>
+<th>Redirect URI</th>
+<th>Google Console URI</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Docker</td>
+<td>80</td>
+<td><code>http://localhost</code></td>
+<td><code>http://localhost/auth/google/callback</code></td>
+<td>✅ Add this</td>
+</tr>
+<tr>
+<td>Dev (npm)</td>
+<td>3000</td>
+<td><code>http://localhost:3000</code></td>
+<td><code>http://localhost:3000/auth/google/callback</code></td>
+<td>✅ Add this</td>
+</tr>
+<tr>
+<td>Production</td>
+<td>443</td>
+<td><code>https://yourdomain.com</code></td>
+<td><code>https://yourdomain.com/auth/google/callback</code></td>
+<td>✅ Add this</td>
+</tr>
+</tbody></table>
+<h3>Environment Variables Quick Check</h3>
+<pre><code class="language-bash"># Docker deployment
+GOOGLE_CLIENT_ID=your-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-secret
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
+
+# Development (npm run dev)
+GOOGLE_CLIENT_ID=your-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
+
+# Production
+GOOGLE_CLIENT_ID=your-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-secret
+GOOGLE_REDIRECT_URI=https://yourdomain.com/auth/google/callback
+</code></pre>
+<h3>Restart Commands</h3>
+<pre><code class="language-bash"># Docker
+docker compose restart backend
+
+# Full restart
+docker compose down &amp;&amp; docker compose up -d
+
+# Development
+cd backend &amp;&amp; npm run dev
+</code></pre>
+<hr>
+<h2>Still Having Issues?</h2>
+<ol>
+<li><p><strong>Check Google Cloud Console:</strong></p>
+<ul>
+<li>Verify OAuth credentials are created</li>
+<li>Verify redirect URIs are added</li>
+<li>Verify Google+ API is enabled</li>
+</ul>
+</li>
+<li><p><strong>Check backend logs:</strong></p>
+<pre><code class="language-bash">docker logs notehub-backend -f
+</code></pre>
+</li>
+<li><p><strong>Check browser console:</strong></p>
+<ul>
+<li>Open DevTools (F12)</li>
+<li>Check Network tab for API errors</li>
+<li>Check Console tab for JavaScript errors</li>
+</ul>
+</li>
+<li><p><strong>Verify port accessibility:</strong></p>
+<pre><code class="language-bash"># Docker should be on port 80
+curl http://localhost/api/health
+
+# Dev should be on port 3000
+curl http://localhost:3000/api/health
+</code></pre>
+</li>
+<li><p><strong>Review the setup guide:</strong></p>
+<ul>
+<li>See <code>docs/guides/GOOGLE_SSO_SETUP.md</code> for detailed instructions</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Summary</h2>
+<p><strong>Most common issues:</strong></p>
+<ol>
+<li><p>❌ <strong>Wrong redirect URI for your environment</strong></p>
+<ul>
+<li>✅ Docker: <code>http://localhost/auth/google/callback</code></li>
+<li>✅ Dev: <code>http://localhost:3000/auth/google/callback</code></li>
+<li>✅ Prod: <code>https://yourdomain.com/auth/google/callback</code></li>
+</ul>
+</li>
+<li><p>❌ <strong>Redirect URI not added to Google Cloud Console</strong></p>
+<ul>
+<li>✅ Add ALL redirect URIs you&#39;ll use</li>
+</ul>
+</li>
+<li><p>❌ <strong>Environment variables not set</strong></p>
+<ul>
+<li>✅ Check <code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>, <code>GOOGLE_REDIRECT_URI</code></li>
+</ul>
+</li>
+<li><p>❌ <strong>Backend not restarted after changing <code>.env</code></strong></p>
+<ul>
+<li>✅ Run <code>docker compose restart backend</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>Created:</strong> December 2024<br><strong>Last Updated:</strong> December 2024</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>

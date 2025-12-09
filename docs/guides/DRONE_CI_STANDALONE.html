@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteHub Documentation - Drone CI Standalone Deployment Guide">
+    <title>Drone CI Standalone Deployment Guide - NoteHub Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-lighter: #334155;
+            --text: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --accent: #22d3ee;
+            --border: rgba(148, 163, 184, 0.1);
+            --code-bg: #1e293b;
+            --link: #60a5fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f35 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 3rem;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .content {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        h5, h6 {
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 1.25rem;
+            margin-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            background: var(--bg-lighter);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                margin-left: 1rem;
+                font-size: 0.85rem;
+            }
+
+            pre {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .language-javascript .keyword { color: #c792ea; }
+        .language-javascript .string { color: #c3e88d; }
+        .language-javascript .comment { color: #676e95; }
+        .language-bash .command { color: #82aaff; }
+        .language-json .property { color: #f07178; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./documentation.html" class="logo">📚 NoteHub Documentation</a>
+        <nav>
+            <a href="./documentation.html">Documentation Home</a>
+            <a href="./INDEX.html">Full Index</a>
+            <a href="https://github.com/thienng-it/note-hub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="breadcrumb">
+            <a href="./documentation.html">📚 Documentation</a>
+            <span>/</span>
+            <span>Drone CI Standalone Deployment Guide</span>
+        </div>
+
+        <article class="content">
+            <h1>Drone CI Standalone Deployment Guide</h1>
+<p>This guide explains how Drone CI can be deployed <strong>completely independently</strong> from NoteHub. Drone CI is a self-contained CI/CD platform that does not depend on NoteHub&#39;s infrastructure, configuration, or services.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#independence-overview">Independence Overview</a></li>
+<li><a href="#standalone-architecture">Standalone Architecture</a></li>
+<li><a href="#deployment-without-notehub">Deployment Without NoteHub</a></li>
+<li><a href="#configuration-independence">Configuration Independence</a></li>
+<li><a href="#network-independence">Network Independence</a></li>
+<li><a href="#data-independence">Data Independence</a></li>
+<li><a href="#use-cases">Use Cases</a></li>
+<li><a href="#migration-and-portability">Migration and Portability</a></li>
+</ul>
+<h2>Independence Overview</h2>
+<p><strong>Drone CI is completely independent from NoteHub.</strong> It can be:</p>
+<ul>
+<li>✅ Deployed on the same server as NoteHub</li>
+<li>✅ Deployed on a different server</li>
+<li>✅ Deployed without NoteHub at all</li>
+<li>✅ Moved between servers independently</li>
+<li>✅ Configured, started, stopped, and managed separately</li>
+</ul>
+<h3>What Drone CI Does NOT Depend On</h3>
+<table>
+<thead>
+<tr>
+<th>Dependency</th>
+<th>Status</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>NoteHub Code</strong></td>
+<td>❌ Independent</td>
+<td>Drone CI has its own codebase</td>
+</tr>
+<tr>
+<td><strong>NoteHub Services</strong></td>
+<td>❌ Independent</td>
+<td>Uses own nginx, database, services</td>
+</tr>
+<tr>
+<td><strong>NoteHub Network</strong></td>
+<td>❌ Independent</td>
+<td>Uses separate Docker network <code>drone-network</code></td>
+</tr>
+<tr>
+<td><strong>NoteHub Database</strong></td>
+<td>❌ Independent</td>
+<td>Uses own PostgreSQL database</td>
+</tr>
+<tr>
+<td><strong>NoteHub Configuration</strong></td>
+<td>❌ Independent</td>
+<td>Uses separate <code>.env.drone</code> file</td>
+</tr>
+<tr>
+<td><strong>NoteHub Ports</strong></td>
+<td>❌ Independent</td>
+<td>Uses port 8080, NoteHub uses port 80</td>
+</tr>
+<tr>
+<td><strong>NoteHub Docker Compose</strong></td>
+<td>❌ Independent</td>
+<td>Uses separate <code>docker-compose.drone.yml</code></td>
+</tr>
+</tbody></table>
+<h3>What is Shared (Optional)</h3>
+<p>The only shared resources when deployed on the same server:</p>
+<ul>
+<li>✅ Docker daemon (system requirement)</li>
+<li>✅ Physical server resources (CPU, RAM, disk)</li>
+<li>✅ Operating system</li>
+<li>✅ Domain/DNS (if using subdomains like <code>drone.example.com</code>)</li>
+</ul>
+<p>These are normal for any multi-application deployment and do not create dependencies.</p>
+<h2>Standalone Architecture</h2>
+<p>Drone CI is a complete, self-contained system:</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│  Drone CI - Complete Independent System                 │
+│                                                          │
+│  ┌────────────────┐                                     │
+│  │  nginx Proxy   │ ← Port 8080 (or any port you want) │
+│  │  (port 8080)   │                                     │
+│  └────────┬───────┘                                     │
+│           │                                              │
+│  ┌────────▼───────┐                                     │
+│  │  Drone Server  │ ← Internal only                     │
+│  │  (internal)    │                                     │
+│  └────────┬───────┘                                     │
+│           │                                              │
+│  ┌────────▼───────┐                                     │
+│  │  Drone Runner  │ ← Internal only                     │
+│  │  (internal)    │                                     │
+│  └────────┬───────┘                                     │
+│           │                                              │
+│  ┌────────▼───────┐                                     │
+│  │  PostgreSQL    │ ← Internal only                     │
+│  │  (internal)    │                                     │
+│  └────────────────┘                                     │
+│                                                          │
+│  Network: drone-network (isolated)                      │
+│  Volumes: drone-data, drone-postgres-data               │
+│  Config:  .env.drone (independent)                      │
+└─────────────────────────────────────────────────────────┘
+</code></pre>
+<p><strong>No arrows or connections to NoteHub</strong> - it&#39;s a completely separate system.</p>
+<h2>Deployment Without NoteHub</h2>
+<p>You can deploy Drone CI on a <strong>completely separate server</strong> without NoteHub:</p>
+<h3>Scenario 1: Dedicated CI/CD Server</h3>
+<pre><code class="language-bash"># On a fresh server (no NoteHub)
+ssh your-ci-server
+
+# Install Docker and Docker Compose
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Clone just the Drone CI files (or copy them)
+mkdir drone-ci
+cd drone-ci
+
+# Copy these files (can be extracted from the repository):
+# - docker-compose.drone.yml
+# - .env.drone.example
+# - docker/nginx-drone.conf
+
+# Configure
+cp .env.drone.example .env.drone
+nano .env.drone  # Set your GitHub OAuth credentials
+
+# Deploy
+docker compose -f docker-compose.drone.yml up -d
+
+# Access at http://your-ci-server:8080
+</code></pre>
+<h3>Scenario 2: Different Cloud Provider</h3>
+<p>You can deploy Drone CI on a completely different infrastructure:</p>
+<pre><code class="language-bash"># NoteHub on Hetzner VPS
+# Drone CI on AWS EC2 / DigitalOcean / Google Cloud
+
+# Same deployment steps - completely independent
+</code></pre>
+<h3>Scenario 3: Corporate Environment</h3>
+<p>Deploy Drone CI behind your corporate firewall:</p>
+<pre><code class="language-bash"># Deploy internally for private repositories
+# No need for NoteHub to be present
+
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+<h2>Configuration Independence</h2>
+<h3>Separate Configuration Files</h3>
+<p>Drone CI uses its <strong>own configuration file</strong> (<code>.env.drone</code>) which is completely separate from NoteHub&#39;s <code>.env</code> file.</p>
+<p><strong><code>.env.drone</code></strong> (Drone CI configuration):</p>
+<pre><code class="language-bash"># GitHub OAuth (independent from NoteHub)
+DRONE_GITHUB_CLIENT_ID=your-drone-github-client-id
+DRONE_GITHUB_CLIENT_SECRET=your-drone-github-client-secret
+
+# Server configuration (independent)
+DRONE_SERVER_HOST=drone.example.com
+DRONE_RPC_SECRET=your-unique-secret
+
+# Database (independent)
+DRONE_POSTGRES_PASSWORD=your-secure-password
+</code></pre>
+<p><strong><code>.env</code></strong> (NoteHub configuration - if present):</p>
+<pre><code class="language-bash"># Completely separate configuration
+SECRET_KEY=notehub-secret
+NOTES_ADMIN_PASSWORD=notehub-password
+</code></pre>
+<p><strong>No variables are shared between these files.</strong></p>
+<h3>GitHub OAuth Independence</h3>
+<p>Drone CI requires its <strong>own GitHub OAuth App</strong>:</p>
+<ol>
+<li>Go to <a href="https://github.com/settings/developers">https://github.com/settings/developers</a></li>
+<li>Create <strong>separate OAuth App</strong> for Drone CI</li>
+<li>Set callback URL: <code>http://your-drone-server:8080/login</code></li>
+<li>Use these credentials <strong>only</strong> in <code>.env.drone</code></li>
+</ol>
+<p>This is <strong>completely independent</strong> from any NoteHub OAuth configuration.</p>
+<h2>Network Independence</h2>
+<h3>Separate Docker Networks</h3>
+<pre><code class="language-bash"># List Docker networks
+docker network ls
+
+# You&#39;ll see:
+# notehub-network  (used by NoteHub - if present)
+# drone-network    (used by Drone CI)
+</code></pre>
+<p>These networks are <strong>completely isolated</strong>:</p>
+<ul>
+<li>Drone CI containers <strong>cannot</strong> communicate with NoteHub containers</li>
+<li>NoteHub containers <strong>cannot</strong> communicate with Drone CI containers</li>
+<li>No shared network means no security vulnerabilities between apps</li>
+</ul>
+<h3>Verify Network Isolation</h3>
+<pre><code class="language-bash"># Inspect Drone CI network
+docker network inspect drone-network
+
+# Shows only Drone CI containers:
+# - drone-traefik
+# - drone-server
+# - drone-runner
+# - drone-db
+
+# Inspect NoteHub network (if present)
+docker network inspect notehub-network
+
+# Shows only NoteHub containers - no Drone CI containers
+</code></pre>
+<h2>Data Independence</h2>
+<h3>Separate Data Volumes</h3>
+<p>Drone CI stores data in its <strong>own Docker volumes</strong>:</p>
+<pre><code class="language-bash"># List volumes
+docker volume ls
+
+# Drone CI volumes (independent):
+# - drone-data (Drone server data)
+# - drone-postgres-data (Database data)
+
+# NoteHub volumes (if present, separate):
+# - notehub-data
+# - notehub-uploads
+</code></pre>
+<h3>Independent Backups</h3>
+<p>Backup Drone CI data <strong>independently</strong>:</p>
+<pre><code class="language-bash"># Backup Drone CI database
+docker compose -f docker-compose.drone.yml exec -T drone-db \
+  pg_dump -U drone drone &gt; drone-backup-$(date +%Y%m%d).sql
+
+# This does NOT backup NoteHub data
+# Each system is backed up separately
+</code></pre>
+<h3>Data Portability</h3>
+<p>Move Drone CI data to another server:</p>
+<pre><code class="language-bash"># Export volumes
+docker run --rm -v drone-data:/data -v $(pwd):/backup \
+  alpine tar czf /backup/drone-data.tar.gz /data
+
+# Import on new server
+docker run --rm -v drone-data:/data -v $(pwd):/backup \
+  alpine tar xzf /backup/drone-data.tar.gz -C /
+</code></pre>
+<h2>Use Cases</h2>
+<h3>Use Case 1: CI/CD for Multiple Projects</h3>
+<p>Deploy Drone CI to handle CI/CD for <strong>all your projects</strong>, not just NoteHub:</p>
+<pre><code class="language-yaml"># .drone.yml in any project
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: test
+    image: node:20
+    commands:
+      - npm install
+      - npm test
+</code></pre>
+<p>Drone CI works with <strong>any GitHub repository</strong>, not just NoteHub.</p>
+<h3>Use Case 2: Team CI/CD Server</h3>
+<p>Deploy Drone CI as a <strong>shared CI/CD platform</strong> for your team:</p>
+<pre><code class="language-bash"># One Drone CI server
+# Multiple developers
+# Multiple projects
+# No NoteHub needed
+</code></pre>
+<h3>Use Case 3: Client Projects</h3>
+<p>Deploy Drone CI for <strong>client projects</strong>:</p>
+<pre><code class="language-bash"># Client 1: Drone CI on their server
+# Client 2: Drone CI on their server
+# Your infrastructure: NoteHub only
+
+# Each deployment is independent
+</code></pre>
+<h2>Migration and Portability</h2>
+<h3>Scenario: Move Drone CI to Different Server</h3>
+<p>Drone CI can be moved <strong>without affecting NoteHub</strong>:</p>
+<p><strong>Step 1: Backup on old server</strong></p>
+<pre><code class="language-bash">cd /path/to/drone
+docker compose -f docker-compose.drone.yml down
+docker run --rm -v drone-data:/data -v $(pwd):/backup alpine \
+  tar czf /backup/drone-backup.tar.gz /data
+</code></pre>
+<p><strong>Step 2: Deploy on new server</strong></p>
+<pre><code class="language-bash">ssh new-server
+mkdir drone-ci
+cd drone-ci
+# Copy files: docker-compose.drone.yml, .env.drone, docker/nginx-drone.conf
+</code></pre>
+<p><strong>Step 3: Restore and start</strong></p>
+<pre><code class="language-bash">docker run --rm -v drone-data:/data -v $(pwd):/backup alpine \
+  tar xzf /backup/drone-backup.tar.gz -C /
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+<p><strong>Step 4: Update DNS/GitHub OAuth callback URL</strong></p>
+<pre><code class="language-bash"># Point drone.example.com to new server
+# Update GitHub OAuth App callback URL to new server
+</code></pre>
+<p><strong>NoteHub is not affected at all</strong> during this migration.</p>
+<h3>Scenario: Remove NoteHub, Keep Drone CI</h3>
+<p>You can remove NoteHub while keeping Drone CI running:</p>
+<pre><code class="language-bash"># Stop and remove NoteHub
+docker compose down -v  # Removes NoteHub
+
+# Drone CI continues running normally
+docker compose -f docker-compose.drone.yml ps
+# All Drone CI services still running
+
+# Drone CI is completely unaffected
+</code></pre>
+<h3>Scenario: Remove Drone CI, Keep NoteHub</h3>
+<p>You can remove Drone CI while keeping NoteHub running:</p>
+<pre><code class="language-bash"># Stop and remove Drone CI
+docker compose -f docker-compose.drone.yml down -v
+
+# NoteHub continues running normally
+docker compose ps
+# All NoteHub services still running
+</code></pre>
+<h2>Port Management</h2>
+<p>Drone CI uses port <strong>8080 by default</strong>, but this is <strong>completely configurable</strong>:</p>
+<h3>Change Drone CI Port</h3>
+<p>Edit <code>docker-compose.drone.yml</code>:</p>
+<pre><code class="language-yaml">drone-traefik:
+  ports:
+    - &quot;9000:80&quot;   # Use ports 9000/9443 instead of default 8080/8443
+    - &quot;9443:443&quot;  # HTTPS port
+</code></pre>
+<p>Update <code>.env.drone</code>:</p>
+<pre><code class="language-bash">DRONE_SERVER_HOST=your-server:9000
+</code></pre>
+<p>Update GitHub OAuth callback:</p>
+<pre><code>http://your-server:9000/login
+</code></pre>
+<p><strong>NoteHub remains on port 80</strong> - completely independent.</p>
+<h3>Multiple Drone CI Instances</h3>
+<p>You can even run <strong>multiple Drone CI instances</strong> independently:</p>
+<pre><code class="language-yaml"># drone-ci-team1/docker-compose.yml
+drone-traefik:
+  ports:
+    - &quot;8080:80&quot;
+    - &quot;8443:443&quot;
+
+# drone-ci-team2/docker-compose.yml
+drone-traefik:
+  ports:
+    - &quot;8081:80&quot;
+    - &quot;8444:443&quot;
+</code></pre>
+<p>Each with its own:</p>
+<ul>
+<li>Configuration (<code>.env.drone</code>)</li>
+<li>Network (<code>drone-network-team1</code>, <code>drone-network-team2</code>)</li>
+<li>Data volumes</li>
+<li>GitHub OAuth app</li>
+</ul>
+<h2>Docker Compose Independence</h2>
+<h3>Separate Docker Compose Files</h3>
+<pre><code class="language-bash"># NoteHub deployment
+docker compose up -d
+# Uses: docker-compose.yml
+
+# Drone CI deployment
+docker compose -f docker-compose.drone.yml up -d
+# Uses: docker-compose.drone.yml
+</code></pre>
+<p>These are <strong>completely separate</strong> Docker Compose stacks:</p>
+<ul>
+<li>Can be started/stopped independently</li>
+<li>Can be on different servers</li>
+<li>No shared services</li>
+<li>No shared networks</li>
+<li>No shared volumes</li>
+</ul>
+<h3>Service Management</h3>
+<pre><code class="language-bash"># Restart NoteHub (does NOT restart Drone CI)
+docker compose restart
+
+# Restart Drone CI (does NOT restart NoteHub)
+docker compose -f docker-compose.drone.yml restart
+
+# Update NoteHub (does NOT affect Drone CI)
+git pull
+docker compose pull
+docker compose up -d
+
+# Update Drone CI (does NOT affect NoteHub)
+docker compose -f docker-compose.drone.yml pull
+docker compose -f docker-compose.drone.yml up -d
+</code></pre>
+<h2>Resource Isolation</h2>
+<p>While deployed on the same server, resources are <strong>logically isolated</strong>:</p>
+<h3>CPU and Memory</h3>
+<pre><code class="language-bash"># Set resource limits for Drone CI
+# Edit docker-compose.drone.yml
+
+drone-server:
+  deploy:
+    resources:
+      limits:
+        cpus: &#39;1.0&#39;
+        memory: 512M
+
+drone-runner:
+  deploy:
+    resources:
+      limits:
+        cpus: &#39;2.0&#39;
+        memory: 2G
+</code></pre>
+<h3>Disk Space</h3>
+<p>Each system uses its own volumes:</p>
+<pre><code class="language-bash"># Check Drone CI disk usage
+docker system df -v | grep drone
+
+# Check NoteHub disk usage
+docker system df -v | grep notehub
+</code></pre>
+<h2>Monitoring Independence</h2>
+<p>Monitor each system separately:</p>
+<pre><code class="language-bash"># Monitor Drone CI only
+docker compose -f docker-compose.drone.yml logs -f
+
+# Monitor NoteHub only
+docker compose logs -f
+
+# Monitor specific Drone CI service
+docker compose -f docker-compose.drone.yml logs -f drone-server
+</code></pre>
+<h2>Summary: Complete Independence</h2>
+<p><strong>Drone CI is a standalone application</strong> that can be:</p>
+<p>✅ <strong>Deployed anywhere</strong> - same server, different server, cloud, on-premise<br>✅ <strong>Configured independently</strong> - separate <code>.env.drone</code> file<br>✅ <strong>Networked separately</strong> - isolated Docker network<br>✅ <strong>Stored separately</strong> - independent Docker volumes<br>✅ <strong>Managed separately</strong> - separate Docker Compose stack<br>✅ <strong>Moved independently</strong> - backup and restore without NoteHub<br>✅ <strong>Scaled independently</strong> - adjust resources as needed<br>✅ <strong>Updated independently</strong> - pull new versions separately</p>
+<p><strong>What happens if NoteHub is removed?</strong></p>
+<ul>
+<li>Drone CI continues to work normally</li>
+<li>No configuration changes needed</li>
+<li>No data loss</li>
+<li>No service interruption</li>
+</ul>
+<p><strong>What happens if Drone CI is removed?</strong></p>
+<ul>
+<li>NoteHub continues to work normally</li>
+<li>No configuration changes needed</li>
+<li>No data loss</li>
+<li>No service interruption</li>
+</ul>
+<h2>Next Steps</h2>
+<p>Ready to deploy Drone CI independently?</p>
+<ol>
+<li><strong>Standalone deployment</strong>: See <a href="DRONE_CI_SETUP.md">DRONE_CI_SETUP.md</a></li>
+<li><strong>Configuration details</strong>: See <a href=".env.drone.example">environment variables documentation</a></li>
+<li><strong>Port management</strong>: See <a href="PORT_ALLOCATION.md">PORT_ALLOCATION.md</a></li>
+<li><strong>Dual deployment</strong> (optional): See <a href="DUAL_DEPLOYMENT_EXAMPLE.md">DUAL_DEPLOYMENT_EXAMPLE.md</a></li>
+</ol>
+<hr>
+<p><strong>Key Takeaway</strong>: Drone CI is <strong>completely independent</strong>. The fact that it can be deployed alongside NoteHub is a <strong>convenience</strong>, not a <strong>dependency</strong>.</p>
+
+        </article>
+
+        <a href="./documentation.html" class="back-link">← Back to Documentation</a>
+    </main>
+</body>
+</html>
