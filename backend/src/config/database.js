@@ -973,6 +973,9 @@ class Database {
   /**
    * Get database connection pool metrics.
    * Returns pool statistics for MySQL or null for SQLite.
+   * 
+   * Note: mysql2 library doesn't expose public APIs for active/idle connection counts.
+   * We only report the configured pool size limit.
    */
   getPoolMetrics() {
     if (this.isSQLite || !this.db || !this.db.pool) {
@@ -982,10 +985,14 @@ class Database {
     // MySQL pool statistics
     try {
       const pool = this.db.pool;
+      // mysql2 only exposes config.connectionLimit in public API
+      const total = pool.config?.connectionLimit || 10;
+      
+      // Return basic metrics - active/idle counts not available via public API
       return {
-        active: pool._allConnections.length - pool._freeConnections.length,
-        idle: pool._freeConnections.length,
-        total: pool._allConnections.length,
+        active: 0, // Not available in mysql2 public API
+        idle: 0, // Not available in mysql2 public API
+        total: total,
       };
     } catch (_error) {
       return null;
