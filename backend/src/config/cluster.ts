@@ -33,9 +33,7 @@ export function startCluster(startApp: () => Promise<void> | void): void {
     });
 
     cluster.on('exit', (worker, code, signal) => {
-      console.log(
-        `❌ Worker ${worker.process.pid} died (${signal || code}). Restarting...`,
-      );
+      console.log(`❌ Worker ${worker.process.pid} died (${signal || code}). Restarting...`);
       cluster.fork();
     });
 
@@ -57,7 +55,7 @@ export function startCluster(startApp: () => Promise<void> | void): void {
   } else {
     // Worker process
     console.log(`👷 Worker process ${process.pid} started`);
-    
+
     // Start the application
     Promise.resolve(startApp()).catch((error) => {
       console.error(`❌ Worker ${process.pid} failed to start:`, error);

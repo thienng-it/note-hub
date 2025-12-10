@@ -5,15 +5,16 @@
  * Supports multiple formats and transports for different environments.
  * Includes optional Graylog integration via GELF protocol.
  */
+
+import os from 'node:os';
 import winston from 'winston';
 import WinstonGraylog2 from 'winston-graylog2';
-import os from 'node:os';
 
 // Log level type definition
 type LogLevel = 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
 
 // Get log configuration from environment
-const LOG_LEVEL = (process.env.LOG_LEVEL || 
+const LOG_LEVEL = (process.env.LOG_LEVEL ||
   (process.env.NODE_ENV === 'production' ? 'error' : 'info')) as LogLevel;
 const LOG_FORMAT =
   process.env.LOG_FORMAT || (process.env.NODE_ENV === 'production' ? 'json' : 'simple');
@@ -127,7 +128,7 @@ if (process.env.GRAYLOG_ENABLED === 'true') {
       graylogOptions.graylog.protocol = 'tcp';
     }
 
-    logger.add(new WinstonGraylog2(graylogOptions));
+    logger.add(new WinstonGraylog2(graylogOptions) as any);
     logger.info('Graylog transport enabled', {
       host: graylogHost,
       port: graylogPort,

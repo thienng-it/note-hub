@@ -43,7 +43,7 @@ Converter.convert(
     }
 
     const postmanCollection = conversionResult.output[0].data;
-    
+
     // Add variables for base URL
     postmanCollection.variable = [
       {
@@ -58,15 +58,9 @@ Converter.convert(
       for (const item of items) {
         if (item.request) {
           if (typeof item.request.url === 'string') {
-            item.request.url = item.request.url.replace(
-              /^https?:\/\/[^/]+/,
-              '{{baseUrl}}',
-            );
+            item.request.url = item.request.url.replace(/^https?:\/\/[^/]+/, '{{baseUrl}}');
           } else if (item.request.url && item.request.url.raw) {
-            item.request.url.raw = item.request.url.raw.replace(
-              /^https?:\/\/[^/]+/,
-              '{{baseUrl}}',
-            );
+            item.request.url.raw = item.request.url.raw.replace(/^https?:\/\/[^/]+/, '{{baseUrl}}');
           }
         }
         if (item.item) {
@@ -132,7 +126,7 @@ for (const [path, methods] of Object.entries(openapiSpec.paths)) {
   for (const [method, operation] of Object.entries(methods)) {
     if (['get', 'post', 'put', 'patch', 'delete'].includes(method)) {
       const tag = operation.tags?.[0] || 'General';
-      let folderId = `_folder_${tag.replace(/\s+/g, '_')}`;
+      const folderId = `_folder_${tag.replace(/\s+/g, '_')}`;
 
       // Check if folder exists, if not create it
       if (!insomniaCollection.resources.find((r) => r._id === folderId)) {

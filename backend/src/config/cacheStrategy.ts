@@ -8,7 +8,7 @@
  * - Intelligent TTL management
  */
 
-import type { CacheConfig } from '../types';
+// CacheConfig type available in ../types if needed
 
 /**
  * Cache key patterns for different entity types
@@ -18,32 +18,29 @@ export const CacheKeys = {
   user: (userId: number | string) => `user:${userId}`,
   userProfile: (userId: number | string) => `user:${userId}:profile`,
   userSettings: (userId: number | string) => `user:${userId}:settings`,
-  
+
   // Note-related keys
   note: (noteId: number | string) => `note:${noteId}`,
-  notesList: (userId: number | string, filter?: string) => 
+  notesList: (userId: number | string, filter?: string) =>
     `notes:${userId}${filter ? `:${filter}` : ''}`,
-  notesSearch: (userId: number | string, query: string) => 
-    `notes:${userId}:search:${query}`,
-  notesByTag: (userId: number | string, tag: string) => 
-    `notes:${userId}:tag:${tag}`,
-  
+  notesSearch: (userId: number | string, query: string) => `notes:${userId}:search:${query}`,
+  notesByTag: (userId: number | string, tag: string) => `notes:${userId}:tag:${tag}`,
+
   // Task-related keys
   task: (taskId: number | string) => `task:${taskId}`,
-  tasksList: (userId: number | string, status?: string) => 
+  tasksList: (userId: number | string, status?: string) =>
     `tasks:${userId}${status ? `:${status}` : ''}`,
-  
+
   // Tag-related keys
   tags: (userId: number | string) => `tags:${userId}`,
   tagsList: () => 'tags:all',
-  
+
   // Session keys
   session: (tokenId: string) => `session:${tokenId}`,
   refreshToken: (tokenHash: string) => `refresh:${tokenHash}`,
-  
+
   // Rate limiting keys
-  rateLimit: (identifier: string, endpoint: string) => 
-    `rate:${endpoint}:${identifier}`,
+  rateLimit: (identifier: string, endpoint: string) => `rate:${endpoint}:${identifier}`,
 } as const;
 
 /**
@@ -52,25 +49,25 @@ export const CacheKeys = {
 export const CacheTTL = {
   // Short-lived caches (5 minutes)
   SHORT: 5 * 60,
-  
+
   // Medium-lived caches (30 minutes)
   MEDIUM: 30 * 60,
-  
+
   // Long-lived caches (2 hours)
   LONG: 2 * 60 * 60,
-  
+
   // Session caches (24 hours)
   SESSION: 24 * 60 * 60,
-  
+
   // Specific entity TTLs
-  user: 30 * 60,           // 30 minutes
-  note: 10 * 60,           // 10 minutes
-  notesList: 5 * 60,       // 5 minutes
-  notesSearch: 3 * 60,     // 3 minutes
-  task: 10 * 60,           // 10 minutes
-  tasksList: 5 * 60,       // 5 minutes
-  tags: 30 * 60,           // 30 minutes
-  session: 24 * 60 * 60,   // 24 hours
+  user: 30 * 60, // 30 minutes
+  note: 10 * 60, // 10 minutes
+  notesList: 5 * 60, // 5 minutes
+  notesSearch: 3 * 60, // 3 minutes
+  task: 10 * 60, // 10 minutes
+  tasksList: 5 * 60, // 5 minutes
+  tags: 30 * 60, // 30 minutes
+  session: 24 * 60 * 60, // 24 hours
   refreshToken: 7 * 24 * 60 * 60, // 7 days
 } as const;
 
@@ -87,7 +84,7 @@ export const InvalidationPatterns = {
     `${CacheKeys.tasksList(userId)}*`,
     CacheKeys.tags(userId),
   ],
-  
+
   // Invalidate note-related caches
   note: (userId: number | string, noteId: number | string): string[] => [
     CacheKeys.note(noteId),
@@ -95,13 +92,13 @@ export const InvalidationPatterns = {
     `${CacheKeys.notesSearch(userId, '')}*`,
     CacheKeys.tags(userId),
   ],
-  
+
   // Invalidate task-related caches
   task: (userId: number | string, taskId: number | string): string[] => [
     CacheKeys.task(taskId),
     `${CacheKeys.tasksList(userId)}*`,
   ],
-  
+
   // Invalidate tag-related caches
   tags: (userId: number | string): string[] => [
     CacheKeys.tags(userId),
@@ -115,19 +112,19 @@ export const InvalidationPatterns = {
  */
 export const CacheWarmingConfig = {
   enabled: process.env.CACHE_WARMING_ENABLED === 'true',
-  
+
   // Warm cache on application startup
   onStartup: true,
-  
+
   // Warm cache periodically
   periodic: true,
-  
+
   // Warming interval (milliseconds) - default 1 hour
   interval: parseInt(process.env.CACHE_WARMING_INTERVAL || String(60 * 60 * 1000), 10),
-  
+
   // Entities to warm
   entities: ['notes', 'tasks', 'tags'] as const,
-  
+
   // Maximum users to warm (prevent memory exhaustion)
   maxUsers: parseInt(process.env.CACHE_WARMING_MAX_USERS || '100', 10),
 };
@@ -156,15 +153,15 @@ export interface CacheOptions {
 
 /**
  * Cache strategy: Cache-aside (Lazy Loading)
- * 
+ *
  * NOTE: These are template functions that demonstrate caching patterns.
  * Actual implementation requires a Redis client instance.
  * When implementing, replace commented sections with actual Redis calls.
- * 
+ *
  * Example integration:
  * ```typescript
  * import redis from './redis';
- * 
+ *
  * const cached = await redis.get(key);
  * if (cached) return JSON.parse(cached);
  * // ... rest of implementation
@@ -176,61 +173,61 @@ export const CacheStrategies = {
    * Template function - implement with actual Redis client
    */
   readThrough: async <T>(
-    key: string,
+    _key: string,
     fetchFn: () => Promise<T>,
-    options: CacheOptions = {},
+    _options: CacheOptions = {},
   ): Promise<T> => {
     // TODO: Implement with Redis client
-    // const cached = await redis.get(key);
+    // const cached = await redis.get(_key);
     // if (cached) return JSON.parse(cached);
-    
+
     const data = await fetchFn();
-    
+
     // TODO: Cache the result
-    // await redis.setex(key, options.ttl || CacheTTL.MEDIUM, JSON.stringify(data));
+    // await redis.setex(_key, _options.ttl || CacheTTL.MEDIUM, JSON.stringify(data));
     return data;
   },
-  
+
   /**
    * Write-through cache strategy
    * Template function - implement with actual Redis client
    */
   writeThrough: async <T>(
-    key: string,
-    data: T,
+    _key: string,
+    _data: T,
     saveFn: () => Promise<T>,
-    options: CacheOptions = {},
+    _options: CacheOptions = {},
   ): Promise<T> => {
     // Save to database first
     const saved = await saveFn();
-    
+
     // TODO: Update cache
-    // await redis.setex(key, options.ttl || CacheTTL.MEDIUM, JSON.stringify(saved));
-    
+    // await redis.setex(_key, _options.ttl || CacheTTL.MEDIUM, JSON.stringify(saved));
+
     return saved;
   },
-  
+
   /**
    * Write-behind (write-back) cache strategy
    * Template function - implement with actual Redis client
    */
   writeBehind: async <T>(
-    key: string,
-    data: T,
+    _key: string,
+    _data: T,
     saveFn: () => Promise<T>,
-    options: CacheOptions = {},
+    _options: CacheOptions = {},
   ): Promise<T> => {
     // TODO: Update cache immediately
-    // await redis.setex(key, options.ttl || CacheTTL.MEDIUM, JSON.stringify(data));
-    
+    // await redis.setex(_key, _options.ttl || CacheTTL.MEDIUM, JSON.stringify(_data));
+
     // Queue database write (async)
     setImmediate(() => {
       saveFn().catch((error) => {
         console.error('Write-behind cache error:', error);
       });
     });
-    
-    return data;
+
+    return _data;
   },
 };
 
@@ -241,31 +238,31 @@ export const BatchOperations = {
   /**
    * Get multiple keys at once
    */
-  mget: async (keys: string[]): Promise<Map<string, any>> => {
-    // const values = await redis.mget(keys);
+  mget: async (_keys: string[]): Promise<Map<string, any>> => {
+    // const values = await redis.mget(_keys);
     const result = new Map<string, any>();
-    // keys.forEach((key, index) => {
+    // _keys.forEach((key, index) => {
     //   if (values[index]) result.set(key, JSON.parse(values[index]));
     // });
     return result;
   },
-  
+
   /**
    * Set multiple keys at once
    */
-  mset: async (entries: Map<string, any>, ttl?: number): Promise<void> => {
+  mset: async (_entries: Map<string, any>, _ttl?: number): Promise<void> => {
     // const pipeline = redis.pipeline();
-    // entries.forEach((value, key) => {
-    //   pipeline.setex(key, ttl || CacheTTL.MEDIUM, JSON.stringify(value));
+    // _entries.forEach((value, key) => {
+    //   pipeline.setex(key, _ttl || CacheTTL.MEDIUM, JSON.stringify(value));
     // });
     // await pipeline.exec();
   },
-  
+
   /**
    * Delete multiple keys at once
    */
-  mdel: async (keys: string[]): Promise<void> => {
-    // await redis.del(...keys);
+  mdel: async (_keys: string[]): Promise<void> => {
+    // await redis.del(..._keys);
   },
 };
 

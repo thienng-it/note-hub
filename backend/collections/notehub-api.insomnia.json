@@ -21,10 +21,7 @@
         "accessToken": ""
       },
       "dataPropertyOrder": {
-        "&": [
-          "baseUrl",
-          "accessToken"
-        ]
+        "&": ["baseUrl", "accessToken"]
       },
       "color": null,
       "isPrivate": false,

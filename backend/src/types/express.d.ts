@@ -1,6 +1,6 @@
 /**
  * Express Request/Response Type Extensions
- * 
+ *
  * Module augmentation for Express types to add custom properties.
  * This approach is preferred over global namespace declaration.
  */
@@ -20,5 +20,3 @@ declare module 'express-serve-static-core' {
     };
   }
 }
-
-export {};

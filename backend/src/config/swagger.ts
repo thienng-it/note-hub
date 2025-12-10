@@ -147,7 +147,7 @@ All success responses follow this format:
             },
           },
         },
-        
+
         // User schemas
         User: {
           type: 'object',
@@ -164,7 +164,7 @@ All success responses follow this format:
             last_login: { type: 'string', format: 'date-time', nullable: true },
           },
         },
-        
+
         // Auth schemas
         LoginRequest: {
           type: 'object',
@@ -172,10 +172,14 @@ All success responses follow this format:
           properties: {
             username: { type: 'string', example: 'johndoe' },
             password: { type: 'string', format: 'password', example: 'SecurePass123!' },
-            totp_code: { type: 'string', example: '123456', description: 'Required if 2FA is enabled' },
+            totp_code: {
+              type: 'string',
+              example: '123456',
+              description: 'Required if 2FA is enabled',
+            },
           },
         },
-        
+
         TokenResponse: {
           type: 'object',
           properties: {
@@ -186,7 +190,7 @@ All success responses follow this format:
             user: { $ref: '#/components/schemas/User' },
           },
         },
-        
+
         // Note schemas
         Note: {
           type: 'object',
@@ -206,7 +210,7 @@ All success responses follow this format:
             },
           },
         },
-        
+
         NoteCreate: {
           type: 'object',
           required: ['title', 'content'],
@@ -223,7 +227,7 @@ All success responses follow this format:
             is_hidden: { type: 'boolean', example: false },
           },
         },
-        
+
         Tag: {
           type: 'object',
           properties: {
@@ -231,7 +235,7 @@ All success responses follow this format:
             name: { type: 'string', example: 'work' },
           },
         },
-        
+
         // Task schemas
         Task: {
           type: 'object',
@@ -239,8 +243,16 @@ All success responses follow this format:
             id: { type: 'integer', example: 1 },
             user_id: { type: 'integer', example: 1 },
             title: { type: 'string', example: 'Complete API documentation' },
-            description: { type: 'string', nullable: true, example: 'Write comprehensive OpenAPI docs' },
-            status: { type: 'string', enum: ['pending', 'in_progress', 'completed'], example: 'in_progress' },
+            description: {
+              type: 'string',
+              nullable: true,
+              example: 'Write comprehensive OpenAPI docs',
+            },
+            status: {
+              type: 'string',
+              enum: ['pending', 'in_progress', 'completed'],
+              example: 'in_progress',
+            },
             priority: { type: 'string', enum: ['low', 'medium', 'high'], example: 'high' },
             due_date: { type: 'string', format: 'date', nullable: true, example: '2025-12-31' },
             completed_at: { type: 'string', format: 'date-time', nullable: true },
@@ -248,19 +260,23 @@ All success responses follow this format:
             updated_at: { type: 'string', format: 'date-time' },
           },
         },
-        
+
         TaskCreate: {
           type: 'object',
           required: ['title'],
           properties: {
             title: { type: 'string', example: 'Complete API documentation', minLength: 1 },
             description: { type: 'string', example: 'Write comprehensive OpenAPI docs' },
-            status: { type: 'string', enum: ['pending', 'in_progress', 'completed'], default: 'pending' },
+            status: {
+              type: 'string',
+              enum: ['pending', 'in_progress', 'completed'],
+              default: 'pending',
+            },
             priority: { type: 'string', enum: ['low', 'medium', 'high'], default: 'medium' },
             due_date: { type: 'string', format: 'date', example: '2025-12-31' },
           },
         },
-        
+
         // Pagination
         Pagination: {
           type: 'object',

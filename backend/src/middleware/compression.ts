@@ -14,10 +14,10 @@ import type { Request, Response } from 'express';
 export const compressionMiddleware = compression({
   // Only compress responses above 1KB
   threshold: 1024,
-  
+
   // Compression level (0-9, where 6 is default and balanced)
   level: 6,
-  
+
   // Filter function to determine which responses to compress
   filter: (req: Request, res: Response): boolean => {
     // Don't compress if client doesn't support it
@@ -34,10 +34,10 @@ export const compressionMiddleware = compression({
     // Use compression's default filter for standard content types
     return compression.filter(req, res);
   },
-  
+
   // Memory level (1-9, where 8 is default)
   memLevel: 8,
-  
+
   // Window size (8-15, where 15 is default and provides best compression)
   windowBits: 15,
 });

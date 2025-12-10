@@ -2,7 +2,7 @@
  * Core Type Definitions for NoteHub Backend
  */
 
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 
 // ===========================
 // User Types

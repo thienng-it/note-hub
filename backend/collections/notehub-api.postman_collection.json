@@ -18,15 +18,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "register"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "auth", "register"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -58,15 +51,8 @@
               "name": "User created successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "register"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "auth", "register"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -112,15 +98,8 @@
               "name": "Validation error",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "register"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "auth", "register"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -177,15 +156,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "auth", "login"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -217,15 +189,8 @@
               "name": "Login successful",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "login"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "auth", "login"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -271,15 +236,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "login"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "auth", "login"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -336,15 +294,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "auth", "refresh"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -376,15 +327,8 @@
               "name": "Token refreshed successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "refresh"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "auth", "refresh"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -430,15 +374,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "refresh"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "auth", "refresh"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -495,15 +432,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "auth", "logout"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -535,15 +465,8 @@
               "name": "Logout successful",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "logout"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "auth", "logout"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -621,14 +544,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "profile"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "profile"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -647,14 +564,8 @@
               "name": "Profile retrieved successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "profile"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "profile"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -692,14 +603,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "profile"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "profile"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -748,14 +653,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "profile"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "profile"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -787,14 +686,8 @@
               "name": "Profile updated successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "profile"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "profile"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -840,14 +733,8 @@
               "name": "Validation error",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "profile"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "profile"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -893,14 +780,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "profile"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "profile"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -968,14 +849,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "notes"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "notes"],
+              "host": ["{{baseUrl}}"],
               "query": [
                 {
                   "disabled": false,
@@ -1020,14 +895,8 @@
               "name": "Notes retrieved successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes"],
+                  "host": ["{{baseUrl}}"],
                   "query": [
                     {
                       "key": "filter",
@@ -1086,14 +955,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes"],
+                  "host": ["{{baseUrl}}"],
                   "query": [
                     {
                       "key": "filter",
@@ -1163,14 +1026,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "notes"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "notes"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -1202,14 +1059,8 @@
               "name": "Note created successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -1255,14 +1106,8 @@
               "name": "Validation error",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -1308,14 +1153,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -1372,15 +1211,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "notes",
-                ":id"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "notes", ":id"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": [
                 {
@@ -1407,15 +1239,8 @@
               "name": "Note retrieved successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1461,15 +1286,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1515,15 +1333,8 @@
               "name": "Resource not found",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1580,15 +1391,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "notes",
-                ":id"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "notes", ":id"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": [
                 {
@@ -1628,15 +1432,8 @@
               "name": "Note updated successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1690,15 +1487,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1752,15 +1542,8 @@
               "name": "Resource not found",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1825,15 +1608,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "notes",
-                ":id"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "notes", ":id"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": [
                 {
@@ -1860,15 +1636,8 @@
               "name": "Note deleted successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1910,15 +1679,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -1964,15 +1726,8 @@
               "name": "Resource not found",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "notes",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "notes", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2040,14 +1795,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "tasks"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "tasks"],
+              "host": ["{{baseUrl}}"],
               "query": [
                 {
                   "disabled": false,
@@ -2077,14 +1826,8 @@
               "name": "Tasks retrieved successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks"],
+                  "host": ["{{baseUrl}}"],
                   "query": [
                     {
                       "key": "status",
@@ -2131,14 +1874,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks"],
+                  "host": ["{{baseUrl}}"],
                   "query": [
                     {
                       "key": "status",
@@ -2196,14 +1933,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "tasks"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "tasks"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -2235,14 +1966,8 @@
               "name": "Task created successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -2288,14 +2013,8 @@
               "name": "Validation error",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -2341,14 +2060,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },
@@ -2405,15 +2118,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "tasks",
-                ":id"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "tasks", ":id"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": [
                 {
@@ -2440,15 +2146,8 @@
               "name": "Task retrieved successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2494,15 +2193,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2548,15 +2240,8 @@
               "name": "Resource not found",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2613,15 +2298,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "tasks",
-                ":id"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "tasks", ":id"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": [
                 {
@@ -2661,15 +2339,8 @@
               "name": "Task updated successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2723,15 +2394,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2785,15 +2449,8 @@
               "name": "Resource not found",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2858,15 +2515,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "tasks",
-                ":id"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "tasks", ":id"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": [
                 {
@@ -2893,15 +2543,8 @@
               "name": "Task deleted successfully",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2943,15 +2586,8 @@
               "name": "Unauthorized - Invalid or missing authentication token",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -2997,15 +2633,8 @@
               "name": "Resource not found",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "tasks",
-                    ":id"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "tasks", ":id"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": [
                     {
@@ -3113,14 +2742,8 @@
               "type": "text/plain"
             },
             "url": {
-              "path": [
-                "api",
-                "v1",
-                "health"
-              ],
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "path": ["api", "v1", "health"],
+              "host": ["{{baseUrl}}"],
               "query": [],
               "variable": []
             },
@@ -3139,14 +2762,8 @@
               "name": "API is healthy",
               "originalRequest": {
                 "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "health"
-                  ],
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "path": ["api", "v1", "health"],
+                  "host": ["{{baseUrl}}"],
                   "query": [],
                   "variable": []
                 },

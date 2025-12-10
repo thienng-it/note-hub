@@ -3,7 +3,7 @@
  *
  * Provides consistent response format across all API endpoints.
  * Includes metadata for debugging, pagination, and API versioning.
- * 
+ *
  * Note: Uses relative imports as per project structure.
  * If path mapping is configured in tsconfig.json, these can be updated to use aliases.
  */
@@ -26,14 +26,10 @@ interface ErrorOptions {
 /**
  * Success response wrapper
  */
-export function success<T = any>(
-  res: Response,
-  data: T,
-  options: SuccessOptions = {}
-): Response {
+export function success<T = any>(res: Response, data: T, options: SuccessOptions = {}): Response {
   const { statusCode = 200, message = 'Success', meta = {} } = options;
 
-  const response = {
+  const response: any = {
     success: true,
     message,
     data,
@@ -55,14 +51,10 @@ export function success<T = any>(
 /**
  * Error response wrapper
  */
-export function error(
-  res: Response,
-  message: string,
-  options: ErrorOptions = {}
-): Response {
+export function error(res: Response, message: string, options: ErrorOptions = {}): Response {
   const { statusCode = 500, errorCode = 'INTERNAL_ERROR', details = null } = options;
 
-  const response = {
+  const response: any = {
     success: false,
     error: {
       message,
@@ -130,7 +122,7 @@ export function forbidden(res: Response, message = 'Forbidden'): Response {
 export function created<T = any>(
   res: Response,
   data: T,
-  message = 'Resource created successfully'
+  message = 'Resource created successfully',
 ): Response {
   return success(res, data, {
     statusCode: 201,
@@ -151,7 +143,7 @@ export function noContent(res: Response): Response {
 export function paginated<T = any>(
   res: Response,
   data: T[],
-  pagination: Omit<PaginationMeta, 'totalPages' | 'hasNext' | 'hasPrev'>
+  pagination: Omit<PaginationMeta, 'totalPages' | 'hasNext' | 'hasPrev'>,
 ): Response {
   const { page, limit, total } = pagination;
   const totalPages = Math.ceil(total / limit);
