@@ -106,6 +106,8 @@ note-hub/
    - Reusable components in `components/` directory
    - Use React hooks (useState, useEffect, useCallback, etc.)
    - Implement proper TypeScript typing for all props and state
+   - **ALWAYS add snapshot tests for new components**
+   - **ALWAYS update snapshot tests when modifying UI**
 
 2. **State Management:**
    - Use Context API for global state (AuthContext, ThemeContext)
@@ -116,6 +118,14 @@ note-hub/
    - All API calls go through `api/client.ts`
    - Automatic JWT token handling with refresh
    - Error handling with proper user feedback
+
+4. **Testing Requirements:**
+   - **ALL UI changes MUST include updated snapshot tests**
+   - **ALL tests MUST pass (green) before committing**
+   - Run `npm test -- -u` after intentional UI changes
+   - Review snapshot diffs: `git diff src/**/__snapshots__/`
+   - Commit snapshot files with component changes
+   - See Testing Guidelines section for detailed instructions
 
 ## Code Style Guidelines
 
@@ -429,11 +439,141 @@ note-hub/
    });
    ```
 
-2. **Test Coverage:**
+2. **Snapshot Tests - REQUIRED for UI Changes:**
+   **IMPORTANT**: Always update/add snapshot tests when making UI changes to ensure visual consistency and catch unintended regressions.
+
+   **When to Add/Update Snapshots:**
+   - ✅ **Always** when creating new components
+   - ✅ **Always** when modifying component structure, classes, or styling
+   - ✅ **Always** when adding/removing elements or changing layout
+   - ✅ **Always** when updating props that affect rendering
+   - ✅ **Always** before completing a PR with UI changes
+
+   **Snapshot Test Pattern:**
+   ```typescript
+   import { render } from '@testing-library/react';
+   import { describe, it, expect } from 'vitest';
+   import { Component } from './Component';
+   
+   describe('Component Snapshots', () => {
+     it('should match snapshot - default state', () => {
+       const { container } = render(<Component />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+     
+     it('should match snapshot - with props', () => {
+       const { container } = render(<Component title="Test" isActive={true} />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+     
+     it('should match snapshot - loading state', () => {
+       const { container } = render(<Component isLoading={true} />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+     
+     it('should match snapshot - error state', () => {
+       const { container } = render(<Component error="Error message" />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+   });
+   ```
+
+   **Updating Snapshots:**
+   ```bash
+   # After UI changes, update snapshots
+   cd frontend
+   npm test -- -u
+   
+   # Or update specific test file
+   npm test -- ComponentName.test.tsx -u
+   
+   # Review changes in git diff before committing
+   git diff src/**/__snapshots__/
+   ```
+
+   **Snapshot Best Practices:**
+   - Keep snapshots small and focused (test individual components, not full pages)
+   - Include snapshots for all component states (default, loading, error, empty)
+   - Review snapshot diffs carefully - ensure changes are intentional
+   - Commit snapshot files alongside component changes
+   - Never blindly update all snapshots without reviewing each change
+   - Add comments in test describing what the snapshot captures
+
+   **Example - Complete Component Test Suite:**
+   ```typescript
+   import { render, screen, fireEvent } from '@testing-library/react';
+   import { describe, it, expect, vi } from 'vitest';
+   import { Button } from './Button';
+   
+   describe('Button', () => {
+     // Behavioral tests
+     it('calls onClick when clicked', () => {
+       const onClick = vi.fn();
+       render(<Button onClick={onClick}>Click me</Button>);
+       fireEvent.click(screen.getByText('Click me'));
+       expect(onClick).toHaveBeenCalledTimes(1);
+     });
+     
+     it('is disabled when disabled prop is true', () => {
+       render(<Button disabled>Click me</Button>);
+       expect(screen.getByText('Click me')).toBeDisabled();
+     });
+     
+     // Snapshot tests for visual consistency
+     describe('Snapshots', () => {
+       it('matches snapshot - default', () => {
+         const { container } = render(<Button>Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+       
+       it('matches snapshot - primary variant', () => {
+         const { container } = render(<Button variant="primary">Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+       
+       it('matches snapshot - disabled state', () => {
+         const { container } = render(<Button disabled>Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+       
+       it('matches snapshot - loading state', () => {
+         const { container } = render(<Button isLoading>Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+     });
+   });
+   ```
+
+3. **Test Coverage:**
    - Aim for 80%+ coverage on critical paths
    - Test user interactions (clicks, form submissions)
    - Test error states and loading states
-   - Use snapshot tests for complex UI components
+   - **Always include snapshot tests for UI components**
+   - Ensure all tests pass (green) before committing
+
+4. **Running Tests:**
+   ```bash
+   # Run all frontend tests
+   cd frontend
+   npm test
+   
+   # Run tests in watch mode during development
+   npm test -- --watch
+   
+   # Run tests with coverage
+   npm test -- --coverage
+   
+   # Update snapshots after intentional UI changes
+   npm test -- -u
+   ```
+
+5. **Test Quality Checklist:**
+   - [ ] All new components have snapshot tests
+   - [ ] All UI changes have updated snapshots
+   - [ ] Snapshot diffs reviewed and intentional
+   - [ ] All tests passing (green checkmarks)
+   - [ ] No test warnings or errors
+   - [ ] Coverage remains above 80% for modified files
 
 ## Common Patterns
 
@@ -531,13 +671,19 @@ if (isRedisEnabled) {
    - Run linter frequently: `npm run lint`
    - Test changes locally
    - Update types/interfaces as needed
-   - update/add translation keys as we support i18n
+   - Update/add translation keys as we support i18n
+   - **Update snapshot tests when UI changes** - run `npm test -- -u` after intentional UI changes
 
 3. **Before Committing:**
    - Run full linting: `npm run lint`
-   - Run tests: `npm test`
+   - **Run tests: `npm test` - ALL TESTS MUST BE GREEN ✅**
+   - **For UI changes: Review snapshot diffs** - `git diff src/**/__snapshots__/`
+   - **Update snapshots if changes are intentional** - `npm test -- -u`
    - Fix any linting errors
+   - Fix any test failures
+   - **Verify all tests pass** - No red/failing tests allowed
    - Update documentation if needed
+   - Commit snapshot files with component changes
 
 4. **Commit Messages:**
    ```
