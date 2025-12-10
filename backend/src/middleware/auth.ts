@@ -14,7 +14,7 @@ export const jwtRequired = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
-): Promise<void | Response> => {
+): Promise<undefined | Response> => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -103,7 +103,7 @@ export const adminRequired = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
-): Promise<void | Response> => {
+): Promise<undefined | Response> => {
   if (!req.user || !req.user.is_admin) {
     return responseHandler.forbidden(res, 'Admin privileges required');
   }

@@ -36,7 +36,10 @@ router.post('/register-options', jwtRequired, async (req: Request, res: Response
       });
     }
 
-    const options = await PasskeyService.generateRegistrationOptions(req.userId, req.user!.username);
+    const options = await PasskeyService.generateRegistrationOptions(
+      req.userId,
+      req.user?.username,
+    );
 
     // Store challenge for verification
     const challengeKey = `reg_${req.userId}_${Date.now()}`;

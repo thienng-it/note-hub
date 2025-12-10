@@ -81,10 +81,9 @@ router.post('/rewrite', jwtRequired, async (req: Request, res: Response) => {
 
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Text is required' });
-      return;
     }
 
-    if (text.length > 10000) {
+    if (text && text.length > 10000) {
       return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
     }
 

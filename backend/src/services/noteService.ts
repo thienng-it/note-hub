@@ -109,12 +109,13 @@ class NoteService {
         });
         const parsedNotes = notes.map((note) => ({
           ...note,
-          tags: note.tag_names && note.tag_ids
-            ? note.tag_names.split(',').map((name, i) => ({
-                id: parseInt(note.tag_ids!.split(',')[i]!, 10),
-                name,
-              }))
-            : [],
+          tags:
+            note.tag_names && note.tag_ids
+              ? note.tag_names.split(',').map((name, i) => ({
+                  id: parseInt(note.tag_ids?.split(',')[i]!, 10),
+                  name,
+                }))
+              : [],
         }));
 
         await cache.set(cacheKey, parsedNotes, CACHE_TTL.NOTES_SEARCH);
@@ -187,12 +188,13 @@ class NoteService {
     // Parse tags from concatenated strings
     const parsedNotes = notes.map((note) => ({
       ...note,
-      tags: note.tag_names && note.tag_ids
-        ? note.tag_names.split(',').map((name, i) => ({
-            id: parseInt(note.tag_ids!.split(',')[i]!, 10),
-            name,
-          }))
-        : [],
+      tags:
+        note.tag_names && note.tag_ids
+          ? note.tag_names.split(',').map((name, i) => ({
+              id: parseInt(note.tag_ids?.split(',')[i]!, 10),
+              name,
+            }))
+          : [],
     }));
 
     // Cache results
@@ -257,12 +259,13 @@ class NoteService {
     }
 
     // Parse tags
-    note.tags = note.tag_names && note.tag_ids
-      ? note.tag_names.split(',').map((name, i) => ({
-          id: parseInt(note.tag_ids!.split(',')[i]!, 10),
-          name,
-        }))
-      : [];
+    note.tags =
+      note.tag_names && note.tag_ids
+        ? note.tag_names.split(',').map((name, i) => ({
+            id: parseInt(note.tag_ids?.split(',')[i]!, 10),
+            name,
+          }))
+        : [];
 
     // Owner has full access
     if (note.owner_id === userId) {
@@ -458,12 +461,13 @@ class NoteService {
 
     if (!note) return null;
 
-    note.tags = note.tag_names && note.tag_ids
-      ? note.tag_names.split(',').map((name, i) => ({
-          id: parseInt(note.tag_ids!.split(',')[i]!, 10),
-          name,
-        }))
-      : [];
+    note.tags =
+      note.tag_names && note.tag_ids
+        ? note.tag_names.split(',').map((name, i) => ({
+            id: parseInt(note.tag_ids?.split(',')[i]!, 10),
+            name,
+          }))
+        : [];
 
     return note;
   }

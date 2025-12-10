@@ -10,7 +10,7 @@ import responseHandler from '../utils/responseHandler';
  * Validate required fields in request body
  */
 export function validateRequiredFields(requiredFields: string[]) {
-  return (req: Request, res: Response, next: NextFunction): void | Response => {
+  return (req: Request, res: Response, next: NextFunction): undefined | Response => {
     const missingFields: string[] = [];
 
     for (const field of requiredFields) {
@@ -34,7 +34,7 @@ export function validateRequiredFields(requiredFields: string[]) {
  * Validate email format
  */
 export function validateEmail(fieldName = 'email') {
-  return (req: Request, res: Response, next: NextFunction): void | Response => {
+  return (req: Request, res: Response, next: NextFunction): undefined | Response => {
     const email = req.body[fieldName];
 
     if (!email) {
@@ -60,7 +60,7 @@ export function validateEmail(fieldName = 'email') {
 export function validateLength(fieldName: string, options: { min?: number; max?: number } = {}) {
   const { min, max } = options;
 
-  return (req: Request, res: Response, next: NextFunction): void | Response => {
+  return (req: Request, res: Response, next: NextFunction): undefined | Response => {
     const value = req.body[fieldName];
 
     if (!value) {

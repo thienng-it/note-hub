@@ -67,16 +67,16 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
 
     return res.json({
       user: {
-        id: req.user!.id,
-        username: req.user!.username,
-        email: req.user!.email,
-        bio: req.user!.bio,
-        theme: req.user!.theme,
-        hidden_notes: req.user!.hidden_notes || null,
-        preferred_language: req.user!.preferred_language || 'en',
+        id: req.user?.id,
+        username: req.user?.username,
+        email: req.user?.email,
+        bio: req.user?.bio,
+        theme: req.user?.theme,
+        hidden_notes: req.user?.hidden_notes || null,
+        preferred_language: req.user?.preferred_language || 'en',
         has_2fa: !!(req.user as unknown as User).totp_secret,
-        created_at: req.user!.created_at,
-        last_login: req.user!.last_login,
+        created_at: req.user?.created_at,
+        last_login: req.user?.last_login,
       },
       stats: {
         total_notes: totalNotes?.count || 0,
@@ -103,7 +103,7 @@ router.put('/', jwtRequired, async (req: Request, res: Response) => {
     const { username, email, bio, theme, hidden_notes, preferred_language } = req.body;
 
     // Check if new username already exists
-    if (username && username !== req.user!.username) {
+    if (username && username !== req.user?.username) {
       const existingUser = await db.queryOne(
         `SELECT id FROM users WHERE username = ? AND id != ?`,
         [username, req.userId],
@@ -155,7 +155,7 @@ router.put('/', jwtRequired, async (req: Request, res: Response) => {
     }
 
     if (updates.length > 0) {
-      params.push(req.userId!.toString());
+      params.push(req.userId?.toString());
       await db.run(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, params);
     }
 
@@ -189,7 +189,7 @@ router.put('/', jwtRequired, async (req: Request, res: Response) => {
  */
 router.post('/toggle-theme', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const newTheme = req.user!.theme === 'light' ? 'dark' : 'light';
+    const newTheme = req.user?.theme === 'light' ? 'dark' : 'light';
 
     await db.run(`UPDATE users SET theme = ? WHERE id = ?`, [newTheme, req.userId!]);
 

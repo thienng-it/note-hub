@@ -233,7 +233,9 @@ class AuthService {
       resetToken.user_id as number,
     ]);
 
-    await db.run(`UPDATE password_reset_tokens SET used = 1 WHERE id = ?`, [resetToken.id as number]);
+    await db.run(`UPDATE password_reset_tokens SET used = 1 WHERE id = ?`, [
+      resetToken.id as number,
+    ]);
 
     return { success: true };
   }

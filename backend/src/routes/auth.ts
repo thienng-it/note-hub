@@ -192,14 +192,14 @@ router.get('/validate', jwtRequired, (req: Request, res: Response) => {
     {
       valid: true,
       user: {
-        id: req.user!.id,
-        username: req.user!.username,
-        email: req.user!.email,
-        bio: req.user!.bio,
-        theme: req.user!.theme,
-        preferred_language: req.user!.preferred_language || 'en',
+        id: req.user?.id,
+        username: req.user?.username,
+        email: req.user?.email,
+        bio: req.user?.bio,
+        theme: req.user?.theme,
+        preferred_language: req.user?.preferred_language || 'en',
         has_2fa: !!(req.user as unknown as User).totp_secret,
-        created_at: req.user!.created_at,
+        created_at: req.user?.created_at,
       },
     },
     { message: 'Token is valid' },
@@ -301,7 +301,7 @@ router.post('/change-password', jwtRequired, async (req: Request, res: Response)
 router.get('/2fa/setup', jwtRequired, async (req: Request, res: Response) => {
   try {
     const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(req.user!.username, 'NoteHub', secret);
+    const otpauth = authenticator.keyuri(req.user?.username, 'NoteHub', secret);
 
     const qrCodeDataUrl = await QRCode.toDataURL(otpauth);
 
@@ -454,7 +454,9 @@ router.post('/google/callback', async (req: Request, res: Response) => {
         [username, passwordHash, googleUser.email],
       );
 
-      user = await db.queryOne<any>(`SELECT * FROM users WHERE id = ?`, [result.insertId as number]);
+      user = await db.queryOne<any>(`SELECT * FROM users WHERE id = ?`, [
+        result.insertId as number,
+      ]);
 
       console.log(`[AUTH] New user created via Google OAuth: ${username} (${googleUser.email})`);
     } else {
