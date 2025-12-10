@@ -65,7 +65,7 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
       [req.userId],
     );
 
-    res.json({
+    return res.json({
       user: {
         id: req.user!.id,
         username: req.user!.username,
@@ -91,7 +91,7 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -164,7 +164,7 @@ router.put('/', jwtRequired, async (req: Request, res: Response) => {
       [req.userId!],
     );
 
-    res.json({
+    return res.json({
       message: 'Profile updated successfully',
       user: {
         id: updatedUser.id,
@@ -180,7 +180,7 @@ router.put('/', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -193,10 +193,10 @@ router.post('/toggle-theme', jwtRequired, async (req: Request, res: Response) =>
 
     await db.run(`UPDATE users SET theme = ? WHERE id = ?`, [newTheme, req.userId!]);
 
-    res.json({ theme: newTheme });
+    return res.json({ theme: newTheme });
   } catch (error) {
     console.error('Toggle theme error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -216,10 +216,10 @@ router.get('/invitations', jwtRequired, async (req: Request, res: Response) => {
       [req.userId],
     );
 
-    res.json({ invitations });
+    return res.json({ invitations });
   } catch (error) {
     console.error('Get invitations error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -244,13 +244,13 @@ router.post('/invitations', jwtRequired, async (req: Request, res: Response) => 
       result.insertId,
     ]);
 
-    res.status(201).json({
+    return res.status(201).json({
       invitation,
       invite_url: `${req.protocol}://${req.get('host')}/register?token=${token}`,
     });
   } catch (error) {
     console.error('Create invitation error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -274,7 +274,7 @@ router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
       userId,
     ]);
 
-    res.json({
+    return res.json({
       user: {
         id: user.id,
         username: user.username,
@@ -288,7 +288,7 @@ router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get user profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 

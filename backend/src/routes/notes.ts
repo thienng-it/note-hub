@@ -23,7 +23,7 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
     );
     const tags = await NoteService.getTagsForUser(req.userId!);
 
-    res.json({
+    return res.json({
       notes: notes.map((note) => ({
         id: note.id,
         title: note.title,
@@ -41,7 +41,7 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('List notes error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -50,7 +50,7 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
  */
 router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const { note, hasAccess, canEdit } = await NoteService.checkNoteAccess(noteId, req.userId!);
 
     if (!note) {
@@ -61,7 +61,7 @@ router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    res.json({
+    return res.json({
       note: {
         id: note.id,
         title: note.title,
@@ -79,7 +79,7 @@ router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get note error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -113,7 +113,7 @@ router.post('/', jwtRequired, async (req: Request, res: Response) => {
       images,
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       note: {
         id: note.id,
         title: note.title,
@@ -128,7 +128,7 @@ router.post('/', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Create note error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -137,21 +137,21 @@ router.post('/', jwtRequired, async (req: Request, res: Response) => {
  */
 async function updateNote(req: Request, res: Response) {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const { note, hasAccess, canEdit } = await NoteService.checkNoteAccess(noteId, req.userId!);
 
     if (!note) {
-      res.status(404).json({ error: 'Note not found' });
+      return res.status(404).json({ error: 'Note not found' });
       return;
     }
 
     if (!hasAccess) {
-      res.status(403).json({ error: 'Access denied' });
+      return res.status(403).json({ error: 'Access denied' });
       return;
     }
 
     if (!canEdit) {
-      res.status(403).json({ error: 'You do not have edit permissions for this note' });
+      return res.status(403).json({ error: 'You do not have edit permissions for this note' });
       return;
     }
 
@@ -168,7 +168,7 @@ async function updateNote(req: Request, res: Response) {
       images,
     );
 
-    res.json({
+    return res.json({
       note: {
         id: updatedNote.id,
         title: updatedNote.title,
@@ -185,7 +185,7 @@ async function updateNote(req: Request, res: Response) {
     });
   } catch (error) {
     console.error('Update note error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
@@ -197,7 +197,7 @@ router.patch('/:id', jwtRequired, updateNote);
  */
 router.delete('/:id', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const note = await NoteService.getNoteById(noteId);
 
     if (!note) {
@@ -210,10 +210,10 @@ router.delete('/:id', jwtRequired, async (req: Request, res: Response) => {
 
     await NoteService.deleteNote(noteId, req.userId!);
 
-    res.json({ message: 'Note deleted successfully' });
+    return res.json({ message: 'Note deleted successfully' });
   } catch (error) {
     console.error('Delete note error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -222,7 +222,7 @@ router.delete('/:id', jwtRequired, async (req: Request, res: Response) => {
  */
 router.post('/:id/toggle-pin', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const note = await NoteService.getNoteById(noteId);
 
     if (!note) {
@@ -241,13 +241,13 @@ router.post('/:id/toggle-pin', jwtRequired, async (req: Request, res: Response) 
       !note.pinned,
     );
 
-    res.json({
+    return res.json({
       pinned: !!updatedNote.pinned,
       message: updatedNote.pinned ? 'Note pinned' : 'Note unpinned',
     });
   } catch (error) {
     console.error('Toggle pin error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -256,7 +256,7 @@ router.post('/:id/toggle-pin', jwtRequired, async (req: Request, res: Response) 
  */
 router.post('/:id/toggle-favorite', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const { note, hasAccess } = await NoteService.checkNoteAccess(noteId, req.userId!);
 
     if (!note) {
@@ -276,13 +276,13 @@ router.post('/:id/toggle-favorite', jwtRequired, async (req: Request, res: Respo
       !note.favorite,
     );
 
-    res.json({
+    return res.json({
       favorite: !!updatedNote.favorite,
       message: updatedNote.favorite ? 'Note favorited' : 'Note unfavorited',
     });
   } catch (error) {
     console.error('Toggle favorite error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -291,7 +291,7 @@ router.post('/:id/toggle-favorite', jwtRequired, async (req: Request, res: Respo
  */
 router.post('/:id/toggle-archive', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const note = await NoteService.getNoteById(noteId);
 
     if (!note) {
@@ -312,13 +312,13 @@ router.post('/:id/toggle-archive', jwtRequired, async (req: Request, res: Respon
       !note.archived,
     );
 
-    res.json({
+    return res.json({
       archived: !!updatedNote.archived,
       message: updatedNote.archived ? 'Note archived' : 'Note unarchived',
     });
   } catch (error) {
     console.error('Toggle archive error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -327,7 +327,7 @@ router.post('/:id/toggle-archive', jwtRequired, async (req: Request, res: Respon
  */
 router.get('/:id/shares', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const note = await NoteService.getNoteById(noteId);
 
     if (!note) {
@@ -348,10 +348,10 @@ router.get('/:id/shares', jwtRequired, async (req: Request, res: Response) => {
       [noteId],
     );
 
-    res.json({ shares });
+    return res.json({ shares });
   } catch (error) {
     console.error('Get shares error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -360,7 +360,7 @@ router.get('/:id/shares', jwtRequired, async (req: Request, res: Response) => {
  */
 router.post('/:id/share', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const { username, can_edit = false } = req.body;
 
     if (!username) {
@@ -383,13 +383,13 @@ router.post('/:id/share', jwtRequired, async (req: Request, res: Response) => {
       return res.status(400).json({ error: result.error });
     }
 
-    res.json({
+    return res.json({
       message: `Note shared with ${username}`,
       shared_with: result.sharedWith,
     });
   } catch (error) {
     console.error('Share note error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -398,7 +398,7 @@ router.post('/:id/share', jwtRequired, async (req: Request, res: Response) => {
  */
 router.delete('/:id/share/:shareId', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const noteId = parseInt(req.params.id, 10);
+    const noteId = parseInt(req.params.id!, 10);
     const shareId = parseInt(req.params.shareId!, 10);
 
     const note = await NoteService.getNoteById(noteId);
@@ -413,10 +413,10 @@ router.delete('/:id/share/:shareId', jwtRequired, async (req: Request, res: Resp
 
     await NoteService.unshareNote(noteId, shareId);
 
-    res.json({ message: 'Note unshared successfully' });
+    return res.json({ message: 'Note unshared successfully' });
   } catch (error) {
     console.error('Unshare note error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 

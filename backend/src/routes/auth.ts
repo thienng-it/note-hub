@@ -214,7 +214,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
     const { username } = req.body;
 
     if (!username) {
-      res.status(400).json({ error: 'Username required' });
+      return res.status(400).json({ error: 'Username required' });
       return;
     }
 
@@ -235,13 +235,13 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
     // In production, this would be sent via email
     console.log(`[SECURITY] Password reset token for '${user.username}': ${token}`);
 
-    res.json({
+    return res.json({
       message: 'Reset token generated',
       token, // Only for development - remove in production
     });
   } catch (error) {
     console.error('Forgot password error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -253,7 +253,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
     const { token, password } = req.body;
 
     if (!token || !password) {
-      res.status(400).json({ error: 'Token and password required' });
+      return res.status(400).json({ error: 'Token and password required' });
       return;
     }
 
@@ -263,10 +263,10 @@ router.post('/reset-password', async (req: Request, res: Response) => {
       return res.status(400).json({ error: result.error });
     }
 
-    res.json({ message: 'Password reset successful' });
+    return res.json({ message: 'Password reset successful' });
   } catch (error) {
     console.error('Reset password error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -278,7 +278,7 @@ router.post('/change-password', jwtRequired, async (req: Request, res: Response)
     const { current_password, new_password } = req.body;
 
     if (!current_password || !new_password) {
-      res.status(400).json({ error: 'Current and new password required' });
+      return res.status(400).json({ error: 'Current and new password required' });
       return;
     }
 
@@ -288,10 +288,10 @@ router.post('/change-password', jwtRequired, async (req: Request, res: Response)
       return res.status(400).json({ error: result.error });
     }
 
-    res.json({ message: 'Password changed successfully' });
+    return res.json({ message: 'Password changed successfully' });
   } catch (error) {
     console.error('Change password error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -305,13 +305,13 @@ router.get('/2fa/setup', jwtRequired, async (req: Request, res: Response) => {
 
     const qrCodeDataUrl = await QRCode.toDataURL(otpauth);
 
-    res.json({
+    return res.json({
       secret,
       qr_code: qrCodeDataUrl.split(',')[1], // Remove data:image/png;base64, prefix
     });
   } catch (error) {
     console.error('2FA setup error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -323,7 +323,7 @@ router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
     const { secret, totp_code } = req.body;
 
     if (!secret || !totp_code) {
-      res.status(400).json({ error: 'Secret and TOTP code required' });
+      return res.status(400).json({ error: 'Secret and TOTP code required' });
       return;
     }
 
@@ -334,13 +334,13 @@ router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
 
     await db.run(`UPDATE users SET totp_secret = ? WHERE id = ?`, [secret, req.userId]);
 
-    res.json({
+    return res.json({
       message: '2FA enabled successfully',
       has_2fa: true,
     });
   } catch (error) {
     console.error('2FA enable error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -353,7 +353,7 @@ router.post('/2fa/disable', jwtRequired, async (req: Request, res: Response) => 
   try {
     const user = req.user!;
     if (!(user as any).totp_secret) {
-      res.status(400).json({ error: '2FA is not enabled' });
+      return res.status(400).json({ error: '2FA is not enabled' });
       return;
     }
 
@@ -363,13 +363,13 @@ router.post('/2fa/disable', jwtRequired, async (req: Request, res: Response) => 
     // Log security event
     console.log(`[SECURITY] 2FA disabled by user ID: ${req.userId}`);
 
-    res.json({
+    return res.json({
       message: '2FA disabled successfully',
       has_2fa: false,
     });
   } catch (error) {
     console.error('2FA disable error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -379,15 +379,15 @@ router.post('/2fa/disable', jwtRequired, async (req: Request, res: Response) => 
 router.get('/google', (_req: Request, res: Response) => {
   try {
     if (!googleOAuthService.isEnabled()) {
-      res.status(503).json({ error: 'Google OAuth not configured' });
+      return res.status(503).json({ error: 'Google OAuth not configured' });
       return;
     }
 
     const authUrl = googleOAuthService.getAuthUrl();
-    res.json({ auth_url: authUrl });
+    return res.json({ auth_url: authUrl });
   } catch (error) {
     console.error('Google OAuth URL error:', error);
-    res.status(500).json({ error: 'Failed to generate OAuth URL' });
+    return res.status(500).json({ error: 'Failed to generate OAuth URL' });
   }
 });
 
@@ -399,12 +399,12 @@ router.post('/google/callback', async (req: Request, res: Response) => {
     const { code, id_token } = req.body;
 
     if (!code && !id_token) {
-      res.status(400).json({ error: 'Authorization code or ID token required' });
+      return res.status(400).json({ error: 'Authorization code or ID token required' });
       return;
     }
 
     if (!googleOAuthService.isEnabled()) {
-      res.status(503).json({ error: 'Google OAuth not configured' });
+      return res.status(503).json({ error: 'Google OAuth not configured' });
       return;
     }
 
@@ -482,7 +482,7 @@ router.post('/google/callback', async (req: Request, res: Response) => {
     // Update last login
     await AuthService.updateLastLogin(user.id);
 
-    res.json({
+    return res.json({
       access_token: accessToken,
       refresh_token: refreshToken,
       token_type: 'Bearer',
@@ -498,7 +498,7 @@ router.post('/google/callback', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Google OAuth callback error:', error);
-    res.status(500).json({ error: 'Authentication failed' });
+    return res.status(500).json({ error: 'Authentication failed' });
   }
 });
 
@@ -506,7 +506,7 @@ router.post('/google/callback', async (req: Request, res: Response) => {
  * GET /api/auth/google/status - Check if Google OAuth is configured
  */
 router.get('/google/status', (_req: Request, res: Response) => {
-  res.json({
+  return res.json({
     enabled: googleOAuthService.isEnabled(),
   });
 });
@@ -515,7 +515,7 @@ router.get('/google/status', (_req: Request, res: Response) => {
  * GET /api/auth/github/status - Check if GitHub OAuth is configured
  */
 router.get('/github/status', (_req: Request, res: Response) => {
-  res.json({
+  return res.json({
     enabled: githubOAuthService.isEnabled(),
   });
 });
@@ -526,7 +526,7 @@ router.get('/github/status', (_req: Request, res: Response) => {
 router.get('/github', (_req: Request, res: Response) => {
   try {
     if (!githubOAuthService.isEnabled()) {
-      res.status(503).json({ error: 'GitHub OAuth not configured' });
+      return res.status(503).json({ error: 'GitHub OAuth not configured' });
       return;
     }
 
@@ -536,13 +536,13 @@ router.get('/github', (_req: Request, res: Response) => {
     // In production, store state in session or database for validation
     const authUrl = githubOAuthService.getAuthorizationUrl(state);
 
-    res.json({
+    return res.json({
       auth_url: authUrl,
       state: state,
     });
   } catch (error) {
     console.error('GitHub OAuth URL error:', error);
-    res.status(500).json({ error: 'Failed to generate OAuth URL' });
+    return res.status(500).json({ error: 'Failed to generate OAuth URL' });
   }
 });
 
@@ -554,12 +554,12 @@ router.post('/github/callback', async (req: Request, res: Response) => {
     const { code } = req.body;
 
     if (!code) {
-      res.status(400).json({ error: 'Authorization code required' });
+      return res.status(400).json({ error: 'Authorization code required' });
       return;
     }
 
     if (!githubOAuthService.isEnabled()) {
-      res.status(503).json({ error: 'GitHub OAuth not configured' });
+      return res.status(503).json({ error: 'GitHub OAuth not configured' });
       return;
     }
 
@@ -598,7 +598,7 @@ router.post('/github/callback', async (req: Request, res: Response) => {
 
     console.log(`[AUTH] User logged in via GitHub OAuth: ${user.username}`);
 
-    res.json({
+    return res.json({
       access_token: accessToken,
       refresh_token: refreshToken,
       token_type: 'Bearer',

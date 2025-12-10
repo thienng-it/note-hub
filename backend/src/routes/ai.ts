@@ -15,10 +15,10 @@ const router = express.Router();
 router.get('/status', jwtRequired, async (_req: Request, res: Response) => {
   try {
     const status = AIService.getAIStatus();
-    res.json(status);
+    return res.json(status);
   } catch (error) {
     console.error('Get AI status error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -30,17 +30,17 @@ router.post('/proofread', jwtRequired, async (req: Request, res: Response) => {
     const { text } = req.body;
 
     if (!text || typeof text !== 'string') {
-      res.status(400).json({ error: 'Text is required' });
+      return res.status(400).json({ error: 'Text is required' });
       return;
     }
 
     if (text.length > 10000) {
-      res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
+      return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
       return;
     }
 
     const result = await AIService.proofreadText(text);
-    res.json({ result });
+    return res.json({ result });
   } catch (error) {
     console.error('Proofread error:', error);
     res
@@ -57,17 +57,17 @@ router.post('/summarize', jwtRequired, async (req: Request, res: Response) => {
     const { text } = req.body;
 
     if (!text || typeof text !== 'string') {
-      res.status(400).json({ error: 'Text is required' });
+      return res.status(400).json({ error: 'Text is required' });
       return;
     }
 
     if (text.length > 10000) {
-      res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
+      return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
       return;
     }
 
     const result = await AIService.summarizeText(text);
-    res.json({ result });
+    return res.json({ result });
   } catch (error) {
     console.error('Summarize error:', error);
     res
@@ -84,7 +84,7 @@ router.post('/rewrite', jwtRequired, async (req: Request, res: Response) => {
     const { text, style = 'professional' } = req.body;
 
     if (!text || typeof text !== 'string') {
-      res.status(400).json({ error: 'Text is required' });
+      return res.status(400).json({ error: 'Text is required' });
       return;
     }
 
@@ -100,7 +100,7 @@ router.post('/rewrite', jwtRequired, async (req: Request, res: Response) => {
     }
 
     const result = await AIService.rewriteText(text, style);
-    res.json({ result });
+    return res.json({ result });
   } catch (error) {
     console.error('Rewrite error:', error);
     res

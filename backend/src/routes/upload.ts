@@ -23,7 +23,7 @@ router.post('/image', jwtRequired, upload.single('image'), async (req: Request, 
     // Return the file path relative to the uploads directory
     const filePath = `/uploads/${req.file.filename}`;
 
-    res.json({
+    return res.json({
       success: true,
       path: filePath,
       filename: req.file.filename,
@@ -58,7 +58,7 @@ router.post(
         mimetype: file.mimetype,
       }));
 
-      res.json({
+      return res.json({
         success: true,
         files,
       });
@@ -87,10 +87,10 @@ router.delete('/:filename', jwtRequired, async (req: Request, res: Response) => 
     // Delete the file
     fs.unlinkSync(filePath);
 
-    res.json({ success: true, message: 'File deleted successfully' });
+    return res.json({ success: true, message: 'File deleted successfully' });
   } catch (error) {
     console.error('Delete error:', error);
-    res.status(500).json({ error: 'Failed to delete image' });
+    return res.status(500).json({ error: 'Failed to delete image' });
   }
 });
 

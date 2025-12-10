@@ -66,7 +66,7 @@ router.get('/users', jwtRequired, adminRequired, async (req: Request, res: Respo
       `SELECT COUNT(*) as count FROM users WHERE is_admin = 1`,
     );
 
-    res.json({
+    return res.json({
       users: users.map((u) => ({
         id: u.id,
         username: u.username,
@@ -95,7 +95,7 @@ router.get('/users', jwtRequired, adminRequired, async (req: Request, res: Respo
     });
   } catch (error) {
     console.error('Admin list users error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -134,7 +134,7 @@ router.post(
       // Log admin action for audit trail
       console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
 
-      res.json({
+      return res.json({
         message: `2FA disabled successfully for user ${user.username}`,
         user: {
           id: user.id,
@@ -144,7 +144,7 @@ router.post(
       });
     } catch (error) {
       console.error('Admin disable 2FA error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
@@ -191,7 +191,7 @@ router.post(
       // Log admin action for audit trail
       console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} locked user ID: ${userId}`);
 
-      res.json({
+      return res.json({
         message: `User ${user.username} locked successfully`,
         user: {
           id: user.id,
@@ -201,7 +201,7 @@ router.post(
       });
     } catch (error) {
       console.error('Admin lock user error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
@@ -241,7 +241,7 @@ router.post(
       // Log admin action for audit trail
       console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} unlocked user ID: ${userId}`);
 
-      res.json({
+      return res.json({
         message: `User ${user.username} unlocked successfully`,
         user: {
           id: user.id,
@@ -251,7 +251,7 @@ router.post(
       });
     } catch (error) {
       console.error('Admin unlock user error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
@@ -299,12 +299,12 @@ router.delete(
         `[SECURITY AUDIT] Admin ID: ${req.userId} deleted user ID: ${userId} (username: ${user.username})`,
       );
 
-      res.json({
+      return res.json({
         message: `User ${user.username} deleted successfully`,
       });
     } catch (error) {
       console.error('Admin delete user error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
@@ -346,7 +346,7 @@ router.post(
         `[SECURITY AUDIT] Admin ID: ${req.userId} granted admin privileges to user ID: ${userId}`,
       );
 
-      res.json({
+      return res.json({
         message: `Admin privileges granted to ${user.username}`,
         user: {
           id: user.id,
@@ -356,7 +356,7 @@ router.post(
       });
     } catch (error) {
       console.error('Admin grant privileges error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
@@ -405,7 +405,7 @@ router.post(
         `[SECURITY AUDIT] Admin ID: ${req.userId} revoked admin privileges from user ID: ${userId}`,
       );
 
-      res.json({
+      return res.json({
         message: `Admin privileges revoked from ${user.username}`,
         user: {
           id: user.id,
@@ -415,7 +415,7 @@ router.post(
       });
     } catch (error) {
       console.error('Admin revoke privileges error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: 'Internal server error' });
     }
   },
 );
@@ -429,7 +429,7 @@ router.get('/health', async (_req: Request, res: Response) => {
     const userCount = await db.queryOne<CountResult>(`SELECT COUNT(*) as count FROM users`);
     const dbPath = process.env.NOTES_DB_PATH || 'data/notes.db';
 
-    res.json({
+    return res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
       database: {
@@ -443,7 +443,7 @@ router.get('/health', async (_req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Health check error:', error);
-    res.status(503).json({
+    return res.status(503).json({
       status: 'unhealthy',
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString(),

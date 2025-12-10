@@ -47,7 +47,7 @@ router.get('/search', jwtRequired, async (req: Request, res: Response) => {
       [`%${searchQuery}%`, req.userId],
     );
 
-    res.json({
+    return res.json({
       users: users.map((u: { id: number; username: string }) => ({
         id: u.id,
         username: u.username,
@@ -55,7 +55,7 @@ router.get('/search', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('User search error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -78,7 +78,7 @@ router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
       userId,
     ]);
 
-    res.json({
+    return res.json({
       user: {
         id: user.id,
         username: user.username,
@@ -92,7 +92,7 @@ router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get user profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
