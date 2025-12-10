@@ -133,14 +133,17 @@ logger.api = (method, path, statusCode, duration) => {
     path,
     statusCode,
     duration: `${duration}ms`,
+    durationMs: duration,
   });
 };
 
-logger.db = (operation, table, duration) => {
+logger.db = (operation, table, duration, success = true) => {
   logger.debug('DB Operation', {
     operation,
     table,
     duration: duration ? `${duration}ms` : undefined,
+    durationMs: duration,
+    success,
   });
 };
 
@@ -148,6 +151,7 @@ logger.auth = (event, userId, details) => {
   logger.info('Auth Event', {
     event,
     userId,
+    timestamp: new Date().toISOString(),
     ...details,
   });
 };
@@ -155,7 +159,37 @@ logger.auth = (event, userId, details) => {
 logger.security = (event, details) => {
   logger.warn('Security Event', {
     event,
+    timestamp: new Date().toISOString(),
     ...details,
+  });
+};
+
+logger.business = (operation, entity, details) => {
+  logger.info('Business Operation', {
+    operation,
+    entity,
+    timestamp: new Date().toISOString(),
+    ...details,
+  });
+};
+
+logger.performance = (operation, duration, details) => {
+  logger.info('Performance', {
+    operation,
+    duration: `${duration}ms`,
+    durationMs: duration,
+    timestamp: new Date().toISOString(),
+    ...details,
+  });
+};
+
+logger.cache = (operation, key, hit, duration) => {
+  logger.debug('Cache Operation', {
+    operation,
+    key,
+    hit,
+    duration: duration ? `${duration}ms` : undefined,
+    durationMs: duration,
   });
 };
 
