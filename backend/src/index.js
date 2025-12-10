@@ -183,7 +183,7 @@ async function updateMetricsJob() {
       tasks: metrics.tasks || 0,
       tags: metrics.tags || 0,
       notesByStatus: notesByStatus,
-      activeSessions: activeSessions
+      activeSessions: activeSessions,
     });
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });
