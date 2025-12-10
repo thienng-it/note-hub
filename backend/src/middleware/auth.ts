@@ -1,10 +1,10 @@
 /**
  * JWT Authentication Middleware.
  */
-import type { Response, NextFunction } from 'express';
-import type { AuthRequest } from '../types';
-import jwtService from '../services/jwtService';
+import type { NextFunction, Response } from 'express';
 import db from '../config/database';
+import jwtService from '../services/jwtService';
+import type { AuthRequest } from '../types';
 import responseHandler from '../utils/responseHandler';
 
 /**

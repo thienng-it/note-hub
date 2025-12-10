@@ -2,10 +2,10 @@
  * Google OAuth Service for Single Sign-On (SSO).
  * Handles Google OAuth 2.0 authentication flow.
  */
-import { google } from 'googleapis';
+
 import axios from 'axios';
-import type { OAuth2Client } from 'google-auth-library';
-import type { Credentials } from 'google-auth-library';
+import type { Credentials, OAuth2Client } from 'google-auth-library';
+import { google } from 'googleapis';
 
 interface GoogleUserInfo {
   id: string;

@@ -59,7 +59,7 @@ Converter.convert(
         if (item.request) {
           if (typeof item.request.url === 'string') {
             item.request.url = item.request.url.replace(/^https?:\/\/[^/]+/, '{{baseUrl}}');
-          } else if (item.request.url && item.request.url.raw) {
+          } else if (item.request.url?.raw) {
             item.request.url.raw = item.request.url.raw.replace(/^https?:\/\/[^/]+/, '{{baseUrl}}');
           }
         }

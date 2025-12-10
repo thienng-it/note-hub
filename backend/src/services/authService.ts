@@ -1,8 +1,9 @@
 /**
  * Authentication Service for user management.
  */
-import bcrypt from 'bcryptjs';
+
 import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
 import db from '../config/database';
 
 interface PasswordValidation {
@@ -82,10 +83,7 @@ class AuthService {
    * Automatically rehashes password if using old work factor.
    * Handles case-insensitive and whitespace-trimmed comparison.
    */
-  static async authenticateUser(
-    usernameOrEmail: string,
-    password: string,
-  ): Promise<User | null> {
+  static async authenticateUser(usernameOrEmail: string, password: string): Promise<User | null> {
     // Trim whitespace from input
     const trimmedInput = usernameOrEmail.trim();
 

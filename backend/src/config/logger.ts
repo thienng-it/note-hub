@@ -62,8 +62,8 @@ switch (LOG_FORMAT) {
 interface CustomLogger extends winston.Logger {
   api: (method: string, path: string, statusCode: number, duration: number) => void;
   db: (operation: string, table: string, duration?: number) => void;
-  auth: (event: string, userId: number | string, details?: Record<string, any>) => void;
-  security: (event: string, details?: Record<string, any>) => void;
+  auth: (event: string, userId: number | string, details?: Record<string, unknown>) => void;
+  security: (event: string, details?: Record<string, unknown>) => void;
   config: {
     level: string;
     format: string;
@@ -105,7 +105,7 @@ if (process.env.GRAYLOG_ENABLED === 'true') {
   const graylogFacility = process.env.GRAYLOG_FACILITY || 'notehub-backend';
 
   try {
-    const graylogOptions: any = {
+    const graylogOptions = {
       name: 'Graylog',
       level: LOG_LEVEL,
       silent: false,
@@ -115,6 +115,7 @@ if (process.env.GRAYLOG_ENABLED === 'true') {
         hostname: process.env.HOSTNAME || os.hostname(),
         facility: graylogFacility,
         bufferSize: 1400,
+        protocol: graylogProtocol === 'tcp' ? ('tcp' as const) : ('udp' as const),
       },
       staticMeta: {
         environment: process.env.NODE_ENV || 'development',
@@ -123,21 +124,17 @@ if (process.env.GRAYLOG_ENABLED === 'true') {
       },
     };
 
-    // Set protocol (tcp or udp)
-    if (graylogProtocol === 'tcp') {
-      graylogOptions.graylog.protocol = 'tcp';
-    }
-
-    logger.add(new WinstonGraylog2(graylogOptions) as any);
+    logger.add(new WinstonGraylog2(graylogOptions));
     logger.info('Graylog transport enabled', {
       host: graylogHost,
       port: graylogPort,
       protocol: graylogProtocol,
       facility: graylogFacility,
     });
-  } catch (error: any) {
+  } catch (error) {
     // Graceful degradation - if Graylog transport fails, continue without it
-    console.error('Failed to initialize Graylog transport:', error?.message);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Failed to initialize Graylog transport:', errorMessage);
     console.error('Continuing with console logging only');
   }
 }
@@ -160,7 +157,7 @@ logger.db = (operation: string, table: string, duration?: number): void => {
   });
 };
 
-logger.auth = (event: string, userId: number | string, details?: Record<string, any>): void => {
+logger.auth = (event: string, userId: number | string, details?: Record<string, unknown>): void => {
   logger.info('Auth Event', {
     event,
     userId,
@@ -168,7 +165,7 @@ logger.auth = (event: string, userId: number | string, details?: Record<string, 
   });
 };
 
-logger.security = (event: string, details?: Record<string, any>): void => {
+logger.security = (event: string, details?: Record<string, unknown>): void => {
   logger.warn('Security Event', {
     event,
     ...details,

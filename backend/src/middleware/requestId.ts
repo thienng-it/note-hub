@@ -4,8 +4,9 @@
  * Generates a unique request ID for each incoming request.
  * This helps with debugging and log correlation.
  */
+
+import type { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import type { Request, Response, NextFunction } from 'express';
 
 /**
  * Middleware to add unique request ID to each request

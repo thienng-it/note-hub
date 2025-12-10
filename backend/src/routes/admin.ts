@@ -1,9 +1,9 @@
 /**
  * Admin Routes.
  */
-import express, { Request, Response, Router } from 'express';
-import { jwtRequired, adminRequired } from '../middleware/auth';
+import express, { type Request, type Response, type Router } from 'express';
 import db from '../config/database';
+import { adminRequired, jwtRequired } from '../middleware/auth';
 
 const router: Router = express.Router();
 
@@ -102,142 +102,159 @@ router.get('/users', jwtRequired, adminRequired, async (req: Request, res: Respo
 /**
  * POST /api/admin/users/:userId/disable-2fa - Disable 2FA for a user (admin only)
  */
-router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req: Request, res: Response) => {
-  try {
-    const userId = parseInt(req.params.userId, 10);
+router.post(
+  '/users/:userId/disable-2fa',
+  jwtRequired,
+  adminRequired,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId, 10);
 
-    if (!userId || userId <= 0) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      if (!userId || userId <= 0) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      // Check if user exists
+      const user = await db.queryOne<{ id: number; username: string; totp_secret: string | null }>(
+        `SELECT id, username, totp_secret FROM users WHERE id = ?`,
+        [userId],
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (!user.totp_secret) {
+        return res.status(400).json({ error: '2FA is not enabled for this user' });
+      }
+
+      // Disable 2FA
+      await db.run(`UPDATE users SET totp_secret = NULL WHERE id = ?`, [userId]);
+
+      // Log admin action for audit trail
+      console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
+
+      res.json({
+        message: `2FA disabled successfully for user ${user.username}`,
+        user: {
+          id: user.id,
+          username: user.username,
+          has_2fa: false,
+        },
+      });
+    } catch (error) {
+      console.error('Admin disable 2FA error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Check if user exists
-    const user = await db.queryOne<{ id: number; username: string; totp_secret: string | null }>(
-      `SELECT id, username, totp_secret FROM users WHERE id = ?`,
-      [userId],
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    if (!user.totp_secret) {
-      return res.status(400).json({ error: '2FA is not enabled for this user' });
-    }
-
-    // Disable 2FA
-    await db.run(`UPDATE users SET totp_secret = NULL WHERE id = ?`, [userId]);
-
-    // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
-
-    res.json({
-      message: `2FA disabled successfully for user ${user.username}`,
-      user: {
-        id: user.id,
-        username: user.username,
-        has_2fa: false,
-      },
-    });
-  } catch (error) {
-    console.error('Admin disable 2FA error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+  },
+);
 
 /**
  * POST /api/admin/users/:userId/lock - Lock a user account (admin only)
  */
-router.post('/users/:userId/lock', jwtRequired, adminRequired, async (req: Request, res: Response) => {
-  try {
-    const userId = parseInt(req.params.userId, 10);
+router.post(
+  '/users/:userId/lock',
+  jwtRequired,
+  adminRequired,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId, 10);
 
-    if (!userId || userId <= 0) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      if (!userId || userId <= 0) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      // Check if user exists
+      const user = await db.queryOne<{
+        id: number;
+        username: string;
+        is_admin: number;
+        is_locked: number;
+      }>(`SELECT id, username, is_admin, is_locked FROM users WHERE id = ?`, [userId]);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Prevent locking the main admin user (username 'admin' is protected)
+      if (user.username === 'admin') {
+        return res.status(403).json({ error: 'Cannot lock the main admin user' });
+      }
+
+      if (user.is_locked) {
+        return res.status(400).json({ error: 'User is already locked' });
+      }
+
+      // Lock user
+      await db.run(`UPDATE users SET is_locked = 1 WHERE id = ?`, [userId]);
+
+      // Log admin action for audit trail
+      console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} locked user ID: ${userId}`);
+
+      res.json({
+        message: `User ${user.username} locked successfully`,
+        user: {
+          id: user.id,
+          username: user.username,
+          is_locked: true,
+        },
+      });
+    } catch (error) {
+      console.error('Admin lock user error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Check if user exists
-    const user = await db.queryOne<{ id: number; username: string; is_admin: number; is_locked: number }>(
-      `SELECT id, username, is_admin, is_locked FROM users WHERE id = ?`,
-      [userId],
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Prevent locking the main admin user (username 'admin' is protected)
-    if (user.username === 'admin') {
-      return res.status(403).json({ error: 'Cannot lock the main admin user' });
-    }
-
-    if (user.is_locked) {
-      return res.status(400).json({ error: 'User is already locked' });
-    }
-
-    // Lock user
-    await db.run(`UPDATE users SET is_locked = 1 WHERE id = ?`, [userId]);
-
-    // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} locked user ID: ${userId}`);
-
-    res.json({
-      message: `User ${user.username} locked successfully`,
-      user: {
-        id: user.id,
-        username: user.username,
-        is_locked: true,
-      },
-    });
-  } catch (error) {
-    console.error('Admin lock user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+  },
+);
 
 /**
  * POST /api/admin/users/:userId/unlock - Unlock a user account (admin only)
  */
-router.post('/users/:userId/unlock', jwtRequired, adminRequired, async (req: Request, res: Response) => {
-  try {
-    const userId = parseInt(req.params.userId, 10);
+router.post(
+  '/users/:userId/unlock',
+  jwtRequired,
+  adminRequired,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId, 10);
 
-    if (!userId || userId <= 0) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      if (!userId || userId <= 0) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      // Check if user exists
+      const user = await db.queryOne<{ id: number; username: string; is_locked: number }>(
+        `SELECT id, username, is_locked FROM users WHERE id = ?`,
+        [userId],
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (!user.is_locked) {
+        return res.status(400).json({ error: 'User is not locked' });
+      }
+
+      // Unlock user
+      await db.run(`UPDATE users SET is_locked = 0 WHERE id = ?`, [userId]);
+
+      // Log admin action for audit trail
+      console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} unlocked user ID: ${userId}`);
+
+      res.json({
+        message: `User ${user.username} unlocked successfully`,
+        user: {
+          id: user.id,
+          username: user.username,
+          is_locked: false,
+        },
+      });
+    } catch (error) {
+      console.error('Admin unlock user error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Check if user exists
-    const user = await db.queryOne<{ id: number; username: string; is_locked: number }>(
-      `SELECT id, username, is_locked FROM users WHERE id = ?`,
-      [userId],
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    if (!user.is_locked) {
-      return res.status(400).json({ error: 'User is not locked' });
-    }
-
-    // Unlock user
-    await db.run(`UPDATE users SET is_locked = 0 WHERE id = ?`, [userId]);
-
-    // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} unlocked user ID: ${userId}`);
-
-    res.json({
-      message: `User ${user.username} unlocked successfully`,
-      user: {
-        id: user.id,
-        username: user.username,
-        is_locked: false,
-      },
-    });
-  } catch (error) {
-    console.error('Admin unlock user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+  },
+);
 
 /**
  * DELETE /api/admin/users/:userId - Delete a user account (admin only)
@@ -290,106 +307,116 @@ router.delete('/users/:userId', jwtRequired, adminRequired, async (req: Request,
 /**
  * POST /api/admin/users/:userId/grant-admin - Grant admin privileges (admin only)
  */
-router.post('/users/:userId/grant-admin', jwtRequired, adminRequired, async (req: Request, res: Response) => {
-  try {
-    const userId = parseInt(req.params.userId, 10);
+router.post(
+  '/users/:userId/grant-admin',
+  jwtRequired,
+  adminRequired,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId, 10);
 
-    if (!userId || userId <= 0) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      if (!userId || userId <= 0) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      // Check if user exists
+      const user = await db.queryOne<{ id: number; username: string; is_admin: number }>(
+        `SELECT id, username, is_admin FROM users WHERE id = ?`,
+        [userId],
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (user.is_admin) {
+        return res.status(400).json({ error: 'User already has admin privileges' });
+      }
+
+      // Grant admin privileges
+      await db.run(`UPDATE users SET is_admin = 1 WHERE id = ?`, [userId]);
+
+      // Log admin action for audit trail
+      console.log(
+        `[SECURITY AUDIT] Admin ID: ${req.userId} granted admin privileges to user ID: ${userId}`,
+      );
+
+      res.json({
+        message: `Admin privileges granted to ${user.username}`,
+        user: {
+          id: user.id,
+          username: user.username,
+          is_admin: true,
+        },
+      });
+    } catch (error) {
+      console.error('Admin grant privileges error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Check if user exists
-    const user = await db.queryOne<{ id: number; username: string; is_admin: number }>(
-      `SELECT id, username, is_admin FROM users WHERE id = ?`,
-      [userId],
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    if (user.is_admin) {
-      return res.status(400).json({ error: 'User already has admin privileges' });
-    }
-
-    // Grant admin privileges
-    await db.run(`UPDATE users SET is_admin = 1 WHERE id = ?`, [userId]);
-
-    // Log admin action for audit trail
-    console.log(
-      `[SECURITY AUDIT] Admin ID: ${req.userId} granted admin privileges to user ID: ${userId}`,
-    );
-
-    res.json({
-      message: `Admin privileges granted to ${user.username}`,
-      user: {
-        id: user.id,
-        username: user.username,
-        is_admin: true,
-      },
-    });
-  } catch (error) {
-    console.error('Admin grant privileges error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+  },
+);
 
 /**
  * POST /api/admin/users/:userId/revoke-admin - Revoke admin privileges (admin only)
  */
-router.post('/users/:userId/revoke-admin', jwtRequired, adminRequired, async (req: Request, res: Response) => {
-  try {
-    const userId = parseInt(req.params.userId, 10);
+router.post(
+  '/users/:userId/revoke-admin',
+  jwtRequired,
+  adminRequired,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId, 10);
 
-    if (!userId || userId <= 0) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      if (!userId || userId <= 0) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      // Check if user exists
+      const user = await db.queryOne<{ id: number; username: string; is_admin: number }>(
+        `SELECT id, username, is_admin FROM users WHERE id = ?`,
+        [userId],
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Prevent revoking the main admin user's privileges (username 'admin' is protected)
+      if (user.username === 'admin' && user.is_admin) {
+        return res.status(403).json({ error: 'Cannot revoke privileges from the main admin user' });
+      }
+
+      // Prevent revoking your own admin privileges
+      if (userId === req.userId) {
+        return res.status(403).json({ error: 'Cannot revoke your own admin privileges' });
+      }
+
+      if (!user.is_admin) {
+        return res.status(400).json({ error: 'User does not have admin privileges' });
+      }
+
+      // Revoke admin privileges
+      await db.run(`UPDATE users SET is_admin = 0 WHERE id = ?`, [userId]);
+
+      // Log admin action for audit trail
+      console.log(
+        `[SECURITY AUDIT] Admin ID: ${req.userId} revoked admin privileges from user ID: ${userId}`,
+      );
+
+      res.json({
+        message: `Admin privileges revoked from ${user.username}`,
+        user: {
+          id: user.id,
+          username: user.username,
+          is_admin: false,
+        },
+      });
+    } catch (error) {
+      console.error('Admin revoke privileges error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Check if user exists
-    const user = await db.queryOne<{ id: number; username: string; is_admin: number }>(
-      `SELECT id, username, is_admin FROM users WHERE id = ?`,
-      [userId],
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Prevent revoking the main admin user's privileges (username 'admin' is protected)
-    if (user.username === 'admin' && user.is_admin) {
-      return res.status(403).json({ error: 'Cannot revoke privileges from the main admin user' });
-    }
-
-    // Prevent revoking your own admin privileges
-    if (userId === req.userId) {
-      return res.status(403).json({ error: 'Cannot revoke your own admin privileges' });
-    }
-
-    if (!user.is_admin) {
-      return res.status(400).json({ error: 'User does not have admin privileges' });
-    }
-
-    // Revoke admin privileges
-    await db.run(`UPDATE users SET is_admin = 0 WHERE id = ?`, [userId]);
-
-    // Log admin action for audit trail
-    console.log(
-      `[SECURITY AUDIT] Admin ID: ${req.userId} revoked admin privileges from user ID: ${userId}`,
-    );
-
-    res.json({
-      message: `Admin privileges revoked from ${user.username}`,
-      user: {
-        id: user.id,
-        username: user.username,
-        is_admin: false,
-      },
-    });
-  } catch (error) {
-    console.error('Admin revoke privileges error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+  },
+);
 
 /**
  * GET /api/admin/health - Health check endpoint

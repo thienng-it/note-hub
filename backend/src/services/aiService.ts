@@ -227,7 +227,10 @@ export async function summarizeText(text: string): Promise<string> {
 /**
  * Rewrite text - improve clarity and style
  */
-export async function rewriteText(text: string, style: RewriteStyle = 'professional'): Promise<string> {
+export async function rewriteText(
+  text: string,
+  style: RewriteStyle = 'professional',
+): Promise<string> {
   if (!isAIEnabled()) {
     throw new Error('AI features are not enabled. Please configure an AI provider.');
   }

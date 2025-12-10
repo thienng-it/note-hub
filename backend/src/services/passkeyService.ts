@@ -3,10 +3,10 @@
  * Handles passkey registration and authentication using FIDO2/WebAuthn standards.
  */
 import {
-  generateRegistrationOptions,
-  verifyRegistrationResponse,
   generateAuthenticationOptions,
+  generateRegistrationOptions,
   verifyAuthenticationResponse,
+  verifyRegistrationResponse,
 } from '@simplewebauthn/server';
 import db from '../config/database';
 import type { User } from '../types';
@@ -68,10 +68,7 @@ class PasskeyService {
   /**
    * Generate registration options for a user to register a new passkey.
    */
-  static async generateRegistrationOptions(
-    userId: number,
-    username: string,
-  ): Promise<any> {
+  static async generateRegistrationOptions(userId: number, username: string): Promise<any> {
     const { rpName, rpID } = PasskeyService.getRelyingPartyConfig();
 
     // Get user's existing credentials to exclude them
@@ -124,7 +121,8 @@ class PasskeyService {
 
     const registrationInfo = verification.registrationInfo;
     const credentialID = registrationInfo.credential?.id || registrationInfo.credentialID;
-    const credentialPublicKey = registrationInfo.credential?.publicKey || registrationInfo.credentialPublicKey;
+    const credentialPublicKey =
+      registrationInfo.credential?.publicKey || registrationInfo.credentialPublicKey;
     const counter = registrationInfo.credential?.counter || registrationInfo.counter || 0;
     const aaguid = registrationInfo.aaguid || '';
 
@@ -149,9 +147,7 @@ class PasskeyService {
   /**
    * Generate authentication options for passkey login.
    */
-  static async generateAuthenticationOptions(
-    username: string | null = null,
-  ): Promise<any> {
+  static async generateAuthenticationOptions(username: string | null = null): Promise<any> {
     const { rpID } = PasskeyService.getRelyingPartyConfig();
 
     let allowCredentials: Array<{ id: Buffer; type: 'public-key' }> = [];

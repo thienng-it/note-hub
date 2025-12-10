@@ -1,8 +1,9 @@
 /**
  * AI Routes - Text improvement features using AI
  */
-import express from 'express';
+
 import type { Request, Response } from 'express';
+import express from 'express';
 import { jwtRequired } from '../middleware/auth';
 
 const AIService = require('../services/aiService');
@@ -42,7 +43,9 @@ router.post('/proofread', jwtRequired, async (req: Request, res: Response) => {
     res.json({ result });
   } catch (error) {
     console.error('Proofread error:', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to proofread text' });
+    res
+      .status(500)
+      .json({ error: error instanceof Error ? error.message : 'Failed to proofread text' });
   }
 });
 
@@ -67,7 +70,9 @@ router.post('/summarize', jwtRequired, async (req: Request, res: Response) => {
     res.json({ result });
   } catch (error) {
     console.error('Summarize error:', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to summarize text' });
+    res
+      .status(500)
+      .json({ error: error instanceof Error ? error.message : 'Failed to summarize text' });
   }
 });
 
@@ -98,7 +103,9 @@ router.post('/rewrite', jwtRequired, async (req: Request, res: Response) => {
     res.json({ result });
   } catch (error) {
     console.error('Rewrite error:', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to rewrite text' });
+    res
+      .status(500)
+      .json({ error: error instanceof Error ? error.message : 'Failed to rewrite text' });
   }
 });
 

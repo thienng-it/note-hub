@@ -4,7 +4,7 @@
  * Adapts standardized v1 responses back to legacy format for backward compatibility.
  * This allows the same route handlers to work for both /api/ and /api/v1/ routes.
  */
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
  * Middleware to detect if request is to a v1 endpoint

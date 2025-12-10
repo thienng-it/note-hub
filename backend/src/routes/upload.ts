@@ -1,10 +1,11 @@
 /**
  * Upload Routes
  */
-import express from 'express';
-import type { Request, Response } from 'express';
-import path from 'node:path';
+
 import fs from 'node:fs';
+import path from 'node:path';
+import type { Request, Response } from 'express';
+import express from 'express';
 import { jwtRequired } from '../middleware/auth';
 import { upload } from '../middleware/upload';
 
@@ -31,35 +32,44 @@ router.post('/image', jwtRequired, upload.single('image'), async (req: Request, 
     });
   } catch (error) {
     console.error('Upload error:', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to upload image' });
+    res
+      .status(500)
+      .json({ error: error instanceof Error ? error.message : 'Failed to upload image' });
   }
 });
 
 /**
  * POST /api/upload/images - Upload multiple images
  */
-router.post('/images', jwtRequired, upload.array('images', 10), async (req: Request, res: Response) => {
-  try {
-    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-      return res.status(400).json({ error: 'No files uploaded' });
+router.post(
+  '/images',
+  jwtRequired,
+  upload.array('images', 10),
+  async (req: Request, res: Response) => {
+    try {
+      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+        return res.status(400).json({ error: 'No files uploaded' });
+      }
+
+      const files = req.files.map((file) => ({
+        path: `/uploads/${file.filename}`,
+        filename: file.filename,
+        size: file.size,
+        mimetype: file.mimetype,
+      }));
+
+      res.json({
+        success: true,
+        files,
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res
+        .status(500)
+        .json({ error: error instanceof Error ? error.message : 'Failed to upload images' });
     }
-
-    const files = req.files.map((file) => ({
-      path: `/uploads/${file.filename}`,
-      filename: file.filename,
-      size: file.size,
-      mimetype: file.mimetype,
-    }));
-
-    res.json({
-      success: true,
-      files,
-    });
-  } catch (error) {
-    console.error('Upload error:', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to upload images' });
-  }
-});
+  },
+);
 
 /**
  * DELETE /api/upload/:filename - Delete an uploaded image

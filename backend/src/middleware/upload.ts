@@ -1,9 +1,10 @@
 /**
  * File upload middleware using multer
  */
-import multer from 'multer';
-import path from 'node:path';
+
 import fs from 'node:fs';
+import path from 'node:path';
+import multer from 'multer';
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '../../uploads');

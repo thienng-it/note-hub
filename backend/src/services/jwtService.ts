@@ -1,8 +1,9 @@
 /**
  * JWT Service for token generation and validation with refresh token rotation.
  */
-import jwt from 'jsonwebtoken';
+
 import crypto from 'node:crypto';
+import jwt from 'jsonwebtoken';
 import db from '../config/database';
 
 interface TokenPayload {
@@ -82,13 +83,9 @@ class JWTService {
    * payload and verified on each request.
    */
   generateToken(userId: number): string {
-    return jwt.sign(
-      { user_id: userId, type: 'access' } as TokenPayload,
-      this.secretKey,
-      {
-        expiresIn: this.accessTokenExpiry,
-      } as jwt.SignOptions,
-    );
+    return jwt.sign({ user_id: userId, type: 'access' } as TokenPayload, this.secretKey, {
+      expiresIn: this.accessTokenExpiry,
+    } as jwt.SignOptions);
   }
 
   /**

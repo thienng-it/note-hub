@@ -3,7 +3,7 @@
  *
  * Provides common validation functions for request input.
  */
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import responseHandler from '../utils/responseHandler';
 
 /**
@@ -57,10 +57,7 @@ export function validateEmail(fieldName = 'email') {
 /**
  * Validate string length
  */
-export function validateLength(
-  fieldName: string,
-  options: { min?: number; max?: number } = {},
-) {
+export function validateLength(fieldName: string, options: { min?: number; max?: number } = {}) {
   const { min, max } = options;
 
   return (req: Request, res: Response, next: NextFunction): void | Response => {

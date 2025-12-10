@@ -4,7 +4,7 @@
  * Adds extra security headers beyond what helmet provides.
  * Includes API versioning headers and other best practices.
  */
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
  * Middleware to add additional security headers

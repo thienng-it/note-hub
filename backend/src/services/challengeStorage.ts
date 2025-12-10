@@ -3,8 +3,9 @@
  * Handles storage and retrieval of WebAuthn challenges.
  * Uses Redis when available, falls back to in-memory storage for single-instance deployments.
  */
-import cache from '../config/redis';
+
 import logger from '../config/logger';
+import cache from '../config/redis';
 
 interface ChallengeEntry {
   challenge: string;

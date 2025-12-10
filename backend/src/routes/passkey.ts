@@ -1,12 +1,13 @@
 /**
  * Passkey (WebAuthn) Authentication Routes.
  */
-import express from 'express';
+
 import type { Request, Response } from 'express';
-import { jwtRequired } from '../middleware/auth';
-import * as responseHandler from '../utils/responseHandler';
-import { storeChallenge, getAndRemoveChallenge } from '../services/challengeStorage';
+import express from 'express';
 import * as logger from '../config/logger';
+import { jwtRequired } from '../middleware/auth';
+import { getAndRemoveChallenge, storeChallenge } from '../services/challengeStorage';
+import * as responseHandler from '../utils/responseHandler';
 
 const PasskeyService = require('../services/passkeyService');
 const jwtService = require('../services/jwtService');

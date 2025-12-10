@@ -2,20 +2,22 @@
  * Type definitions for database module
  */
 
+export type QueryParam = string | number | boolean | null;
+
 export interface QueryResult {
   insertId?: number;
   affectedRows?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface Database {
-  query<T = any>(sql: string, params?: any[]): Promise<T[]>;
-  queryOne<T = any>(sql: string, params?: any[]): Promise<T | null>;
-  run(sql: string, params?: any[]): Promise<QueryResult>;
-  db: any;
+  query<T = Record<string, unknown>>(sql: string, params?: QueryParam[]): Promise<T[]>;
+  queryOne<T = Record<string, unknown>>(sql: string, params?: QueryParam[]): Promise<T | null>;
+  run(sql: string, params?: QueryParam[]): Promise<QueryResult>;
+  db: unknown;
   isSQLite: boolean;
-  connect(): Promise<any>;
-  replication: any;
+  connect(): Promise<void>;
+  replication: unknown;
 }
 
 declare const db: Database;

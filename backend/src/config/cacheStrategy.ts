@@ -238,9 +238,9 @@ export const BatchOperations = {
   /**
    * Get multiple keys at once
    */
-  mget: async (_keys: string[]): Promise<Map<string, any>> => {
+  mget: async (_keys: string[]): Promise<Map<string, unknown>> => {
     // const values = await redis.mget(_keys);
-    const result = new Map<string, any>();
+    const result = new Map<string, unknown>();
     // _keys.forEach((key, index) => {
     //   if (values[index]) result.set(key, JSON.parse(values[index]));
     // });
@@ -250,7 +250,7 @@ export const BatchOperations = {
   /**
    * Set multiple keys at once
    */
-  mset: async (_entries: Map<string, any>, _ttl?: number): Promise<void> => {
+  mset: async (_entries: Map<string, unknown>, _ttl?: number): Promise<void> => {
     // const pipeline = redis.pipeline();
     // _entries.forEach((value, key) => {
     //   pipeline.setex(key, _ttl || CacheTTL.MEDIUM, JSON.stringify(value));

@@ -1,10 +1,10 @@
 /**
  * Notes Routes.
  */
-import express, { Request, Response, Router } from 'express';
-import NoteService from '../services/noteService';
-import { jwtRequired } from '../middleware/auth';
+import express, { type Request, type Response, type Router } from 'express';
 import db from '../config/database';
+import { jwtRequired } from '../middleware/auth';
+import NoteService from '../services/noteService';
 
 const router: Router = express.Router();
 

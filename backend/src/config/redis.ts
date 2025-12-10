@@ -73,8 +73,9 @@ class RedisCache {
         console.log('✅ Redis ready');
         this.enabled = true;
       });
-    } catch (error: any) {
-      console.error('⚠️  Redis connection failed:', error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('⚠️  Redis connection failed:', errorMessage);
       console.log('⚠️  Continuing without cache - performance may be slower');
       this.enabled = false;
       this.client = null;
@@ -84,14 +85,15 @@ class RedisCache {
   /**
    * Get value from cache.
    */
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     if (!this.enabled || !this.client) return null;
 
     try {
       const value = await this.client.get(key);
       return value ? JSON.parse(value) : null;
-    } catch (error: any) {
-      console.error(`Cache get error for key ${key}:`, error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`Cache get error for key ${key}:`, errorMessage);
       return null;
     }
   }
@@ -99,14 +101,15 @@ class RedisCache {
   /**
    * Set value in cache with TTL (seconds).
    */
-  async set(key: string, value: any, ttl = 3600): Promise<boolean> {
+  async set(key: string, value: unknown, ttl = 3600): Promise<boolean> {
     if (!this.enabled || !this.client) return false;
 
     try {
       await this.client.setex(key, ttl, JSON.stringify(value));
       return true;
-    } catch (error: any) {
-      console.error(`Cache set error for key ${key}:`, error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`Cache set error for key ${key}:`, errorMessage);
       return false;
     }
   }

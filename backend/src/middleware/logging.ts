@@ -3,7 +3,7 @@
  *
  * Express middleware for logging API requests and responses.
  */
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import logger from '../config/logger';
 
 /**
@@ -15,7 +15,8 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
 
   // Skip logging for health check in production (too noisy)
   if (req.path === '/api/health' && process.env.NODE_ENV === 'production') {
-    return next();
+    next();
+    return;
   }
 
   // Log when response is finished

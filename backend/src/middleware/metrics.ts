@@ -4,8 +4,9 @@
  * Collects and exposes application metrics for Prometheus scraping.
  * Provides default Node.js metrics and custom application metrics.
  */
+
+import type { NextFunction, Request, Response } from 'express';
 import promClient from 'prom-client';
-import type { Request, Response, NextFunction } from 'express';
 import logger from '../config/logger';
 
 // Create a Registry to register metrics
@@ -92,7 +93,8 @@ const tasksTotal = new promClient.Gauge({
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
   // Skip metrics endpoint itself
   if (req.path === '/metrics' || req.path === '/api/metrics') {
-    return next();
+    next();
+    return;
   }
 
   // Track active connections

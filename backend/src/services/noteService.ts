@@ -2,8 +2,9 @@
  * Note Service for note management operations.
  * Integrated with Redis caching and Elasticsearch for enhanced performance.
  */
-import type { Note, Tag, ShareNote } from '../types';
-import { SEARCH_MIN_LENGTH, CACHE_TTL } from '../config/constants';
+
+import { CACHE_TTL, SEARCH_MIN_LENGTH } from '../config/constants';
+import type { Note, ShareNote, Tag } from '../types';
 import { validateEmail } from '../utils/common';
 
 const db = require('../config/database');

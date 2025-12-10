@@ -1,109 +1,114 @@
 /**
  * Authentication Routes.
  */
-import express, { Request, Response, Router } from 'express';
-import AuthService from '../services/authService';
-import jwtService from '../services/jwtService';
-import googleOAuthService from '../services/googleOAuthService';
-import githubOAuthService from '../services/githubOAuthService';
+
+import crypto from 'node:crypto';
+import express, { type Request, type Response, type Router } from 'express';
+import jwt from 'jsonwebtoken';
+import { authenticator } from 'otplib';
+import QRCode from 'qrcode';
+import db from '../config/database';
 import { jwtRequired } from '../middleware/auth';
-import responseHandler from '../utils/responseHandler';
 import {
-  validateRequiredFields,
   sanitizeStrings,
   validateEmail,
   validateLength,
+  validateRequiredFields,
 } from '../middleware/validation';
-import db from '../config/database';
-import { authenticator } from 'otplib';
-import QRCode from 'qrcode';
-import crypto from 'node:crypto';
-import jwt from 'jsonwebtoken';
+import AuthService from '../services/authService';
+import githubOAuthService from '../services/githubOAuthService';
+import googleOAuthService from '../services/googleOAuthService';
+import jwtService from '../services/jwtService';
+import responseHandler from '../utils/responseHandler';
 
 const router: Router = express.Router();
 
 /**
  * POST /api/auth/login - User login
  */
-router.post('/login', sanitizeStrings(['username', 'password']), async (req: Request, res: Response) => {
-  try {
-    const { username, password, totp_code } = req.body;
+router.post(
+  '/login',
+  sanitizeStrings(['username', 'password']),
+  async (req: Request, res: Response) => {
+    try {
+      const { username, password, totp_code } = req.body;
 
-    if (!username || !password) {
-      return responseHandler.validationError(res, {
-        missingFields: ['username', 'password'],
-        message: 'Username/email and password required',
-      });
-    }
-
-    const user = await AuthService.authenticateUser(username, password);
-
-    if (!user) {
-      return responseHandler.unauthorized(res, 'Invalid credentials');
-    }
-
-    // Check 2FA if enabled
-    if (user.totp_secret && !totp_code) {
-      return responseHandler.error(res, '2FA code required', {
-        statusCode: 401,
-        errorCode: 'REQUIRES_2FA',
-        details: { requires_2fa: true },
-      });
-    }
-
-    if (user.totp_secret) {
-      const isValidTotp = authenticator.verify({ token: totp_code, secret: user.totp_secret });
-      if (!isValidTotp) {
-        return responseHandler.unauthorized(res, 'Invalid 2FA code');
+      if (!username || !password) {
+        return responseHandler.validationError(res, {
+          missingFields: ['username', 'password'],
+          message: 'Username/email and password required',
+        });
       }
-    }
 
-    // Generate tokens with rotation
-    const accessToken = jwtService.generateToken(user.id);
-    const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(user.id);
+      const user = await AuthService.authenticateUser(username, password);
 
-    // Store refresh token in database
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-    const deviceInfo = req.headers['user-agent'] || null;
-    const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
+      if (!user) {
+        return responseHandler.unauthorized(res, 'Invalid credentials');
+      }
 
-    await jwtService.storeRefreshToken(
-      user.id,
-      tokenId,
-      expiresAt.toISOString(),
-      deviceInfo,
-      ipAddress,
-    );
+      // Check 2FA if enabled
+      if (user.totp_secret && !totp_code) {
+        return responseHandler.error(res, '2FA code required', {
+          statusCode: 401,
+          errorCode: 'REQUIRES_2FA',
+          details: { requires_2fa: true },
+        });
+      }
 
-    // Update last login
-    await AuthService.updateLastLogin(user.id);
+      if (user.totp_secret) {
+        const isValidTotp = authenticator.verify({ token: totp_code, secret: user.totp_secret });
+        if (!isValidTotp) {
+          return responseHandler.unauthorized(res, 'Invalid 2FA code');
+        }
+      }
 
-    return responseHandler.success(
-      res,
-      {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        token_type: 'Bearer',
-        expires_in: 86400, // 24 hours
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          preferred_language: user.preferred_language || 'en',
-          has_2fa: !!user.totp_secret,
+      // Generate tokens with rotation
+      const accessToken = jwtService.generateToken(user.id);
+      const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(user.id);
+
+      // Store refresh token in database
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      const deviceInfo = req.headers['user-agent'] || null;
+      const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
+
+      await jwtService.storeRefreshToken(
+        user.id,
+        tokenId,
+        expiresAt.toISOString(),
+        deviceInfo,
+        ipAddress,
+      );
+
+      // Update last login
+      await AuthService.updateLastLogin(user.id);
+
+      return responseHandler.success(
+        res,
+        {
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          token_type: 'Bearer',
+          expires_in: 86400, // 24 hours
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            preferred_language: user.preferred_language || 'en',
+            has_2fa: !!user.totp_secret,
+          },
         },
-      },
-      { message: 'Login successful' },
-    );
-  } catch (error) {
-    console.error('Login error:', error);
-    return responseHandler.error(res, 'Internal server error', {
-      statusCode: 500,
-      errorCode: 'LOGIN_ERROR',
-    });
-  }
-});
+        { message: 'Login successful' },
+      );
+    } catch (error) {
+      console.error('Login error:', error);
+      return responseHandler.error(res, 'Internal server error', {
+        statusCode: 500,
+        errorCode: 'LOGIN_ERROR',
+      });
+    }
+  },
+);
 
 /**
  * POST /api/auth/register - User registration
@@ -146,32 +151,36 @@ router.post(
 /**
  * POST /api/auth/refresh - Refresh access token with rotation
  */
-router.post('/refresh', validateRequiredFields(['refresh_token']), async (req: Request, res: Response) => {
-  const { refresh_token } = req.body;
-  const deviceInfo = req.headers['user-agent'] || null;
-  const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
+router.post(
+  '/refresh',
+  validateRequiredFields(['refresh_token']),
+  async (req: Request, res: Response) => {
+    const { refresh_token } = req.body;
+    const deviceInfo = req.headers['user-agent'] || null;
+    const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
 
-  const result = await jwtService.refreshAccessToken(refresh_token, deviceInfo, ipAddress);
+    const result = await jwtService.refreshAccessToken(refresh_token, deviceInfo, ipAddress);
 
-  if (!result.success) {
-    return responseHandler.unauthorized(res, result.error || 'Token refresh failed');
-  }
+    if (!result.success) {
+      return responseHandler.unauthorized(res, result.error || 'Token refresh failed');
+    }
 
-  const response: any = {
-    access_token: result.accessToken,
-    token_type: 'Bearer',
-    expires_in: 86400, // 24 hours
-  };
+    const response: any = {
+      access_token: result.accessToken,
+      token_type: 'Bearer',
+      expires_in: 86400, // 24 hours
+    };
 
-  // Include new refresh token if rotation occurred
-  if (result.rotated && result.refreshToken) {
-    response.refresh_token = result.refreshToken;
-  }
+    // Include new refresh token if rotation occurred
+    if (result.rotated && result.refreshToken) {
+      response.refresh_token = result.refreshToken;
+    }
 
-  return responseHandler.success(res, response, {
-    message: 'Token refreshed successfully',
-  });
-});
+    return responseHandler.success(res, response, {
+      message: 'Token refreshed successfully',
+    });
+  },
+);
 
 /**
  * GET /api/auth/validate - Validate JWT token and return user info
@@ -427,7 +436,9 @@ router.post('/google/callback', async (req: Request, res: Response) => {
       let username = googleUser.email.split('@')[0];
 
       // Check if username exists, add random suffix if needed
-      const existingUser = await db.queryOne<any>(`SELECT id FROM users WHERE username = ?`, [username]);
+      const existingUser = await db.queryOne<any>(`SELECT id FROM users WHERE username = ?`, [
+        username,
+      ]);
 
       if (existingUser) {
         username = `${username}_${crypto.randomBytes(4).toString('hex')}`;
@@ -602,7 +613,9 @@ router.post('/github/callback', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('GitHub OAuth callback error:', error);
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Authentication failed' });
+    res
+      .status(500)
+      .json({ error: error instanceof Error ? error.message : 'Authentication failed' });
   }
 });
 
