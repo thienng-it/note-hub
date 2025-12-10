@@ -21,7 +21,7 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
     const counts = await TaskService.getTaskCounts(req.userId);
 
     return res.json({
-      tasks: tasks.map((task: any) => ({
+      tasks: tasks.map((task: Task) => ({
         id: task.id,
         title: task.title,
         description: task.description,

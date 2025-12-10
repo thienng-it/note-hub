@@ -13,7 +13,7 @@ interface PasswordValidation {
 
 interface AuthResult {
   success: boolean;
-  user?: any;
+  user?: User;
   error?: string;
 }
 
@@ -25,7 +25,7 @@ interface User {
   is_locked: boolean;
   created_at: string;
   is_admin?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 class AuthService {

@@ -103,7 +103,7 @@ async function callOpenAI(systemPrompt: string, userContent: string): Promise<st
     );
 
     return response.data.choices[0].message.content;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('OpenAI API error:', error.response?.data || error.message);
     throw new Error(
       `Failed to process with OpenAI: ${error.response?.data?.error?.message || error.message}`,
@@ -140,7 +140,7 @@ async function callGemini(systemPrompt: string, userContent: string): Promise<st
     );
 
     return response.data.candidates[0].content.parts[0].text;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Gemini API error:', error.response?.data || error.message);
     throw new Error(
       `Failed to process with Gemini: ${error.response?.data?.error?.message || error.message}`,
@@ -174,7 +174,7 @@ async function callOllama(systemPrompt: string, userContent: string): Promise<st
     );
 
     return response.data.response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Ollama API error:', error.response?.data || error.message);
     throw new Error(`Failed to process with Ollama: ${error.message || 'Unknown error'}`);
   }
