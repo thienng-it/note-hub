@@ -146,17 +146,14 @@ async function updateNote(req: Request, res: Response) {
 
     if (!note) {
       return res.status(404).json({ error: 'Note not found' });
-      return;
     }
 
     if (!hasAccess) {
       return res.status(403).json({ error: 'Access denied' });
-      return;
     }
 
     if (!canEdit) {
       return res.status(403).json({ error: 'You do not have edit permissions for this note' });
-      return;
     }
 
     const { title, body, tags, images, pinned, favorite, archived } = req.body;

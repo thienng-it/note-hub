@@ -22,7 +22,7 @@ export function legacyResponseAdapter(_req: Request, res: Response, next: NextFu
   const originalJson = res.json.bind(res);
 
   // Override json method
-  res.json = (data: any): Response => {
+  res.json = (data: unknown): Response => {
     // If this is a v1 endpoint, use standard format
     if (res.locals.isV1) {
       return originalJson(data);
@@ -88,7 +88,7 @@ export function legacyResponseAdapter(_req: Request, res: Response, next: NextFu
           }
         }
 
-        const legacyError: any = { error: errorMessage };
+        const legacyError: Record<string, unknown> = { error: errorMessage };
 
         // Preserve special fields for auth errors
         if (data.error?.details?.requires_2fa) {

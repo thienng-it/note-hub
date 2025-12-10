@@ -17,6 +17,9 @@
       },
       "correctness": {
         "noUnusedVariables": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
       }
     }
   },
@@ -77,6 +80,9 @@
             "noSparseArray": "error",
             "noUnsafeNegation": "error",
             "noWith": "error"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
           }
         }
       }

@@ -14,7 +14,7 @@ import LokiTransport from 'winston-loki';
 type LogLevel = 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
 
 // Extended logger type with custom methods
-interface CustomLogger extends winston.Logger {
+export interface CustomLogger extends winston.Logger {
   api: (method: string, path: string, statusCode: number, duration: number) => void;
   db: (operation: string, table: string, duration?: number) => void;
   auth: (event: string, userId: number | string, details?: Record<string, unknown>) => void;

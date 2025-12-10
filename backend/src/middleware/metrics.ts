@@ -108,7 +108,7 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
 
   // Override res.end to capture metrics after response
   const originalEnd = res.end.bind(res);
-  res.end = ((...args: any[]): Response => {
+  res.end = ((...args: unknown[]): Response => {
     // Calculate duration
     const duration = (Date.now() - start) / 1000; // Convert to seconds
 
@@ -132,8 +132,8 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
     activeConnections.dec();
 
     // Call original end
-    return originalEnd(...args);
-  }) as any;
+    return originalEnd(...(args as Parameters<typeof originalEnd>));
+  }) as unknown as typeof res.end;
 
   next();
 }
@@ -224,8 +224,9 @@ export async function metricsEndpoint(_req: Request, res: Response): Promise<voi
 
     // Send metrics
     res.end(metrics);
-  } catch (error: any) {
-    logger.error('Error collecting metrics', { error: error.message });
+  } catch (error: unknown) {
+    const err = error as Error;
+    logger.error('Error collecting metrics', { error: err.message });
     res.status(500).end('Error collecting metrics');
   }
 }

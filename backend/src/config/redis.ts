@@ -123,8 +123,9 @@ class RedisCache {
     try {
       await this.client.del(key);
       return true;
-    } catch (error: any) {
-      console.error(`Cache del error for key ${key}:`, error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error(`Cache del error for key ${key}:`, err.message);
       return false;
     }
   }
@@ -170,8 +171,9 @@ class RedisCache {
       } while (cursor !== '0');
 
       return true;
-    } catch (error: any) {
-      console.error(`Cache delPattern error for pattern ${pattern}:`, error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error(`Cache delPattern error for pattern ${pattern}:`, err.message);
       return false;
     }
   }
