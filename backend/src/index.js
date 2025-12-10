@@ -143,10 +143,10 @@ async function updateMetricsJob() {
         (SELECT COUNT(*) FROM users) as users,
         (SELECT COUNT(*) FROM notes) as notes,
         (SELECT COUNT(*) FROM tasks) as tasks,
-        (SELECT COUNT(DISTINCT tag_id) FROM tags) as tags,
-        (SELECT COUNT(*) FROM notes WHERE is_favorite = 1) as favorite_notes,
-        (SELECT COUNT(*) FROM notes WHERE is_pinned = 1) as pinned_notes,
-        (SELECT COUNT(*) FROM notes WHERE is_favorite = 0 AND is_pinned = 0) as normal_notes
+        (SELECT COUNT(DISTINCT id) FROM tags) as tags,
+        (SELECT COUNT(*) FROM notes WHERE favorite = 1) as favorite_notes,
+        (SELECT COUNT(*) FROM notes WHERE pinned = 1) as pinned_notes,
+        (SELECT COUNT(*) FROM notes WHERE favorite = 0 AND pinned = 0) as normal_notes
     `);
 
     const metrics = counts?.[0] || {
