@@ -531,6 +531,7 @@ router.get('/github', (_req, res) => {
 
 /**
  * POST /api/auth/github/callback - Handle GitHub OAuth callback
+ * Note: Rate limiting is applied globally via apiLimiter middleware in index.js
  */
 router.post('/github/callback', async (req, res) => {
   try {
