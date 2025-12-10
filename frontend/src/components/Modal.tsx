@@ -82,6 +82,7 @@ interface ConfirmModalProps {
   cancelText?: string;
   variant?: 'danger' | 'warning' | 'info';
   isLoading?: boolean;
+  children?: ReactNode;
 }
 
 export function ConfirmModal({
@@ -94,6 +95,7 @@ export function ConfirmModal({
   cancelText = 'Cancel',
   variant = 'info',
   isLoading = false,
+  children,
 }: ConfirmModalProps) {
   const variantStyles = {
     danger: {
@@ -132,6 +134,9 @@ export function ConfirmModal({
 
         {/* Message */}
         <p className="text-center text-[var(--text-secondary)]">{message}</p>
+
+        {/* Optional children (e.g., additional form inputs) */}
+        {children}
 
         {/* Actions */}
         <div className="flex gap-3">

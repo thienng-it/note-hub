@@ -1,10 +1,13 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { tasksApi } from '../api/client';
 import { ImageUpload } from '../components/ImageUpload';
+import { ConfirmModal } from '../components/Modal';
 import type { Task, TaskFilterType } from '../types';
 import { type TaskTemplate, taskTemplates } from '../utils/templates';
 
 export function TasksPage() {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<TaskFilterType>('all');
   const [isLoading, setIsLoading] = useState(true);
@@ -22,6 +25,10 @@ export function TasksPage() {
 
   // Edit task
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+  // Delete confirmation modal
+  const [deleteModal, setDeleteModal] = useState<{ task: Task } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Hide/show tasks functionality
   const [hiddenTasks, setHiddenTasks] = useState<Set<number>>(() => {
@@ -117,13 +124,22 @@ export function TasksPage() {
     }
   };
 
-  const handleDeleteTask = async (task: Task) => {
-    if (!confirm(`Delete task "${task.title}"?`)) return;
+  const handleDeleteTask = (task: Task) => {
+    setDeleteModal({ task });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal) return;
+
+    setIsDeleting(true);
     try {
-      await tasksApi.delete(task.id);
-      setTasks(tasks.filter((t) => t.id !== task.id));
+      await tasksApi.delete(deleteModal.task.id);
+      setTasks(tasks.filter((t) => t.id !== deleteModal.task.id));
+      setDeleteModal(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete task');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -624,6 +640,19 @@ export function TasksPage() {
           </button>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal !== null}
+        onClose={() => setDeleteModal(null)}
+        onConfirm={handleDeleteConfirm}
+        title={t('tasks.deleteConfirmTitle')}
+        message={t('tasks.deleteConfirmMessage', { title: deleteModal?.task.title || '' })}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
