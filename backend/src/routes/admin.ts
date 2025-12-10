@@ -176,9 +176,9 @@ router.post(
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Prevent locking the main admin user (username 'admin' is protected)
-      if (user.username === 'admin') {
-        return res.status(403).json({ error: 'Cannot lock the main admin user' });
+      // Prevent locking any admin user
+      if (user.is_admin) {
+        return res.status(403).json({ error: 'Cannot lock an admin user' });
       }
 
       if (user.is_locked) {
@@ -281,9 +281,9 @@ router.delete(
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Prevent deleting the main admin user (username 'admin' is protected)
-      if (user.username === 'admin') {
-        return res.status(403).json({ error: 'Cannot delete the main admin user' });
+      // Prevent deleting any admin user
+      if (user.is_admin) {
+        return res.status(403).json({ error: 'Cannot delete an admin user' });
       }
 
       // Prevent deleting yourself
@@ -386,10 +386,7 @@ router.post(
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Prevent revoking the main admin user's privileges (username 'admin' is protected)
-      if (user.username === 'admin' && user.is_admin) {
-        return res.status(403).json({ error: 'Cannot revoke privileges from the main admin user' });
-      }
+      // Allow revoking admin privileges (system should have multiple admins)
 
       // Prevent revoking your own admin privileges
       if (userId === req.userId) {
