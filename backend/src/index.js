@@ -177,6 +177,10 @@ async function updateMetricsJob() {
       normal: metrics.normal_notes || 0,
     };
 
+    logger.info('Current metrics', metrics);
+    logger.info('Current notesByStatus', notesByStatus);
+    logger.info('Current activeSessions', activeSessions);
+
     updateApplicationMetrics({
       users: metrics.users || 0,
       notes: metrics.notes || 0,
@@ -187,9 +191,6 @@ async function updateMetricsJob() {
     });
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });
-    logger.error('Current metrics', metrics);
-    logger.error('Current notesByStatus', notesByStatus);
-    logger.error('Current activeSessions', activeSessions);
   }
 }
 
