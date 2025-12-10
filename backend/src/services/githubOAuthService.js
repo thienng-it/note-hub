@@ -145,16 +145,27 @@ class GitHubOAuthService {
     }
 
     // Check if username is taken (should be unique)
-    const existingUsername = await db.queryOne(
+    let finalUsername = username;
+    let existingUsername = await db.queryOne(
       `SELECT id FROM users WHERE username = ?`,
-      [username],
+      [finalUsername],
     );
 
-    // Generate unique username if taken
-    let finalUsername = username;
-    if (existingUsername) {
+    // Generate unique username if taken (try up to 5 times)
+    let attempts = 0;
+    while (existingUsername && attempts < 5) {
       const randomSuffix = crypto.randomBytes(4).toString('hex');
       finalUsername = `${username}_${randomSuffix}`;
+      existingUsername = await db.queryOne(
+        `SELECT id FROM users WHERE username = ?`,
+        [finalUsername],
+      );
+      attempts++;
+    }
+
+    // If still conflicting after 5 attempts, use timestamp as last resort
+    if (existingUsername) {
+      finalUsername = `${username}_${Date.now()}`;
     }
 
     // Create new user with random password (they'll use GitHub OAuth to login)
@@ -178,8 +189,13 @@ class GitHubOAuthService {
   /**
    * Complete GitHub OAuth flow.
    * @param {string} code - Authorization code
-   * @param {string} state - CSRF protection state
+   * @param {string} state - CSRF protection state (validation TODO)
    * @returns {Promise<Object>} User object
+   * 
+   * TODO: Implement proper state validation for CSRF protection in production
+   * - Store state in session or Redis with expiration
+   * - Validate state parameter matches stored value
+   * - Clear state after validation
    */
   static async authenticateUser(code) {
     if (!this.isEnabled()) {

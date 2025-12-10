@@ -146,9 +146,9 @@ router.post('/users/:userId/lock', jwtRequired, adminRequired, async (req, res) 
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Prevent locking the admin user
+    // Prevent locking the main admin user (username 'admin' is protected)
     if (user.username === 'admin') {
-      return res.status(403).json({ error: 'Cannot lock the admin user' });
+      return res.status(403).json({ error: 'Cannot lock the main admin user' });
     }
 
     if (user.is_locked) {
@@ -237,9 +237,9 @@ router.delete('/users/:userId', jwtRequired, adminRequired, async (req, res) => 
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Prevent deleting the admin user
+    // Prevent deleting the main admin user (username 'admin' is protected)
     if (user.username === 'admin') {
-      return res.status(403).json({ error: 'Cannot delete the admin user' });
+      return res.status(403).json({ error: 'Cannot delete the main admin user' });
     }
 
     // Prevent deleting yourself
@@ -326,8 +326,8 @@ router.post('/users/:userId/revoke-admin', jwtRequired, adminRequired, async (re
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Prevent revoking the main admin user's privileges
-    if (user.username === 'admin') {
+    // Prevent revoking the main admin user's privileges (username 'admin' is protected)
+    if (user.username === 'admin' && user.is_admin) {
       return res.status(403).json({ error: 'Cannot revoke privileges from the main admin user' });
     }
 
