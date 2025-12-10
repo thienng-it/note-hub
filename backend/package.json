@@ -2,16 +2,20 @@
   "name": "notehub-backend",
   "version": "1.2.0",
   "description": "NoteHub Backend - Node.js/Express API",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:js": "node src/index.js",
+    "dev": "ts-node src/index.ts",
+    "dev:watch": "nodemon --exec ts-node src/index.ts",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
-    "seed": "node scripts/seed_db.js"
+    "seed": "ts-node scripts/seed_db.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.15.0",
@@ -42,10 +46,24 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.10.2",
+    "@types/sanitize-html": "^2.16.0",
+    "@types/supertest": "^6.0.3",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9.15.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.7",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=18.0.0"
