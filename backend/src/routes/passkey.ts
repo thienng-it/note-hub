@@ -49,7 +49,7 @@ router.post('/register-options', jwtRequired, async (req: Request, res: Response
       options,
       challengeKey,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Passkey registration options error', {
       error: error.message,
       stack: error.stack,
@@ -104,7 +104,7 @@ router.post('/register-verify', jwtRequired, async (req: Request, res: Response)
     return responseHandler.success(res, {
       message: 'Passkey registered successfully',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Passkey registration verification error', {
       error: error.message,
       stack: error.stack,
@@ -141,7 +141,7 @@ router.post('/login-options', async (req: Request, res: Response) => {
       options,
       challengeKey,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Passkey authentication options error', {
       error: error.message,
       stack: error.stack,
@@ -195,7 +195,8 @@ router.post('/login-verify', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     const deviceInfo = req.headers['user-agent'] || null;
-    const ipAddress = req.ip || (req.connection as any).remoteAddress || null;
+    const ipAddress =
+      req.ip || (req.connection as unknown as { remoteAddress?: string }).remoteAddress || null;
 
     await jwtService.storeRefreshToken(
       user.id,
@@ -228,7 +229,7 @@ router.post('/login-verify', async (req: Request, res: Response) => {
       },
       { message: 'Login successful' },
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Passkey authentication verification error', {
       error: error.message,
       stack: error.stack,
@@ -247,7 +248,7 @@ router.get('/credentials', jwtRequired, async (req: Request, res: Response) => {
   try {
     const credentials = await PasskeyService.getUserCredentials(req.userId);
     return responseHandler.success(res, { credentials });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Get credentials error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to retrieve credentials', {
       statusCode: 500,
@@ -284,7 +285,7 @@ router.delete('/credentials/:id', jwtRequired, async (req: Request, res: Respons
     return responseHandler.success(res, {
       message: 'Passkey deleted successfully',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Delete credential error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to delete credential', {
       statusCode: 500,
@@ -325,7 +326,7 @@ router.patch('/credentials/:id', jwtRequired, async (req: Request, res: Response
     return responseHandler.success(res, {
       message: 'Passkey updated successfully',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Update credential error', { error: error.message, stack: error.stack });
     return responseHandler.error(res, 'Failed to update credential', {
       statusCode: 500,

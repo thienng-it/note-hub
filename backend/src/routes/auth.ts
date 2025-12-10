@@ -71,7 +71,8 @@ router.post(
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
       const deviceInfo = req.headers['user-agent'] || null;
-      const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
+      const ipAddress =
+        req.ip || (req.connection && (req.connection as unknown as { remoteAddress?: string }).remoteAddress) || null;
 
       await jwtService.storeRefreshToken(
         user.id,
@@ -167,7 +168,7 @@ router.post(
       return responseHandler.unauthorized(res, result.error || 'Token refresh failed');
     }
 
-    const response: any = {
+    const response: Record<string, unknown> = {
       access_token: result.accessToken,
       token_type: 'Bearer',
       expires_in: 86400, // 24 hours
@@ -216,10 +217,9 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
 
     if (!username) {
       return res.status(400).json({ error: 'Username required' });
-      return;
     }
 
-    const user = await db.queryOne<any>(`SELECT * FROM users WHERE username = ?`, [username]);
+    const user = await db.queryOne<User>(`SELECT * FROM users WHERE username = ?`, [username]);
 
     if (!user) {
       // Don't reveal if user exists
@@ -255,7 +255,6 @@ router.post('/reset-password', async (req: Request, res: Response) => {
 
     if (!token || !password) {
       return res.status(400).json({ error: 'Token and password required' });
-      return;
     }
 
     const result = await AuthService.resetPassword(token, password);
@@ -280,7 +279,6 @@ router.post('/change-password', jwtRequired, async (req: Request, res: Response)
 
     if (!current_password || !new_password) {
       return res.status(400).json({ error: 'Current and new password required' });
-      return;
     }
 
     const result = await AuthService.changePassword(req.userId!, current_password, new_password);
@@ -325,7 +323,6 @@ router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
 
     if (!secret || !totp_code) {
       return res.status(400).json({ error: 'Secret and TOTP code required' });
-      return;
     }
 
     const isValid = authenticator.verify({ token: totp_code, secret });
@@ -353,9 +350,8 @@ router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
 router.post('/2fa/disable', jwtRequired, async (req: Request, res: Response) => {
   try {
     const user = req.user!;
-    if (!(user as any).totp_secret) {
+    if (!(user as User).totp_secret) {
       return res.status(400).json({ error: '2FA is not enabled' });
-      return;
     }
 
     // Disable 2FA without requiring OTP code
@@ -381,7 +377,6 @@ router.get('/google', (_req: Request, res: Response) => {
   try {
     if (!googleOAuthService.isEnabled()) {
       return res.status(503).json({ error: 'Google OAuth not configured' });
-      return;
     }
 
     const authUrl = googleOAuthService.getAuthUrl();
@@ -401,7 +396,6 @@ router.post('/google/callback', async (req: Request, res: Response) => {
 
     if (!code && !id_token) {
       return res.status(400).json({ error: 'Authorization code or ID token required' });
-      return;
     }
 
     if (!googleOAuthService.isEnabled()) {
