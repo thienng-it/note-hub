@@ -47,14 +47,14 @@ export function safeJsonParse<T = any>(json: string, fallback: T): T {
 /**
  * Check if value is a valid date
  */
-export function isValidDate(date: any): boolean {
+export function isValidDate(date: unknown): boolean {
   return date instanceof Date && !Number.isNaN(date.getTime());
 }
 
 /**
  * Format date to ISO string or null
  */
-export function formatDateOrNull(date: any): string | null {
+export function formatDateOrNull(date: string): string | null {
   if (!date) return null;
   const d = new Date(date);
   return isValidDate(d) ? d.toISOString() : null;
@@ -83,7 +83,7 @@ export function deepClone<T>(obj: T): T {
 /**
  * Check if object is empty
  */
-export function isEmpty(obj: any): boolean {
+export function isEmpty(obj: string | object): boolean {
   if (obj === null || obj === undefined) return true;
   if (typeof obj === 'string' || Array.isArray(obj)) return obj.length === 0;
   if (typeof obj === 'object') return Object.keys(obj).length === 0;

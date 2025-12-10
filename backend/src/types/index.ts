@@ -134,7 +134,7 @@ export interface AuthRequest extends Request {
 // Response Types
 // ===========================
 
-export interface SuccessResponse<T = any> {
+export interface SuccessResponse<T = unknown> {
   success: true;
   message: string;
   data: T;
@@ -142,7 +142,7 @@ export interface SuccessResponse<T = any> {
     timestamp: string;
     version: string;
     requestId?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

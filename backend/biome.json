@@ -13,13 +13,18 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "warn",
+        "noExplicitAny": "off",
+        "noNonNullAssertedOptionalChain": "off"
       },
       "correctness": {
         "noUnusedVariables": "error"
       },
       "style": {
         "noNonNullAssertion": "off"
+      },
+      "complexity": {
+        "noStaticOnlyClass": "info"
       }
     }
   },

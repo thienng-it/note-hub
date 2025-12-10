@@ -16,7 +16,7 @@ declare module 'express-serve-static-core' {
   interface Response {
     locals: {
       requestId?: string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
   }
 }

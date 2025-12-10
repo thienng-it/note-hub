@@ -26,7 +26,7 @@ class TaskService {
     filterType: FilterType = 'all',
   ): Promise<TaskWithOverdue[]> {
     let sql = `SELECT * FROM tasks WHERE owner_id = ?`;
-    const params: any[] = [userId];
+    const params: unknown[] = [userId];
 
     switch (filterType) {
       case 'active':
@@ -40,13 +40,13 @@ class TaskService {
         break;
     }
 
-    sql += ` ORDER BY 
+    sql += ` ORDER BY
       CASE WHEN completed = 0 THEN 0 ELSE 1 END,
-      CASE priority 
-        WHEN 'high' THEN 0 
-        WHEN 'medium' THEN 1 
-        WHEN 'low' THEN 2 
-        ELSE 3 
+      CASE priority
+        WHEN 'high' THEN 0
+        WHEN 'medium' THEN 1
+        WHEN 'low' THEN 2
+        ELSE 3
       END,
       due_date ASC NULLS LAST,
       created_at DESC`;
@@ -135,7 +135,7 @@ class TaskService {
     images?: string[],
   ): Promise<Task | null> {
     const updates: string[] = [];
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (title !== undefined) {
       updates.push('title = ?');
