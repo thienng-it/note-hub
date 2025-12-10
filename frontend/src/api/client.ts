@@ -453,6 +453,36 @@ export const adminApi = {
       method: 'POST',
     });
   },
+
+  async lockUser(userId: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/admin/users/${userId}/lock`, {
+      method: 'POST',
+    });
+  },
+
+  async unlockUser(userId: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/admin/users/${userId}/unlock`, {
+      method: 'POST',
+    });
+  },
+
+  async deleteUser(userId: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/admin/users/${userId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async grantAdmin(userId: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/admin/users/${userId}/grant-admin`, {
+      method: 'POST',
+    });
+  },
+
+  async revokeAdmin(userId: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/admin/users/${userId}/revoke-admin`, {
+      method: 'POST',
+    });
+  },
 };
 
 // Upload API
