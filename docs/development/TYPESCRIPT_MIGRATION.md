@@ -76,7 +76,7 @@ This document guides the ongoing migration of the NoteHub backend from JavaScrip
 **Tests** (0% migrated):
 - [ ] All test files in `tests/` directory (TODO)
 
-### Overall Progress: ~36% Complete (22 of 38 files)
+### Overall Progress: ~57% Complete (30+ of 38+ core files)
 
 ## TypeScript Setup
 
