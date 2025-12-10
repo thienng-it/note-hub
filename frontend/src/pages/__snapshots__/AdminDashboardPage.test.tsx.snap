@@ -43,7 +43,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
     >
       <div
         class="glass-card p-6 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white"
@@ -53,22 +53,22 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
         >
           <div>
             <p
-              class="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]"
+              class="text-blue-100 text-sm mb-2"
             >
               Total Users
             </p>
             <p
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]"
+              class="text-3xl font-bold"
             >
               2
             </p>
           </div>
           <div
-            class="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center"
+            class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
           >
             <i
               aria-hidden="true"
-              class="glass-avatar fas fa-users text-xl sm:text-2xl"
+              class="fas fa-users text-xl"
             />
           </div>
         </div>
@@ -81,22 +81,22 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
         >
           <div>
             <p
-              class="text-green-100 text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]"
+              class="text-green-100 text-sm mb-2"
             >
               2FA Enabled
             </p>
             <p
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]"
+              class="text-3xl font-bold"
             >
               1
             </p>
           </div>
           <div
-            class="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center"
+            class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
           >
             <i
               aria-hidden="true"
-              class="glass-avatar fas fa-shield-alt text-xl sm:text-2xl"
+              class="fas fa-shield-alt text-xl"
             />
           </div>
         </div>
@@ -109,22 +109,74 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
         >
           <div>
             <p
-              class="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]"
+              class="text-purple-100 text-sm mb-2"
             >
               With Email
             </p>
             <p
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-secondary)]"
+              class="text-3xl font-bold"
             >
               2
             </p>
           </div>
           <div
-            class="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center"
+            class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
           >
             <i
               aria-hidden="true"
-              class="glass-avatar fas fa-envelope text-xl sm:text-2xl"
+              class="fas fa-envelope text-xl"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="glass-card p-6 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white"
+      >
+        <div
+          class="flex items-center justify-between"
+        >
+          <div>
+            <p
+              class="text-orange-100 text-sm mb-2"
+            >
+              Admins
+            </p>
+            <p
+              class="text-3xl font-bold"
+            />
+          </div>
+          <div
+            class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
+          >
+            <i
+              aria-hidden="true"
+              class="fas fa-crown text-xl"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="glass-card p-6 rounded-xl bg-gradient-to-br from-red-500 to-red-600 text-white"
+      >
+        <div
+          class="flex items-center justify-between"
+        >
+          <div>
+            <p
+              class="text-red-100 text-sm mb-2"
+            >
+              Locked
+            </p>
+            <p
+              class="text-3xl font-bold"
+            />
+          </div>
+          <div
+            class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
+          >
+            <i
+              aria-hidden="true"
+              class="fas fa-lock text-xl"
             />
           </div>
         </div>
@@ -195,12 +247,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
               <th
                 class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider"
               >
-                ID
-              </th>
-              <th
-                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider"
-              >
-                Username
+                User
               </th>
               <th
                 class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden sm:table-cell"
@@ -210,17 +257,12 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
               <th
                 class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell"
               >
-                Created At
+                Status
               </th>
               <th
                 class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell"
               >
-                Last Login
-              </th>
-              <th
-                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider"
-              >
-                2FA
+                Created
               </th>
               <th
                 class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider"
@@ -236,12 +278,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
               class="hover:bg-[var(--bg-tertiary)]/50 transition-colors"
             >
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-primary)]"
-              >
-                1
-              </td>
-              <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap"
+                class="px-4 sm:px-6 py-4"
               >
                 <div
                   class="flex items-center gap-3"
@@ -253,91 +290,91 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                   </div>
                   <div>
                     <div
-                      class="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2"
+                      class="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2 flex-wrap"
                     >
                       user1
+                    </div>
+                    <div
+                      class="text-xs text-[var(--text-muted)]"
+                    >
+                      ID: 
+                      1
                     </div>
                   </div>
                 </div>
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden sm:table-cell"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] hidden sm:table-cell"
               >
-                <span
-                  class="flex items-center gap-2"
-                >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-envelope text-[var(--text-muted)]"
-                  />
-                  user1@example.com
-                </span>
+                user1@example.com
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden md:table-cell"
+                class="px-4 sm:px-6 py-4 hidden md:table-cell"
               >
-                <span
-                  class="flex items-center gap-2"
+                <div
+                  class="flex flex-col gap-1"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-calendar-plus text-[var(--text-muted)]"
-                  />
-                  1/1/2024
-                </span>
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-600 dark:text-green-400 w-fit"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-check-circle mr-1"
+                    />
+                    Active
+                  </span>
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-600 dark:text-blue-400 w-fit"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-shield-alt mr-1"
+                    />
+                    2FA
+                  </span>
+                </div>
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden lg:table-cell"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] hidden lg:table-cell"
               >
-                <span
-                  class="flex items-center gap-2"
-                >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-sign-in-alt text-[var(--text-muted)]"
-                  />
-                  1/15/2024
-                </span>
+                1/1/2024
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap"
+                class="px-4 sm:px-6 py-4"
               >
-                <span
-                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-600 dark:text-green-400"
+                <div
+                  class="flex flex-wrap gap-2"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-shield-alt mr-1"
-                  />
-                  Enabled
-                </span>
-              </td>
-              <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap"
-              >
-                <button
-                  class="glass-span"
-                  title="Disable 2FA for this user"
-                  type="button"
-                >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-shield-alt mr-1.5"
-                  />
-                  Disable 2FA
-                </button>
+                  <button
+                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500/20 transition-colors"
+                    title="Lock user account"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-lock mr-1.5"
+                    />
+                    Lock
+                  </button>
+                  <button
+                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors"
+                    title="Disable 2FA for account recovery"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-shield-alt mr-1.5"
+                    />
+                    Disable 2FA
+                  </button>
+                </div>
               </td>
             </tr>
             <tr
               class="hover:bg-[var(--bg-tertiary)]/50 transition-colors"
             >
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-primary)]"
-              >
-                2
-              </td>
-              <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap"
+                class="px-4 sm:px-6 py-4"
               >
                 <div
                   class="flex items-center gap-3"
@@ -349,64 +386,87 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                   </div>
                   <div>
                     <div
-                      class="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2"
+                      class="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2 flex-wrap"
                     >
                       user2
+                    </div>
+                    <div
+                      class="text-xs text-[var(--text-muted)]"
+                    >
+                      ID: 
+                      2
                     </div>
                   </div>
                 </div>
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden sm:table-cell"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] hidden sm:table-cell"
               >
-                <span
-                  class="flex items-center gap-2"
-                >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-envelope text-[var(--text-muted)]"
-                  />
-                  user2@example.com
-                </span>
+                user2@example.com
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden md:table-cell"
+                class="px-4 sm:px-6 py-4 hidden md:table-cell"
               >
-                <span
-                  class="flex items-center gap-2"
+                <div
+                  class="flex flex-col gap-1"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-calendar-plus text-[var(--text-muted)]"
-                  />
-                  1/2/2024
-                </span>
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-600 dark:text-green-400 w-fit"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-check-circle mr-1"
+                    />
+                    Active
+                  </span>
+                </div>
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] hidden lg:table-cell"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] hidden lg:table-cell"
               >
-                <span
-                  class="text-[var(--text-muted)] italic"
-                >
-                  Never
-                </span>
+                1/2/2024
               </td>
               <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap"
+                class="px-4 sm:px-6 py-4"
               >
-                <span
-                  class="glass-span"
+                <div
+                  class="flex flex-wrap gap-2"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="glass-i fas fa-shield-alt mr-1"
-                  />
-                  Disabled
-                </span>
+                  <button
+                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500/20 transition-colors"
+                    title="Lock user account"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-lock mr-1.5"
+                    />
+                    Lock
+                  </button>
+                  <button
+                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors"
+                    title="Grant admin privileges"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-crown mr-1.5"
+                    />
+                    Grant
+                  </button>
+                  <button
+                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+                    title="Delete user account permanently"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-trash mr-1.5"
+                    />
+                    Delete
+                  </button>
+                </div>
               </td>
-              <td
-                class="px-4 sm:px-6 py-4 whitespace-nowrap"
-              />
             </tr>
           </tbody>
         </table>
