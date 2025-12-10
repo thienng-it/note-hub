@@ -316,15 +316,19 @@ router.post('/2fa/enable', jwtRequired, async (req, res) => {
     const { secret, totp_code } = req.body;
 
     if (!secret || !totp_code) {
+      record2FAOperation('enable', false);
       return res.status(400).json({ error: 'Secret and TOTP code required' });
     }
 
     const isValid = authenticator.verify({ token: totp_code, secret });
     if (!isValid) {
+      record2FAOperation('enable', false);
       return res.status(400).json({ error: 'Invalid verification code' });
     }
 
     await db.run(`UPDATE users SET totp_secret = ? WHERE id = ?`, [secret, req.userId]);
+
+    record2FAOperation('enable', true);
 
     res.json({
       message: '2FA enabled successfully',
@@ -332,6 +336,7 @@ router.post('/2fa/enable', jwtRequired, async (req, res) => {
     });
   } catch (error) {
     console.error('2FA enable error:', error);
+    record2FAOperation('enable', false);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -344,6 +349,7 @@ router.post('/2fa/enable', jwtRequired, async (req, res) => {
 router.post('/2fa/disable', jwtRequired, async (req, res) => {
   try {
     if (!req.user.totp_secret) {
+      record2FAOperation('disable', false);
       return res.status(400).json({ error: '2FA is not enabled' });
     }
 
@@ -354,12 +360,15 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
     // TODO: Consider using a proper logging framework (winston, pino) in production
     console.log(`[SECURITY] 2FA disabled by user ID: ${req.userId}`);
 
+    record2FAOperation('disable', true);
+
     res.json({
       message: '2FA disabled successfully',
       has_2fa: false,
     });
   } catch (error) {
     console.error('2FA disable error:', error);
+    record2FAOperation('disable', false);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

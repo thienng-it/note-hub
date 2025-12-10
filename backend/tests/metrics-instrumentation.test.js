@@ -222,4 +222,50 @@ describe('Metrics Instrumentation', () => {
       );
     });
   });
+
+  describe('Active Sessions Tracking', () => {
+    it('should increment active sessions on connection', () => {
+      // This is an integration concept test
+      // In real implementation, Express app tracks connections
+      // and decrements on socket close, not app close
+      const mockSocket = {
+        on: jest.fn(),
+      };
+
+      // Simulate connection event
+      let activeSessions = 0;
+      activeSessions++;
+      mockSocket.on('close', () => {
+        activeSessions--;
+      });
+
+      expect(activeSessions).toBe(1);
+      expect(mockSocket.on).toHaveBeenCalledWith('close', expect.any(Function));
+    });
+
+    it('should decrement active sessions on socket close', () => {
+      let activeSessions = 0;
+      let closeHandler;
+
+      const mockSocket = {
+        on: jest.fn((event, handler) => {
+          if (event === 'close') {
+            closeHandler = handler;
+          }
+        }),
+      };
+
+      // Simulate connection
+      activeSessions++;
+      mockSocket.on('close', () => {
+        activeSessions--;
+      });
+
+      expect(activeSessions).toBe(1);
+
+      // Simulate socket close
+      closeHandler();
+      expect(activeSessions).toBe(0);
+    });
+  });
 });

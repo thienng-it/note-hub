@@ -136,10 +136,10 @@ app.get('/api/metrics', metricsEndpoint);
 // Track activeSessions
 let activeSessions = 0;
 
-app.on('connection', (_socket) => {
+app.on('connection', (socket) => {
   activeSessions++;
 
-  app.on('close', () => {
+  socket.on('close', () => {
     activeSessions--;
   });
 });

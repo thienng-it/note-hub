@@ -5,6 +5,7 @@ const express = require('express');
 const router = express.Router();
 const { jwtRequired, adminRequired } = require('../middleware/auth');
 const db = require('../config/database');
+const { record2FAOperation } = require('../middleware/metrics');
 
 /**
  * GET /api/admin/users - List all users (admin only)
@@ -87,6 +88,7 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     const userId = parseInt(req.params.userId, 10);
 
     if (!userId || userId <= 0) {
+      record2FAOperation('disable', false);
       return res.status(400).json({ error: 'Invalid user ID' });
     }
 
@@ -96,10 +98,12 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     ]);
 
     if (!user) {
+      record2FAOperation('disable', false);
       return res.status(404).json({ error: 'User not found' });
     }
 
     if (!user.totp_secret) {
+      record2FAOperation('disable', false);
       return res.status(400).json({ error: '2FA is not enabled for this user' });
     }
 
@@ -109,6 +113,8 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     // Log admin action for audit trail
     // TODO: Consider using a proper logging framework (winston, pino) in production
     console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
+
+    record2FAOperation('disable', true);
 
     res.json({
       message: `2FA disabled successfully for user ${user.username}`,
@@ -120,6 +126,7 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     });
   } catch (error) {
     console.error('Admin disable 2FA error:', error);
+    record2FAOperation('disable', false);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
