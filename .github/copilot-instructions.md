@@ -597,16 +597,83 @@ docker compose logs -f backend    # View backend logs
 
 **Note:** Some documentation files may reference older Python/Flask implementation. Always refer to the actual Node.js/Express codebase in `backend/src/` and React/TypeScript code in `frontend/src/` for current patterns and conventions.
 
+## Documentation Guidelines
+
+### Writing Documentation
+
+1. **Location:**
+   - All documentation files MUST be placed in the `docs/` folder
+   - Never create documentation files in the root directory
+   - Organize documentation into appropriate subdirectories:
+     - `docs/api/` - API documentation
+     - `docs/guides/` - How-to guides and setup instructions
+     - `docs/architecture/` - Architecture and design documents
+     - `docs/security/` - Security guidelines
+     - `docs/testing/` - Testing documentation
+     - `docs/investigation/` - Research and analysis documents
+
+2. **Documentation Format:**
+   - Use Markdown (.md) format for all documentation
+   - Follow consistent heading structure (# for title, ## for sections)
+   - Include code examples with proper syntax highlighting
+   - Add links to related documents
+   - Keep documentation up-to-date with code changes
+
+3. **Documentation Standards:**
+   - Write clear, concise explanations
+   - Include practical examples
+   - Document breaking changes
+   - Add troubleshooting sections for complex features
+   - Update the docs/INDEX.md when adding new documentation
+
+## Versioning Guidelines
+
+### Version Bumping Strategy
+
+**IMPORTANT:** Before merging any PR to the main branch, you MUST bump the version numbers in the final commit.
+
+1. **When to Bump Versions:**
+   - **Patch (x.y.Z)** - Bug fixes, documentation updates, small improvements
+   - **Minor (x.Y.0)** - New features, non-breaking changes
+   - **Major (X.0.0)** - Breaking changes, major refactors
+
+2. **Files to Update:**
+   - `frontend/package.json` - Update version field
+   - `backend/package.json` - Update version field
+   - Both frontend and backend should have the same version number
+
+3. **Version Bump Process:**
+   ```bash
+   # Before final commit to merge with main branch:
+   
+   # Update frontend version
+   cd frontend
+   npm version patch|minor|major --no-git-tag-version
+   
+   # Update backend version
+   cd ../backend
+   npm version patch|minor|major --no-git-tag-version
+   
+   # Commit the version changes
+   git add frontend/package.json backend/package.json
+   git commit -m "chore: bump version to x.y.z"
+   ```
+
+4. **Commit Message Convention:**
+   - Version bump commits should use: `chore: bump version to x.y.z`
+   - This should be the last commit before merging to main
+
 ## Summary
 
 When working on NoteHub:
 1. Follow the layered architecture (routes → services → data)
-2. Use Biome for all formatting and linting
+2. Use Biome for all formatting and linting (NO ESLint/Prettier)
 3. Write TypeScript with explicit types on frontend
 4. Use CommonJS (require) on backend
 5. Implement proper error handling everywhere
 6. Test your changes with Jest/Vitest
 7. Follow security best practices
 8. Use i18n for all user-facing text
-9. Keep documentation up-to-date
-10. Make small, focused commits with good messages
+9. **Write documentation in docs/ folder** - Never in root directory
+10. **Bump FE/BE versions before final merge to main**
+11. Make small, focused commits with good messages

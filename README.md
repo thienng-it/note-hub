@@ -89,7 +89,7 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
   - Pre-built Grafana dashboards
   - Optimized for 2GB RAM VPS (~1GB overhead)
   - No port conflicts with NoteHub or Drone CI
-  - See [MONITORING_QUICKSTART.md](MONITORING_QUICKSTART.md) for setup
+  - See [MONITORING_QUICKSTART.md](docs/MONITORING_QUICKSTART.md) for setup
 
 ### Performance Enhancements (December 2024)
 - ⚡ **10x Faster Queries** - Redis caching reduces note list operations from 80ms to 8ms
