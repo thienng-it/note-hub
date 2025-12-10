@@ -5,6 +5,22 @@
 const Redis = require('ioredis');
 const { REDIS } = require('./constants');
 
+// Import metrics recording function - use lazy loading to avoid circular dependency
+let recordCacheOperation = null;
+function getMetrics() {
+  if (!recordCacheOperation) {
+    try {
+      const metrics = require('../middleware/metrics');
+      recordCacheOperation = metrics.recordCacheOperation;
+    } catch (_error) {
+      // Metrics not available yet, use noop
+      // biome-ignore lint/suspicious/noEmptyBlockStatements: Intentional noop for lazy loading
+      recordCacheOperation = () => {};
+    }
+  }
+  return recordCacheOperation;
+}
+
 class RedisCache {
   constructor() {
     this.client = null;
@@ -82,13 +98,22 @@ class RedisCache {
    * Get value from cache.
    */
   async get(key) {
-    if (!this.enabled || !this.client) return null;
+    if (!this.enabled || !this.client) {
+      const recordMetrics = getMetrics();
+      recordMetrics('get', 'disabled');
+      return null;
+    }
 
     try {
       const value = await this.client.get(key);
+      const result = value ? 'hit' : 'miss';
+      const recordMetrics = getMetrics();
+      recordMetrics('get', result);
       return value ? JSON.parse(value) : null;
     } catch (error) {
       console.error(`Cache get error for key ${key}:`, error.message);
+      const recordMetrics = getMetrics();
+      recordMetrics('get', 'error');
       return null;
     }
   }
@@ -97,13 +122,21 @@ class RedisCache {
    * Set value in cache with TTL (seconds).
    */
   async set(key, value, ttl = 3600) {
-    if (!this.enabled || !this.client) return false;
+    if (!this.enabled || !this.client) {
+      const recordMetrics = getMetrics();
+      recordMetrics('set', 'disabled');
+      return false;
+    }
 
     try {
       await this.client.setex(key, ttl, JSON.stringify(value));
+      const recordMetrics = getMetrics();
+      recordMetrics('set', 'success');
       return true;
     } catch (error) {
       console.error(`Cache set error for key ${key}:`, error.message);
+      const recordMetrics = getMetrics();
+      recordMetrics('set', 'error');
       return false;
     }
   }
@@ -112,13 +145,21 @@ class RedisCache {
    * Delete value from cache.
    */
   async del(key) {
-    if (!this.enabled || !this.client) return false;
+    if (!this.enabled || !this.client) {
+      const recordMetrics = getMetrics();
+      recordMetrics('del', 'disabled');
+      return false;
+    }
 
     try {
       await this.client.del(key);
+      const recordMetrics = getMetrics();
+      recordMetrics('del', 'success');
       return true;
     } catch (error) {
       console.error(`Cache del error for key ${key}:`, error.message);
+      const recordMetrics = getMetrics();
+      recordMetrics('del', 'error');
       return false;
     }
   }
