@@ -97,6 +97,7 @@ router.post(
             email: user.email,
             preferred_language: user.preferred_language || 'en',
             has_2fa: !!user.totp_secret,
+            is_admin: user.is_admin,
           },
         },
         { message: 'Login successful' },

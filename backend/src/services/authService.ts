@@ -24,6 +24,7 @@ interface User {
   password_hash: string;
   is_locked: boolean;
   created_at: string;
+  is_admin?: boolean;
   [key: string]: any;
 }
 
