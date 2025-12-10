@@ -253,6 +253,32 @@ export const authApi = {
 
     return result;
   },
+
+  // GitHub OAuth
+  async getGitHubAuthStatus(): Promise<{ enabled: boolean }> {
+    return apiRequest(`${API_VERSION}/auth/github/status`);
+  },
+
+  async getGitHubAuthUrl(): Promise<{ auth_url: string; state: string }> {
+    return apiRequest(`${API_VERSION}/auth/github`);
+  },
+
+  async githubCallback(code: string, state: string): Promise<LoginResponse> {
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/github/callback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, state }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'GitHub authentication failed');
+    }
+
+    setStoredAuth(result.access_token, result.refresh_token, result.user);
+    return result;
+  },
 };
 
 // Profile API

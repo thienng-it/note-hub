@@ -490,6 +490,116 @@ router.get('/google/status', (_req, res) => {
 });
 
 /**
+ * GitHub OAuth Routes
+ */
+const githubOAuthService = require('../services/githubOAuthService');
+
+/**
+ * GET /api/auth/github/status - Check if GitHub OAuth is configured
+ */
+router.get('/github/status', (_req, res) => {
+  res.json({
+    enabled: githubOAuthService.isEnabled(),
+  });
+});
+
+/**
+ * GET /api/auth/github - Get GitHub OAuth authorization URL
+ */
+router.get('/github', (_req, res) => {
+  try {
+    if (!githubOAuthService.isEnabled()) {
+      return res.status(503).json({ error: 'GitHub OAuth not configured' });
+    }
+
+    // Generate CSRF state token
+    const state = crypto.randomBytes(16).toString('hex');
+    
+    // In production, store state in session or database for validation
+    // For now, we'll return it to be sent back by the client
+    const authUrl = githubOAuthService.getAuthorizationUrl(state);
+    
+    res.json({ 
+      auth_url: authUrl,
+      state: state 
+    });
+  } catch (error) {
+    console.error('GitHub OAuth URL error:', error);
+    res.status(500).json({ error: 'Failed to generate OAuth URL' });
+  }
+});
+
+/**
+ * POST /api/auth/github/callback - Handle GitHub OAuth callback
+ */
+router.post('/github/callback', async (req, res) => {
+  try {
+    const { code, state } = req.body;
+
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code required' });
+    }
+
+    if (!githubOAuthService.isEnabled()) {
+      return res.status(503).json({ error: 'GitHub OAuth not configured' });
+    }
+
+    // Authenticate user with GitHub
+    const user = await githubOAuthService.authenticateUser(code);
+
+    if (!user) {
+      return res.status(400).json({ error: 'Failed to authenticate with GitHub' });
+    }
+
+    // Check if account is locked
+    if (user.is_locked) {
+      return res.status(403).json({ error: 'Account is locked. Please contact an administrator.' });
+    }
+
+    // Generate tokens (no 2FA check for OAuth users)
+    const accessToken = jwtService.generateToken(user.id);
+    const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(user.id);
+
+    // Store refresh token in database
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    const deviceInfo = req.headers['user-agent'] || null;
+    const ipAddress = req.ip || req.connection.remoteAddress || null;
+
+    await jwtService.storeRefreshToken(
+      user.id,
+      tokenId,
+      expiresAt.toISOString(),
+      deviceInfo,
+      ipAddress,
+    );
+
+    // Update last login
+    await AuthService.updateLastLogin(user.id);
+
+    console.log(`[AUTH] User logged in via GitHub OAuth: ${user.username}`);
+
+    res.json({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      token_type: 'Bearer',
+      expires_in: 86400,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        preferred_language: user.preferred_language || 'en',
+        has_2fa: !!user.totp_secret,
+        auth_method: 'github',
+      },
+    });
+  } catch (error) {
+    console.error('GitHub OAuth callback error:', error);
+    res.status(500).json({ error: error.message || 'Authentication failed' });
+  }
+});
+
+/**
  * POST /api/auth/logout - Logout and revoke refresh token
  */
 router.post('/logout', jwtRequired, async (req, res) => {
