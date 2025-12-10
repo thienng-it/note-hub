@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
+import { ConfirmModal } from '../components/Modal';
 import { useAuth } from '../context/AuthContext';
 
 export function Setup2FAPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
   const [qrCode, setQrCode] = useState('');
@@ -13,6 +16,8 @@ export function Setup2FAPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showRefreshModal, setShowRefreshModal] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchSetupData = useCallback(async () => {
     try {
@@ -78,10 +83,15 @@ export function Setup2FAPage() {
   };
 
   const refreshSecret = () => {
-    if (window.confirm('Generate a new QR code? The current one will be discarded.')) {
-      setIsLoading(true);
-      fetchSetupData();
-    }
+    setShowRefreshModal(true);
+  };
+
+  const handleRefreshConfirm = async () => {
+    setIsRefreshing(true);
+    setIsLoading(true);
+    await fetchSetupData();
+    setShowRefreshModal(false);
+    setIsRefreshing(false);
   };
 
   if (isLoading) {
@@ -256,6 +266,19 @@ export function Setup2FAPage() {
           </p>
         </div>
       </div>
+
+      {/* Refresh Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showRefreshModal}
+        onClose={() => setShowRefreshModal(false)}
+        onConfirm={handleRefreshConfirm}
+        title={t('setup2fa.generateNewQRTitle')}
+        message={t('setup2fa.generateNewQRMessage')}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        variant="warning"
+        isLoading={isRefreshing}
+      />
     </div>
   );
 }

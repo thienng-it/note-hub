@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ConfirmModal } from './Modal';
 import { passkeyService } from '../services/passkeyService';
 
 interface Credential {
@@ -9,6 +11,7 @@ interface Credential {
 }
 
 export function PasskeyManager() {
+  const { t } = useTranslation();
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -17,6 +20,8 @@ export function PasskeyManager() {
   const [passkeyAvailable, setPasskeyAvailable] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [newName, setNewName] = useState('');
+  const [deleteModal, setDeleteModal] = useState<{ id: number } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const checkPasskeyAvailability = useCallback(async () => {
     const available = await passkeyService.isAvailable();
@@ -64,24 +69,30 @@ export function PasskeyManager() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to remove this passkey?')) {
-      return;
-    }
+  const handleDelete = (id: number) => {
+    setDeleteModal({ id });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal) return;
 
     setError(null);
     setSuccess(null);
+    setIsDeleting(true);
 
     try {
-      const deleted = await passkeyService.deleteCredential(id);
+      const deleted = await passkeyService.deleteCredential(deleteModal.id);
       if (deleted) {
         setSuccess('Passkey removed successfully');
         await loadCredentials();
+        setDeleteModal(null);
       } else {
         setError('Failed to remove passkey');
       }
     } catch (_err) {
       setError('Failed to remove passkey');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -392,6 +403,19 @@ export function PasskeyManager() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal !== null}
+        onClose={() => setDeleteModal(null)}
+        onConfirm={handleDeleteConfirm}
+        title={t('passkey.removePasskeyTitle')}
+        message={t('passkey.removePasskeyMessage')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { adminApi } from '../api/client.ts';
+import { ConfirmModal } from '../components/Modal';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types';
 import { logger } from '../utils/logger';
@@ -30,6 +31,16 @@ export function AdminDashboardPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Modal states
+  type ModalType = 'disable2fa' | 'lockUser' | 'unlockUser' | 'deleteUser' | 'grantAdmin' | 'revokeAdmin' | null;
+  const [modalState, setModalState] = useState<{
+    type: ModalType;
+    userId: number;
+    username: string;
+  } | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   const loadUsers = useCallback(async () => {
     setIsLoading(true);
@@ -72,119 +83,104 @@ export function AdminDashboardPage() {
     setPage(1);
   };
 
-  const handleDisable2FA = async (userId: number, username: string) => {
-    if (
-      !confirm(
-        `Are you sure you want to disable 2FA for user "${username}"?\n\nThis action is for account recovery purposes only.`,
-      )
-    ) {
-      return;
-    }
-
-    try {
-      await adminApi.disable2fa(userId);
-      await loadUsers();
-      setError('');
-      logger.info('Admin action: 2FA disabled successfully', { userId, username });
-    } catch (err) {
-      logger.error('Admin action: Failed to disable 2FA', err, { userId, username });
-      setError(err instanceof Error ? err.message : 'Failed to disable 2FA');
-    }
+  const handleDisable2FA = (userId: number, username: string) => {
+    setModalState({ type: 'disable2fa', userId, username });
   };
 
-  const handleLockUser = async (userId: number, username: string) => {
-    if (
-      !confirm(
-        `Are you sure you want to lock user "${username}"?\n\nThey will not be able to log in until unlocked.`,
-      )
-    ) {
-      return;
-    }
-
-    try {
-      await adminApi.lockUser(userId);
-      await loadUsers();
-      setError('');
-      logger.info('Admin action: User locked successfully', { userId, username });
-    } catch (err) {
-      logger.error('Admin action: Failed to lock user', err, { userId, username });
-      setError(err instanceof Error ? err.message : 'Failed to lock user');
-    }
+  const handleLockUser = (userId: number, username: string) => {
+    setModalState({ type: 'lockUser', userId, username });
   };
 
-  const handleUnlockUser = async (userId: number, username: string) => {
-    if (!confirm(`Are you sure you want to unlock user "${username}"?`)) {
-      return;
-    }
-
-    try {
-      await adminApi.unlockUser(userId);
-      await loadUsers();
-      setError('');
-      logger.info('Admin action: User unlocked successfully', { userId, username });
-    } catch (err) {
-      logger.error('Admin action: Failed to unlock user', err, { userId, username });
-      setError(err instanceof Error ? err.message : 'Failed to unlock user');
-    }
+  const handleUnlockUser = (userId: number, username: string) => {
+    setModalState({ type: 'unlockUser', userId, username });
   };
 
-  const handleDeleteUser = async (userId: number, username: string) => {
-    if (
-      !confirm(
-        `⚠️ WARNING: Are you sure you want to DELETE user "${username}"?\n\nThis action is PERMANENT and will delete:\n• User account\n• All their notes\n• All their tasks\n• All associated data\n\nThis CANNOT be undone!`,
-      )
-    ) {
-      return;
-    }
+  const handleDeleteUser = (userId: number, username: string) => {
+    setModalState({ type: 'deleteUser', userId, username });
+    setDeleteConfirmText('');
+  };
 
-    // Double confirmation for safety
-    const confirmText = prompt(`Type "${username}" to confirm deletion:`);
-    if (confirmText !== username) {
+  const handleGrantAdmin = (userId: number, username: string) => {
+    setModalState({ type: 'grantAdmin', userId, username });
+  };
+
+  const handleRevokeAdmin = (userId: number, username: string) => {
+    setModalState({ type: 'revokeAdmin', userId, username });
+  };
+
+  const handleModalConfirm = async () => {
+    if (!modalState) return;
+
+    // For delete user, check if confirmation text matches
+    if (modalState.type === 'deleteUser' && deleteConfirmText !== modalState.username) {
       setError('Deletion cancelled: Username did not match');
       return;
     }
 
+    setIsProcessing(true);
     try {
-      await adminApi.deleteUser(userId);
+      switch (modalState.type) {
+        case 'disable2fa':
+          await adminApi.disable2fa(modalState.userId);
+          logger.info('Admin action: 2FA disabled successfully', { 
+            userId: modalState.userId, 
+            username: modalState.username 
+          });
+          break;
+        case 'lockUser':
+          await adminApi.lockUser(modalState.userId);
+          logger.info('Admin action: User locked successfully', { 
+            userId: modalState.userId, 
+            username: modalState.username 
+          });
+          break;
+        case 'unlockUser':
+          await adminApi.unlockUser(modalState.userId);
+          logger.info('Admin action: User unlocked successfully', { 
+            userId: modalState.userId, 
+            username: modalState.username 
+          });
+          break;
+        case 'deleteUser':
+          await adminApi.deleteUser(modalState.userId);
+          logger.info('Admin action: User deleted successfully', { 
+            userId: modalState.userId, 
+            username: modalState.username 
+          });
+          break;
+        case 'grantAdmin':
+          await adminApi.grantAdmin(modalState.userId);
+          logger.info('Admin action: Admin privileges granted', { 
+            userId: modalState.userId, 
+            username: modalState.username 
+          });
+          break;
+        case 'revokeAdmin':
+          await adminApi.revokeAdmin(modalState.userId);
+          logger.info('Admin action: Admin privileges revoked', { 
+            userId: modalState.userId, 
+            username: modalState.username 
+          });
+          break;
+      }
       await loadUsers();
       setError('');
-      logger.info('Admin action: User deleted successfully', { userId, username });
+      setModalState(null);
+      setDeleteConfirmText('');
     } catch (err) {
-      logger.error('Admin action: Failed to delete user', err, { userId, username });
-      setError(err instanceof Error ? err.message : 'Failed to delete user');
+      logger.error(`Admin action: Failed to ${modalState.type}`, err, { 
+        userId: modalState.userId, 
+        username: modalState.username 
+      });
+      setError(err instanceof Error ? err.message : `Failed to ${modalState.type}`);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleGrantAdmin = async (userId: number, username: string) => {
-    if (!confirm(`Are you sure you want to grant admin privileges to "${username}"?`)) {
-      return;
-    }
-
-    try {
-      await adminApi.grantAdmin(userId);
-      await loadUsers();
-      setError('');
-      logger.info('Admin action: Admin privileges granted', { userId, username });
-    } catch (err) {
-      logger.error('Admin action: Failed to grant admin privileges', err, { userId, username });
-      setError(err instanceof Error ? err.message : 'Failed to grant admin privileges');
-    }
-  };
-
-  const handleRevokeAdmin = async (userId: number, username: string) => {
-    if (!confirm(`Are you sure you want to revoke admin privileges from "${username}"?`)) {
-      return;
-    }
-
-    try {
-      await adminApi.revokeAdmin(userId);
-      await loadUsers();
-      setError('');
-      logger.info('Admin action: Admin privileges revoked', { userId, username });
-    } catch (err) {
-      logger.error('Admin action: Failed to revoke admin privileges', err, { userId, username });
-      setError(err instanceof Error ? err.message : 'Failed to revoke admin privileges');
-    }
+  const closeModal = () => {
+    setModalState(null);
+    setDeleteConfirmText('');
   };
 
   // Check if user is admin
@@ -604,6 +600,105 @@ export function AdminDashboardPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Confirmation Modals */}
+      {modalState && modalState.type === 'deleteUser' && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={closeModal}
+          onConfirm={handleModalConfirm}
+          title={t('admin.deleteUserTitle')}
+          message={t('admin.deleteUserMessage', { username: modalState.username })}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
+          variant="danger"
+          isLoading={isProcessing}
+        >
+          <div className="mt-4">
+            <label htmlFor="deleteConfirm" className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+              {t('admin.deleteUserConfirmPrompt', { username: modalState.username })}
+            </label>
+            <input
+              id="deleteConfirm"
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              className="w-full px-4 py-2 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] focus:ring-2 focus:ring-red-500"
+              placeholder={modalState.username}
+            />
+          </div>
+        </ConfirmModal>
+      )}
+
+      {modalState && modalState.type === 'disable2fa' && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={closeModal}
+          onConfirm={handleModalConfirm}
+          title={t('admin.disable2FATitle')}
+          message={t('admin.disable2FAMessage', { username: modalState.username })}
+          confirmText={t('common.confirm')}
+          cancelText={t('common.cancel')}
+          variant="warning"
+          isLoading={isProcessing}
+        />
+      )}
+
+      {modalState && modalState.type === 'lockUser' && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={closeModal}
+          onConfirm={handleModalConfirm}
+          title={t('admin.lockUserTitle')}
+          message={t('admin.lockUserMessage', { username: modalState.username })}
+          confirmText={t('common.confirm')}
+          cancelText={t('common.cancel')}
+          variant="warning"
+          isLoading={isProcessing}
+        />
+      )}
+
+      {modalState && modalState.type === 'unlockUser' && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={closeModal}
+          onConfirm={handleModalConfirm}
+          title={t('admin.unlockUserTitle')}
+          message={t('admin.unlockUserMessage', { username: modalState.username })}
+          confirmText={t('common.confirm')}
+          cancelText={t('common.cancel')}
+          variant="info"
+          isLoading={isProcessing}
+        />
+      )}
+
+      {modalState && modalState.type === 'grantAdmin' && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={closeModal}
+          onConfirm={handleModalConfirm}
+          title={t('admin.grantAdminTitle')}
+          message={t('admin.grantAdminMessage', { username: modalState.username })}
+          confirmText={t('common.confirm')}
+          cancelText={t('common.cancel')}
+          variant="warning"
+          isLoading={isProcessing}
+        />
+      )}
+
+      {modalState && modalState.type === 'revokeAdmin' && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={closeModal}
+          onConfirm={handleModalConfirm}
+          title={t('admin.revokeAdminTitle')}
+          message={t('admin.revokeAdminMessage', { username: modalState.username })}
+          confirmText={t('common.confirm')}
+          cancelText={t('common.cancel')}
+          variant="warning"
+          isLoading={isProcessing}
+        />
       )}
     </div>
   );
