@@ -224,7 +224,7 @@ export function Layout() {
               </Link>
 
               <div className="pt-4 mt-4 border-t border-[var(--border-color)] space-y-2">
-                {user.username === 'admin' && (
+                {user.is_admin && (
                   <Link to="/admin" className={linkClass(isActive('/admin'), sidebarCollapsed)}>
                     <i className="glass-i fas fa-users-cog w-5 text-center" aria-hidden="true"></i>
                     {!sidebarCollapsed && <span>{t('admin.title')}</span>}

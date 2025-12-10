@@ -89,6 +89,7 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
           email: user.email,
           preferred_language: user.preferred_language || 'en',
           has_2fa: !!user.totp_secret,
+          is_admin: user.is_admin || false,
         },
       },
       { message: 'Login successful' },
