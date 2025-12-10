@@ -248,7 +248,7 @@ All confirm dialogs now support full internationalization across 6 languages:
 
 #### Tasks
 - `tasks.deleteConfirmTitle` - "Delete Task"
-- `tasks.deleteConfirmMessage` - "Delete task \"{title}\"?"
+- `tasks.deleteConfirmMessage` - "Delete task \"{{title}}\"?"
 
 #### Setup 2FA
 - `setup2fa.generateNewQRTitle` - "Generate New QR Code"
@@ -267,7 +267,7 @@ All confirm dialogs now support full internationalization across 6 languages:
 - `admin.unlockUserMessage` - Simple confirmation
 - `admin.deleteUserTitle` - "Delete User"
 - `admin.deleteUserMessage` - Detailed warning with data loss details
-- `admin.deleteUserConfirmPrompt` - "Type \"{username}\" to confirm deletion:"
+- `admin.deleteUserConfirmPrompt` - "Type \"{{username}}\" to confirm deletion:"
 - `admin.grantAdminTitle` - "Grant Admin Privileges"
 - `admin.grantAdminMessage` - Confirmation message
 - `admin.revokeAdminTitle` - "Revoke Admin Privileges"
