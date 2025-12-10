@@ -3,6 +3,9 @@
  *
  * Provides consistent response format across all API endpoints.
  * Includes metadata for debugging, pagination, and API versioning.
+ * 
+ * Note: Uses relative imports as per project structure.
+ * If path mapping is configured in tsconfig.json, these can be updated to use aliases.
  */
 
 import type { Response } from 'express';

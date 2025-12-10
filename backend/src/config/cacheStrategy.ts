@@ -157,31 +157,43 @@ export interface CacheOptions {
 /**
  * Cache strategy: Cache-aside (Lazy Loading)
  * 
- * 1. Check cache first
- * 2. If miss, fetch from database
- * 3. Store in cache for future requests
+ * NOTE: These are template functions that demonstrate caching patterns.
+ * Actual implementation requires a Redis client instance.
+ * When implementing, replace commented sections with actual Redis calls.
+ * 
+ * Example integration:
+ * ```typescript
+ * import redis from './redis';
+ * 
+ * const cached = await redis.get(key);
+ * if (cached) return JSON.parse(cached);
+ * // ... rest of implementation
+ * ```
  */
 export const CacheStrategies = {
   /**
    * Read-through cache strategy
+   * Template function - implement with actual Redis client
    */
   readThrough: async <T>(
     key: string,
     fetchFn: () => Promise<T>,
     options: CacheOptions = {},
   ): Promise<T> => {
-    // This is a template - actual implementation would use Redis client
+    // TODO: Implement with Redis client
     // const cached = await redis.get(key);
     // if (cached) return JSON.parse(cached);
     
     const data = await fetchFn();
     
+    // TODO: Cache the result
     // await redis.setex(key, options.ttl || CacheTTL.MEDIUM, JSON.stringify(data));
     return data;
   },
   
   /**
    * Write-through cache strategy
+   * Template function - implement with actual Redis client
    */
   writeThrough: async <T>(
     key: string,
@@ -192,7 +204,7 @@ export const CacheStrategies = {
     // Save to database first
     const saved = await saveFn();
     
-    // Then update cache
+    // TODO: Update cache
     // await redis.setex(key, options.ttl || CacheTTL.MEDIUM, JSON.stringify(saved));
     
     return saved;
@@ -200,6 +212,7 @@ export const CacheStrategies = {
   
   /**
    * Write-behind (write-back) cache strategy
+   * Template function - implement with actual Redis client
    */
   writeBehind: async <T>(
     key: string,
@@ -207,7 +220,7 @@ export const CacheStrategies = {
     saveFn: () => Promise<T>,
     options: CacheOptions = {},
   ): Promise<T> => {
-    // Update cache immediately
+    // TODO: Update cache immediately
     // await redis.setex(key, options.ttl || CacheTTL.MEDIUM, JSON.stringify(data));
     
     // Queue database write (async)

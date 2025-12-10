@@ -9,9 +9,12 @@ import winston from 'winston';
 import WinstonGraylog2 from 'winston-graylog2';
 import os from 'node:os';
 
+// Log level type definition
+type LogLevel = 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
+
 // Get log configuration from environment
-const LOG_LEVEL =
-  process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'error' : 'info');
+const LOG_LEVEL = (process.env.LOG_LEVEL || 
+  (process.env.NODE_ENV === 'production' ? 'error' : 'info')) as LogLevel;
 const LOG_FORMAT =
   process.env.LOG_FORMAT || (process.env.NODE_ENV === 'production' ? 'json' : 'simple');
 

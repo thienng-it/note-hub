@@ -14,7 +14,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
-    "seed": "ts-node scripts/seed_db.ts",
+    "seed": "node scripts/seed_db.js",
     "typecheck": "tsc --noEmit",
     "generate:collections": "node scripts/generate-collections.js",
     "docs": "echo 'OpenAPI docs available at /api/docs when server is running'"

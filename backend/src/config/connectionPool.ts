@@ -121,11 +121,13 @@ export const poolHealthCheck = {
   logFailures: process.env.NODE_ENV === 'production',
 };
 
+import os from 'node:os';
+
 /**
  * Get optimal pool size based on available resources
  */
 export function getOptimalPoolSize(type: 'mysql' | 'redis' | 'generic' = 'generic'): number {
-  const cpuCount = require('node:os').cpus().length;
+  const cpuCount = os.cpus().length;
   
   switch (type) {
     case 'mysql':
