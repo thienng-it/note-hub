@@ -133,6 +133,17 @@ const packageJson = require('../package.json');
 app.get('/metrics', metricsEndpoint);
 app.get('/api/metrics', metricsEndpoint);
 
+// Track activeSessions
+let activeSessions = 0;
+
+app.on('connection', (socket) => {
+  activeSessions++;
+
+  app.on('close', () => {
+    activeSessions--;
+  });
+});
+
 // Update application metrics periodically
 const { updateApplicationMetrics } = require('./middleware/metrics');
 async function updateMetricsJob() {
@@ -172,6 +183,7 @@ async function updateMetricsJob() {
       tasks: metrics.tasks || 0,
       tags: metrics.tags || 0,
       notesByStatus: notesByStatus,
+      activeSessions: activeSessions,
     });
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });
