@@ -78,6 +78,27 @@ note-hub/
    - Support both SQLite (dev) and MySQL (prod) with read replicas
    - Implement database connection pooling
 
+4. **Database Migrations:**
+   - **All database schema changes MUST include automatic migration**
+   - Migrations should be integrated into the database initialization process
+   - Check if schema changes exist before applying to support both new and existing installations
+   - Migration code should be added to `backend/src/config/database.js` in the schema initialization
+   - Use `IF NOT EXISTS` for table creation and column checks before ALTER TABLE
+   - Example pattern:
+     ```javascript
+     // In initSQLiteSchema() or initMySQLSchema()
+     // Check if column exists before adding
+     const tableInfo = db.db.prepare('PRAGMA table_info(users)').all();
+     const hasNewColumn = tableInfo.some(col => col.name === 'new_column');
+     if (!hasNewColumn) {
+       db.db.exec('ALTER TABLE users ADD COLUMN new_column TEXT DEFAULT NULL');
+     }
+     ```
+   - **DO NOT create separate migration scripts** unless the change is complex and requires special handling
+   - For complex migrations, place in `backend/scripts/` and document in deployment guide
+   - Always test migrations on both SQLite and MySQL
+   - Ensure migrations are idempotent (safe to run multiple times)
+
 ### Frontend Architecture
 
 1. **Component Structure:**
@@ -85,6 +106,8 @@ note-hub/
    - Reusable components in `components/` directory
    - Use React hooks (useState, useEffect, useCallback, etc.)
    - Implement proper TypeScript typing for all props and state
+   - **ALWAYS add snapshot tests for new components**
+   - **ALWAYS update snapshot tests when modifying UI**
 
 2. **State Management:**
    - Use Context API for global state (AuthContext, ThemeContext)
@@ -95,6 +118,14 @@ note-hub/
    - All API calls go through `api/client.ts`
    - Automatic JWT token handling with refresh
    - Error handling with proper user feedback
+
+4. **Testing Requirements:**
+   - **ALL UI changes MUST include updated snapshot tests**
+   - **ALL tests MUST pass (green) before committing**
+   - Run `npm test -- -u` after intentional UI changes
+   - Review snapshot diffs: `git diff src/**/__snapshots__/`
+   - Commit snapshot files with component changes
+   - See Testing Guidelines section for detailed instructions
 
 ## Code Style Guidelines
 
@@ -408,11 +439,141 @@ note-hub/
    });
    ```
 
-2. **Test Coverage:**
+2. **Snapshot Tests - REQUIRED for UI Changes:**
+   **IMPORTANT**: Always update/add snapshot tests when making UI changes to ensure visual consistency and catch unintended regressions.
+
+   **When to Add/Update Snapshots:**
+   - ✅ **Always** when creating new components
+   - ✅ **Always** when modifying component structure, classes, or styling
+   - ✅ **Always** when adding/removing elements or changing layout
+   - ✅ **Always** when updating props that affect rendering
+   - ✅ **Always** before completing a PR with UI changes
+
+   **Snapshot Test Pattern:**
+   ```typescript
+   import { render } from '@testing-library/react';
+   import { describe, it, expect } from 'vitest';
+   import { Component } from './Component';
+   
+   describe('Component Snapshots', () => {
+     it('should match snapshot - default state', () => {
+       const { container } = render(<Component />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+     
+     it('should match snapshot - with props', () => {
+       const { container } = render(<Component title="Test" isActive={true} />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+     
+     it('should match snapshot - loading state', () => {
+       const { container } = render(<Component isLoading={true} />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+     
+     it('should match snapshot - error state', () => {
+       const { container } = render(<Component error="Error message" />);
+       expect(container.firstChild).toMatchSnapshot();
+     });
+   });
+   ```
+
+   **Updating Snapshots:**
+   ```bash
+   # After UI changes, update snapshots
+   cd frontend
+   npm test -- -u
+   
+   # Or update specific test file
+   npm test -- ComponentName.test.tsx -u
+   
+   # Review changes in git diff before committing
+   git diff src/**/__snapshots__/
+   ```
+
+   **Snapshot Best Practices:**
+   - Keep snapshots small and focused (test individual components, not full pages)
+   - Include snapshots for all component states (default, loading, error, empty)
+   - Review snapshot diffs carefully - ensure changes are intentional
+   - Commit snapshot files alongside component changes
+   - Never blindly update all snapshots without reviewing each change
+   - Add comments in test describing what the snapshot captures
+
+   **Example - Complete Component Test Suite:**
+   ```typescript
+   import { render, screen, fireEvent } from '@testing-library/react';
+   import { describe, it, expect, vi } from 'vitest';
+   import { Button } from './Button';
+   
+   describe('Button', () => {
+     // Behavioral tests
+     it('calls onClick when clicked', () => {
+       const onClick = vi.fn();
+       render(<Button onClick={onClick}>Click me</Button>);
+       fireEvent.click(screen.getByText('Click me'));
+       expect(onClick).toHaveBeenCalledTimes(1);
+     });
+     
+     it('is disabled when disabled prop is true', () => {
+       render(<Button disabled>Click me</Button>);
+       expect(screen.getByText('Click me')).toBeDisabled();
+     });
+     
+     // Snapshot tests for visual consistency
+     describe('Snapshots', () => {
+       it('matches snapshot - default', () => {
+         const { container } = render(<Button>Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+       
+       it('matches snapshot - primary variant', () => {
+         const { container } = render(<Button variant="primary">Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+       
+       it('matches snapshot - disabled state', () => {
+         const { container } = render(<Button disabled>Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+       
+       it('matches snapshot - loading state', () => {
+         const { container } = render(<Button isLoading>Click me</Button>);
+         expect(container.firstChild).toMatchSnapshot();
+       });
+     });
+   });
+   ```
+
+3. **Test Coverage:**
    - Aim for 80%+ coverage on critical paths
    - Test user interactions (clicks, form submissions)
    - Test error states and loading states
-   - Use snapshot tests for complex UI components
+   - **Always include snapshot tests for UI components**
+   - Ensure all tests pass (green) before committing
+
+4. **Running Tests:**
+   ```bash
+   # Run all frontend tests
+   cd frontend
+   npm test
+   
+   # Run tests in watch mode during development
+   npm test -- --watch
+   
+   # Run tests with coverage
+   npm test -- --coverage
+   
+   # Update snapshots after intentional UI changes
+   npm test -- -u
+   ```
+
+5. **Test Quality Checklist:**
+   - [ ] All new components have snapshot tests
+   - [ ] All UI changes have updated snapshots
+   - [ ] Snapshot diffs reviewed and intentional
+   - [ ] All tests passing (green checkmarks)
+   - [ ] No test warnings or errors
+   - [ ] Coverage remains above 80% for modified files
 
 ## Common Patterns
 
@@ -510,13 +671,19 @@ if (isRedisEnabled) {
    - Run linter frequently: `npm run lint`
    - Test changes locally
    - Update types/interfaces as needed
-   - update/add translation keys as we support i18n
+   - Update/add translation keys as we support i18n
+   - **Update snapshot tests when UI changes** - run `npm test -- -u` after intentional UI changes
 
 3. **Before Committing:**
    - Run full linting: `npm run lint`
-   - Run tests: `npm test`
+   - **Run tests: `npm test` - ALL TESTS MUST BE GREEN ✅**
+   - **For UI changes: Review snapshot diffs** - `git diff src/**/__snapshots__/`
+   - **Update snapshots if changes are intentional** - `npm test -- -u`
    - Fix any linting errors
+   - Fix any test failures
+   - **Verify all tests pass** - No red/failing tests allowed
    - Update documentation if needed
+   - Commit snapshot files with component changes
 
 4. **Commit Messages:**
    ```
@@ -597,16 +764,83 @@ docker compose logs -f backend    # View backend logs
 
 **Note:** Some documentation files may reference older Python/Flask implementation. Always refer to the actual Node.js/Express codebase in `backend/src/` and React/TypeScript code in `frontend/src/` for current patterns and conventions.
 
+## Documentation Guidelines
+
+### Writing Documentation
+
+1. **Location:**
+   - All documentation files MUST be placed in the `docs/` folder
+   - Never create documentation files in the root directory
+   - Organize documentation into appropriate subdirectories:
+     - `docs/api/` - API documentation
+     - `docs/guides/` - How-to guides and setup instructions
+     - `docs/architecture/` - Architecture and design documents
+     - `docs/security/` - Security guidelines
+     - `docs/testing/` - Testing documentation
+     - `docs/investigation/` - Research and analysis documents
+
+2. **Documentation Format:**
+   - Use Markdown (.md) format for all documentation
+   - Follow consistent heading structure (# for title, ## for sections)
+   - Include code examples with proper syntax highlighting
+   - Add links to related documents
+   - Keep documentation up-to-date with code changes
+
+3. **Documentation Standards:**
+   - Write clear, concise explanations
+   - Include practical examples
+   - Document breaking changes
+   - Add troubleshooting sections for complex features
+   - Update the docs/INDEX.md when adding new documentation
+
+## Versioning Guidelines
+
+### Version Bumping Strategy
+
+**IMPORTANT:** Before merging any PR to the main branch, you MUST bump the version numbers in the final commit.
+
+1. **When to Bump Versions:**
+   - **Patch (x.y.Z)** - Bug fixes, documentation updates, small improvements
+   - **Minor (x.Y.0)** - New features, non-breaking changes
+   - **Major (X.0.0)** - Breaking changes, major refactors
+
+2. **Files to Update:**
+   - `frontend/package.json` - Update version field
+   - `backend/package.json` - Update version field
+   - Both frontend and backend should have the same version number
+
+3. **Version Bump Process:**
+   ```bash
+   # Before final commit to merge with main branch:
+   
+   # Update frontend version
+   cd frontend
+   npm version patch|minor|major --no-git-tag-version
+   
+   # Update backend version
+   cd ../backend
+   npm version patch|minor|major --no-git-tag-version
+   
+   # Commit the version changes
+   git add frontend/package.json backend/package.json
+   git commit -m "chore: bump version to x.y.z"
+   ```
+
+4. **Commit Message Convention:**
+   - Version bump commits should use: `chore: bump version to x.y.z`
+   - This should be the last commit before merging to main
+
 ## Summary
 
 When working on NoteHub:
 1. Follow the layered architecture (routes → services → data)
-2. Use Biome for all formatting and linting
+2. Use Biome for all formatting and linting (NO ESLint/Prettier)
 3. Write TypeScript with explicit types on frontend
 4. Use CommonJS (require) on backend
 5. Implement proper error handling everywhere
 6. Test your changes with Jest/Vitest
 7. Follow security best practices
 8. Use i18n for all user-facing text
-9. Keep documentation up-to-date
-10. Make small, focused commits with good messages
+9. **Write documentation in docs/ folder** - Never in root directory
+10. **Bump FE/BE versions before final merge to main**
+11. Make small, focused commits with good messages

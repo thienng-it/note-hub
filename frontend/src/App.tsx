@@ -11,6 +11,7 @@ import { EditProfilePage } from './pages/EditProfilePage';
 import { EditTaskPage } from './pages/EditTaskPage';
 import { ErrorPage } from './pages/ErrorPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { GitHubCallbackPage } from './pages/GitHubCallbackPage';
 import { GoogleCallbackPage } from './pages/GoogleCallbackPage';
 import { InvitePage } from './pages/InvitePage';
 import { LoginPage } from './pages/LoginPage';
@@ -55,6 +56,7 @@ function AppRoutes() {
       />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+      <Route path="/auth/github/callback" element={<GitHubCallbackPage />} />
       <Route
         element={
           <ProtectedRoute>

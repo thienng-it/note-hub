@@ -10,6 +10,8 @@ export interface User {
   hidden_notes?: string | null;
   preferred_language?: string;
   has_2fa?: boolean;
+  is_admin?: boolean;
+  is_locked?: boolean;
 }
 
 // Auth types
@@ -122,6 +124,8 @@ export interface UsersResponse {
     total_users: number;
     users_with_2fa: number;
     users_with_email: number;
+    locked_users: number;
+    admin_users: number;
   };
   pagination: {
     page: number;

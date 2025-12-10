@@ -75,6 +75,11 @@ class AuthService {
       return null;
     }
 
+    // Check if account is locked
+    if (user.is_locked) {
+      return null; // Return null for locked accounts (same as invalid credentials)
+    }
+
     const isValid = await AuthService.verifyPassword(password, user.password_hash);
     if (!isValid) {
       return null;

@@ -14,7 +14,7 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
     const { search = '', page = 1, per_page = 20 } = req.query;
     const offset = (parseInt(page, 10) - 1) * parseInt(per_page, 10);
 
-    let sql = `SELECT id, username, email, bio, theme, totp_secret, created_at, last_login FROM users`;
+    let sql = `SELECT id, username, email, bio, theme, totp_secret, is_admin, is_locked, created_at, last_login FROM users`;
     let countSql = `SELECT COUNT(*) as count FROM users`;
     const params = [];
     const countParams = [];
@@ -41,6 +41,10 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
     const usersWithEmail = await db.queryOne(
       `SELECT COUNT(*) as count FROM users WHERE email IS NOT NULL`,
     );
+    const lockedUsers = await db.queryOne(
+      `SELECT COUNT(*) as count FROM users WHERE is_locked = 1`,
+    );
+    const adminUsers = await db.queryOne(`SELECT COUNT(*) as count FROM users WHERE is_admin = 1`);
 
     res.json({
       users: users.map((u) => ({
@@ -50,6 +54,8 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
         bio: u.bio,
         theme: u.theme,
         has_2fa: !!u.totp_secret,
+        is_admin: !!u.is_admin,
+        is_locked: !!u.is_locked,
         created_at: u.created_at,
         last_login: u.last_login,
       })),
@@ -63,6 +69,8 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
         total_users: totalUsers?.count || 0,
         users_with_2fa: usersWith2FA?.count || 0,
         users_with_email: usersWithEmail?.count || 0,
+        locked_users: lockedUsers?.count || 0,
+        admin_users: adminUsers?.count || 0,
       },
     });
   } catch (error) {
@@ -112,6 +120,247 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
     });
   } catch (error) {
     console.error('Admin disable 2FA error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/admin/users/:userId/lock - Lock a user account (admin only)
+ */
+router.post('/users/:userId/lock', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    if (!userId || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Check if user exists
+    const user = await db.queryOne(
+      `SELECT id, username, is_admin, is_locked FROM users WHERE id = ?`,
+      [userId],
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Prevent locking the main admin user (username 'admin' is protected)
+    if (user.username === 'admin') {
+      return res.status(403).json({ error: 'Cannot lock the main admin user' });
+    }
+
+    if (user.is_locked) {
+      return res.status(400).json({ error: 'User is already locked' });
+    }
+
+    // Lock user
+    await db.run(`UPDATE users SET is_locked = 1 WHERE id = ?`, [userId]);
+
+    // Log admin action for audit trail
+    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} locked user ID: ${userId}`);
+
+    res.json({
+      message: `User ${user.username} locked successfully`,
+      user: {
+        id: user.id,
+        username: user.username,
+        is_locked: true,
+      },
+    });
+  } catch (error) {
+    console.error('Admin lock user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/admin/users/:userId/unlock - Unlock a user account (admin only)
+ */
+router.post('/users/:userId/unlock', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    if (!userId || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Check if user exists
+    const user = await db.queryOne(`SELECT id, username, is_locked FROM users WHERE id = ?`, [
+      userId,
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.is_locked) {
+      return res.status(400).json({ error: 'User is not locked' });
+    }
+
+    // Unlock user
+    await db.run(`UPDATE users SET is_locked = 0 WHERE id = ?`, [userId]);
+
+    // Log admin action for audit trail
+    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} unlocked user ID: ${userId}`);
+
+    res.json({
+      message: `User ${user.username} unlocked successfully`,
+      user: {
+        id: user.id,
+        username: user.username,
+        is_locked: false,
+      },
+    });
+  } catch (error) {
+    console.error('Admin unlock user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * DELETE /api/admin/users/:userId - Delete a user account (admin only)
+ */
+router.delete('/users/:userId', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    if (!userId || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Check if user exists
+    const user = await db.queryOne(`SELECT id, username FROM users WHERE id = ?`, [userId]);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Prevent deleting the main admin user (username 'admin' is protected)
+    if (user.username === 'admin') {
+      return res.status(403).json({ error: 'Cannot delete the main admin user' });
+    }
+
+    // Prevent deleting yourself
+    if (userId === req.userId) {
+      return res.status(403).json({ error: 'Cannot delete your own account' });
+    }
+
+    // Delete user and all associated data (cascade deletes handled by foreign keys)
+    await db.run(`DELETE FROM users WHERE id = ?`, [userId]);
+
+    // Log admin action for audit trail
+    console.log(
+      `[SECURITY AUDIT] Admin ID: ${req.userId} deleted user ID: ${userId} (username: ${user.username})`,
+    );
+
+    res.json({
+      message: `User ${user.username} deleted successfully`,
+    });
+  } catch (error) {
+    console.error('Admin delete user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/admin/users/:userId/grant-admin - Grant admin privileges (admin only)
+ */
+router.post('/users/:userId/grant-admin', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    if (!userId || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Check if user exists
+    const user = await db.queryOne(`SELECT id, username, is_admin FROM users WHERE id = ?`, [
+      userId,
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.is_admin) {
+      return res.status(400).json({ error: 'User already has admin privileges' });
+    }
+
+    // Grant admin privileges
+    await db.run(`UPDATE users SET is_admin = 1 WHERE id = ?`, [userId]);
+
+    // Log admin action for audit trail
+    console.log(
+      `[SECURITY AUDIT] Admin ID: ${req.userId} granted admin privileges to user ID: ${userId}`,
+    );
+
+    res.json({
+      message: `Admin privileges granted to ${user.username}`,
+      user: {
+        id: user.id,
+        username: user.username,
+        is_admin: true,
+      },
+    });
+  } catch (error) {
+    console.error('Admin grant privileges error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/admin/users/:userId/revoke-admin - Revoke admin privileges (admin only)
+ */
+router.post('/users/:userId/revoke-admin', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    if (!userId || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    // Check if user exists
+    const user = await db.queryOne(`SELECT id, username, is_admin FROM users WHERE id = ?`, [
+      userId,
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Prevent revoking the main admin user's privileges (username 'admin' is protected)
+    if (user.username === 'admin' && user.is_admin) {
+      return res.status(403).json({ error: 'Cannot revoke privileges from the main admin user' });
+    }
+
+    // Prevent revoking your own admin privileges
+    if (userId === req.userId) {
+      return res.status(403).json({ error: 'Cannot revoke your own admin privileges' });
+    }
+
+    if (!user.is_admin) {
+      return res.status(400).json({ error: 'User does not have admin privileges' });
+    }
+
+    // Revoke admin privileges
+    await db.run(`UPDATE users SET is_admin = 0 WHERE id = ?`, [userId]);
+
+    // Log admin action for audit trail
+    console.log(
+      `[SECURITY AUDIT] Admin ID: ${req.userId} revoked admin privileges from user ID: ${userId}`,
+    );
+
+    res.json({
+      message: `Admin privileges revoked from ${user.username}`,
+      user: {
+        id: user.id,
+        username: user.username,
+        is_admin: false,
+      },
+    });
+  } catch (error) {
+    console.error('Admin revoke privileges error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

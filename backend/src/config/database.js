@@ -136,6 +136,8 @@ class Database {
         hidden_notes TEXT,
         preferred_language TEXT DEFAULT 'en',
         totp_secret TEXT,
+        is_admin INTEGER DEFAULT 0,
+        is_locked INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         last_login DATETIME
@@ -326,6 +328,30 @@ class Database {
       }
     }
 
+    // Auto-migration: Add is_admin and is_locked columns if they don't exist
+    try {
+      const userColumns = this.db.prepare('PRAGMA table_info(users)').all();
+      const hasIsAdmin = userColumns.some((col) => col.name === 'is_admin');
+      const hasIsLocked = userColumns.some((col) => col.name === 'is_locked');
+
+      if (!hasIsAdmin) {
+        console.log('  🔄 Migrating: Adding is_admin column to users table...');
+        this.db.exec('ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0');
+        // Set admin user to is_admin = 1
+        this.db.prepare('UPDATE users SET is_admin = 1 WHERE username = ?').run('admin');
+        console.log('  ✅ Migration: is_admin column added');
+      }
+
+      if (!hasIsLocked) {
+        console.log('  🔄 Migrating: Adding is_locked column to users table...');
+        this.db.exec('ALTER TABLE users ADD COLUMN is_locked INTEGER DEFAULT 0');
+        console.log('  ✅ Migration: is_locked column added');
+      }
+    } catch (error) {
+      console.warn('  ⚠️  Auto-migration warning:', error.message);
+      // Non-fatal: schema might already be up-to-date
+    }
+
     console.log('✅ SQLite schema initialized');
   }
 
@@ -345,6 +371,8 @@ class Database {
         hidden_notes TEXT,
         preferred_language VARCHAR(10) DEFAULT 'en',
         totp_secret VARCHAR(32),
+        is_admin TINYINT DEFAULT 0,
+        is_locked TINYINT DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         last_login DATETIME,
@@ -497,6 +525,38 @@ class Database {
       if (statement.trim()) {
         await this.db.execute(statement);
       }
+    }
+
+    // Auto-migration: Add is_admin and is_locked columns if they don't exist
+    try {
+      const [adminColumn] = await this.db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_admin'`,
+        [process.env.MYSQL_DATABASE || 'notehub'],
+      );
+
+      const [lockedColumn] = await this.db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_locked'`,
+        [process.env.MYSQL_DATABASE || 'notehub'],
+      );
+
+      if (adminColumn.length === 0) {
+        console.log('  🔄 Migrating: Adding is_admin column to users table...');
+        await this.db.query('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
+        // Set admin user to is_admin = 1
+        await this.db.query('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
+        console.log('  ✅ Migration: is_admin column added');
+      }
+
+      if (lockedColumn.length === 0) {
+        console.log('  🔄 Migrating: Adding is_locked column to users table...');
+        await this.db.query('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
+        console.log('  ✅ Migration: is_locked column added');
+      }
+    } catch (error) {
+      console.warn('  ⚠️  Auto-migration warning:', error.message);
+      // Non-fatal: schema might already be up-to-date
     }
 
     console.log('✅ MySQL schema initialized');
