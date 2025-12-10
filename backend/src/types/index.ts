@@ -45,12 +45,13 @@ export interface UserPublic {
 
 export interface Note {
   id: number;
-  user_id: number;
   title: string;
-  content: string;
-  is_favorite: boolean;
-  is_pinned: boolean;
-  is_hidden: boolean;
+  body: string;
+  images?: string | null;
+  pinned: number; // 0 or 1
+  archived: number; // 0 or 1
+  favorite: number; // 0 or 1
+  owner_id: number;
   created_at: string;
   updated_at: string;
 }
@@ -62,6 +63,16 @@ export interface NoteWithTags extends Note {
 export interface Tag {
   id: number;
   name: string;
+}
+
+export interface ShareNote {
+  id: number;
+  note_id: number;
+  shared_by_id: number;
+  shared_with_id: number;
+  can_edit: number; // 0 or 1
+  created_at: string;
+  updated_at: string;
 }
 
 // ===========================
