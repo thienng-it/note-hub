@@ -4,7 +4,7 @@
 import type { NextFunction, Response } from 'express';
 import db from '../config/database';
 import jwtService from '../services/jwtService';
-import type { AuthRequest } from '../types';
+import type { AuthRequest, User, UserPublic } from '../types';
 import responseHandler from '../utils/responseHandler';
 
 /**
@@ -39,9 +39,9 @@ export const jwtRequired = async (
   }
 
   // Get user from database
-  const user = await db.queryOne(
+  const user = await db.queryOne<User>(
     `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, is_admin, is_locked, created_at, last_login FROM users WHERE id = ?`,
-    [result.userId],
+    [result.userId as number],
   );
 
   if (!user) {
@@ -53,8 +53,8 @@ export const jwtRequired = async (
     return responseHandler.forbidden(res, 'Account is locked. Please contact an administrator.');
   }
 
-  // Add user to request
-  req.user = user;
+  // Add user to request (casting to UserPublic for API exposure, but keeping totp_secret internally)
+  req.user = user as UserPublic;
   req.userId = user.id;
 
   next();
@@ -83,12 +83,12 @@ export const jwtOptional = async (
   const result = jwtService.validateToken(token);
 
   if (result.valid) {
-    const user = await db.queryOne(
+    const user = await db.queryOne<User>(
       `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, is_admin, is_locked, created_at, last_login FROM users WHERE id = ?`,
-      [result.userId],
+      [result.userId as number],
     );
     if (user && !user.is_locked) {
-      req.user = user;
+      req.user = user as UserPublic;
       req.userId = user.id;
     }
   }

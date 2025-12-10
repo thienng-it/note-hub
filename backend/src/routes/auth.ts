@@ -19,6 +19,7 @@ import AuthService from '../services/authService';
 import githubOAuthService from '../services/githubOAuthService';
 import googleOAuthService from '../services/googleOAuthService';
 import jwtService from '../services/jwtService';
+import type { User } from '../types';
 import responseHandler from '../utils/responseHandler';
 
 const router: Router = express.Router();
@@ -197,7 +198,7 @@ router.get('/validate', jwtRequired, (req: Request, res: Response) => {
         bio: req.user!.bio,
         theme: req.user!.theme,
         preferred_language: req.user!.preferred_language || 'en',
-        has_2fa: !!req.user!.totp_secret,
+        has_2fa: !!(req.user as unknown as User).totp_secret,
         created_at: req.user!.created_at,
       },
     },
@@ -208,7 +209,7 @@ router.get('/validate', jwtRequired, (req: Request, res: Response) => {
 /**
  * POST /api/auth/forgot-password - Request password reset
  */
-router.post('/forgot-password', async (req: Request, res: Response) => {
+router.post('/forgot-password', async (req: Request, res: Response): Promise<void> => {
   try {
     const { username } = req.body;
 
@@ -247,7 +248,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
 /**
  * POST /api/auth/reset-password - Reset password with token
  */
-router.post('/reset-password', async (req: Request, res: Response) => {
+router.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
   try {
     const { token, password } = req.body;
 
@@ -272,7 +273,7 @@ router.post('/reset-password', async (req: Request, res: Response) => {
 /**
  * POST /api/auth/change-password - Change password (authenticated)
  */
-router.post('/change-password', jwtRequired, async (req: Request, res: Response) => {
+router.post('/change-password', jwtRequired, async (req: Request, res: Response): Promise<void> => {
   try {
     const { current_password, new_password } = req.body;
 
@@ -317,7 +318,7 @@ router.get('/2fa/setup', jwtRequired, async (req: Request, res: Response) => {
 /**
  * POST /api/auth/2fa/enable - Enable 2FA
  */
-router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
+router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response): Promise<void> => {
   try {
     const { secret, totp_code } = req.body;
 
@@ -357,7 +358,7 @@ router.post('/2fa/disable', jwtRequired, async (req: Request, res: Response) => 
     }
 
     // Disable 2FA without requiring OTP code
-    await db.run(`UPDATE users SET totp_secret = NULL WHERE id = ?`, [req.userId]);
+    await db.run(`UPDATE users SET totp_secret = NULL WHERE id = ?`, [req.userId!]);
 
     // Log security event
     console.log(`[SECURITY] 2FA disabled by user ID: ${req.userId}`);

@@ -368,7 +368,14 @@ class JWTService {
   async getUserTokens(userId: number): Promise<TokensResult> {
     try {
       const now = this.getCurrentTimestamp();
-      const tokens = await db.query(
+      const tokens = await db.query<{
+        id: number;
+        device_info: string | null;
+        ip_address: string | null;
+        created_at: string;
+        last_used_at: string;
+        expires_at: string;
+      }>(
         `SELECT id, device_info, ip_address, created_at, last_used_at, expires_at 
          FROM refresh_tokens 
          WHERE user_id = ? AND revoked = 0 AND expires_at > ?

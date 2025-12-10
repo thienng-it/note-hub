@@ -106,9 +106,9 @@ router.post(
   '/users/:userId/disable-2fa',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = parseInt(req.params.userId, 10);
+      const userId = parseInt(req.params.userId!, 10);
 
       if (!userId || userId <= 0) {
         return res.status(400).json({ error: 'Invalid user ID' });
@@ -156,9 +156,9 @@ router.post(
   '/users/:userId/lock',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = parseInt(req.params.userId, 10);
+      const userId = parseInt(req.params.userId!, 10);
 
       if (!userId || userId <= 0) {
         return res.status(400).json({ error: 'Invalid user ID' });
@@ -213,9 +213,9 @@ router.post(
   '/users/:userId/unlock',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = parseInt(req.params.userId, 10);
+      const userId = parseInt(req.params.userId!, 10);
 
       if (!userId || userId <= 0) {
         return res.status(400).json({ error: 'Invalid user ID' });
@@ -259,9 +259,9 @@ router.post(
 /**
  * DELETE /api/admin/users/:userId - Delete a user account (admin only)
  */
-router.delete('/users/:userId', jwtRequired, adminRequired, async (req: Request, res: Response) => {
+router.delete('/users/:userId', jwtRequired, adminRequired, async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = parseInt(req.params.userId, 10);
+    const userId = parseInt(req.params.userId!, 10);
 
     if (!userId || userId <= 0) {
       return res.status(400).json({ error: 'Invalid user ID' });
@@ -311,9 +311,9 @@ router.post(
   '/users/:userId/grant-admin',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = parseInt(req.params.userId, 10);
+      const userId = parseInt(req.params.userId!, 10);
 
       if (!userId || userId <= 0) {
         return res.status(400).json({ error: 'Invalid user ID' });
@@ -363,9 +363,9 @@ router.post(
   '/users/:userId/revoke-admin',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = parseInt(req.params.userId, 10);
+      const userId = parseInt(req.params.userId!, 10);
 
       if (!userId || userId <= 0) {
         return res.status(400).json({ error: 'Invalid user ID' });

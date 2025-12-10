@@ -124,7 +124,7 @@ if (process.env.GRAYLOG_ENABLED === 'true') {
       },
     };
 
-    logger.add(new WinstonGraylog2(graylogOptions));
+    logger.add(new WinstonGraylog2(graylogOptions) as unknown as winston.transport);
     logger.info('Graylog transport enabled', {
       host: graylogHost,
       port: graylogPort,

@@ -6,6 +6,7 @@ import crypto from 'node:crypto';
 import type { Request, Response } from 'express';
 import express from 'express';
 import { jwtRequired } from '../middleware/auth';
+import type { User } from '../types';
 
 const db = require('../config/database');
 const router = express.Router();
@@ -66,16 +67,16 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
 
     res.json({
       user: {
-        id: req.user.id,
-        username: req.user.username,
-        email: req.user.email,
-        bio: req.user.bio,
-        theme: req.user.theme,
-        hidden_notes: req.user.hidden_notes || null,
-        preferred_language: req.user.preferred_language || 'en',
-        has_2fa: !!req.user.totp_secret,
-        created_at: req.user.created_at,
-        last_login: req.user.last_login,
+        id: req.user!.id,
+        username: req.user!.username,
+        email: req.user!.email,
+        bio: req.user!.bio,
+        theme: req.user!.theme,
+        hidden_notes: req.user!.hidden_notes || null,
+        preferred_language: req.user!.preferred_language || 'en',
+        has_2fa: !!(req.user as unknown as User).totp_secret,
+        created_at: req.user!.created_at,
+        last_login: req.user!.last_login,
       },
       stats: {
         total_notes: totalNotes?.count || 0,
@@ -97,12 +98,12 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
 /**
  * PUT /api/profile - Update user profile
  */
-router.put('/', jwtRequired, async (req: Request, res: Response) => {
+router.put('/', jwtRequired, async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, bio, theme, hidden_notes, preferred_language } = req.body;
 
     // Check if new username already exists
-    if (username && username !== req.user.username) {
+    if (username && username !== req.user!.username) {
       const existingUser = await db.queryOne(
         `SELECT id FROM users WHERE username = ? AND id != ?`,
         [username, req.userId],
@@ -154,13 +155,13 @@ router.put('/', jwtRequired, async (req: Request, res: Response) => {
     }
 
     if (updates.length > 0) {
-      params.push(req.userId.toString());
+      params.push(req.userId!.toString());
       await db.run(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, params);
     }
 
     const updatedUser = await db.queryOne(
       `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, created_at FROM users WHERE id = ?`,
-      [req.userId],
+      [req.userId!],
     );
 
     res.json({
@@ -188,9 +189,9 @@ router.put('/', jwtRequired, async (req: Request, res: Response) => {
  */
 router.post('/toggle-theme', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const newTheme = req.user.theme === 'light' ? 'dark' : 'light';
+    const newTheme = req.user!.theme === 'light' ? 'dark' : 'light';
 
-    await db.run(`UPDATE users SET theme = ? WHERE id = ?`, [newTheme, req.userId]);
+    await db.run(`UPDATE users SET theme = ? WHERE id = ?`, [newTheme, req.userId!]);
 
     res.json({ theme: newTheme });
   } catch (error) {
@@ -257,9 +258,9 @@ router.post('/invitations', jwtRequired, async (req: Request, res: Response) => 
  * GET /api/profile/:id - Get user profile (public view)
  * Note: This endpoint is deprecated. Use /api/v1/users/:id instead
  */
-router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
+router.get('/:id', jwtRequired, async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = parseInt(req.params.id, 10);
+    const userId = parseInt(req.params.id!, 10);
 
     const user = await db.queryOne(`SELECT id, username, bio, created_at FROM users WHERE id = ?`, [
       userId,
