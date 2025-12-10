@@ -7,10 +7,42 @@ This directory contains pre-built Grafana dashboards for NoteHub monitoring.
 ### notehub-overview.json
 - **Purpose**: Main dashboard for NoteHub application monitoring
 - **Metrics**:
-  - HTTP request rate and latency
+  - HTTP request rate and latency (p95, p99)
   - Active connections
   - Application stats (users, notes, tasks)
   - Backend CPU and memory usage
+- **Best for**: Daily monitoring, quick health checks
+
+### notehub-auth-security.json
+- **Purpose**: Authentication and security monitoring
+- **Metrics**:
+  - Active user sessions
+  - Authentication attempts (success/failure) by method
+  - Failed login attempts with reasons
+  - 2FA operations (enable, disable, verify)
+  - Client errors (4xx) and server errors (5xx) by route
+  - Authentication method distribution
+- **Best for**: Security audits, investigating suspicious activity, monitoring auth system health
+
+### notehub-database.json
+- **Purpose**: Database performance and caching
+- **Metrics**:
+  - Database query rate and duration (p95, p99)
+  - Connection pool status (active, idle, total)
+  - Cache hit rate and operations
+  - Database query errors
+- **Best for**: Performance tuning, identifying slow queries, optimizing cache usage
+
+### notehub-business.json
+- **Purpose**: Business metrics and user activity
+- **Metrics**:
+  - Total users, notes, tasks, and tags
+  - Note operations rate (create, update, delete)
+  - Note operations distribution
+  - Notes by status (favorite, pinned, normal)
+  - Tag operations
+  - Search operations rate and duration
+- **Best for**: Product analytics, understanding user behavior, tracking feature adoption
 
 ## Customizing Dashboards
 
