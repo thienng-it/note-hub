@@ -187,6 +187,9 @@ async function updateMetricsJob() {
     });
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });
+    logger.error('Current metrics', metrics);
+    logger.error('Current notesByStatus', notesByStatus);
+    logger.error('Current activeSessions', activeSessions);
   }
 }
 
