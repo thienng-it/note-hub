@@ -2,7 +2,7 @@
  * Notes Routes.
  */
 import express, { Request, Response, Router } from 'express';
-import * as NoteService from '../services/noteService';
+import NoteService from '../services/noteService';
 import { jwtRequired } from '../middleware/auth';
 import db from '../config/database';
 

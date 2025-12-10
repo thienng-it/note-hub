@@ -29,11 +29,13 @@ router.post('/proofread', jwtRequired, async (req: Request, res: Response) => {
     const { text } = req.body;
 
     if (!text || typeof text !== 'string') {
-      return res.status(400).json({ error: 'Text is required' });
+      res.status(400).json({ error: 'Text is required' });
+      return;
     }
 
     if (text.length > 10000) {
-      return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
+      res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
+      return;
     }
 
     const result = await AIService.proofreadText(text);
@@ -52,11 +54,13 @@ router.post('/summarize', jwtRequired, async (req: Request, res: Response) => {
     const { text } = req.body;
 
     if (!text || typeof text !== 'string') {
-      return res.status(400).json({ error: 'Text is required' });
+      res.status(400).json({ error: 'Text is required' });
+      return;
     }
 
     if (text.length > 10000) {
-      return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
+      res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
+      return;
     }
 
     const result = await AIService.summarizeText(text);
@@ -75,7 +79,8 @@ router.post('/rewrite', jwtRequired, async (req: Request, res: Response) => {
     const { text, style = 'professional' } = req.body;
 
     if (!text || typeof text !== 'string') {
-      return res.status(400).json({ error: 'Text is required' });
+      res.status(400).json({ error: 'Text is required' });
+      return;
     }
 
     if (text.length > 10000) {

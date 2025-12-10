@@ -2,12 +2,12 @@
  * Authentication Routes.
  */
 import express, { Request, Response, Router } from 'express';
-import * as AuthService from '../services/authService';
-import * as jwtService from '../services/jwtService';
-import * as googleOAuthService from '../services/googleOAuthService';
-import * as githubOAuthService from '../services/githubOAuthService';
+import AuthService from '../services/authService';
+import jwtService from '../services/jwtService';
+import googleOAuthService from '../services/googleOAuthService';
+import githubOAuthService from '../services/githubOAuthService';
 import { jwtRequired } from '../middleware/auth';
-import * as responseHandler from '../utils/responseHandler';
+import responseHandler from '../utils/responseHandler';
 import {
   validateRequiredFields,
   sanitizeStrings,
@@ -204,7 +204,8 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
     const { username } = req.body;
 
     if (!username) {
-      return res.status(400).json({ error: 'Username required' });
+      res.status(400).json({ error: 'Username required' });
+      return;
     }
 
     const user = await db.queryOne<any>(`SELECT * FROM users WHERE username = ?`, [username]);
@@ -242,7 +243,8 @@ router.post('/reset-password', async (req: Request, res: Response) => {
     const { token, password } = req.body;
 
     if (!token || !password) {
-      return res.status(400).json({ error: 'Token and password required' });
+      res.status(400).json({ error: 'Token and password required' });
+      return;
     }
 
     const result = await AuthService.resetPassword(token, password);
@@ -266,7 +268,8 @@ router.post('/change-password', jwtRequired, async (req: Request, res: Response)
     const { current_password, new_password } = req.body;
 
     if (!current_password || !new_password) {
-      return res.status(400).json({ error: 'Current and new password required' });
+      res.status(400).json({ error: 'Current and new password required' });
+      return;
     }
 
     const result = await AuthService.changePassword(req.userId!, current_password, new_password);
@@ -310,7 +313,8 @@ router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
     const { secret, totp_code } = req.body;
 
     if (!secret || !totp_code) {
-      return res.status(400).json({ error: 'Secret and TOTP code required' });
+      res.status(400).json({ error: 'Secret and TOTP code required' });
+      return;
     }
 
     const isValid = authenticator.verify({ token: totp_code, secret });
@@ -337,8 +341,10 @@ router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
  */
 router.post('/2fa/disable', jwtRequired, async (req: Request, res: Response) => {
   try {
-    if (!req.user!.totp_secret) {
-      return res.status(400).json({ error: '2FA is not enabled' });
+    const user = req.user!;
+    if (!(user as any).totp_secret) {
+      res.status(400).json({ error: '2FA is not enabled' });
+      return;
     }
 
     // Disable 2FA without requiring OTP code
@@ -363,7 +369,8 @@ router.post('/2fa/disable', jwtRequired, async (req: Request, res: Response) => 
 router.get('/google', (_req: Request, res: Response) => {
   try {
     if (!googleOAuthService.isEnabled()) {
-      return res.status(503).json({ error: 'Google OAuth not configured' });
+      res.status(503).json({ error: 'Google OAuth not configured' });
+      return;
     }
 
     const authUrl = googleOAuthService.getAuthUrl();
@@ -382,11 +389,13 @@ router.post('/google/callback', async (req: Request, res: Response) => {
     const { code, id_token } = req.body;
 
     if (!code && !id_token) {
-      return res.status(400).json({ error: 'Authorization code or ID token required' });
+      res.status(400).json({ error: 'Authorization code or ID token required' });
+      return;
     }
 
     if (!googleOAuthService.isEnabled()) {
-      return res.status(503).json({ error: 'Google OAuth not configured' });
+      res.status(503).json({ error: 'Google OAuth not configured' });
+      return;
     }
 
     let googleUser: any;
@@ -505,7 +514,8 @@ router.get('/github/status', (_req: Request, res: Response) => {
 router.get('/github', (_req: Request, res: Response) => {
   try {
     if (!githubOAuthService.isEnabled()) {
-      return res.status(503).json({ error: 'GitHub OAuth not configured' });
+      res.status(503).json({ error: 'GitHub OAuth not configured' });
+      return;
     }
 
     // Generate CSRF state token
@@ -532,11 +542,13 @@ router.post('/github/callback', async (req: Request, res: Response) => {
     const { code } = req.body;
 
     if (!code) {
-      return res.status(400).json({ error: 'Authorization code required' });
+      res.status(400).json({ error: 'Authorization code required' });
+      return;
     }
 
     if (!githubOAuthService.isEnabled()) {
-      return res.status(503).json({ error: 'GitHub OAuth not configured' });
+      res.status(503).json({ error: 'GitHub OAuth not configured' });
+      return;
     }
 
     // Authenticate user with GitHub
