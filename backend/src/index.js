@@ -142,15 +142,36 @@ async function updateMetricsJob() {
       SELECT 
         (SELECT COUNT(*) FROM users) as users,
         (SELECT COUNT(*) FROM notes) as notes,
-        (SELECT COUNT(*) FROM tasks) as tasks
+        (SELECT COUNT(*) FROM tasks) as tasks,
+        (SELECT COUNT(DISTINCT tag_id) FROM note_tags) as tags,
+        (SELECT COUNT(*) FROM notes WHERE is_favorite = 1) as favorite_notes,
+        (SELECT COUNT(*) FROM notes WHERE is_pinned = 1) as pinned_notes,
+        (SELECT COUNT(*) FROM notes WHERE is_favorite = 0 AND is_pinned = 0) as normal_notes
     `);
 
-    const metrics = counts?.[0] || { users: 0, notes: 0, tasks: 0 };
+    const metrics = counts?.[0] || {
+      users: 0,
+      notes: 0,
+      tasks: 0,
+      tags: 0,
+      favorite_notes: 0,
+      pinned_notes: 0,
+      normal_notes: 0,
+    };
+
+    // Notes by status (non-overlapping categories)
+    const notesByStatus = {
+      favorite: metrics.favorite_notes || 0,
+      pinned: metrics.pinned_notes || 0,
+      normal: metrics.normal_notes || 0,
+    };
 
     updateApplicationMetrics({
       users: metrics.users || 0,
       notes: metrics.notes || 0,
       tasks: metrics.tasks || 0,
+      tags: metrics.tags || 0,
+      notesByStatus: notesByStatus,
     });
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });

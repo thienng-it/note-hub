@@ -1,0 +1,345 @@
+# =============================================================================
+# NoteHub Alerting Rules for Prometheus
+# =============================================================================
+#
+# This file contains alerting rules for monitoring NoteHub application health,
+# performance, and security. Alerts are organized by severity level:
+#
+# - critical: Immediate attention required, service down or data loss risk
+# - high: Service degraded, user impact present
+# - warning: Potential issues developing, no immediate user impact
+# - info: Informational alerts, anomalies detected
+#
+# To enable these alerts:
+# 1. Uncomment the rule_files section in prometheus.yml
+# 2. Add: rule_files: ["alerts/*.yml"]
+# 3. Configure Alertmanager (optional) for notifications
+# 4. Restart Prometheus container
+#
+# =============================================================================
+
+groups:
+  # ===========================================================================
+  # Application Health Alerts
+  # ===========================================================================
+  - name: notehub-health
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(notehub_api_errors_total[5m]))
+            /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.10
+        for: 5m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "High API error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+          runbook: "Check logs for error patterns, investigate recent deployments"
+
+      - alert: VeryHighErrorRate
+        expr: |
+          (
+            sum(rate(notehub_api_errors_total[5m]))
+            /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.25
+        for: 2m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "CRITICAL: Very high API error rate"
+          description: "Error rate is {{ $value | humanizePercentage }} - service severely degraded"
+          runbook: "Immediate investigation required, consider rollback"
+
+      - alert: NoTraffic
+        expr: |
+          rate(http_requests_total{job="notehub-backend"}[5m]) == 0
+        for: 10m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "No incoming traffic to backend"
+          description: "Backend has received no requests for 10 minutes"
+          runbook: "Check if backend is running, check network connectivity"
+
+  # ===========================================================================
+  # Performance Alerts
+  # ===========================================================================
+  - name: notehub-performance
+    interval: 30s
+    rules:
+      - alert: HighResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket{job="notehub-backend"}[5m])
+          ) > 2
+        for: 10m
+        labels:
+          severity: high
+          component: backend
+        annotations:
+          summary: "High API response time"
+          description: "p95 latency is {{ $value | humanizeDuration }} over 10 minutes"
+          runbook: "Check slow queries, review recent changes, check resource utilization"
+
+      - alert: VeryHighResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket{job="notehub-backend"}[5m])
+          ) > 5
+        for: 5m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "CRITICAL: Very high API response time"
+          description: "p95 latency is {{ $value | humanizeDuration }}"
+          runbook: "Immediate investigation, check for blocking operations, database issues"
+
+      - alert: SlowDatabaseQueries
+        expr: |
+          histogram_quantile(0.95,
+            rate(db_query_duration_seconds_bucket[5m])
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "p95 database query time is {{ $value | humanizeDuration }}"
+          runbook: "Review slow query log, check for missing indexes"
+
+  # ===========================================================================
+  # Resource Utilization Alerts
+  # ===========================================================================
+  - name: notehub-resources
+    interval: 30s
+    rules:
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            process_resident_memory_bytes{job="notehub-backend"}
+            /
+            (1024 * 1024 * 1024)
+          ) > 0.9
+        for: 5m
+        labels:
+          severity: high
+          component: backend
+        annotations:
+          summary: "High memory usage"
+          description: "Backend using {{ $value | humanize }}GB of memory"
+          runbook: "Check for memory leaks, review recent changes, consider scaling"
+
+      - alert: HighCPUUsage
+        expr: |
+          rate(process_cpu_seconds_total{job="notehub-backend"}[5m]) * 100 > 85
+        for: 15m
+        labels:
+          severity: high
+          component: backend
+        annotations:
+          summary: "High CPU usage"
+          description: "Backend CPU usage is {{ $value | humanize }}%"
+          runbook: "Check for CPU-intensive operations, review recent changes"
+
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          (
+            db_connection_pool_size{status="active"}
+            /
+            db_connection_pool_size{status="total"}
+          ) > 0.9
+        for: 5m
+        labels:
+          severity: high
+          component: database
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "{{ $value | humanizePercentage }} of connections in use"
+          runbook: "Check for connection leaks, review long-running queries, increase pool size"
+
+  # ===========================================================================
+  # Security Alerts
+  # ===========================================================================
+  - name: notehub-security
+    interval: 30s
+    rules:
+      - alert: BruteForceAttack
+        expr: |
+          rate(notehub_auth_attempts_total{status="failure"}[1m]) > 10
+        for: 2m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Potential brute force attack detected"
+          description: "{{ $value | humanize }} failed login attempts per second"
+          runbook: "Review failed login logs, check source IPs, consider rate limiting"
+
+      - alert: HighUnauthorizedAccess
+        expr: |
+          rate(http_requests_total{status_code="401"}[5m]) > 5
+        for: 5m
+        labels:
+          severity: high
+          component: security
+        annotations:
+          summary: "High rate of unauthorized access attempts"
+          description: "{{ $value | humanize }} 401 responses per second"
+          runbook: "Review authentication logs, check for token expiration issues"
+
+      - alert: UnusualFailedLoginPattern
+        expr: |
+          (
+            rate(notehub_auth_attempts_total{status="failure"}[5m])
+            /
+            rate(notehub_auth_attempts_total[5m])
+          ) > 0.5
+        for: 10m
+        labels:
+          severity: high
+          component: security
+        annotations:
+          summary: "Unusual pattern of failed login attempts"
+          description: "{{ $value | humanizePercentage }} of logins are failing"
+          runbook: "Investigate for credential stuffing, check authentication service health"
+
+      - alert: Failed2FAAttempts
+        expr: |
+          rate(notehub_2fa_operations_total{operation="verify",status="failure"}[5m]) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High rate of failed 2FA verification attempts"
+          description: "{{ $value | humanize }} failed 2FA verifications per second"
+          runbook: "Check if users are having issues with 2FA, verify time sync"
+
+  # ===========================================================================
+  # Database Health Alerts
+  # ===========================================================================
+  - name: notehub-database
+    interval: 30s
+    rules:
+      - alert: DatabaseQueryErrors
+        expr: |
+          rate(db_queries_total{status="error"}[5m]) > 1
+        for: 5m
+        labels:
+          severity: high
+          component: database
+        annotations:
+          summary: "Database query errors detected"
+          description: "{{ $value | humanize }} query errors per second"
+          runbook: "Check database logs, verify database connectivity, check for schema issues"
+
+      - alert: LowCacheHitRate
+        expr: |
+          (
+            rate(cache_operations_total{result="hit"}[10m])
+            /
+            (
+              rate(cache_operations_total{result="hit"}[10m])
+              +
+              rate(cache_operations_total{result="miss"}[10m])
+            )
+          ) < 0.7
+        for: 15m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}"
+          runbook: "Review cache configuration, check cache size, investigate cache invalidation patterns"
+
+  # ===========================================================================
+  # Business Metrics Alerts
+  # ===========================================================================
+  - name: notehub-business
+    interval: 60s
+    rules:
+      - alert: UnusualNoteCreationRate
+        expr: |
+          rate(notehub_note_operations_total{operation="create"}[5m]) > 10
+        for: 10m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "Unusual note creation rate"
+          description: "{{ $value | humanize }} notes created per second"
+          runbook: "This might be normal usage or automated testing, investigate if unexpected"
+
+      - alert: NoNoteActivity
+        expr: |
+          rate(notehub_note_operations_total[30m]) == 0
+        for: 2h
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "No note activity for 2 hours"
+          description: "No note operations detected in the last 2 hours"
+          runbook: "This might be normal for low-traffic periods, verify application is accessible"
+
+  # ===========================================================================
+  # Service Availability Alerts
+  # ===========================================================================
+  - name: notehub-availability
+    interval: 30s
+    rules:
+      - alert: BackendDown
+        expr: |
+          up{job="notehub-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "Backend service is down"
+          description: "NoteHub backend is not responding to Prometheus scrapes"
+          runbook: "Check if container is running, review logs, verify application startup"
+
+      - alert: HighServerErrorRate
+        expr: |
+          rate(notehub_api_errors_total{error_type="server_error"}[5m]) > 1
+        for: 5m
+        labels:
+          severity: high
+          component: backend
+        annotations:
+          summary: "High rate of server errors (5xx)"
+          description: "{{ $value | humanize }} server errors per second"
+          runbook: "Review error logs, check for exceptions, verify external dependencies"
+
+# =============================================================================
+# Alert Configuration Notes
+# =============================================================================
+#
+# Threshold Tuning:
+# - Adjust thresholds based on your baseline metrics
+# - Use lower thresholds for critical alerts
+# - Use higher thresholds and longer durations for warnings
+#
+# Testing Alerts:
+# - Temporarily lower thresholds to test alert firing
+# - Verify Alertmanager receives alerts
+# - Test notification channels
+#
+# Alert Fatigue Prevention:
+# - Set appropriate 'for' durations to avoid transient spikes
+# - Group related alerts
+# - Review and tune alerts based on actual incidents
+#
+# =============================================================================

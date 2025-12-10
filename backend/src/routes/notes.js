@@ -6,6 +6,7 @@ const router = express.Router();
 const NoteService = require('../services/noteService');
 const { jwtRequired } = require('../middleware/auth');
 const db = require('../config/database');
+const { recordNoteOperation, recordTagOperation } = require('../middleware/metrics');
 
 /**
  * GET /api/notes - List all notes for user
@@ -107,6 +108,12 @@ router.post('/', jwtRequired, async (req, res) => {
       images,
     );
 
+    // Record metrics
+    recordNoteOperation('create', true);
+    if (tags && tags.length > 0) {
+      recordTagOperation('assign');
+    }
+
     res.status(201).json({
       note: {
         id: note.id,
@@ -122,6 +129,7 @@ router.post('/', jwtRequired, async (req, res) => {
     });
   } catch (error) {
     console.error('Create note error:', error);
+    recordNoteOperation('create', false);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -162,6 +170,9 @@ async function updateNote(req, res) {
       images,
     );
 
+    // Record metrics
+    recordNoteOperation('update', true);
+
     res.json({
       note: {
         id: updatedNote.id,
@@ -179,6 +190,7 @@ async function updateNote(req, res) {
     });
   } catch (error) {
     console.error('Update note error:', error);
+    recordNoteOperation('update', false);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -201,9 +213,13 @@ router.delete('/:id', jwtRequired, async (req, res) => {
 
     await NoteService.deleteNote(noteId, req.userId);
 
+    // Record metrics
+    recordNoteOperation('delete', true);
+
     res.json({ message: 'Note deleted successfully' });
   } catch (error) {
     console.error('Delete note error:', error);
+    recordNoteOperation('delete', false);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

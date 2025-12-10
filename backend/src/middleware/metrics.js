@@ -85,6 +85,105 @@ const tasksTotal = new promClient.Gauge({
   registers: [register],
 });
 
+// Authentication metrics
+const authAttempts = new promClient.Counter({
+  name: 'notehub_auth_attempts_total',
+  help: 'Total number of authentication attempts',
+  labelNames: ['method', 'status', 'reason'],
+  registers: [register],
+});
+
+const authActiveSessions = new promClient.Gauge({
+  name: 'notehub_auth_active_sessions',
+  help: 'Number of active user sessions',
+  registers: [register],
+});
+
+const twoFactorUsage = new promClient.Counter({
+  name: 'notehub_2fa_operations_total',
+  help: 'Total 2FA operations (enable, disable, verify)',
+  labelNames: ['operation', 'status'],
+  registers: [register],
+});
+
+// Business metrics - Notes operations
+const noteOperations = new promClient.Counter({
+  name: 'notehub_note_operations_total',
+  help: 'Total note operations',
+  labelNames: ['operation', 'status'],
+  registers: [register],
+});
+
+const notesByStatus = new promClient.Gauge({
+  name: 'notehub_notes_by_status',
+  help: 'Number of notes by status',
+  labelNames: ['status'],
+  registers: [register],
+});
+
+// Business metrics - Tags
+const tagsTotal = new promClient.Gauge({
+  name: 'notehub_tags_total',
+  help: 'Total number of tags in the system',
+  registers: [register],
+});
+
+const tagUsage = new promClient.Counter({
+  name: 'notehub_tag_operations_total',
+  help: 'Total tag operations',
+  labelNames: ['operation'],
+  registers: [register],
+});
+
+// Error tracking
+const apiErrors = new promClient.Counter({
+  name: 'notehub_api_errors_total',
+  help: 'Total API errors by type and route',
+  labelNames: ['route', 'error_type', 'status_code'],
+  registers: [register],
+});
+
+// Request size metrics
+const requestSize = new promClient.Histogram({
+  name: 'http_request_size_bytes',
+  help: 'Size of HTTP requests in bytes',
+  labelNames: ['method', 'route'],
+  buckets: [100, 1000, 10000, 100000, 1000000], // Bytes
+  registers: [register],
+});
+
+const responseSize = new promClient.Histogram({
+  name: 'http_response_size_bytes',
+  help: 'Size of HTTP responses in bytes',
+  labelNames: ['method', 'route', 'status_code'],
+  buckets: [100, 1000, 10000, 100000, 1000000], // Bytes
+  registers: [register],
+});
+
+// Database connection pool metrics
+const dbConnectionPoolSize = new promClient.Gauge({
+  name: 'db_connection_pool_size',
+  help: 'Database connection pool size',
+  labelNames: ['status'],
+  registers: [register],
+});
+
+// Search operations (Elasticsearch)
+const searchOperations = new promClient.Counter({
+  name: 'notehub_search_operations_total',
+  help: 'Total search operations',
+  labelNames: ['engine', 'status'],
+  registers: [register],
+});
+
+const searchDuration = new promClient.Histogram({
+  name: 'notehub_search_duration_seconds',
+  help: 'Duration of search operations',
+  labelNames: ['engine'],
+  buckets: [0.1, 0.5, 1, 2, 5],
+  registers: [register],
+});
+
 /**
  * Middleware to track HTTP request metrics
  */
@@ -102,6 +201,12 @@ function metricsMiddleware(req, res, next) {
 
   // Normalize route to avoid high cardinality
   const route = normalizeRoute(req.path);
+
+  // Track request size
+  const reqSize = +(req.get('content-length') || '0');
+  if (reqSize > 0) {
+    requestSize.observe({ method: req.method, route }, reqSize);
+  }
 
   // Override res.end to capture metrics after response
   const originalEnd = res.end;
@@ -124,6 +229,22 @@ function metricsMiddleware(req, res, next) {
       route: route,
       status_code: res.statusCode,
     });
+
+    // Track response size
+    const resSize = +(res.get('content-length') || '0');
+    if (resSize > 0) {
+      responseSize.observe({ method: req.method, route, status_code: res.statusCode }, resSize);
+    }
+
+    // Track errors (4xx and 5xx)
+    if (res.statusCode >= 400) {
+      const errorType = res.statusCode >= 500 ? 'server_error' : 'client_error';
+      apiErrors.inc({
+        route,
+        error_type: errorType,
+        status_code: res.statusCode,
+      });
+    }
 
     // Decrement active connections
     activeConnections.dec();
@@ -202,6 +323,66 @@ function updateApplicationMetrics(metrics) {
   if (metrics.tasks !== undefined) {
     tasksTotal.set(metrics.tasks);
   }
+  if (metrics.tags !== undefined) {
+    tagsTotal.set(metrics.tags);
+  }
+  if (metrics.activeSessions !== undefined) {
+    authActiveSessions.set(metrics.activeSessions);
+  }
+  if (metrics.notesByStatus) {
+    Object.keys(metrics.notesByStatus).forEach((status) => {
+      notesByStatus.set({ status }, metrics.notesByStatus[status]);
+    });
+  }
+}
+
+/**
+ * Record authentication attempt
+ */
+function recordAuthAttempt(method, success, reason = 'none') {
+  const status = success ? 'success' : 'failure';
+  authAttempts.inc({ method, status, reason });
+}
+
+/**
+ * Record 2FA operation
+ */
+function record2FAOperation(operation, success) {
+  const status = success ? 'success' : 'failure';
+  twoFactorUsage.inc({ operation, status });
+}
+
+/**
+ * Record note operation
+ */
+function recordNoteOperation(operation, success = true) {
+  const status = success ? 'success' : 'failure';
+  noteOperations.inc({ operation, status });
+}
+
+/**
+ * Record tag operation
+ */
+function recordTagOperation(operation) {
+  tagUsage.inc({ operation });
+}
+
+/**
+ * Record search operation
+ */
+function recordSearchOperation(engine, duration, success = true) {
+  const status = success ? 'success' : 'failure';
+  searchOperations.inc({ engine, status });
+  searchDuration.observe({ engine }, duration / 1000); // Convert to seconds
+}
+
+/**
+ * Update database connection pool metrics
+ */
+function updateDbPoolMetrics(active, idle, total) {
+  dbConnectionPoolSize.set({ status: 'active' }, active);
+  dbConnectionPoolSize.set({ status: 'idle' }, idle);
+  dbConnectionPoolSize.set({ status: 'total' }, total);
 }
 
 /**
@@ -229,5 +410,11 @@ module.exports = {
   recordDbQuery,
   recordCacheOperation,
   updateApplicationMetrics,
+  recordAuthAttempt,
+  record2FAOperation,
+  recordNoteOperation,
+  recordTagOperation,
+  recordSearchOperation,
+  updateDbPoolMetrics,
   register,
 };

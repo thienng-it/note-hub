@@ -18,6 +18,7 @@ const db = require('../config/database');
 const { authenticator } = require('otplib');
 const QRCode = require('qrcode');
 const crypto = require('node:crypto');
+const { recordAuthAttempt, record2FAOperation } = require('../middleware/metrics');
 
 /**
  * POST /api/auth/login - User login
@@ -36,6 +37,7 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
     const user = await AuthService.authenticateUser(username, password);
 
     if (!user) {
+      recordAuthAttempt('password', false, 'invalid_credentials');
       return responseHandler.unauthorized(res, 'Invalid credentials');
     }
 
@@ -51,8 +53,11 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
     if (user.totp_secret) {
       const isValidTotp = authenticator.verify({ token: totp_code, secret: user.totp_secret });
       if (!isValidTotp) {
+        record2FAOperation('verify', false);
+        recordAuthAttempt('password', false, 'invalid_2fa');
         return responseHandler.unauthorized(res, 'Invalid 2FA code');
       }
+      record2FAOperation('verify', true);
     }
 
     // Generate tokens with rotation
@@ -75,6 +80,9 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
 
     // Update last login
     await AuthService.updateLastLogin(user.id);
+
+    // Record successful authentication
+    recordAuthAttempt('password', true, 'none');
 
     return responseHandler.success(
       res,
