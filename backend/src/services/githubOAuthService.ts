@@ -97,8 +97,9 @@ class GitHubOAuthService {
       }
 
       return response.data.access_token;
-    } catch (error: any) {
-      console.error('GitHub token exchange error:', error.response?.data || error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('GitHub token exchange error:', err.message);
       throw new Error('Failed to exchange authorization code for token');
     }
   }
@@ -138,8 +139,9 @@ class GitHubOAuthService {
         avatar_url: user.avatar_url,
         bio: user.bio,
       };
-    } catch (error: any) {
-      console.error('GitHub API error:', error.response?.data || error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('GitHub API error:', err.message);
       throw new Error('Failed to fetch user profile from GitHub');
     }
   }

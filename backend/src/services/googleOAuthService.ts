@@ -45,8 +45,9 @@ class GoogleOAuthService {
 
       this.enabled = true;
       console.log('🔐 Google OAuth configured - SSO enabled');
-    } catch (error: any) {
-      console.error('⚠️  Google OAuth initialization failed:', error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('⚠️  Google OAuth initialization failed:', err.message);
       this.enabled = false;
     }
   }
@@ -82,8 +83,9 @@ class GoogleOAuthService {
     try {
       const { tokens } = await this.oauth2Client.getToken(code);
       return tokens;
-    } catch (error: any) {
-      console.error('Error getting tokens:', error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('Error getting tokens:', err.message);
       throw new Error('Failed to exchange authorization code');
     }
   }
@@ -106,8 +108,9 @@ class GoogleOAuthService {
         picture: response.data.picture,
         verified_email: response.data.verified_email,
       };
-    } catch (error: any) {
-      console.error('Error getting user info:', error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('Error getting user info:', err.message);
       throw new Error('Failed to get user information from Google');
     }
   }
@@ -138,8 +141,9 @@ class GoogleOAuthService {
         picture: payload.picture || '',
         verified_email: payload.email_verified || false,
       };
-    } catch (error: any) {
-      console.error('Error verifying ID token:', error.message);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('Error verifying ID token:', err.message);
       throw new Error('Failed to verify Google ID token');
     }
   }

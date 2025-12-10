@@ -54,7 +54,7 @@ export function success<T = any>(res: Response, data: T, options: SuccessOptions
 export function error(res: Response, message: string, options: ErrorOptions = {}): Response {
   const { statusCode = 500, errorCode = 'INTERNAL_ERROR', details = null } = options;
 
-  const response: any = {
+  const response: Record<string, unknown> = {
     success: false,
     error: {
       message,
@@ -78,7 +78,7 @@ export function error(res: Response, message: string, options: ErrorOptions = {}
 /**
  * Validation error response
  */
-export function validationError(res: Response, errors: any): Response {
+export function validationError(res: Response, errors: unknown): Response {
   return error(res, 'Validation failed', {
     statusCode: 400,
     errorCode: 'VALIDATION_ERROR',

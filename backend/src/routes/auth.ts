@@ -72,7 +72,10 @@ router.post(
       expiresAt.setDate(expiresAt.getDate() + 7);
       const deviceInfo = req.headers['user-agent'] || null;
       const ipAddress =
-        req.ip || (req.connection && (req.connection as unknown as { remoteAddress?: string }).remoteAddress) || null;
+        req.ip ||
+        (req.connection &&
+          (req.connection as unknown as { remoteAddress?: string }).remoteAddress) ||
+        null;
 
       await jwtService.storeRefreshToken(
         user.id,
@@ -160,7 +163,10 @@ router.post(
   async (req: Request, res: Response) => {
     const { refresh_token } = req.body;
     const deviceInfo = req.headers['user-agent'] || null;
-    const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
+    const ipAddress =
+      req.ip ||
+      (req.connection && (req.connection as unknown as { remoteAddress?: string }).remoteAddress) ||
+      null;
 
     const result = await jwtService.refreshAccessToken(refresh_token, deviceInfo, ipAddress);
 
@@ -400,10 +406,14 @@ router.post('/google/callback', async (req: Request, res: Response) => {
 
     if (!googleOAuthService.isEnabled()) {
       return res.status(503).json({ error: 'Google OAuth not configured' });
-      return;
     }
 
-    let googleUser: any;
+    let googleUser: {
+      email: string;
+      verified_email: boolean;
+      name?: string;
+      picture?: string;
+    };
 
     // Method 1: Using authorization code
     if (code) {
@@ -424,7 +434,7 @@ router.post('/google/callback', async (req: Request, res: Response) => {
     }
 
     // Check if user exists by email
-    let user = await db.queryOne<any>(`SELECT * FROM users WHERE email = ?`, [googleUser.email]);
+    let user = await db.queryOne<User>(`SELECT * FROM users WHERE email = ?`, [googleUser.email]);
 
     if (!user) {
       // Create new user with Google account
@@ -432,9 +442,10 @@ router.post('/google/callback', async (req: Request, res: Response) => {
       let username = googleUser.email.split('@')[0];
 
       // Check if username exists, add random suffix if needed
-      const existingUser = await db.queryOne<any>(`SELECT id FROM users WHERE username = ?`, [
-        username,
-      ]);
+      const existingUser = await db.queryOne<{ id: number }>(
+        `SELECT id FROM users WHERE username = ?`,
+        [username],
+      );
 
       if (existingUser) {
         username = `${username}_${crypto.randomBytes(4).toString('hex')}`;
@@ -449,7 +460,7 @@ router.post('/google/callback', async (req: Request, res: Response) => {
         [username, passwordHash, googleUser.email],
       );
 
-      user = await db.queryOne<any>(`SELECT * FROM users WHERE id = ?`, [
+      user = await db.queryOne<User>(`SELECT * FROM users WHERE id = ?`, [
         result.insertId as number,
       ]);
 
@@ -466,7 +477,10 @@ router.post('/google/callback', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     const deviceInfo = req.headers['user-agent'] || null;
-    const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
+    const ipAddress =
+      req.ip ||
+      (req.connection && (req.connection as unknown as { remoteAddress?: string }).remoteAddress) ||
+      null;
 
     await jwtService.storeRefreshToken(
       user.id,
@@ -524,7 +538,6 @@ router.get('/github', (_req: Request, res: Response) => {
   try {
     if (!githubOAuthService.isEnabled()) {
       return res.status(503).json({ error: 'GitHub OAuth not configured' });
-      return;
     }
 
     // Generate CSRF state token
@@ -552,12 +565,10 @@ router.post('/github/callback', async (req: Request, res: Response) => {
 
     if (!code) {
       return res.status(400).json({ error: 'Authorization code required' });
-      return;
     }
 
     if (!githubOAuthService.isEnabled()) {
       return res.status(503).json({ error: 'GitHub OAuth not configured' });
-      return;
     }
 
     // Authenticate user with GitHub
@@ -580,7 +591,10 @@ router.post('/github/callback', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     const deviceInfo = req.headers['user-agent'] || null;
-    const ipAddress = req.ip || (req.connection && (req.connection as any).remoteAddress) || null;
+    const ipAddress =
+      req.ip ||
+      (req.connection && (req.connection as unknown as { remoteAddress?: string }).remoteAddress) ||
+      null;
 
     await jwtService.storeRefreshToken(
       user.id,
@@ -626,7 +640,7 @@ router.post('/logout', jwtRequired, async (req: Request, res: Response) => {
 
     if (refresh_token) {
       try {
-        const decoded = jwt.decode(refresh_token) as any;
+        const decoded = jwt.decode(refresh_token) as { jti?: string } | null;
         if (decoded?.jti) {
           await jwtService.revokeRefreshToken(decoded.jti);
         }

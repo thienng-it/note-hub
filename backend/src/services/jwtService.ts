@@ -165,8 +165,9 @@ class JWTService {
         return { valid: false, error: 'Invalid token type' };
       }
       return { valid: true, userId: decoded.user_id };
-    } catch (error: any) {
-      if (error.name === 'TokenExpiredError') {
+    } catch (error: unknown) {
+      const err = error as Error & { name?: string };
+      if (err.name === 'TokenExpiredError') {
         return { valid: false, error: 'Token expired' };
       }
       return { valid: false, error: 'Invalid token' };
@@ -232,11 +233,12 @@ class JWTService {
           `SELECT * FROM refresh_tokens WHERE token_hash = ? AND user_id = ?`,
           [tokenHash, userId],
         );
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const err = error as Error;
         // Table doesn't exist - graceful degradation, allow refresh without rotation
         if (
-          error.message &&
-          (error.message.includes('no such table') || error.message.includes('refresh_tokens'))
+          err.message &&
+          (err.message.includes('no such table') || err.message.includes('refresh_tokens'))
         ) {
           console.warn('[JWT] Refresh tokens table not available - using legacy mode');
           const newAccessToken = this.generateToken(userId);
@@ -304,11 +306,12 @@ class JWTService {
         refreshToken: newRefreshToken,
         rotated: true,
       };
-    } catch (error: any) {
-      if (error.name === 'TokenExpiredError') {
+    } catch (error: unknown) {
+      const err = error as Error & { name?: string };
+      if (err.name === 'TokenExpiredError') {
         return { success: false, error: 'Refresh token expired' };
       }
-      console.error('[JWT] Token refresh error:', error);
+      console.error('[JWT] Token refresh error:', err);
       return { success: false, error: 'Invalid refresh token' };
     }
   }
@@ -354,7 +357,10 @@ class JWTService {
   async cleanupExpiredTokens(): Promise<CleanupResult> {
     try {
       const now = this.getCurrentTimestamp();
-      const result: any = await db.run(`DELETE FROM refresh_tokens WHERE expires_at < ?`, [now]);
+      const result: { affectedRows?: number } = await db.run(
+        `DELETE FROM refresh_tokens WHERE expires_at < ?`,
+        [now],
+      );
       return { success: true, deleted: result.affectedRows };
     } catch (error) {
       console.error('[JWT] Failed to cleanup expired tokens:', error);

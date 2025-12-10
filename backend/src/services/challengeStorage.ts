@@ -30,9 +30,10 @@ export async function storeChallenge(
     try {
       const success = await cache.set(`challenge:${key}`, challenge, expirationSeconds);
       return success;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       logger.warn('Redis challenge storage error, falling back to memory', {
-        error: error.message,
+        error: err.message,
       });
     }
   }
@@ -67,9 +68,10 @@ export async function getAndRemoveChallenge(key: string): Promise<string | null>
         await cache.del(`challenge:${key}`);
         return challenge;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       logger.warn('Redis challenge retrieval error, falling back to memory', {
-        error: error.message,
+        error: err.message,
       });
     }
   }
