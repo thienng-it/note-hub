@@ -203,7 +203,7 @@ function metricsMiddleware(req, res, next) {
   const route = normalizeRoute(req.path);
 
   // Track request size
-  const reqSize = Number.parseInt(req.get('content-length') || '0', 10);
+  const reqSize = +(req.get('content-length') || '0');
   if (reqSize > 0) {
     requestSize.observe({ method: req.method, route }, reqSize);
   }
@@ -231,7 +231,7 @@ function metricsMiddleware(req, res, next) {
     });
 
     // Track response size
-    const resSize = Number.parseInt(res.get('content-length') || '0', 10);
+    const resSize = +(res.get('content-length') || '0');
     if (resSize > 0) {
       responseSize.observe({ method: req.method, route, status_code: res.statusCode }, resSize);
     }

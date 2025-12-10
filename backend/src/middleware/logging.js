@@ -5,6 +5,9 @@
  */
 const logger = require('../config/logger');
 
+// Paths to exclude from logging in production (too noisy)
+const EXCLUDED_PATHS_PRODUCTION = ['/api/health', '/metrics'];
+
 /**
  * Request logging middleware
  * Logs API requests with method, path, status code, and duration
@@ -12,11 +15,8 @@ const logger = require('../config/logger');
 function requestLogger(req, res, next) {
   const startTime = Date.now();
 
-  // Skip logging for health check and metrics in production (too noisy)
-  if (
-    (req.path === '/api/health' || req.path === '/metrics') &&
-    process.env.NODE_ENV === 'production'
-  ) {
+  // Skip logging for excluded paths in production (too noisy)
+  if (process.env.NODE_ENV === 'production' && EXCLUDED_PATHS_PRODUCTION.includes(req.path)) {
     return next();
   }
 
