@@ -209,7 +209,7 @@ router.get('/validate', jwtRequired, (req: Request, res: Response) => {
 /**
  * POST /api/auth/forgot-password - Request password reset
  */
-router.post('/forgot-password', async (req: Request, res: Response): Promise<void> => {
+router.post('/forgot-password', async (req: Request, res: Response) => {
   try {
     const { username } = req.body;
 
@@ -248,7 +248,7 @@ router.post('/forgot-password', async (req: Request, res: Response): Promise<voi
 /**
  * POST /api/auth/reset-password - Reset password with token
  */
-router.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
+router.post('/reset-password', async (req: Request, res: Response) => {
   try {
     const { token, password } = req.body;
 
@@ -273,7 +273,7 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
 /**
  * POST /api/auth/change-password - Change password (authenticated)
  */
-router.post('/change-password', jwtRequired, async (req: Request, res: Response): Promise<void> => {
+router.post('/change-password', jwtRequired, async (req: Request, res: Response) => {
   try {
     const { current_password, new_password } = req.body;
 
@@ -318,7 +318,7 @@ router.get('/2fa/setup', jwtRequired, async (req: Request, res: Response) => {
 /**
  * POST /api/auth/2fa/enable - Enable 2FA
  */
-router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response): Promise<void> => {
+router.post('/2fa/enable', jwtRequired, async (req: Request, res: Response) => {
   try {
     const { secret, totp_code } = req.body;
 

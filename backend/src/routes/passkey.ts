@@ -4,10 +4,10 @@
 
 import type { Request, Response } from 'express';
 import express from 'express';
-import * as logger from '../config/logger';
+import logger from '../config/logger';
 import { jwtRequired } from '../middleware/auth';
 import { getAndRemoveChallenge, storeChallenge } from '../services/challengeStorage';
-import * as responseHandler from '../utils/responseHandler';
+import responseHandler from '../utils/responseHandler';
 
 const PasskeyService = require('../services/passkeyService');
 const jwtService = require('../services/jwtService');
@@ -36,7 +36,7 @@ router.post('/register-options', jwtRequired, async (req: Request, res: Response
       });
     }
 
-    const options = await PasskeyService.generateRegistrationOptions(req.userId, req.user.username);
+    const options = await PasskeyService.generateRegistrationOptions(req.userId, req.user!.username);
 
     // Store challenge for verification
     const challengeKey = `reg_${req.userId}_${Date.now()}`;
@@ -258,7 +258,7 @@ router.get('/credentials', jwtRequired, async (req: Request, res: Response) => {
  */
 router.delete('/credentials/:id', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const credentialId = parseInt(req.params.id, 10);
+    const credentialId = parseInt(req.params.id!, 10);
 
     if (Number.isNaN(credentialId)) {
       return responseHandler.validationError(res, {
@@ -295,7 +295,7 @@ router.delete('/credentials/:id', jwtRequired, async (req: Request, res: Respons
  */
 router.patch('/credentials/:id', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const credentialId = parseInt(req.params.id, 10);
+    const credentialId = parseInt(req.params.id!, 10);
     const { deviceName } = req.body;
 
     if (Number.isNaN(credentialId)) {

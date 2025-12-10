@@ -13,6 +13,18 @@ import LokiTransport from 'winston-loki';
 // Log level type definition
 type LogLevel = 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
 
+// Extended logger type with custom methods
+interface CustomLogger extends winston.Logger {
+  api: (method: string, path: string, statusCode: number, duration: number) => void;
+  db: (operation: string, table: string, duration?: number) => void;
+  auth: (event: string, userId: number | string, details?: Record<string, unknown>) => void;
+  security: (event: string, details?: Record<string, unknown>) => void;
+  config: {
+    level: LogLevel;
+    format: string;
+  };
+}
+
 // Get log configuration from environment
 const LOG_LEVEL = (process.env.LOG_LEVEL ||
   (process.env.NODE_ENV === 'production' ? 'error' : 'info')) as LogLevel;
@@ -180,5 +192,5 @@ logger.config = {
   format: LOG_FORMAT,
 };
 
-// Export logger
-export default logger;
+// Export logger with proper typing
+export default logger as CustomLogger;

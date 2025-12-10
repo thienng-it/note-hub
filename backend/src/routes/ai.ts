@@ -79,7 +79,7 @@ router.post('/summarize', jwtRequired, async (req: Request, res: Response) => {
 /**
  * POST /api/ai/rewrite - Rewrite text
  */
-router.post('/rewrite', jwtRequired, async (req: Request, res: Response): Promise<void> => {
+router.post('/rewrite', jwtRequired, async (req: Request, res: Response) => {
   try {
     const { text, style = 'professional' } = req.body;
 

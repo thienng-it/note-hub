@@ -106,7 +106,7 @@ router.post(
   '/users/:userId/disable-2fa',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId!, 10);
 
@@ -156,7 +156,7 @@ router.post(
   '/users/:userId/lock',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId!, 10);
 
@@ -213,7 +213,7 @@ router.post(
   '/users/:userId/unlock',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId!, 10);
 
@@ -263,7 +263,7 @@ router.delete(
   '/users/:userId',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId!, 10);
 
@@ -272,8 +272,8 @@ router.delete(
       }
 
       // Check if user exists
-      const user = await db.queryOne<{ id: number; username: string }>(
-        `SELECT id, username FROM users WHERE id = ?`,
+      const user = await db.queryOne<{ id: number; username: string; is_admin: number }>(
+        `SELECT id, username, is_admin FROM users WHERE id = ?`,
         [userId],
       );
 
@@ -316,7 +316,7 @@ router.post(
   '/users/:userId/grant-admin',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId!, 10);
 
@@ -368,7 +368,7 @@ router.post(
   '/users/:userId/revoke-admin',
   jwtRequired,
   adminRequired,
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId!, 10);
 

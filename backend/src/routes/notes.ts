@@ -135,7 +135,7 @@ router.post('/', jwtRequired, async (req: Request, res: Response) => {
 /**
  * PUT/PATCH /api/notes/:id - Update a note
  */
-async function updateNote(req: Request, res: Response): Promise<void> {
+async function updateNote(req: Request, res: Response) {
   try {
     const noteId = parseInt(req.params.id, 10);
     const { note, hasAccess, canEdit } = await NoteService.checkNoteAccess(noteId, req.userId!);
@@ -399,7 +399,7 @@ router.post('/:id/share', jwtRequired, async (req: Request, res: Response) => {
 router.delete('/:id/share/:shareId', jwtRequired, async (req: Request, res: Response) => {
   try {
     const noteId = parseInt(req.params.id, 10);
-    const shareId = parseInt(req.params.shareId, 10);
+    const shareId = parseInt(req.params.shareId!, 10);
 
     const note = await NoteService.getNoteById(noteId);
 

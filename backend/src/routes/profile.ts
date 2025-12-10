@@ -98,7 +98,7 @@ router.get('/', jwtRequired, async (req: Request, res: Response) => {
 /**
  * PUT /api/profile - Update user profile
  */
-router.put('/', jwtRequired, async (req: Request, res: Response): Promise<void> => {
+router.put('/', jwtRequired, async (req: Request, res: Response) => {
   try {
     const { username, email, bio, theme, hidden_notes, preferred_language } = req.body;
 
@@ -258,7 +258,7 @@ router.post('/invitations', jwtRequired, async (req: Request, res: Response) => 
  * GET /api/profile/:id - Get user profile (public view)
  * Note: This endpoint is deprecated. Use /api/v1/users/:id instead
  */
-router.get('/:id', jwtRequired, async (req: Request, res: Response): Promise<void> => {
+router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id!, 10);
 

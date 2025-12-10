@@ -55,7 +55,7 @@ class NoteService {
     const cacheKey = `notes:user:${userId}:${viewType}:${searchQuery}:${tagFilter}`;
 
     // Try cache first
-    const cached = await cache.get<NoteWithTags[]>(cacheKey);
+    const cached = (await cache.get(cacheKey)) as NoteWithTags[] | null;
     if (cached) {
       return cached;
     }
@@ -109,9 +109,9 @@ class NoteService {
         });
         const parsedNotes = notes.map((note) => ({
           ...note,
-          tags: note.tag_names
+          tags: note.tag_names && note.tag_ids
             ? note.tag_names.split(',').map((name, i) => ({
-                id: parseInt(note.tag_ids!.split(',')[i], 10),
+                id: parseInt(note.tag_ids!.split(',')[i]!, 10),
                 name,
               }))
             : [],
@@ -187,9 +187,9 @@ class NoteService {
     // Parse tags from concatenated strings
     const parsedNotes = notes.map((note) => ({
       ...note,
-      tags: note.tag_names
+      tags: note.tag_names && note.tag_ids
         ? note.tag_names.split(',').map((name, i) => ({
-            id: parseInt(note.tag_ids!.split(',')[i], 10),
+            id: parseInt(note.tag_ids!.split(',')[i]!, 10),
             name,
           }))
         : [],
@@ -209,7 +209,7 @@ class NoteService {
     const cacheKey = `tags:user:${userId}`;
 
     // Try cache first
-    const cached = await cache.get<(Tag & { note_count: number })[]>(cacheKey);
+    const cached = (await cache.get(cacheKey)) as (Tag & { note_count: number })[] | null;
     if (cached) {
       return cached;
     }
@@ -257,9 +257,9 @@ class NoteService {
     }
 
     // Parse tags
-    note.tags = note.tag_names
+    note.tags = note.tag_names && note.tag_ids
       ? note.tag_names.split(',').map((name, i) => ({
-          id: parseInt(note.tag_ids!.split(',')[i], 10),
+          id: parseInt(note.tag_ids!.split(',')[i]!, 10),
           name,
         }))
       : [];
@@ -458,9 +458,9 @@ class NoteService {
 
     if (!note) return null;
 
-    note.tags = note.tag_names
+    note.tags = note.tag_names && note.tag_ids
       ? note.tag_names.split(',').map((name, i) => ({
-          id: parseInt(note.tag_ids!.split(',')[i], 10),
+          id: parseInt(note.tag_ids!.split(',')[i]!, 10),
           name,
         }))
       : [];
