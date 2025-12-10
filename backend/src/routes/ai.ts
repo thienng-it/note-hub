@@ -31,19 +31,17 @@ router.post('/proofread', jwtRequired, async (req: Request, res: Response) => {
 
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Text is required' });
-      return;
     }
 
     if (text.length > 10000) {
       return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
-      return;
     }
 
     const result = await AIService.proofreadText(text);
     return res.json({ result });
   } catch (error) {
     console.error('Proofread error:', error);
-    res
+    return res
       .status(500)
       .json({ error: error instanceof Error ? error.message : 'Failed to proofread text' });
   }
@@ -58,19 +56,17 @@ router.post('/summarize', jwtRequired, async (req: Request, res: Response) => {
 
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Text is required' });
-      return;
     }
 
     if (text.length > 10000) {
       return res.status(400).json({ error: 'Text is too long (max 10000 characters)' });
-      return;
     }
 
     const result = await AIService.summarizeText(text);
     return res.json({ result });
   } catch (error) {
     console.error('Summarize error:', error);
-    res
+    return res
       .status(500)
       .json({ error: error instanceof Error ? error.message : 'Failed to summarize text' });
   }
@@ -103,7 +99,7 @@ router.post('/rewrite', jwtRequired, async (req: Request, res: Response) => {
     return res.json({ result });
   } catch (error) {
     console.error('Rewrite error:', error);
-    res
+    return res
       .status(500)
       .json({ error: error instanceof Error ? error.message : 'Failed to rewrite text' });
   }

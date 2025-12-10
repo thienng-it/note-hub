@@ -32,7 +32,7 @@ router.post('/image', jwtRequired, upload.single('image'), async (req: Request, 
     });
   } catch (error) {
     console.error('Upload error:', error);
-    res
+    return res
       .status(500)
       .json({ error: error instanceof Error ? error.message : 'Failed to upload image' });
   }
@@ -64,7 +64,7 @@ router.post(
       });
     } catch (error) {
       console.error('Upload error:', error);
-      res
+      return res
         .status(500)
         .json({ error: error instanceof Error ? error.message : 'Failed to upload images' });
     }
@@ -77,7 +77,7 @@ router.post(
 router.delete('/:filename', jwtRequired, async (req: Request, res: Response) => {
   try {
     const filename = req.params.filename;
-    const filePath = path.join(__dirname, '../../uploads', filename);
+    const filePath = path.join(__dirname, '../../uploads', filename!);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {

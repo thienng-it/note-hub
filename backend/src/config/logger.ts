@@ -77,7 +77,7 @@ interface CustomLogger extends winston.Logger {
   auth: (event: string, userId: number | string, details?: Record<string, unknown>) => void;
   security: (event: string, details?: Record<string, unknown>) => void;
   config: {
-    level: string;
+    level: LogLevel;
     format: string;
   };
 }

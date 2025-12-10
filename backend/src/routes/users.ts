@@ -64,7 +64,7 @@ router.get('/search', jwtRequired, async (req: Request, res: Response) => {
  */
 router.get('/:id', jwtRequired, async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.params.id, 10);
+    const userId = parseInt(req.params.id!, 10);
 
     const user = await db.queryOne(`SELECT id, username, bio, created_at FROM users WHERE id = ?`, [
       userId,

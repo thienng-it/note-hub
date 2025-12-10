@@ -259,7 +259,7 @@ class PasskeyService {
       userId,
     ]);
 
-    return (result.affectedRows || 0) > 0 || (result.changes || 0) > 0;
+    return (result.affectedRows || 0) > 0 || ((result.changes as number) || 0) > 0;
   }
 
   /**
@@ -277,7 +277,7 @@ class PasskeyService {
       [deviceName, credentialId, userId],
     );
 
-    return (result.affectedRows || 0) > 0 || (result.changes || 0) > 0;
+    return (result.affectedRows || 0) > 0 || ((result.changes as number) || 0) > 0;
   }
 }
 

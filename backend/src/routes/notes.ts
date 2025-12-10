@@ -113,6 +113,10 @@ router.post('/', jwtRequired, async (req: Request, res: Response) => {
       images,
     );
 
+    if (!note) {
+      return res.status(500).json({ error: 'Failed to create note' });
+    }
+
     return res.status(201).json({
       note: {
         id: note.id,
@@ -167,6 +171,10 @@ async function updateNote(req: Request, res: Response) {
       archived,
       images,
     );
+
+    if (!updatedNote) {
+      return res.status(404).json({ error: 'Note not found or failed to update' });
+    }
 
     return res.json({
       note: {
@@ -241,6 +249,10 @@ router.post('/:id/toggle-pin', jwtRequired, async (req: Request, res: Response) 
       !note.pinned,
     );
 
+    if (!updatedNote) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
     return res.json({
       pinned: !!updatedNote.pinned,
       message: updatedNote.pinned ? 'Note pinned' : 'Note unpinned',
@@ -275,6 +287,10 @@ router.post('/:id/toggle-favorite', jwtRequired, async (req: Request, res: Respo
       undefined,
       !note.favorite,
     );
+
+    if (!updatedNote) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
 
     return res.json({
       favorite: !!updatedNote.favorite,
@@ -311,6 +327,10 @@ router.post('/:id/toggle-archive', jwtRequired, async (req: Request, res: Respon
       undefined,
       !note.archived,
     );
+
+    if (!updatedNote) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
 
     return res.json({
       archived: !!updatedNote.archived,

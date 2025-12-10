@@ -195,7 +195,7 @@ class GitHubOAuthService {
     );
 
     // Fetch and return the created user
-    user = await db.queryOne<User>(`SELECT * FROM users WHERE id = ?`, [result.insertId]);
+    user = await db.queryOne<User>(`SELECT * FROM users WHERE id = ?`, [result.insertId as number]);
 
     if (!user) {
       throw new Error('Failed to create user');

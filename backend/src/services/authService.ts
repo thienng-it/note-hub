@@ -230,10 +230,10 @@ class AuthService {
 
     await db.run(`UPDATE users SET password_hash = ? WHERE id = ?`, [
       passwordHash,
-      resetToken.user_id,
+      resetToken.user_id as number,
     ]);
 
-    await db.run(`UPDATE password_reset_tokens SET used = 1 WHERE id = ?`, [resetToken.id]);
+    await db.run(`UPDATE password_reset_tokens SET used = 1 WHERE id = ?`, [resetToken.id as number]);
 
     return { success: true };
   }

@@ -413,7 +413,7 @@ router.post('/google/callback', async (req: Request, res: Response) => {
     // Method 1: Using authorization code
     if (code) {
       const tokens = await googleOAuthService.getTokens(code);
-      googleUser = await googleOAuthService.getUserInfo(tokens.access_token);
+      googleUser = await googleOAuthService.getUserInfo(tokens.access_token!);
     }
     // Method 2: Using ID token (for frontend flow)
     else if (id_token) {
@@ -454,7 +454,7 @@ router.post('/google/callback', async (req: Request, res: Response) => {
         [username, passwordHash, googleUser.email],
       );
 
-      user = await db.queryOne<any>(`SELECT * FROM users WHERE id = ?`, [result.insertId]);
+      user = await db.queryOne<any>(`SELECT * FROM users WHERE id = ?`, [result.insertId as number]);
 
       console.log(`[AUTH] New user created via Google OAuth: ${username} (${googleUser.email})`);
     } else {
@@ -614,7 +614,7 @@ router.post('/github/callback', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('GitHub OAuth callback error:', error);
-    res
+    return res
       .status(500)
       .json({ error: error instanceof Error ? error.message : 'Authentication failed' });
   }
