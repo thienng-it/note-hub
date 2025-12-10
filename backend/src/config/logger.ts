@@ -3,12 +3,12 @@
  *
  * Centralized logging using Winston for structured, level-based logging.
  * Supports multiple formats and transports for different environments.
- * Includes optional Graylog integration via GELF protocol.
+ * Includes optional Grafana Loki integration for centralized logging.
  */
 
 import os from 'node:os';
 import winston from 'winston';
-import WinstonGraylog2 from 'winston-graylog2';
+import LokiTransport from 'winston-loki';
 
 // Log level type definition
 type LogLevel = 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug' | 'silly';
@@ -97,44 +97,46 @@ if (process.env.NODE_ENV === 'production' && process.env.LOG_FILE_PATH) {
   );
 }
 
-// Optional: Add Graylog transport for centralized logging
-if (process.env.GRAYLOG_ENABLED === 'true') {
-  const graylogHost = process.env.GRAYLOG_HOST || 'localhost';
-  const graylogPort = Number.parseInt(process.env.GRAYLOG_PORT || '12201', 10);
-  const graylogProtocol = process.env.GRAYLOG_PROTOCOL || 'udp';
-  const graylogFacility = process.env.GRAYLOG_FACILITY || 'notehub-backend';
+// Optional: Add Grafana Loki transport for centralized logging
+if (process.env.LOKI_ENABLED === 'true') {
+  const lokiHost = process.env.LOKI_HOST || 'http://localhost:3100';
+  const lokiUsername = process.env.LOKI_USERNAME;
+  const lokiPassword = process.env.LOKI_PASSWORD;
+  const lokiLabels = {
+    application: process.env.LOKI_APP_LABEL || 'notehub-backend',
+    environment: process.env.NODE_ENV || 'development',
+    hostname: process.env.HOSTNAME || os.hostname(),
+  };
 
   try {
-    const graylogOptions = {
-      name: 'Graylog',
+    const lokiOptions = {
+      host: lokiHost,
+      labels: lokiLabels,
       level: LOG_LEVEL,
-      silent: false,
-      handleExceptions: true,
-      graylog: {
-        servers: [{ host: graylogHost, port: graylogPort }],
-        hostname: process.env.HOSTNAME || os.hostname(),
-        facility: graylogFacility,
-        bufferSize: 1400,
-        protocol: graylogProtocol === 'tcp' ? ('tcp' as const) : ('udp' as const),
+      json: true,
+      format: winston.format.json(),
+      replaceTimestamp: true,
+      onConnectionError: (err: Error) => {
+        console.error('Loki connection error:', err.message);
       },
-      staticMeta: {
-        environment: process.env.NODE_ENV || 'development',
-        application: 'notehub-backend',
-        version: process.env.npm_package_version || '1.0.0',
-      },
+      // Optional: Add basic authentication if credentials are provided
+      ...(lokiUsername && lokiPassword
+        ? {
+            basicAuth: `${lokiUsername}:${lokiPassword}`,
+          }
+        : {}),
     };
 
-    logger.add(new WinstonGraylog2(graylogOptions) as unknown as winston.transport);
-    logger.info('Graylog transport enabled', {
-      host: graylogHost,
-      port: graylogPort,
-      protocol: graylogProtocol,
-      facility: graylogFacility,
+    logger.add(new LokiTransport(lokiOptions));
+    logger.info('Loki transport enabled', {
+      host: lokiHost,
+      labels: lokiLabels,
+      authenticated: !!(lokiUsername && lokiPassword),
     });
   } catch (error) {
-    // Graceful degradation - if Graylog transport fails, continue without it
+    // Graceful degradation - if Loki transport fails, continue without it
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Failed to initialize Graylog transport:', errorMessage);
+    console.error('Failed to initialize Loki transport:', errorMessage);
     console.error('Continuing with console logging only');
   }
 }
