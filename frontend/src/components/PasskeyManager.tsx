@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ConfirmModal } from './Modal';
 import { passkeyService } from '../services/passkeyService';
+import { ConfirmModal } from './Modal';
 
 interface Credential {
   id: number;

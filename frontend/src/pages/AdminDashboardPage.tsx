@@ -33,7 +33,14 @@ export function AdminDashboardPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   // Modal states
-  type ModalType = 'disable2fa' | 'lockUser' | 'unlockUser' | 'deleteUser' | 'grantAdmin' | 'revokeAdmin' | null;
+  type ModalType =
+    | 'disable2fa'
+    | 'lockUser'
+    | 'unlockUser'
+    | 'deleteUser'
+    | 'grantAdmin'
+    | 'revokeAdmin'
+    | null;
   const [modalState, setModalState] = useState<{
     type: ModalType;
     userId: number;
@@ -122,44 +129,44 @@ export function AdminDashboardPage() {
       switch (modalState.type) {
         case 'disable2fa':
           await adminApi.disable2fa(modalState.userId);
-          logger.info('Admin action: 2FA disabled successfully', { 
-            userId: modalState.userId, 
-            username: modalState.username 
+          logger.info('Admin action: 2FA disabled successfully', {
+            userId: modalState.userId,
+            username: modalState.username,
           });
           break;
         case 'lockUser':
           await adminApi.lockUser(modalState.userId);
-          logger.info('Admin action: User locked successfully', { 
-            userId: modalState.userId, 
-            username: modalState.username 
+          logger.info('Admin action: User locked successfully', {
+            userId: modalState.userId,
+            username: modalState.username,
           });
           break;
         case 'unlockUser':
           await adminApi.unlockUser(modalState.userId);
-          logger.info('Admin action: User unlocked successfully', { 
-            userId: modalState.userId, 
-            username: modalState.username 
+          logger.info('Admin action: User unlocked successfully', {
+            userId: modalState.userId,
+            username: modalState.username,
           });
           break;
         case 'deleteUser':
           await adminApi.deleteUser(modalState.userId);
-          logger.info('Admin action: User deleted successfully', { 
-            userId: modalState.userId, 
-            username: modalState.username 
+          logger.info('Admin action: User deleted successfully', {
+            userId: modalState.userId,
+            username: modalState.username,
           });
           break;
         case 'grantAdmin':
           await adminApi.grantAdmin(modalState.userId);
-          logger.info('Admin action: Admin privileges granted', { 
-            userId: modalState.userId, 
-            username: modalState.username 
+          logger.info('Admin action: Admin privileges granted', {
+            userId: modalState.userId,
+            username: modalState.username,
           });
           break;
         case 'revokeAdmin':
           await adminApi.revokeAdmin(modalState.userId);
-          logger.info('Admin action: Admin privileges revoked', { 
-            userId: modalState.userId, 
-            username: modalState.username 
+          logger.info('Admin action: Admin privileges revoked', {
+            userId: modalState.userId,
+            username: modalState.username,
           });
           break;
       }
@@ -168,9 +175,9 @@ export function AdminDashboardPage() {
       setModalState(null);
       setDeleteConfirmText('');
     } catch (err) {
-      logger.error(`Admin action: Failed to ${modalState.type}`, err, { 
-        userId: modalState.userId, 
-        username: modalState.username 
+      logger.error(`Admin action: Failed to ${modalState.type}`, err, {
+        userId: modalState.userId,
+        username: modalState.username,
       });
       setError(err instanceof Error ? err.message : `Failed to ${modalState.type}`);
     } finally {
@@ -616,7 +623,10 @@ export function AdminDashboardPage() {
           isLoading={isProcessing}
         >
           <div className="mt-4">
-            <label htmlFor="deleteConfirm" className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            <label
+              htmlFor="deleteConfirm"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
+            >
               {t('admin.deleteUserConfirmPrompt', { username: modalState.username })}
             </label>
             <input

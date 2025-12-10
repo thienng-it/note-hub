@@ -20,8 +20,6 @@ vi.mock('../context/AuthContext', async () => {
 
 // Mock fetch
 global.fetch = vi.fn();
-// Mock window.confirm
-global.confirm = vi.fn();
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
