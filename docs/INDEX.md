@@ -27,6 +27,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ## 🔌 API Documentation
 
+- [OPENAPI_DOCS](api/OPENAPI_DOCS.md) - **NEW** Comprehensive OpenAPI 3.0 documentation, Postman & Insomnia collections
 - [API_CHANGELOG](api/API_CHANGELOG.md) - API version history and changes
 - [API_VERSIONING](api/API_VERSIONING.md) - API versioning strategy
 - [JWT_API](api/JWT_API.md) - JWT authentication API documentation
@@ -69,6 +70,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [DATABASE_REPLICATION_IMPLEMENTATION](guides/DATABASE_REPLICATION_IMPLEMENTATION.md) - Database replication implementation
 
 ### Features & Configuration
+- [PERFORMANCE_OPTIMIZATION](guides/PERFORMANCE_OPTIMIZATION.md) - **NEW** Comprehensive performance optimization guide (compression, clustering, caching, pooling)
 - [CACHING_AND_SEARCH](guides/CACHING_AND_SEARCH.md) - Caching and search features
 - [CONFIG](guides/CONFIG.md) - Configuration guide
 - [ERROR_HANDLING](guides/ERROR_HANDLING.md) - Error handling guide
@@ -106,6 +108,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ## 💻 Development
 
+- [TYPESCRIPT_MIGRATION](development/TYPESCRIPT_MIGRATION.md) - **NEW** Complete TypeScript migration guide and status (~15% complete)
 - [CAPTCHA_ENHANCEMENT_SUMMARY](development/CAPTCHA_ENHANCEMENT_SUMMARY.md) - CAPTCHA enhancement summary
 - [CAPTCHA_IMPLEMENTATION_COMPLETE](development/CAPTCHA_IMPLEMENTATION_COMPLETE.md) - CAPTCHA implementation complete
 - [PERFORMANCE_IMPROVEMENTS](development/PERFORMANCE_IMPROVEMENTS.md) - Performance improvements
@@ -133,7 +136,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - **Getting Started**: [README](README.md)
 - **Deployment**: [HETZNER_DEPLOYMENT](guides/HETZNER_DEPLOYMENT.md)
 - **Architecture**: [ARCHITECTURE](architecture/ARCHITECTURE.md)
-- **API Docs**: [JWT_API](api/JWT_API.md) | [API_CHANGELOG](api/API_CHANGELOG.md)
+- **API Docs**: [OPENAPI_DOCS](api/OPENAPI_DOCS.md) | [JWT_API](api/JWT_API.md) | [API_CHANGELOG](api/API_CHANGELOG.md)
 - **Security**: [SECURITY](security/SECURITY.md)
 - **Testing**: [TEST_SUITE_SUMMARY](testing/TEST_SUITE_SUMMARY.md)
 - **CI/CD**: [CI_CD](project/CI_CD.md) | [Drone CI Setup](guides/DRONE_CI_SETUP.md)
