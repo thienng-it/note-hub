@@ -23,7 +23,7 @@ class GitHubOAuthService {
    */
   static getStatus() {
     return {
-      enabled: this.isEnabled(),
+      enabled: GitHubOAuthService.isEnabled(),
       client_id: process.env.GITHUB_CLIENT_ID || null,
       redirect_uri: process.env.GITHUB_REDIRECT_URI || null,
     };
@@ -35,7 +35,7 @@ class GitHubOAuthService {
    * @returns {string} Authorization URL
    */
   static getAuthorizationUrl(state) {
-    if (!this.isEnabled()) {
+    if (!GitHubOAuthService.isEnabled()) {
       throw new Error('GitHub OAuth is not configured');
     }
 
@@ -131,13 +131,13 @@ class GitHubOAuthService {
    * @returns {Promise<Object>} User object
    */
   static async findOrCreateUser(githubProfile) {
-    const { github_id, username, email, name, bio } = githubProfile;
+    const { github_id, username, email, bio } = githubProfile;
 
     // Check if user already exists with this GitHub ID
-    let user = await db.queryOne(
-      `SELECT * FROM users WHERE username = ? OR email = ?`,
-      [username, email],
-    );
+    let user = await db.queryOne(`SELECT * FROM users WHERE username = ? OR email = ?`, [
+      username,
+      email,
+    ]);
 
     if (user) {
       // User exists, return it
@@ -146,20 +146,18 @@ class GitHubOAuthService {
 
     // Check if username is taken (should be unique)
     let finalUsername = username;
-    let existingUsername = await db.queryOne(
-      `SELECT id FROM users WHERE username = ?`,
-      [finalUsername],
-    );
+    let existingUsername = await db.queryOne(`SELECT id FROM users WHERE username = ?`, [
+      finalUsername,
+    ]);
 
     // Generate unique username if taken (try up to 5 times)
     let attempts = 0;
     while (existingUsername && attempts < 5) {
       const randomSuffix = crypto.randomBytes(4).toString('hex');
       finalUsername = `${username}_${randomSuffix}`;
-      existingUsername = await db.queryOne(
-        `SELECT id FROM users WHERE username = ?`,
-        [finalUsername],
-      );
+      existingUsername = await db.queryOne(`SELECT id FROM users WHERE username = ?`, [
+        finalUsername,
+      ]);
       attempts++;
     }
 
@@ -191,25 +189,25 @@ class GitHubOAuthService {
    * @param {string} code - Authorization code
    * @param {string} state - CSRF protection state (validation TODO)
    * @returns {Promise<Object>} User object
-   * 
+   *
    * TODO: Implement proper state validation for CSRF protection in production
    * - Store state in session or Redis with expiration
    * - Validate state parameter matches stored value
    * - Clear state after validation
    */
   static async authenticateUser(code) {
-    if (!this.isEnabled()) {
+    if (!GitHubOAuthService.isEnabled()) {
       throw new Error('GitHub OAuth is not configured');
     }
 
     // Exchange code for access token
-    const accessToken = await this.exchangeCodeForToken(code);
+    const accessToken = await GitHubOAuthService.exchangeCodeForToken(code);
 
     // Get user profile from GitHub
-    const githubProfile = await this.getUserProfile(accessToken);
+    const githubProfile = await GitHubOAuthService.getUserProfile(accessToken);
 
     // Find or create user in database
-    const user = await this.findOrCreateUser(githubProfile);
+    const user = await GitHubOAuthService.findOrCreateUser(githubProfile);
 
     return user;
   }

@@ -78,6 +78,27 @@ note-hub/
    - Support both SQLite (dev) and MySQL (prod) with read replicas
    - Implement database connection pooling
 
+4. **Database Migrations:**
+   - **All database schema changes MUST include automatic migration**
+   - Migrations should be integrated into the database initialization process
+   - Check if schema changes exist before applying to support both new and existing installations
+   - Migration code should be added to `backend/src/config/database.js` in the schema initialization
+   - Use `IF NOT EXISTS` for table creation and column checks before ALTER TABLE
+   - Example pattern:
+     ```javascript
+     // In initSQLiteSchema() or initMySQLSchema()
+     // Check if column exists before adding
+     const tableInfo = db.db.prepare('PRAGMA table_info(users)').all();
+     const hasNewColumn = tableInfo.some(col => col.name === 'new_column');
+     if (!hasNewColumn) {
+       db.db.exec('ALTER TABLE users ADD COLUMN new_column TEXT DEFAULT NULL');
+     }
+     ```
+   - **DO NOT create separate migration scripts** unless the change is complex and requires special handling
+   - For complex migrations, place in `backend/scripts/` and document in deployment guide
+   - Always test migrations on both SQLite and MySQL
+   - Ensure migrations are idempotent (safe to run multiple times)
+
 ### Frontend Architecture
 
 1. **Component Structure:**

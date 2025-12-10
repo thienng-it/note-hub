@@ -514,14 +514,14 @@ router.get('/github', (_req, res) => {
 
     // Generate CSRF state token
     const state = crypto.randomBytes(16).toString('hex');
-    
+
     // In production, store state in session or database for validation
     // For now, we'll return it to be sent back by the client
     const authUrl = githubOAuthService.getAuthorizationUrl(state);
-    
-    res.json({ 
+
+    res.json({
       auth_url: authUrl,
-      state: state 
+      state: state,
     });
   } catch (error) {
     console.error('GitHub OAuth URL error:', error);
@@ -535,7 +535,8 @@ router.get('/github', (_req, res) => {
  */
 router.post('/github/callback', async (req, res) => {
   try {
-    const { code, state } = req.body;
+    const { code } = req.body;
+    // TODO: Validate state parameter for CSRF protection
 
     if (!code) {
       return res.status(400).json({ error: 'Authorization code required' });

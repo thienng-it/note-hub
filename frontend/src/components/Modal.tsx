@@ -42,7 +42,7 @@ export function Modal({ isOpen, onClose, title, children, showCloseButton = true
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={handleBackdropClick}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
-      role="button"
+      role="presentation"
       tabIndex={-1}
       aria-label="Modal backdrop"
     >

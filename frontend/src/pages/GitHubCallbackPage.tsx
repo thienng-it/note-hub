@@ -74,7 +74,9 @@ export function GitHubCallbackPage() {
             <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
               Authenticating with GitHub
             </h1>
-            <p className="text-[var(--text-secondary)]">Please wait while we complete your sign-in...</p>
+            <p className="text-[var(--text-secondary)]">
+              Please wait while we complete your sign-in...
+            </p>
           </>
         )}
       </div>

@@ -44,9 +44,7 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
     const lockedUsers = await db.queryOne(
       `SELECT COUNT(*) as count FROM users WHERE is_locked = 1`,
     );
-    const adminUsers = await db.queryOne(
-      `SELECT COUNT(*) as count FROM users WHERE is_admin = 1`,
-    );
+    const adminUsers = await db.queryOne(`SELECT COUNT(*) as count FROM users WHERE is_admin = 1`);
 
     res.json({
       users: users.map((u) => ({
@@ -138,9 +136,10 @@ router.post('/users/:userId/lock', jwtRequired, adminRequired, async (req, res) 
     }
 
     // Check if user exists
-    const user = await db.queryOne(`SELECT id, username, is_admin, is_locked FROM users WHERE id = ?`, [
-      userId,
-    ]);
+    const user = await db.queryOne(
+      `SELECT id, username, is_admin, is_locked FROM users WHERE id = ?`,
+      [userId],
+    );
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -251,7 +250,9 @@ router.delete('/users/:userId', jwtRequired, adminRequired, async (req, res) => 
     await db.run(`DELETE FROM users WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} deleted user ID: ${userId} (username: ${user.username})`);
+    console.log(
+      `[SECURITY AUDIT] Admin ID: ${req.userId} deleted user ID: ${userId} (username: ${user.username})`,
+    );
 
     res.json({
       message: `User ${user.username} deleted successfully`,
@@ -290,7 +291,9 @@ router.post('/users/:userId/grant-admin', jwtRequired, adminRequired, async (req
     await db.run(`UPDATE users SET is_admin = 1 WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} granted admin privileges to user ID: ${userId}`);
+    console.log(
+      `[SECURITY AUDIT] Admin ID: ${req.userId} granted admin privileges to user ID: ${userId}`,
+    );
 
     res.json({
       message: `Admin privileges granted to ${user.username}`,
@@ -344,7 +347,9 @@ router.post('/users/:userId/revoke-admin', jwtRequired, adminRequired, async (re
     await db.run(`UPDATE users SET is_admin = 0 WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} revoked admin privileges from user ID: ${userId}`);
+    console.log(
+      `[SECURITY AUDIT] Admin ID: ${req.userId} revoked admin privileges from user ID: ${userId}`,
+    );
 
     res.json({
       message: `Admin privileges revoked from ${user.username}`,

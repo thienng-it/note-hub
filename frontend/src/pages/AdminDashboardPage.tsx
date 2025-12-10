@@ -93,7 +93,11 @@ export function AdminDashboardPage() {
   };
 
   const handleLockUser = async (userId: number, username: string) => {
-    if (!confirm(`Are you sure you want to lock user "${username}"?\n\nThey will not be able to log in until unlocked.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to lock user "${username}"?\n\nThey will not be able to log in until unlocked.`,
+      )
+    ) {
       return;
     }
 
@@ -384,10 +388,18 @@ export function AdminDashboardPage() {
                 <tbody className="divide-y divide-[var(--border-color)]">
                   {users.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-[var(--text-secondary)]">
-                        <i className="glass-i fas fa-users text-4xl mb-4 text-[var(--text-muted)]" aria-hidden="true"></i>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-12 text-center text-[var(--text-secondary)]"
+                      >
+                        <i
+                          className="glass-i fas fa-users text-4xl mb-4 text-[var(--text-muted)]"
+                          aria-hidden="true"
+                        ></i>
                         <p className="text-lg">No users found</p>
-                        {searchQuery && <p className="text-sm mt-2">Try adjusting your search criteria</p>}
+                        {searchQuery && (
+                          <p className="text-sm mt-2">Try adjusting your search criteria</p>
+                        )}
                       </td>
                     </tr>
                   ) : (
@@ -416,7 +428,9 @@ export function AdminDashboardPage() {
 
                         {/* Email Column */}
                         <td className="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] hidden sm:table-cell">
-                          {u.email || <span className="text-[var(--text-muted)] italic">No email</span>}
+                          {u.email || (
+                            <span className="text-[var(--text-muted)] italic">No email</span>
+                          )}
                         </td>
 
                         {/* Status Column */}
