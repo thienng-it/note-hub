@@ -1,0 +1,749 @@
+openapi: 3.0.0
+info:
+  title: NoteHub API
+  version: 2.0.0
+  description: |
+    # NoteHub API Documentation
+    
+    A comprehensive RESTful API for managing notes, tasks, and user profiles.
+    
+    ## Features
+    - 🔐 JWT-based authentication with refresh token rotation
+    - 📝 Full CRUD operations for notes and tasks
+    - 🏷️ Tag-based organization
+    - 🔍 Advanced search with Elasticsearch (optional)
+    - ⚡ Redis caching for improved performance (optional)
+    - 🔑 Google OAuth 2.0 and GitHub OAuth integration (optional)
+    - 🔐 WebAuthn passkey support
+    - 📊 Real-time metrics via Prometheus
+    
+    ## Authentication
+    
+    Most endpoints require authentication via JWT tokens in the Authorization header:
+    
+    ```
+    Authorization: Bearer <access_token>
+    ```
+    
+  contact:
+    name: NoteHub Support
+    email: support@notehub.example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000
+    description: Development server
+  - url: https://api.notehub.example.com
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management operations
+  - name: Profile
+    description: User profile management
+  - name: Notes
+    description: Note management operations
+  - name: Tasks
+    description: Task management operations
+  - name: Admin
+    description: Administrative operations (admin only)
+  - name: Passkey
+    description: WebAuthn passkey authentication
+  - name: AI
+    description: AI-powered features
+  - name: Upload
+    description: File upload operations
+  - name: Health
+    description: Health check and monitoring
+
+paths:
+  /api/v1/health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the API is running and healthy
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: {type: string, example: "ok"}
+                  timestamp: {type: string, format: date-time}
+                  uptime: {type: number, example: 3600}
+
+  /api/v1/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username: {type: string, minLength: 3, maxLength: 50, example: "johndoe"}
+                email: {type: string, format: email, example: "john@example.com"}
+                password: {type: string, format: password, minLength: 8, example: "SecurePass123!"}
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Authenticate user and receive JWT tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Get a new access token using refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token: {type: string, example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          access_token: {type: string}
+                          token_type: {type: string, example: "Bearer"}
+                          expires_in: {type: integer, example: 86400}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout
+      description: Invalidate refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token: {type: string}
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /api/v1/notes:
+    get:
+      tags:
+        - Notes
+      summary: List all notes
+      description: Get all notes for the authenticated user
+      parameters:
+        - name: filter
+          in: query
+          schema:
+            type: string
+            enum: [all, favorites, pinned, hidden]
+            default: all
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: tag
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Notes retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Note'
+                      meta:
+                        type: object
+                        properties:
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Notes
+      summary: Create a new note
+      description: Create a new note for the authenticated user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteCreate'
+      responses:
+        '201':
+          description: Note created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Note'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/notes/{id}:
+    get:
+      tags:
+        - Notes
+      summary: Get a note by ID
+      description: Retrieve a specific note by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Note retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Note'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Notes
+      summary: Update a note
+      description: Update an existing note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteCreate'
+      responses:
+        '200':
+          description: Note updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Note'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Notes
+      summary: Delete a note
+      description: Delete a specific note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Note deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/tasks:
+    get:
+      tags:
+        - Tasks
+      summary: List all tasks
+      description: Get all tasks for the authenticated user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, in_progress, completed]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high]
+      responses:
+        '200':
+          description: Tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Tasks
+      summary: Create a new task
+      description: Create a new task for the authenticated user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/tasks/{id}:
+    get:
+      tags:
+        - Tasks
+      summary: Get a task by ID
+      description: Retrieve a specific task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Task'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Tasks
+      summary: Update a task
+      description: Update an existing task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Task'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Tasks
+      summary: Delete a task
+      description: Delete a specific task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Task deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/profile:
+    get:
+      tags:
+        - Profile
+      summary: Get user profile
+      description: Get the profile of the authenticated user
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Profile
+      summary: Update user profile
+      description: Update the profile of the authenticated user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: {type: string, minLength: 3, maxLength: 50}
+                email: {type: string, format: email}
+                bio: {type: string, maxLength: 500}
+                theme: {type: string, enum: [light, dark]}
+                preferred_language: {type: string, example: "en"}
+                hidden_notes: {type: boolean}
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success: {type: boolean, example: true}
+        message: {type: string, example: "Success"}
+        data: {type: object}
+        meta:
+          type: object
+          properties:
+            timestamp: {type: string, format: date-time}
+            version: {type: string, example: "v1"}
+            requestId: {type: string}
+
+    Error:
+      type: object
+      properties:
+        success: {type: boolean, example: false}
+        error:
+          type: object
+          properties:
+            message: {type: string}
+            code: {type: string}
+            details: {type: object}
+        meta:
+          type: object
+          properties:
+            timestamp: {type: string, format: date-time}
+            version: {type: string, example: "v1"}
+            requestId: {type: string}
+
+    User:
+      type: object
+      properties:
+        id: {type: integer, example: 1}
+        username: {type: string, example: "johndoe"}
+        email: {type: string, format: email, example: "john@example.com"}
+        bio: {type: string, nullable: true, example: "Software developer"}
+        theme: {type: string, enum: [light, dark], example: "dark"}
+        hidden_notes: {type: boolean, example: false}
+        preferred_language: {type: string, example: "en"}
+        is_admin: {type: boolean, example: false}
+        created_at: {type: string, format: date-time}
+        last_login: {type: string, format: date-time, nullable: true}
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username: {type: string, example: "johndoe"}
+        password: {type: string, format: password, example: "SecurePass123!"}
+        totp_code: {type: string, example: "123456", description: "Required if 2FA is enabled"}
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token: {type: string}
+        refresh_token: {type: string}
+        token_type: {type: string, example: "Bearer"}
+        expires_in: {type: integer, example: 86400}
+        user:
+          $ref: '#/components/schemas/User'
+
+    Note:
+      type: object
+      properties:
+        id: {type: integer, example: 1}
+        user_id: {type: integer, example: 1}
+        title: {type: string, example: "My First Note"}
+        content: {type: string, example: "This is the content of my note."}
+        is_favorite: {type: boolean, example: false}
+        is_pinned: {type: boolean, example: false}
+        is_hidden: {type: boolean, example: false}
+        created_at: {type: string, format: date-time}
+        updated_at: {type: string, format: date-time}
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+
+    NoteCreate:
+      type: object
+      required: [title, content]
+      properties:
+        title: {type: string, example: "My First Note", minLength: 1, maxLength: 255}
+        content: {type: string, example: "This is the content of my note."}
+        tags:
+          type: array
+          items: {type: string}
+          example: ["work", "important"]
+        is_favorite: {type: boolean, example: false}
+        is_pinned: {type: boolean, example: false}
+        is_hidden: {type: boolean, example: false}
+
+    Tag:
+      type: object
+      properties:
+        id: {type: integer, example: 1}
+        name: {type: string, example: "work"}
+
+    Task:
+      type: object
+      properties:
+        id: {type: integer, example: 1}
+        user_id: {type: integer, example: 1}
+        title: {type: string, example: "Complete API documentation"}
+        description: {type: string, nullable: true, example: "Write comprehensive OpenAPI docs"}
+        status: {type: string, enum: [pending, in_progress, completed], example: "in_progress"}
+        priority: {type: string, enum: [low, medium, high], example: "high"}
+        due_date: {type: string, format: date, nullable: true, example: "2025-12-31"}
+        completed_at: {type: string, format: date-time, nullable: true}
+        created_at: {type: string, format: date-time}
+        updated_at: {type: string, format: date-time}
+
+    TaskCreate:
+      type: object
+      required: [title]
+      properties:
+        title: {type: string, example: "Complete API documentation", minLength: 1}
+        description: {type: string, example: "Write comprehensive OpenAPI docs"}
+        status: {type: string, enum: [pending, in_progress, completed], default: pending}
+        priority: {type: string, enum: [low, medium, high], default: medium}
+        due_date: {type: string, format: date, example: "2025-12-31"}
+
+    Pagination:
+      type: object
+      properties:
+        page: {type: integer, example: 1}
+        limit: {type: integer, example: 20}
+        total: {type: integer, example: 100}
+        totalPages: {type: integer, example: 5}
+        hasNext: {type: boolean, example: true}
+        hasPrev: {type: boolean, example: false}
+
+  responses:
+    Unauthorized:
+      description: Unauthorized - Invalid or missing authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: "Invalid or expired token"
+              code: "UNAUTHORIZED"
+            meta:
+              timestamp: "2025-12-10T06:00:00.000Z"
+              version: "v1"
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+security:
+  - bearerAuth: []

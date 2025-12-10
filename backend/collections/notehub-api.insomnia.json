@@ -1,0 +1,558 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-12-10T06:33:30.681Z",
+  "__export_source": "notehub-api.openapi",
+  "resources": [
+    {
+      "_id": "_workspace_1",
+      "_type": "workspace",
+      "name": "NoteHub API",
+      "description": "# NoteHub API Documentation\n\nA comprehensive RESTful API for managing notes, tasks, and user profiles.\n\n## Features\n- 🔐 JWT-based authentication with refresh token rotation\n- 📝 Full CRUD operations for notes and tasks\n- 🏷️ Tag-based organization\n- 🔍 Advanced search with Elasticsearch (optional)\n- ⚡ Redis caching for improved performance (optional)\n- 🔑 Google OAuth 2.0 and GitHub OAuth integration (optional)\n- 🔐 WebAuthn passkey support\n- 📊 Real-time metrics via Prometheus\n\n## Authentication\n\nMost endpoints require authentication via JWT tokens in the Authorization header:\n\n```\nAuthorization: Bearer <access_token>\n```\n",
+      "scope": "collection",
+      "parentId": null
+    },
+    {
+      "_id": "_env_1",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "baseUrl": "http://localhost:5000",
+        "accessToken": ""
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "baseUrl",
+          "accessToken"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1,
+      "parentId": "_workspace_1"
+    },
+    {
+      "_id": "_folder_Health",
+      "_type": "request_group",
+      "name": "Health",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 0,
+      "parentId": "_workspace_1"
+    },
+    {
+      "_id": "_req_0",
+      "_type": "request",
+      "name": "Health check",
+      "description": "Check if the API is running and healthy",
+      "url": "{{ _.baseUrl }}/api/v1/health",
+      "method": "GET",
+      "headers": [],
+      "authentication": {},
+      "parameters": [],
+      "body": {},
+      "metaSortKey": 1,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Health"
+    },
+    {
+      "_id": "_folder_Authentication",
+      "_type": "request_group",
+      "name": "Authentication",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 1,
+      "parentId": "_workspace_1"
+    },
+    {
+      "_id": "_req_1",
+      "_type": "request",
+      "name": "Register a new user",
+      "description": "Create a new user account",
+      "url": "{{ _.baseUrl }}/api/v1/auth/register",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 2,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Authentication"
+    },
+    {
+      "_id": "_req_2",
+      "_type": "request",
+      "name": "Login",
+      "description": "Authenticate user and receive JWT tokens",
+      "url": "{{ _.baseUrl }}/api/v1/auth/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 3,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Authentication"
+    },
+    {
+      "_id": "_req_3",
+      "_type": "request",
+      "name": "Refresh access token",
+      "description": "Get a new access token using refresh token",
+      "url": "{{ _.baseUrl }}/api/v1/auth/refresh",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 4,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Authentication"
+    },
+    {
+      "_id": "_req_4",
+      "_type": "request",
+      "name": "Logout",
+      "description": "Invalidate refresh token",
+      "url": "{{ _.baseUrl }}/api/v1/auth/logout",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Authentication"
+    },
+    {
+      "_id": "_folder_Notes",
+      "_type": "request_group",
+      "name": "Notes",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 2,
+      "parentId": "_workspace_1"
+    },
+    {
+      "_id": "_req_5",
+      "_type": "request",
+      "name": "List all notes",
+      "description": "Get all notes for the authenticated user",
+      "url": "{{ _.baseUrl }}/api/v1/notes",
+      "method": "GET",
+      "headers": [],
+      "authentication": {},
+      "parameters": [
+        {
+          "name": "filter",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "name": "search",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "name": "tag",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "name": "page",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "body": {},
+      "metaSortKey": 6,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Notes"
+    },
+    {
+      "_id": "_req_6",
+      "_type": "request",
+      "name": "Create a new note",
+      "description": "Create a new note for the authenticated user",
+      "url": "{{ _.baseUrl }}/api/v1/notes",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 7,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Notes"
+    },
+    {
+      "_id": "_req_7",
+      "_type": "request",
+      "name": "Get a note by ID",
+      "description": "Retrieve a specific note by ID",
+      "url": "{{ _.baseUrl }}/api/v1/notes/:id",
+      "method": "GET",
+      "headers": [],
+      "authentication": {},
+      "parameters": [],
+      "body": {},
+      "metaSortKey": 8,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Notes"
+    },
+    {
+      "_id": "_req_8",
+      "_type": "request",
+      "name": "Update a note",
+      "description": "Update an existing note",
+      "url": "{{ _.baseUrl }}/api/v1/notes/:id",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 9,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Notes"
+    },
+    {
+      "_id": "_req_9",
+      "_type": "request",
+      "name": "Delete a note",
+      "description": "Delete a specific note",
+      "url": "{{ _.baseUrl }}/api/v1/notes/:id",
+      "method": "DELETE",
+      "headers": [],
+      "authentication": {},
+      "parameters": [],
+      "body": {},
+      "metaSortKey": 10,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Notes"
+    },
+    {
+      "_id": "_folder_Tasks",
+      "_type": "request_group",
+      "name": "Tasks",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 3,
+      "parentId": "_workspace_1"
+    },
+    {
+      "_id": "_req_10",
+      "_type": "request",
+      "name": "List all tasks",
+      "description": "Get all tasks for the authenticated user",
+      "url": "{{ _.baseUrl }}/api/v1/tasks",
+      "method": "GET",
+      "headers": [],
+      "authentication": {},
+      "parameters": [
+        {
+          "name": "status",
+          "value": "",
+          "description": "",
+          "disabled": true
+        },
+        {
+          "name": "priority",
+          "value": "",
+          "description": "",
+          "disabled": true
+        }
+      ],
+      "body": {},
+      "metaSortKey": 11,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Tasks"
+    },
+    {
+      "_id": "_req_11",
+      "_type": "request",
+      "name": "Create a new task",
+      "description": "Create a new task for the authenticated user",
+      "url": "{{ _.baseUrl }}/api/v1/tasks",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 12,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Tasks"
+    },
+    {
+      "_id": "_req_12",
+      "_type": "request",
+      "name": "Get a task by ID",
+      "description": "Retrieve a specific task by ID",
+      "url": "{{ _.baseUrl }}/api/v1/tasks/:id",
+      "method": "GET",
+      "headers": [],
+      "authentication": {},
+      "parameters": [],
+      "body": {},
+      "metaSortKey": 13,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Tasks"
+    },
+    {
+      "_id": "_req_13",
+      "_type": "request",
+      "name": "Update a task",
+      "description": "Update an existing task",
+      "url": "{{ _.baseUrl }}/api/v1/tasks/:id",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 14,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Tasks"
+    },
+    {
+      "_id": "_req_14",
+      "_type": "request",
+      "name": "Delete a task",
+      "description": "Delete a specific task",
+      "url": "{{ _.baseUrl }}/api/v1/tasks/:id",
+      "method": "DELETE",
+      "headers": [],
+      "authentication": {},
+      "parameters": [],
+      "body": {},
+      "metaSortKey": 15,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Tasks"
+    },
+    {
+      "_id": "_folder_Profile",
+      "_type": "request_group",
+      "name": "Profile",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 4,
+      "parentId": "_workspace_1"
+    },
+    {
+      "_id": "_req_15",
+      "_type": "request",
+      "name": "Get user profile",
+      "description": "Get the profile of the authenticated user",
+      "url": "{{ _.baseUrl }}/api/v1/profile",
+      "method": "GET",
+      "headers": [],
+      "authentication": {},
+      "parameters": [],
+      "body": {},
+      "metaSortKey": 16,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Profile"
+    },
+    {
+      "_id": "_req_16",
+      "_type": "request",
+      "name": "Update user profile",
+      "description": "Update the profile of the authenticated user",
+      "url": "{{ _.baseUrl }}/api/v1/profile",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "metaSortKey": 17,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "parentId": "_folder_Profile"
+    }
+  ]
+}
