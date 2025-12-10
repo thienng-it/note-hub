@@ -136,6 +136,8 @@ class Database {
         hidden_notes TEXT,
         preferred_language TEXT DEFAULT 'en',
         totp_secret TEXT,
+        is_admin INTEGER DEFAULT 0,
+        is_locked INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         last_login DATETIME
@@ -345,6 +347,8 @@ class Database {
         hidden_notes TEXT,
         preferred_language VARCHAR(10) DEFAULT 'en',
         totp_secret VARCHAR(32),
+        is_admin TINYINT DEFAULT 0,
+        is_locked TINYINT DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         last_login DATETIME,

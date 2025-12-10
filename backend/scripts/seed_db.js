@@ -30,15 +30,15 @@ async function seed() {
     // Create admin user
     const existingAdmin = await db.queryOne(`SELECT id FROM users WHERE username = ?`, ['admin']);
     if (!existingAdmin) {
-      await db.run(`INSERT INTO users (username, password_hash, email, bio) VALUES (?, ?, ?, ?)`, [
-        'admin',
-        adminHash,
-        'admin@notehub.local',
-        'NoteHub Administrator',
-      ]);
+      await db.run(
+        `INSERT INTO users (username, password_hash, email, bio, is_admin) VALUES (?, ?, ?, ?, ?)`,
+        ['admin', adminHash, 'admin@notehub.local', 'NoteHub Administrator', 1],
+      );
       console.log('✅ Created admin user');
     } else {
-      console.log('ℹ️  Admin user already exists');
+      // Update existing admin to have is_admin flag
+      await db.run(`UPDATE users SET is_admin = 1 WHERE username = ?`, ['admin']);
+      console.log('ℹ️  Admin user already exists - updated is_admin flag');
     }
 
     // Create demo user

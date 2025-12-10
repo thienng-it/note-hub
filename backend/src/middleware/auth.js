@@ -34,12 +34,17 @@ const jwtRequired = async (req, res, next) => {
 
   // Get user from database
   const user = await db.queryOne(
-    `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, created_at, last_login FROM users WHERE id = ?`,
+    `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, is_admin, is_locked, created_at, last_login FROM users WHERE id = ?`,
     [result.userId],
   );
 
   if (!user) {
     return responseHandler.unauthorized(res, 'User not found');
+  }
+
+  // Check if user account is locked
+  if (user.is_locked) {
+    return responseHandler.forbidden(res, 'Account is locked. Please contact an administrator.');
   }
 
   // Add user to request
@@ -69,10 +74,10 @@ const jwtOptional = async (req, _res, next) => {
 
   if (result.valid) {
     const user = await db.queryOne(
-      `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, created_at, last_login FROM users WHERE id = ?`,
+      `SELECT id, username, email, bio, theme, hidden_notes, preferred_language, totp_secret, is_admin, is_locked, created_at, last_login FROM users WHERE id = ?`,
       [result.userId],
     );
-    if (user) {
+    if (user && !user.is_locked) {
       req.user = user;
       req.userId = user.id;
     }
@@ -85,7 +90,7 @@ const jwtOptional = async (req, _res, next) => {
  * Admin-only middleware.
  */
 const adminRequired = async (req, res, next) => {
-  if (!req.user || req.user.username !== 'admin') {
+  if (!req.user || !req.user.is_admin) {
     return responseHandler.forbidden(res, 'Admin privileges required');
   }
   next();
