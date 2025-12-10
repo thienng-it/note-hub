@@ -70,13 +70,13 @@ export interface Tag {
 
 export interface Task {
   id: number;
-  user_id: number;
+  owner_id: number;
   title: string;
   description?: string | null;
-  status: 'pending' | 'in_progress' | 'completed';
+  images?: string | null;
+  completed: number; // SQLite uses 0/1 for boolean
   priority: 'low' | 'medium' | 'high';
   due_date?: string | null;
-  completed_at?: string | null;
   created_at: string;
   updated_at: string;
 }
