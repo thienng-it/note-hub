@@ -259,50 +259,55 @@ router.post(
 /**
  * DELETE /api/admin/users/:userId - Delete a user account (admin only)
  */
-router.delete('/users/:userId', jwtRequired, adminRequired, async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = parseInt(req.params.userId!, 10);
+router.delete(
+  '/users/:userId',
+  jwtRequired,
+  adminRequired,
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = parseInt(req.params.userId!, 10);
 
-    if (!userId || userId <= 0) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      if (!userId || userId <= 0) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      // Check if user exists
+      const user = await db.queryOne<{ id: number; username: string }>(
+        `SELECT id, username FROM users WHERE id = ?`,
+        [userId],
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Prevent deleting the main admin user (username 'admin' is protected)
+      if (user.username === 'admin') {
+        return res.status(403).json({ error: 'Cannot delete the main admin user' });
+      }
+
+      // Prevent deleting yourself
+      if (userId === req.userId) {
+        return res.status(403).json({ error: 'Cannot delete your own account' });
+      }
+
+      // Delete user and all associated data (cascade deletes handled by foreign keys)
+      await db.run(`DELETE FROM users WHERE id = ?`, [userId]);
+
+      // Log admin action for audit trail
+      console.log(
+        `[SECURITY AUDIT] Admin ID: ${req.userId} deleted user ID: ${userId} (username: ${user.username})`,
+      );
+
+      res.json({
+        message: `User ${user.username} deleted successfully`,
+      });
+    } catch (error) {
+      console.error('Admin delete user error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Check if user exists
-    const user = await db.queryOne<{ id: number; username: string }>(
-      `SELECT id, username FROM users WHERE id = ?`,
-      [userId],
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Prevent deleting the main admin user (username 'admin' is protected)
-    if (user.username === 'admin') {
-      return res.status(403).json({ error: 'Cannot delete the main admin user' });
-    }
-
-    // Prevent deleting yourself
-    if (userId === req.userId) {
-      return res.status(403).json({ error: 'Cannot delete your own account' });
-    }
-
-    // Delete user and all associated data (cascade deletes handled by foreign keys)
-    await db.run(`DELETE FROM users WHERE id = ?`, [userId]);
-
-    // Log admin action for audit trail
-    console.log(
-      `[SECURITY AUDIT] Admin ID: ${req.userId} deleted user ID: ${userId} (username: ${user.username})`,
-    );
-
-    res.json({
-      message: `User ${user.username} deleted successfully`,
-    });
-  } catch (error) {
-    console.error('Admin delete user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+  },
+);
 
 /**
  * POST /api/admin/users/:userId/grant-admin - Grant admin privileges (admin only)
