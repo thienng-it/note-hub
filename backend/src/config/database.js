@@ -6,6 +6,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import logger from './logger.js';
 import replication from './databaseReplication.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
@@ -83,7 +84,7 @@ class Database {
     this.db.pragma('foreign_keys = ON');
     this.isSQLite = true;
 
-    console.log(`📦 Connected to SQLite database: ${dbPath}`);
+    logger.info(`📦 Connected to SQLite database: ${dbPath}`);
     return this.db;
   }
 
@@ -121,7 +122,7 @@ class Database {
     this.db = await mysql.createPool(config);
     this.isSQLite = false;
 
-    console.log(`🐬 Connected to MySQL database: ${config.host}:${config.port}/${config.database}`);
+    logger.info(`🐬 Connected to MySQL database: ${config.host}:${config.port}/${config.database}`);
     return this.db;
   }
 
@@ -352,24 +353,24 @@ class Database {
       const hasIsLocked = userColumns.some((col) => col.name === 'is_locked');
 
       if (!hasIsAdmin) {
-        console.log('  🔄 Migrating: Adding is_admin column to users table...');
+        logger.info('  🔄 Migrating: Adding is_admin column to users table...');
         this.db.exec('ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0');
         // Set admin user to is_admin = 1
         this.db.prepare('UPDATE users SET is_admin = 1 WHERE username = ?').run('admin');
-        console.log('  ✅ Migration: is_admin column added');
+        logger.info('  ✅ Migration: is_admin column added');
       }
 
       if (!hasIsLocked) {
-        console.log('  🔄 Migrating: Adding is_locked column to users table...');
+        logger.info('  🔄 Migrating: Adding is_locked column to users table...');
         this.db.exec('ALTER TABLE users ADD COLUMN is_locked INTEGER DEFAULT 0');
-        console.log('  ✅ Migration: is_locked column added');
+        logger.info('  ✅ Migration: is_locked column added');
       }
     } catch (error) {
-      console.warn('  ⚠️  Auto-migration warning:', error.message);
+      logger.warn('  ⚠️  Auto-migration warning:', error.message);
       // Non-fatal: schema might already be up-to-date
     }
 
-    console.log('✅ SQLite schema initialized');
+    logger.info('✅ SQLite schema initialized');
   }
 
   /**
@@ -559,24 +560,24 @@ class Database {
       );
 
       if (adminColumn.length === 0) {
-        console.log('  🔄 Migrating: Adding is_admin column to users table...');
+        logger.info('  🔄 Migrating: Adding is_admin column to users table...');
         await this.db.query('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
         // Set admin user to is_admin = 1
         await this.db.query('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
-        console.log('  ✅ Migration: is_admin column added');
+        logger.info('  ✅ Migration: is_admin column added');
       }
 
       if (lockedColumn.length === 0) {
-        console.log('  🔄 Migrating: Adding is_locked column to users table...');
+        logger.info('  🔄 Migrating: Adding is_locked column to users table...');
         await this.db.query('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
-        console.log('  ✅ Migration: is_locked column added');
+        logger.info('  ✅ Migration: is_locked column added');
       }
     } catch (error) {
-      console.warn('  ⚠️  Auto-migration warning:', error.message);
+      logger.warn('  ⚠️  Auto-migration warning:', error.message);
       // Non-fatal: schema might already be up-to-date
     }
 
-    console.log('✅ MySQL schema initialized');
+    logger.info('✅ MySQL schema initialized');
   }
 
   /**
@@ -601,7 +602,7 @@ class Database {
           (createdAtCol.dflt_value === null || createdAtCol.dflt_value === undefined);
 
         if (hasProblematicCreatedAt) {
-          console.log(`🔄 Migrating ${displayName} table: fixing created_at constraint`);
+          logger.info(`🔄 Migrating ${displayName} table: fixing created_at constraint`);
           // Need to rebuild the table to remove NOT NULL constraint or add DEFAULT
           // This is the SQLite way to modify column constraints
           this.rebuildTableWithFixedTimestamps(tableName, columns);
@@ -610,7 +611,7 @@ class Database {
 
         // Add updated_at column if missing
         if (!hasUpdatedAt) {
-          console.log(`🔄 Migrating ${displayName} table: adding updated_at column`);
+          logger.info(`🔄 Migrating ${displayName} table: adding updated_at column`);
           // Add column without DEFAULT (SQLite limitation)
           this.db.exec(`ALTER TABLE ${tableName} ADD COLUMN updated_at DATETIME`);
           // Set initial value for existing rows
@@ -643,7 +644,7 @@ class Database {
         const hasImages = columns.some((col) => col.name === 'images');
 
         if (!hasImages) {
-          console.log(`🔄 Migrating ${displayName} table: adding images column`);
+          logger.info(`🔄 Migrating ${displayName} table: adding images column`);
           this.db.exec(`ALTER TABLE ${tableName} ADD COLUMN images TEXT`);
         }
       };
@@ -667,20 +668,20 @@ class Database {
       const userColumns = this.db.prepare(`PRAGMA table_info(users)`).all();
       const hasHiddenNotes = userColumns.some((col) => col.name === 'hidden_notes');
       if (!hasHiddenNotes) {
-        console.log('🔄 Migrating users table: adding hidden_notes column');
+        logger.info('🔄 Migrating users table: adding hidden_notes column');
         this.db.exec(`ALTER TABLE users ADD COLUMN hidden_notes TEXT`);
       }
 
       // Add preferred_language column to users table if missing
       const hasPreferredLanguage = userColumns.some((col) => col.name === 'preferred_language');
       if (!hasPreferredLanguage) {
-        console.log('🔄 Migrating users table: adding preferred_language column');
+        logger.info('🔄 Migrating users table: adding preferred_language column');
         this.db.exec(`ALTER TABLE users ADD COLUMN preferred_language TEXT DEFAULT 'en'`);
       }
 
-      console.log('✅ SQLite schema migration completed');
+      logger.info('✅ SQLite schema migration completed');
     } catch (error) {
-      console.error('⚠️ SQLite migration error (non-fatal):', error.message);
+      logger.error('⚠️ SQLite migration error (non-fatal):', error.message);
     }
   }
 
@@ -793,7 +794,7 @@ class Database {
         END
     `);
 
-    console.log(`  ✓ Rebuilt ${tableName} table with fixed timestamp constraints`);
+    logger.info(`  ✓ Rebuilt ${tableName} table with fixed timestamp constraints`);
   }
 
   /**
@@ -833,7 +834,7 @@ class Database {
         const hasColumn = columns.some((col) => col.COLUMN_NAME === columnName);
 
         if (!hasColumn) {
-          console.log(`🔄 Migrating ${displayName} table: adding ${columnName} column`);
+          logger.info(`🔄 Migrating ${displayName} table: adding ${columnName} column`);
           // Use predefined column definition from whitelist
           const columnDef = allowedColumns[columnName];
           await this.db.execute(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDef}`);
@@ -857,9 +858,9 @@ class Database {
       // Add missing preferred_language column to users table
       await addColumnIfMissing('users', 'preferred_language', 'users');
 
-      console.log('✅ MySQL schema migration completed');
+      logger.info('✅ MySQL schema migration completed');
     } catch (error) {
-      console.error('⚠️ MySQL migration error (non-fatal):', error.message);
+      logger.error('⚠️ MySQL migration error (non-fatal):', error.message);
     }
   }
 

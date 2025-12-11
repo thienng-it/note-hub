@@ -14,6 +14,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import logger from './logger.js';
 
 class DatabaseReplication {
   constructor() {
@@ -47,7 +48,7 @@ class DatabaseReplication {
     // Check if replication is enabled
     const replicationEnabled = process.env.DB_REPLICATION_ENABLED === 'true';
     if (!replicationEnabled) {
-      console.log('📦 Database replication is disabled');
+      logger.info('📦 Database replication is disabled');
       this.enabled = false;
       return;
     }
@@ -61,17 +62,17 @@ class DatabaseReplication {
 
       if (this.replicas.length > 0) {
         this.enabled = true;
-        console.log(`✅ Database replication initialized with ${this.replicas.length} replica(s)`);
+        logger.info(`✅ Database replication initialized with ${this.replicas.length} replica(s)`);
 
         // Start health check monitoring
         this.startHealthChecks();
       } else {
-        console.log('⚠️  No replicas configured, replication disabled');
+        logger.info('⚠️  No replicas configured, replication disabled');
         this.enabled = false;
       }
     } catch (error) {
-      console.error('⚠️  Failed to initialize replication:', error.message);
-      console.log('   Continuing without replication');
+      logger.error('⚠️  Failed to initialize replication:', error.message);
+      logger.info('   Continuing without replication');
       this.enabled = false;
     }
   }
@@ -97,7 +98,7 @@ class DatabaseReplication {
 
         // Check if replica database exists
         if (!fs.existsSync(resolvedPath)) {
-          console.warn(`⚠️  Replica database not found: ${resolvedPath}`);
+          logger.warn(`⚠️  Replica database not found: ${resolvedPath}`);
           continue;
         }
 
@@ -112,9 +113,9 @@ class DatabaseReplication {
           healthy: true,
         });
 
-        console.log(`   ✓ Connected to SQLite replica: ${resolvedPath}`);
+        logger.info(`   ✓ Connected to SQLite replica: ${resolvedPath}`);
       } catch (error) {
-        console.error(`   ✗ Failed to connect to replica ${replicaPath}:`, error.message);
+        logger.error(`   ✗ Failed to connect to replica ${replicaPath}:`, error.message);
       }
     }
   }
@@ -180,9 +181,9 @@ class DatabaseReplication {
           healthy: true,
         });
 
-        console.log(`   ✓ Connected to MySQL replica: ${host}:${port}`);
+        logger.info(`   ✓ Connected to MySQL replica: ${host}:${port}`);
       } catch (error) {
-        console.error(`   ✗ Failed to connect to replica ${host}:${port}:`, error.message);
+        logger.error(`   ✗ Failed to connect to replica ${host}:${port}:`, error.message);
       }
     }
   }
@@ -200,7 +201,7 @@ class DatabaseReplication {
     // Try to use a replica with round-robin load balancing
     const replica = this.getNextHealthyReplica();
     if (!replica) {
-      console.warn('⚠️  No healthy replicas available, falling back to primary');
+      logger.warn('⚠️  No healthy replicas available, falling back to primary');
       return this.queryPrimary(sql, params);
     }
 
@@ -212,7 +213,7 @@ class DatabaseReplication {
         return rows;
       }
     } catch (error) {
-      console.error(
+      logger.error(
         `⚠️  Replica query failed (${replica.host || replica.path}), falling back to primary:`,
         error.message,
       );
@@ -236,7 +237,7 @@ class DatabaseReplication {
     // Try to use a replica with round-robin load balancing
     const replica = this.getNextHealthyReplica();
     if (!replica) {
-      console.warn('⚠️  No healthy replicas available, falling back to primary');
+      logger.warn('⚠️  No healthy replicas available, falling back to primary');
       return this.queryOnePrimary(sql, params);
     }
 
@@ -248,7 +249,7 @@ class DatabaseReplication {
         return rows[0];
       }
     } catch (error) {
-      console.error(
+      logger.error(
         `⚠️  Replica query failed (${replica.host || replica.path}), falling back to primary:`,
         error.message,
       );
@@ -376,7 +377,7 @@ class DatabaseReplication {
               replica.healthy = true;
               this.replicaHealthStatus.set(replica, true);
             } else {
-              console.warn(
+              logger.warn(
                 `⚠️  Replica ${replica.host}:${replica.port} has high lag: ${secondsBehind}s`,
               );
               replica.healthy = false;
@@ -391,7 +392,7 @@ class DatabaseReplication {
           connection.release();
         }
       } catch (error) {
-        console.error(
+        logger.error(
           `⚠️  Health check failed for replica ${replica.host || replica.path}:`,
           error.message,
         );
@@ -447,7 +448,7 @@ class DatabaseReplication {
           await replica.connection.end();
         }
       } catch (error) {
-        console.error('Error closing replica connection:', error.message);
+        logger.error('Error closing replica connection:', error.message);
       }
     }
 

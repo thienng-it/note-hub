@@ -4,6 +4,7 @@
  */
 
 import axios from 'axios';
+import logger from '../config/logger.js';
 import { google } from 'googleapis';
 
 class GoogleOAuthService {
@@ -23,7 +24,7 @@ class GoogleOAuthService {
     const redirectUri = process.env.GOOGLE_REDIRECT_URI;
 
     if (!clientId || !clientSecret || !redirectUri) {
-      console.log('⚠️  Google OAuth not configured - SSO disabled');
+      logger.info('⚠️  Google OAuth not configured - SSO disabled');
       this.enabled = false;
       return;
     }
@@ -32,9 +33,9 @@ class GoogleOAuthService {
       this.oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 
       this.enabled = true;
-      console.log('🔐 Google OAuth configured - SSO enabled');
+      logger.info('🔐 Google OAuth configured - SSO enabled');
     } catch (error) {
-      console.error('⚠️  Google OAuth initialization failed:', error.message);
+      logger.error('⚠️  Google OAuth initialization failed:', error.message);
       this.enabled = false;
     }
   }
@@ -71,7 +72,7 @@ class GoogleOAuthService {
       const { tokens } = await this.oauth2Client.getToken(code);
       return tokens;
     } catch (error) {
-      console.error('Error getting tokens:', error.message);
+      logger.error('Error getting tokens:', error.message);
       throw new Error('Failed to exchange authorization code');
     }
   }
@@ -95,7 +96,7 @@ class GoogleOAuthService {
         verified_email: response.data.verified_email,
       };
     } catch (error) {
-      console.error('Error getting user info:', error.message);
+      logger.error('Error getting user info:', error.message);
       throw new Error('Failed to get user information from Google');
     }
   }
@@ -123,7 +124,7 @@ class GoogleOAuthService {
         verified_email: payload.email_verified,
       };
     } catch (error) {
-      console.error('Error verifying ID token:', error.message);
+      logger.error('Error verifying ID token:', error.message);
       throw new Error('Failed to verify Google ID token');
     }
   }

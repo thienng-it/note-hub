@@ -4,6 +4,7 @@
  */
 
 import axios from 'axios';
+import logger from '../config/logger.js';
 
 /**
  * AI Provider Configuration
@@ -79,7 +80,7 @@ async function callOpenAI(systemPrompt, userContent) {
 
     return response.data.choices[0].message.content;
   } catch (error) {
-    console.error('OpenAI API error:', error.response?.data || error.message);
+    logger.error('OpenAI API error:', error.response?.data || error.message);
     throw new Error(
       `Failed to process with OpenAI: ${error.response?.data?.error?.message || error.message}`,
     );
@@ -116,7 +117,7 @@ async function callGemini(systemPrompt, userContent) {
 
     return response.data.candidates[0].content.parts[0].text;
   } catch (error) {
-    console.error('Gemini API error:', error.response?.data || error.message);
+    logger.error('Gemini API error:', error.response?.data || error.message);
     throw new Error(
       `Failed to process with Gemini: ${error.response?.data?.error?.message || error.message}`,
     );
@@ -150,7 +151,7 @@ async function callOllama(systemPrompt, userContent) {
 
     return response.data.response;
   } catch (error) {
-    console.error('Ollama API error:', error.response?.data || error.message);
+    logger.error('Ollama API error:', error.response?.data || error.message);
     throw new Error(`Failed to process with Ollama: ${error.message || 'Unknown error'}`);
   }
 }

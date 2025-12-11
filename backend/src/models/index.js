@@ -5,6 +5,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import logger from '../config/logger.js';
 import { DataTypes, Sequelize } from 'sequelize';
 
 let sequelize = null;
@@ -20,7 +21,7 @@ export async function initializeSequelize() {
   // Production: Use DATABASE_URL if provided
   if (databaseUrl) {
     sequelize = new Sequelize(databaseUrl, {
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      logging: process.env.NODE_ENV === 'development' ? (msg) => logger.debug(msg) : false,
       dialectOptions: {
         ssl: {
           require: true,
@@ -28,7 +29,7 @@ export async function initializeSequelize() {
         },
       },
     });
-    console.log('🌐 Connected to cloud database via DATABASE_URL');
+    logger.info('🌐 Connected to cloud database via DATABASE_URL');
   }
   // MySQL if MYSQL_HOST is set and no NOTES_DB_PATH
   else if (mysqlHost && !dbPath) {
@@ -48,7 +49,7 @@ export async function initializeSequelize() {
       username: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PASSWORD || '',
       database: process.env.MYSQL_DATABASE || 'notehub',
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      logging: process.env.NODE_ENV === 'development' ? (msg) => logger.debug(msg) : false,
       dialectOptions: sslDisabled
         ? {}
         : {
@@ -64,7 +65,7 @@ export async function initializeSequelize() {
         idle: 10000,
       },
     });
-    console.log(`🐬 Connected to MySQL: ${mysqlHost}`);
+    logger.info(`🐬 Connected to MySQL: ${mysqlHost}`);
   }
   // Default: SQLite
   else {
@@ -83,9 +84,9 @@ export async function initializeSequelize() {
     sequelize = new Sequelize({
       dialect: 'sqlite',
       storage: resolvedPath,
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      logging: process.env.NODE_ENV === 'development' ? (msg) => logger.debug(msg) : false,
     });
-    console.log(`📦 Connected to SQLite: ${resolvedPath}`);
+    logger.info(`📦 Connected to SQLite: ${resolvedPath}`);
   }
 
   // Define models
@@ -94,7 +95,7 @@ export async function initializeSequelize() {
 
   // Test connection
   await sequelize.authenticate();
-  console.log('✅ Database connection established');
+  logger.info('✅ Database connection established');
 
   return sequelize;
 }
@@ -513,7 +514,7 @@ export async function syncDatabase(options = {}) {
   }
 
   await sequelize.sync(options);
-  console.log('✅ Database schema synchronized');
+  logger.info('✅ Database schema synchronized');
 }
 
 /**
@@ -530,7 +531,7 @@ export async function closeDatabase() {
   if (sequelize) {
     await sequelize.close();
     sequelize = null;
-    console.log('📴 Database connection closed');
+    logger.info('📴 Database connection closed');
   }
 }
 

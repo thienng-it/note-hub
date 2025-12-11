@@ -3,6 +3,7 @@
  * Handles passkey registration and authentication using FIDO2/WebAuthn standards.
  */
 import {
+import logger from '../config/logger.js';
   generateAuthenticationOptions,
   generateRegistrationOptions,
   verifyAuthenticationResponse,

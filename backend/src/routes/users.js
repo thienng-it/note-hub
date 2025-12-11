@@ -2,6 +2,7 @@
  * User Routes - Public user information and search.
  */
 import express from 'express';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -53,7 +54,7 @@ router.get('/search', jwtRequired, async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error('User search error:', error);
+    logger.error('User search error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -90,7 +91,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
       is_own_profile: userId === req.userId,
     });
   } catch (error) {
-    console.error('Get user profile error:', error);
+    logger.error('Get user profile error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

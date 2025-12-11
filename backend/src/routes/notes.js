@@ -2,6 +2,7 @@
  * Notes Routes.
  */
 import express from 'express';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -37,7 +38,7 @@ router.get('/', jwtRequired, async (req, res) => {
       tags,
     });
   } catch (error) {
-    console.error('List notes error:', error);
+    logger.error('List notes error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -75,7 +76,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Get note error:', error);
+    logger.error('Get note error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -130,7 +131,7 @@ router.post('/', jwtRequired, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Create note error:', error);
+    logger.error('Create note error:', error);
     recordNoteOperation('create', false);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -194,7 +195,7 @@ async function updateNote(req, res) {
       },
     });
   } catch (error) {
-    console.error('Update note error:', error);
+    logger.error('Update note error:', error);
     recordNoteOperation('update', false);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -223,7 +224,7 @@ router.delete('/:id', jwtRequired, async (req, res) => {
 
     res.json({ message: 'Note deleted successfully' });
   } catch (error) {
-    console.error('Delete note error:', error);
+    logger.error('Delete note error:', error);
     recordNoteOperation('delete', false);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -258,7 +259,7 @@ router.post('/:id/toggle-pin', jwtRequired, async (req, res) => {
       message: updatedNote.pinned ? 'Note pinned' : 'Note unpinned',
     });
   } catch (error) {
-    console.error('Toggle pin error:', error);
+    logger.error('Toggle pin error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -293,7 +294,7 @@ router.post('/:id/toggle-favorite', jwtRequired, async (req, res) => {
       message: updatedNote.favorite ? 'Note favorited' : 'Note unfavorited',
     });
   } catch (error) {
-    console.error('Toggle favorite error:', error);
+    logger.error('Toggle favorite error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -329,7 +330,7 @@ router.post('/:id/toggle-archive', jwtRequired, async (req, res) => {
       message: updatedNote.archived ? 'Note archived' : 'Note unarchived',
     });
   } catch (error) {
-    console.error('Toggle archive error:', error);
+    logger.error('Toggle archive error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -362,7 +363,7 @@ router.get('/:id/shares', jwtRequired, async (req, res) => {
 
     res.json({ shares });
   } catch (error) {
-    console.error('Get shares error:', error);
+    logger.error('Get shares error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -400,7 +401,7 @@ router.post('/:id/share', jwtRequired, async (req, res) => {
       shared_with: result.sharedWith,
     });
   } catch (error) {
-    console.error('Share note error:', error);
+    logger.error('Share note error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -427,7 +428,7 @@ router.delete('/:id/share/:shareId', jwtRequired, async (req, res) => {
 
     res.json({ message: 'Note unshared successfully' });
   } catch (error) {
-    console.error('Unshare note error:', error);
+    logger.error('Unshare note error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

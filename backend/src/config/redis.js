@@ -3,6 +3,7 @@
  * Provides caching for frequently accessed data.
  */
 import Redis from 'ioredis';
+import logger from './logger.js';
 import { REDIS } from './constants.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
@@ -37,7 +38,7 @@ class RedisCache {
     const redisHost = process.env.REDIS_HOST;
 
     if (!redisUrl && !redisHost) {
-      console.log('⚠️  Redis not configured - caching disabled');
+      logger.info('⚠️  Redis not configured - caching disabled');
       this.enabled = false;
       return;
     }
@@ -70,25 +71,25 @@ class RedisCache {
       this.enabled = true;
 
       const host = redisHost || (redisUrl ? 'URL' : 'localhost');
-      console.log(`🔴 Connected to Redis: ${host}`);
+      logger.info(`🔴 Connected to Redis: ${host}`);
 
       // Handle connection errors gracefully
       this.client.on('error', (err) => {
-        console.error('Redis error:', err.message);
+        logger.error('Redis error:', err.message);
         this.enabled = false;
       });
 
       this.client.on('reconnecting', () => {
-        console.log('🔄 Redis reconnecting...');
+        logger.info('🔄 Redis reconnecting...');
       });
 
       this.client.on('ready', () => {
-        console.log('✅ Redis ready');
+        logger.info('✅ Redis ready');
         this.enabled = true;
       });
     } catch (error) {
-      console.error('⚠️  Redis connection failed:', error.message);
-      console.log('⚠️  Continuing without cache - performance may be slower');
+      logger.error('⚠️  Redis connection failed:', error.message);
+      logger.info('⚠️  Continuing without cache - performance may be slower');
       this.enabled = false;
       this.client = null;
     }
@@ -111,7 +112,7 @@ class RedisCache {
       recordMetrics('get', result);
       return value ? JSON.parse(value) : null;
     } catch (error) {
-      console.error(`Cache get error for key ${key}:`, error.message);
+      logger.error(`Cache get error for key ${key}:`, error.message);
       const recordMetrics = await getMetrics();
       recordMetrics('get', 'error');
       return null;
@@ -134,7 +135,7 @@ class RedisCache {
       recordMetrics('set', 'success');
       return true;
     } catch (error) {
-      console.error(`Cache set error for key ${key}:`, error.message);
+      logger.error(`Cache set error for key ${key}:`, error.message);
       const recordMetrics = await getMetrics();
       recordMetrics('set', 'error');
       return false;
@@ -157,7 +158,7 @@ class RedisCache {
       recordMetrics('del', 'success');
       return true;
     } catch (error) {
-      console.error(`Cache del error for key ${key}:`, error.message);
+      logger.error(`Cache del error for key ${key}:`, error.message);
       const recordMetrics = await getMetrics();
       recordMetrics('del', 'error');
       return false;
@@ -197,7 +198,7 @@ class RedisCache {
 
         // Safety check to prevent infinite loops
         if (iterations >= maxIterations) {
-          console.warn(
+          logger.warn(
             `Cache delPattern reached max iterations (${maxIterations}) for pattern ${pattern}`,
           );
           break;
@@ -206,7 +207,7 @@ class RedisCache {
 
       return true;
     } catch (error) {
-      console.error(`Cache delPattern error for pattern ${pattern}:`, error.message);
+      logger.error(`Cache delPattern error for pattern ${pattern}:`, error.message);
       return false;
     }
   }

@@ -4,6 +4,7 @@
  */
 
 import crypto from 'node:crypto';
+import logger from '../config/logger.js';
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import db from '../config/database.js';
@@ -79,7 +80,7 @@ export default class GitHubOAuthService {
 
       return response.data.access_token;
     } catch (error) {
-      console.error('GitHub token exchange error:', error.response?.data || error.message);
+      logger.error('GitHub token exchange error:', error.response?.data || error.message);
       throw new Error('Failed to exchange authorization code for token');
     }
   }
@@ -122,7 +123,7 @@ export default class GitHubOAuthService {
         bio: user.bio,
       };
     } catch (error) {
-      console.error('GitHub API error:', error.response?.data || error.message);
+      logger.error('GitHub API error:', error.response?.data || error.message);
       throw new Error('Failed to fetch user profile from GitHub');
     }
   }
@@ -180,7 +181,7 @@ export default class GitHubOAuthService {
     // Fetch and return the created user
     user = await db.queryOne(`SELECT * FROM users WHERE id = ?`, [result.insertId]);
 
-    console.log(`[GitHub OAuth] Created new user: ${finalUsername} (GitHub ID: ${github_id})`);
+    logger.info(`[GitHub OAuth] Created new user: ${finalUsername} (GitHub ID: ${github_id})`);
 
     return user;
   }
