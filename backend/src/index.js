@@ -139,13 +139,13 @@ let activeSessions = 0;
 app.on('connection', (socket) => {
   activeSessions++;
 
-  app.on('close', () => {
+  socket.on('close', () => {
     activeSessions--;
   });
 });
 
 // Update application metrics periodically
-const { updateApplicationMetrics } = require('./middleware/metrics');
+const { updateApplicationMetrics, updateDbPoolMetrics } = require('./middleware/metrics');
 async function updateMetricsJob() {
   try {
     // Combine queries for better performance
@@ -189,6 +189,12 @@ async function updateMetricsJob() {
       notesByStatus: notesByStatus,
       activeSessions: activeSessions,
     });
+
+    // Update database pool metrics (MySQL only)
+    const poolMetrics = db.getPoolMetrics();
+    if (poolMetrics) {
+      updateDbPoolMetrics(poolMetrics.active, poolMetrics.idle, poolMetrics.total);
+    }
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });
   }

@@ -5,6 +5,22 @@
 const { Client } = require('@elastic/elasticsearch');
 const { ELASTICSEARCH, SEARCH_MIN_LENGTH } = require('./constants');
 
+// Import metrics recording function - use lazy loading to avoid circular dependency
+let recordSearchOperation = null;
+function getMetrics() {
+  if (!recordSearchOperation) {
+    try {
+      const metrics = require('../middleware/metrics');
+      recordSearchOperation = metrics.recordSearchOperation;
+    } catch (_error) {
+      // Metrics not available yet, use noop
+      // biome-ignore lint/suspicious/noEmptyBlockStatements: Intentional noop for lazy loading
+      recordSearchOperation = () => {};
+    }
+  }
+  return recordSearchOperation;
+}
+
 class ElasticsearchService {
   constructor() {
     this.client = null;
@@ -193,6 +209,9 @@ class ElasticsearchService {
   async searchNotes(userId, query, options = {}) {
     if (!this.enabled || !this.client) return null;
 
+    const startTime = Date.now();
+    let success = true;
+
     try {
       const { archived = false, favorite = null, tags = null, limit = 20, offset = 0 } = options;
 
@@ -259,7 +278,13 @@ class ElasticsearchService {
       };
     } catch (error) {
       console.error('Elasticsearch search error:', error.message);
+      success = false;
       return null;
+    } finally {
+      // Record metrics
+      const duration = Date.now() - startTime;
+      const recordMetrics = getMetrics();
+      recordMetrics('elasticsearch', duration, success);
     }
   }
 

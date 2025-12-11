@@ -172,6 +172,9 @@ async function updateNote(req, res) {
 
     // Record metrics
     recordNoteOperation('update', true);
+    if (tags && tags.length > 0) {
+      recordTagOperation('update');
+    }
 
     res.json({
       note: {

@@ -7,6 +7,22 @@ const path = require('node:path');
 const fs = require('node:fs');
 const replication = require('./databaseReplication');
 
+// Import metrics recording function - use lazy loading to avoid circular dependency
+let recordDbQuery = null;
+function getMetrics() {
+  if (!recordDbQuery) {
+    try {
+      const metrics = require('../middleware/metrics');
+      recordDbQuery = metrics.recordDbQuery;
+    } catch (_error) {
+      // Metrics not available yet, use noop
+      // biome-ignore lint/suspicious/noEmptyBlockStatements: Intentional noop for lazy loading
+      recordDbQuery = () => {};
+    }
+  }
+  return recordDbQuery;
+}
+
 class Database {
   constructor() {
     this.db = null;
@@ -851,17 +867,35 @@ class Database {
    * Routes read queries to replicas if replication is enabled.
    */
   async query(sql, params = []) {
-    // Use replication for SELECT queries if enabled
-    if (this.replication.isEnabled() && sql.trim().toUpperCase().startsWith('SELECT')) {
-      return this.replication.query(sql, params);
-    }
+    const startTime = Date.now();
+    const operation = sql.trim().split(/\s+/)[0].toUpperCase(); // Extract operation (SELECT, INSERT, etc.)
+    let success = true;
 
-    // Otherwise use primary connection
-    if (this.isSQLite) {
-      return this.db.prepare(sql).all(...params);
+    try {
+      // Use replication for SELECT queries if enabled
+      if (this.replication.isEnabled() && operation === 'SELECT') {
+        const result = await this.replication.query(sql, params);
+        return result;
+      }
+
+      // Otherwise use primary connection
+      let result;
+      if (this.isSQLite) {
+        result = this.db.prepare(sql).all(...params);
+      } else {
+        const [rows] = await this.db.execute(sql, params);
+        result = rows;
+      }
+      return result;
+    } catch (error) {
+      success = false;
+      throw error;
+    } finally {
+      // Record metrics
+      const duration = Date.now() - startTime;
+      const recordMetrics = getMetrics();
+      recordMetrics(operation, duration, success);
     }
-    const [rows] = await this.db.execute(sql, params);
-    return rows;
   }
 
   /**
@@ -869,29 +903,64 @@ class Database {
    * Routes read queries to replicas if replication is enabled.
    */
   async queryOne(sql, params = []) {
-    // Use replication for SELECT queries if enabled
-    if (this.replication.isEnabled() && sql.trim().toUpperCase().startsWith('SELECT')) {
-      return this.replication.queryOne(sql, params);
-    }
+    const startTime = Date.now();
+    const operation = sql.trim().split(/\s+/)[0].toUpperCase(); // Extract operation (SELECT, INSERT, etc.)
+    let success = true;
 
-    // Otherwise use primary connection
-    if (this.isSQLite) {
-      return this.db.prepare(sql).get(...params);
+    try {
+      // Use replication for SELECT queries if enabled
+      if (this.replication.isEnabled() && operation === 'SELECT') {
+        const result = await this.replication.queryOne(sql, params);
+        return result;
+      }
+
+      // Otherwise use primary connection
+      let result;
+      if (this.isSQLite) {
+        result = this.db.prepare(sql).get(...params);
+      } else {
+        const [rows] = await this.db.execute(sql, params);
+        result = rows[0];
+      }
+      return result;
+    } catch (error) {
+      success = false;
+      throw error;
+    } finally {
+      // Record metrics
+      const duration = Date.now() - startTime;
+      const recordMetrics = getMetrics();
+      recordMetrics(operation, duration, success);
     }
-    const [rows] = await this.db.execute(sql, params);
-    return rows[0];
   }
 
   /**
    * Run an insert/update/delete query.
    */
   async run(sql, params = []) {
-    if (this.isSQLite) {
-      const result = this.db.prepare(sql).run(...params);
-      return { insertId: result.lastInsertRowid, affectedRows: result.changes };
+    const startTime = Date.now();
+    const operation = sql.trim().split(/\s+/)[0].toUpperCase(); // Extract operation (INSERT, UPDATE, DELETE)
+    let success = true;
+
+    try {
+      let result;
+      if (this.isSQLite) {
+        const runResult = this.db.prepare(sql).run(...params);
+        result = { insertId: runResult.lastInsertRowid, affectedRows: runResult.changes };
+      } else {
+        const [execResult] = await this.db.execute(sql, params);
+        result = { insertId: execResult.insertId, affectedRows: execResult.affectedRows };
+      }
+      return result;
+    } catch (error) {
+      success = false;
+      throw error;
+    } finally {
+      // Record metrics
+      const duration = Date.now() - startTime;
+      const recordMetrics = getMetrics();
+      recordMetrics(operation, duration, success);
     }
-    const [result] = await this.db.execute(sql, params);
-    return { insertId: result.insertId, affectedRows: result.affectedRows };
   }
 
   /**
@@ -899,6 +968,35 @@ class Database {
    */
   getReplicationStatus() {
     return this.replication.getStatus();
+  }
+
+  /**
+   * Get database connection pool metrics.
+   * Returns pool statistics for MySQL or null for SQLite.
+   *
+   * Note: mysql2 library doesn't expose public APIs for active/idle connection counts.
+   * We only report the configured pool size limit.
+   */
+  getPoolMetrics() {
+    if (this.isSQLite || !this.db || !this.db.pool) {
+      return null;
+    }
+
+    // MySQL pool statistics
+    try {
+      const pool = this.db.pool;
+      // mysql2 only exposes config.connectionLimit in public API
+      const total = pool.config?.connectionLimit || 10;
+
+      // Return basic metrics - active/idle counts not available via public API
+      return {
+        active: 0, // Not available in mysql2 public API
+        idle: 0, // Not available in mysql2 public API
+        total: total,
+      };
+    } catch (_error) {
+      return null;
+    }
   }
 
   /**
