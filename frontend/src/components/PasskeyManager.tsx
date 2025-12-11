@@ -68,10 +68,14 @@ export function PasskeyManager() {
         setDeviceNameInput('');
       } else {
         setError(result.error || 'Failed to register passkey');
+        setShowAddModal(false);
+        setDeviceNameInput('');
       }
     } catch (err: unknown) {
       const error = err as { message?: string };
       setError(error.message || 'Failed to register passkey');
+      setShowAddModal(false);
+      setDeviceNameInput('');
     } finally {
       setIsRegistering(false);
     }
