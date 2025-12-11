@@ -51,8 +51,9 @@ export default class PasskeyService {
       userID: isoUint8Array.fromUTF8String(userId.toString()),
       userName: username,
       attestationType: 'none',
+      // In v13+, excludeCredentials expects id to be Base64URLString directly
       excludeCredentials: existingCredentials.map((cred) => ({
-        id: Buffer.from(cred.credential_id, 'base64'),
+        id: cred.credential_id, // Already Base64URL-encoded string
         type: 'public-key',
       })),
       authenticatorSelection: {
@@ -83,18 +84,21 @@ export default class PasskeyService {
       return { success: false, error: 'Registration verification failed' };
     }
 
-    const { credentialID, credentialPublicKey, counter, aaguid } = verification.registrationInfo;
+    // In @simplewebauthn/server v13+, the API changed to use a 'credential' object
+    const { credential, aaguid } = verification.registrationInfo;
 
     // Store credential in database
+    // credential.id is already a Base64URL-encoded string
+    // credential.publicKey is a Uint8Array that needs to be converted to base64
     await db.run(
       `INSERT INTO webauthn_credentials (
         user_id, credential_id, public_key, counter, device_name, aaguid
       ) VALUES (?, ?, ?, ?, ?, ?)`,
       [
         userId,
-        Buffer.from(credentialID).toString('base64'),
-        Buffer.from(credentialPublicKey).toString('base64'),
-        counter,
+        credential.id, // Already Base64URL-encoded string
+        Buffer.from(credential.publicKey).toString('base64'),
+        credential.counter,
         deviceName,
         aaguid,
       ],
@@ -124,8 +128,9 @@ export default class PasskeyService {
           `SELECT credential_id FROM webauthn_credentials WHERE user_id = ?`,
           [user.id],
         );
+        // In v13+, allowCredentials expects id to be Base64URLString directly
         allowCredentials = credentials.map((cred) => ({
-          id: Buffer.from(cred.credential_id, 'base64'),
+          id: cred.credential_id, // Already Base64URL-encoded string
           type: 'public-key',
         }));
       }
@@ -147,10 +152,10 @@ export default class PasskeyService {
     const { rpID, origin } = PasskeyService.getRelyingPartyConfig();
 
     // Find the credential
-    const credentialIdBase64 = Buffer.from(response.id, 'base64').toString('base64');
+    // response.id is Base64URL-encoded, credential_id in DB is also Base64URL-encoded
     const credential = await db.queryOne(
       `SELECT * FROM webauthn_credentials WHERE credential_id = ?`,
-      [credentialIdBase64],
+      [response.id],
     );
 
     if (!credential) {
@@ -164,14 +169,15 @@ export default class PasskeyService {
       return { success: false, error: 'User not found' };
     }
 
+    // In @simplewebauthn/server v13+, the API changed to use 'credential' instead of 'authenticator'
     const verification = await verifyAuthenticationResponse({
       response,
       expectedChallenge,
       expectedOrigin: origin,
       expectedRPID: rpID,
-      authenticator: {
-        credentialID: Buffer.from(credential.credential_id, 'base64'),
-        credentialPublicKey: Buffer.from(credential.public_key, 'base64'),
+      credential: {
+        id: credential.credential_id, // Base64URL-encoded string
+        publicKey: Buffer.from(credential.public_key, 'base64'),
         counter: credential.counter,
       },
     });
