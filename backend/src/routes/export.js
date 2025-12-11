@@ -124,6 +124,9 @@ router.post('/import', jwtRequired, async (req, res) => {
         }
 
         // Check if note with same title already exists
+        // Note: This uses title for uniqueness check. Users with duplicate titles
+        // can use the overwrite parameter to update existing notes or manually
+        // rename notes before importing.
         const existing = await db.queryOne(
           `SELECT id FROM notes WHERE title = ? AND owner_id = ?`,
           [noteData.title, userId],
@@ -218,6 +221,9 @@ router.post('/import', jwtRequired, async (req, res) => {
         }
 
         // Check if task with same title already exists
+        // Note: This uses title for uniqueness check. Users with duplicate titles
+        // can use the overwrite parameter to update existing tasks or manually
+        // rename tasks before importing.
         const existing = await db.queryOne(
           `SELECT id FROM tasks WHERE title = ? AND owner_id = ?`,
           [taskData.title, userId],
