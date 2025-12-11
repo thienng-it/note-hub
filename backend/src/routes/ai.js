@@ -2,9 +2,11 @@
  * AI Routes - Text improvement features using AI
  */
 import express from 'express';
+
 const router = express.Router();
+
+import { jwtRequired } from '../middleware/auth.js';
 import * as AIService from '../services/aiService.js';
-import {  jwtRequired  } from '../middleware/auth.js';
 
 /**
  * GET /api/ai/status - Get AI status and configuration

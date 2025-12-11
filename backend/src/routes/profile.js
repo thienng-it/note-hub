@@ -2,10 +2,12 @@
  * Profile and User Routes.
  */
 import express from 'express';
+
 const router = express.Router();
-import {  jwtRequired  } from '../middleware/auth.js';
-import db from '../config/database.js';
+
 import crypto from 'node:crypto';
+import db from '../config/database.js';
+import { jwtRequired } from '../middleware/auth.js';
 
 /**
  * GET /api/profile - Get current user's profile

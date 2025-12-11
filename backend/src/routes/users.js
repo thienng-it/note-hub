@@ -2,9 +2,11 @@
  * User Routes - Public user information and search.
  */
 import express from 'express';
+
 const router = express.Router();
-import {  jwtRequired  } from '../middleware/auth.js';
+
 import db from '../config/database.js';
+import { jwtRequired } from '../middleware/auth.js';
 
 /**
  * GET /api/users/search - Search for users (for share autocomplete)

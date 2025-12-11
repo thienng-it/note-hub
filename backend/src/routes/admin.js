@@ -2,10 +2,12 @@
  * Admin Routes.
  */
 import express from 'express';
+
 const router = express.Router();
-import {  jwtRequired, adminRequired  } from '../middleware/auth.js';
+
 import db from '../config/database.js';
-import {  record2FAOperation  } from '../middleware/metrics.js';
+import { adminRequired, jwtRequired } from '../middleware/auth.js';
+import { record2FAOperation } from '../middleware/metrics.js';
 
 /**
  * GET /api/admin/users - List all users (admin only)

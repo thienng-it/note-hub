@@ -2,9 +2,10 @@
  * Sequelize ORM Models
  * Provides a consistent interface for database operations across SQLite and MySQL.
  */
-import {  Sequelize, DataTypes, Op  } from 'sequelize';
-import path from 'node:path';
+
 import fs from 'node:fs';
+import path from 'node:path';
+import { DataTypes, Op, Sequelize } from 'sequelize';
 
 let sequelize = null;
 
@@ -88,7 +89,8 @@ export async function initializeSequelize() {
   }
 
   // Define models
-  defineModels();
+  const models = defineModels();
+  ({ User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag } = models);
 
   // Test connection
   await sequelize.authenticate();
@@ -496,15 +498,11 @@ function defineModels() {
   Invitation.belongsTo(User, { foreignKey: 'used_by_id', as: 'usedBy' });
 
   // Export models
-  module.exports.User = User;
-  module.exports.Tag = Tag;
-  module.exports.Note = Note;
-  module.exports.Task = Task;
-  module.exports.ShareNote = ShareNote;
-  module.exports.PasswordResetToken = PasswordResetToken;
-  module.exports.Invitation = Invitation;
-  module.exports.NoteTag = NoteTag;
+  return { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag };
 }
+
+// Module-level model exports
+let User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag;
 
 /**
  * Sync database schema.
@@ -535,3 +533,6 @@ export async function closeDatabase() {
     console.log('📴 Database connection closed');
   }
 }
+
+// Export models
+export { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag };

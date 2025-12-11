@@ -1,8 +1,9 @@
 /**
  * JWT Service for token generation and validation with refresh token rotation.
  */
-import jwt from 'jsonwebtoken';
+
 import crypto from 'node:crypto';
+import jwt from 'jsonwebtoken';
 import db from '../config/database.js';
 
 class JWTService {

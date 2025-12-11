@@ -3,8 +3,9 @@
  * Supports both SQLite (default) and MySQL.
  * Supports read replicas for improved performance and high availability.
  */
-import path from 'node:path';
+
 import fs from 'node:fs';
+import path from 'node:path';
 import replication from './databaseReplication.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency

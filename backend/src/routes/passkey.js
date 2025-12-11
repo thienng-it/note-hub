@@ -2,14 +2,16 @@
  * Passkey (WebAuthn) Authentication Routes.
  */
 import express from 'express';
+
 const router = express.Router();
-import PasskeyService from '../services/passkeyService.js';
-import jwtService from '../services/jwtService.js';
-import AuthService from '../services/authService.js';
-import {  jwtRequired  } from '../middleware/auth.js';
-import * as responseHandler from '../utils/responseHandler.js';
-import {  storeChallenge, getAndRemoveChallenge  } from '../services/challengeStorage.js';
+
 import logger from '../config/logger.js';
+import { jwtRequired } from '../middleware/auth.js';
+import AuthService from '../services/authService.js';
+import { getAndRemoveChallenge, storeChallenge } from '../services/challengeStorage.js';
+import jwtService from '../services/jwtService.js';
+import PasskeyService from '../services/passkeyService.js';
+import * as responseHandler from '../utils/responseHandler.js';
 
 /**
  * GET /api/auth/passkey/status - Check if passkey authentication is enabled

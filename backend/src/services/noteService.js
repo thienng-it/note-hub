@@ -2,13 +2,14 @@
  * Note Service for note management operations.
  * Integrated with Redis caching and Elasticsearch for enhanced performance.
  */
-import db from '../config/database.js';
-import cache from '../config/redis.js';
-import elasticsearch from '../config/elasticsearch.js';
-import {  SEARCH_MIN_LENGTH, CACHE_TTL  } from '../config/constants.js';
-import {  marked  } from 'marked';
+
+import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
-import {  validateEmail  } from '../utils/common.js';
+import { CACHE_TTL, SEARCH_MIN_LENGTH } from '../config/constants.js';
+import db from '../config/database.js';
+import elasticsearch from '../config/elasticsearch.js';
+import cache from '../config/redis.js';
+import { validateEmail } from '../utils/common.js';
 
 export default class NoteService {
   /**

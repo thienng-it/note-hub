@@ -3,8 +3,9 @@
  * Handles storage and retrieval of WebAuthn challenges.
  * Uses Redis when available, falls back to in-memory storage for single-instance deployments.
  */
-import cache from '../config/redis.js';
+
 import logger from '../config/logger.js';
+import cache from '../config/redis.js';
 
 // Fallback in-memory storage for when Redis is not available
 const memoryStore = new Map();

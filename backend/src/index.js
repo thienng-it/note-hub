@@ -5,10 +5,11 @@
  * Supports both SQLite (default) and MySQL databases.
  * Uses Sequelize ORM for database operations.
  */
-import path from 'node:path';
+
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // ESM compatibility: define __dirname and __filename
 const __filename = fileURLToPath(import.meta.url);
@@ -19,37 +20,35 @@ const require = createRequire(import.meta.url);
 
 // Load .env from project root
 import dotenv from 'dotenv';
+
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+import cors from 'cors';
+
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+// Database: supports both legacy DB layer and Sequelize ORM
+import db from './config/database.js';
+import elasticsearch from './config/elasticsearch.js';
 // Logger must be imported after dotenv config
 import logger from './config/logger.js';
 
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-
-// Database: supports both legacy DB layer and Sequelize ORM
-import db from './config/database.js';
-import {  initializeSequelize, syncDatabase, closeDatabase  } from './models/index.js';
-
 // Cache and search services
 import cache from './config/redis.js';
-import elasticsearch from './config/elasticsearch.js';
-
-// Import passkey services
-import { isUsingRedis } from './services/challengeStorage.js';
-
-// Import routes
-import authRoutes from './routes/auth.js';
-import passkeyRoutes from './routes/passkey.js';
-import notesRoutes from './routes/notes.js';
-import tasksRoutes from './routes/tasks.js';
-import profileRoutes from './routes/profile.js';
-import usersRoutes from './routes/users.js';
+import { closeDatabase, initializeSequelize, syncDatabase } from './models/index.js';
 import adminRoutes from './routes/admin.js';
 import aiRoutes from './routes/ai.js';
+// Import routes
+import authRoutes from './routes/auth.js';
+import notesRoutes from './routes/notes.js';
+import passkeyRoutes from './routes/passkey.js';
+import profileRoutes from './routes/profile.js';
+import tasksRoutes from './routes/tasks.js';
 import uploadRoutes from './routes/upload.js';
+import usersRoutes from './routes/users.js';
+// Import passkey services
+import { isUsingRedis } from './services/challengeStorage.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -109,22 +108,27 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Request ID middleware for tracking
 import requestIdMiddleware from './middleware/requestId.js';
+
 app.use(requestIdMiddleware);
 
 // Additional security headers
 import securityHeadersMiddleware from './middleware/securityHeaders.js';
+
 app.use(securityHeadersMiddleware);
 
 // Request logging middleware
-import {  requestLogger  } from './middleware/logging.js';
+import { requestLogger } from './middleware/logging.js';
+
 app.use(requestLogger);
 
 // Prometheus metrics middleware
-import {  metricsMiddleware, metricsEndpoint  } from './middleware/metrics.js';
+import { metricsEndpoint, metricsMiddleware } from './middleware/metrics.js';
+
 app.use(metricsMiddleware);
 
 // Response adapter for backward compatibility
-import {  markAsV1, legacyResponseAdapter  } from './middleware/responseAdapter.js';
+import { legacyResponseAdapter, markAsV1 } from './middleware/responseAdapter.js';
+
 app.use(legacyResponseAdapter);
 
 // API v1 routes (standardized response format)
@@ -160,7 +164,8 @@ app.on('connection', (socket) => {
 });
 
 // Update application metrics periodically
-import {  updateApplicationMetrics, updateDbPoolMetrics  } from './middleware/metrics.js';
+import { updateApplicationMetrics, updateDbPoolMetrics } from './middleware/metrics.js';
+
 async function updateMetricsJob() {
   try {
     // Combine queries for better performance

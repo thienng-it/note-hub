@@ -2,24 +2,26 @@
  * Authentication Routes.
  */
 import express from 'express';
+
 const router = express.Router();
-import AuthService from '../services/authService.js';
-import jwtService from '../services/jwtService.js';
-import googleOAuthService from '../services/googleOAuthService.js';
-import {  jwtRequired  } from '../middleware/auth.js';
-import * as responseHandler from '../utils/responseHandler.js';
-import { 
-  validateRequiredFields,
+
+import crypto from 'node:crypto';
+import jwt from 'jsonwebtoken';
+import { authenticator } from 'otplib';
+import QRCode from 'qrcode';
+import db from '../config/database.js';
+import { jwtRequired } from '../middleware/auth.js';
+import { record2FAOperation, recordAuthAttempt } from '../middleware/metrics.js';
+import {
   sanitizeStrings,
   validateEmail,
   validateLength,
- } from '../middleware/validation.js';
-import db from '../config/database.js';
-import {  authenticator  } from 'otplib';
-import QRCode from 'qrcode';
-import crypto from 'node:crypto';
-import jwt from 'jsonwebtoken';
-import {  recordAuthAttempt, record2FAOperation  } from '../middleware/metrics.js';
+  validateRequiredFields,
+} from '../middleware/validation.js';
+import AuthService from '../services/authService.js';
+import googleOAuthService from '../services/googleOAuthService.js';
+import jwtService from '../services/jwtService.js';
+import * as responseHandler from '../utils/responseHandler.js';
 
 /**
  * POST /api/auth/login - User login

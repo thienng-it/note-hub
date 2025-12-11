@@ -2,8 +2,9 @@
  * GitHub OAuth Service for user authentication.
  * Handles GitHub OAuth 2.0 flow for user login and registration.
  */
-import axios from 'axios';
+
 import crypto from 'node:crypto';
+import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import db from '../config/database.js';
 

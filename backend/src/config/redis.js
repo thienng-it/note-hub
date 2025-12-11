@@ -3,7 +3,7 @@
  * Provides caching for frequently accessed data.
  */
 import Redis from 'ioredis';
-import {  REDIS  } from './constants.js';
+import { REDIS } from './constants.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordCacheOperation = null;

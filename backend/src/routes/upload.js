@@ -2,11 +2,18 @@
  * Upload Routes
  */
 import express from 'express';
+
 const router = express.Router();
-import {  jwtRequired  } from '../middleware/auth.js';
-import {  upload  } from '../middleware/upload.js';
-import path from 'node:path';
+
 import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { jwtRequired } from '../middleware/auth.js';
+import { upload } from '../middleware/upload.js';
+
+// ESM compatibility: define __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * POST /api/upload/image - Upload an image

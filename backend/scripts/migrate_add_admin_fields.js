@@ -2,6 +2,7 @@
  * Migration script to add is_admin and is_locked fields to users table
  */
 import path from 'node:path';
+
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 import Database from '../src/config/database.js';

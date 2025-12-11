@@ -5,10 +5,11 @@
  * Run with: npm run seed
  */
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-import db from '../src/config/database.js';
 import bcrypt from 'bcryptjs';
+import db from '../src/config/database.js';
 
 async function seed() {
   try {

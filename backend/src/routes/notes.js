@@ -2,11 +2,13 @@
  * Notes Routes.
  */
 import express from 'express';
+
 const router = express.Router();
-import NoteService from '../services/noteService.js';
-import {  jwtRequired  } from '../middleware/auth.js';
+
 import db from '../config/database.js';
-import {  recordNoteOperation, recordTagOperation  } from '../middleware/metrics.js';
+import { jwtRequired } from '../middleware/auth.js';
+import { recordNoteOperation, recordTagOperation } from '../middleware/metrics.js';
+import NoteService from '../services/noteService.js';
 
 /**
  * GET /api/notes - List all notes for user

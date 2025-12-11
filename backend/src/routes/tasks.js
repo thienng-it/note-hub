@@ -2,9 +2,11 @@
  * Tasks Routes.
  */
 import express from 'express';
+
 const router = express.Router();
+
+import { jwtRequired } from '../middleware/auth.js';
 import TaskService from '../services/taskService.js';
-import {  jwtRequired  } from '../middleware/auth.js';
 
 /**
  * GET /api/tasks - List all tasks for user

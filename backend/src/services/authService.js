@@ -1,8 +1,9 @@
 /**
  * Authentication Service for user management.
  */
-import bcrypt from 'bcryptjs';
+
 import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
 import db from '../config/database.js';
 
 export default class AuthService {

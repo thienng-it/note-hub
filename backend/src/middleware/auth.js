@@ -1,8 +1,9 @@
 /**
  * JWT Authentication Middleware.
  */
-import jwtService from '../services/jwtService.js';
+
 import db from '../config/database.js';
+import jwtService from '../services/jwtService.js';
 import * as responseHandler from '../utils/responseHandler.js';
 
 /**

@@ -2,8 +2,8 @@
  * Elasticsearch configuration and connection management.
  * Provides full-text search capabilities.
  */
-import {  Client  } from '@elastic/elasticsearch';
-import {  ELASTICSEARCH, SEARCH_MIN_LENGTH  } from './constants.js';
+import { Client } from '@elastic/elasticsearch';
+import { ELASTICSEARCH, SEARCH_MIN_LENGTH } from './constants.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordSearchOperation = null;
