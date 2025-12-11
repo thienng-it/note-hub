@@ -54,7 +54,6 @@ export function PasskeyManager() {
   };
 
   const handleRegisterConfirm = async () => {
-    setShowAddModal(false);
     setIsRegistering(true);
     setError(null);
     setSuccess(null);
@@ -65,6 +64,8 @@ export function PasskeyManager() {
       if (result.success) {
         setSuccess('Passkey registered successfully!');
         await loadCredentials();
+        setShowAddModal(false);
+        setDeviceNameInput('');
       } else {
         setError(result.error || 'Failed to register passkey');
       }
@@ -73,7 +74,6 @@ export function PasskeyManager() {
       setError(error.message || 'Failed to register passkey');
     } finally {
       setIsRegistering(false);
-      setDeviceNameInput('');
     }
   };
 
@@ -416,8 +416,10 @@ export function PasskeyManager() {
       <ConfirmModal
         isOpen={showAddModal}
         onClose={() => {
-          setShowAddModal(false);
-          setDeviceNameInput('');
+          if (!isRegistering) {
+            setShowAddModal(false);
+            setDeviceNameInput('');
+          }
         }}
         onConfirm={handleRegisterConfirm}
         title={t('passkey.addPasskeyTitle')}
@@ -425,7 +427,7 @@ export function PasskeyManager() {
         confirmText={t('passkey.addPasskey')}
         cancelText={t('common.cancel')}
         variant="info"
-        isLoading={false}
+        isLoading={isRegistering}
       >
         <div className="mt-4">
           <label
