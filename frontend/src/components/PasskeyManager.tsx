@@ -22,6 +22,8 @@ export function PasskeyManager() {
   const [newName, setNewName] = useState('');
   const [deleteModal, setDeleteModal] = useState<{ id: number } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [deviceNameInput, setDeviceNameInput] = useState('');
 
   const checkPasskeyAvailability = useCallback(async () => {
     const available = await passkeyService.isAvailable();
@@ -45,15 +47,20 @@ export function PasskeyManager() {
     checkPasskeyAvailability();
   }, [loadCredentials, checkPasskeyAvailability]);
 
-  const handleRegister = async () => {
+  const handleRegister = () => {
+    // Show modal to get device name first
+    setDeviceNameInput('');
+    setShowAddModal(true);
+  };
+
+  const handleRegisterConfirm = async () => {
+    setShowAddModal(false);
     setIsRegistering(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const deviceName = prompt('Enter a name for this passkey (e.g., "My iPhone")');
-
-      const result = await passkeyService.register(deviceName || undefined);
+      const result = await passkeyService.register(deviceNameInput.trim() || undefined);
 
       if (result.success) {
         setSuccess('Passkey registered successfully!');
@@ -66,6 +73,7 @@ export function PasskeyManager() {
       setError(error.message || 'Failed to register passkey');
     } finally {
       setIsRegistering(false);
+      setDeviceNameInput('');
     }
   };
 
@@ -403,6 +411,40 @@ export function PasskeyManager() {
           </div>
         </div>
       </div>
+
+      {/* Add Passkey Modal */}
+      <ConfirmModal
+        isOpen={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setDeviceNameInput('');
+        }}
+        onConfirm={handleRegisterConfirm}
+        title={t('passkey.addPasskeyTitle')}
+        message={t('passkey.addPasskeyMessage')}
+        confirmText={t('passkey.addPasskey')}
+        cancelText={t('common.cancel')}
+        variant="info"
+        isLoading={false}
+      >
+        <div className="mt-4">
+          <label
+            htmlFor="deviceName"
+            className="block text-sm font-medium mb-2 text-[var(--text-primary)]"
+          >
+            {t('passkey.deviceNameLabel')}
+          </label>
+          <input
+            id="deviceName"
+            type="text"
+            value={deviceNameInput}
+            onChange={(e) => setDeviceNameInput(e.target.value)}
+            placeholder={t('passkey.deviceNamePlaceholder')}
+            className="w-full px-4 py-2 border rounded-lg border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-2">{t('passkey.deviceNameHint')}</p>
+        </div>
+      </ConfirmModal>
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
