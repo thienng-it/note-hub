@@ -24,6 +24,8 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [SQL_VS_NOSQL_COMPARISON](investigation/SQL_VS_NOSQL_COMPARISON.md) - Visual comparison and performance analysis
 - [EXECUTIVE_SUMMARY](investigation/EXECUTIVE_SUMMARY.md) - Executive summary of technical investigations
 - [IMPLEMENTATION_SUMMARY](investigation/IMPLEMENTATION_SUMMARY.md) - Implementation summary
+- [DOCKER_OPTIMIZATION_SUMMARY](investigation/DOCKER_OPTIMIZATION_SUMMARY.md) - Complete Docker optimization project summary
+- [THIRD_PARTY_PERMISSION_ANALYSIS](investigation/THIRD_PARTY_PERMISSION_ANALYSIS.md) - Permission analysis for third-party services
 
 ## 🔌 API Documentation
 
@@ -38,6 +40,8 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [DUAL_DEPLOYMENT_EXAMPLE](guides/DUAL_DEPLOYMENT_EXAMPLE.md) - Dual deployment example
 - [PORT_ALLOCATION](guides/PORT_ALLOCATION.md) - Port allocation guide
 - [ENVIRONMENT_CONFIGURATION](guides/ENVIRONMENT_CONFIGURATION.md) - Environment configuration
+- [DOCKER_OPTIMIZATION](../DOCKER_OPTIMIZATION.md) - Docker build and image optimization guide
+- [REQUIRED_FILES](../REQUIRED_FILES.md) - Required files for each application deployment
 
 ### SSL/HTTPS Setup
 - [SSL_HTTPS_SETUP](guides/SSL_HTTPS_SETUP.md) - SSL/HTTPS setup guide

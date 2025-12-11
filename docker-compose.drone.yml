@@ -66,7 +66,7 @@ services:
   # Traefik - Reverse Proxy for Drone CI with SSL/HTTPS
   # ==========================================================================
   drone-traefik:
-    image: traefik:v2.11
+    image: traefik:v3.2
     container_name: drone-traefik
     restart: unless-stopped
     command:
@@ -109,12 +109,18 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 64M
 
   # ==========================================================================
   # Drone Server - Main API and Web UI (Internal)
   # ==========================================================================
   drone-server:
-    image: drone/drone:2
+    image: drone/drone:2.25
     container_name: drone-server
     restart: unless-stopped
     env_file:
@@ -147,6 +153,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
@@ -173,7 +185,7 @@ services:
   # Drone Runner - Docker-based Pipeline Executor
   # ==========================================================================
   drone-runner:
-    image: drone/drone-runner-docker:1
+    image: drone/drone-runner-docker:1.8
     container_name: drone-runner
     restart: unless-stopped
     env_file:
@@ -203,6 +215,12 @@ services:
     networks:
       - drone-network
     # Runner doesn't expose ports - communicates with server via RPC
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
 
   # ==========================================================================
   # PostgreSQL Database for Drone
@@ -229,6 +247,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
 
 networks:
   # Separate network for Drone CI

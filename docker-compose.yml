@@ -29,7 +29,7 @@
 #
 # Services:
 #   - traefik: Reverse proxy and load balancer (port 80)
-#   - frontend: React SPA served by static file server (internal)
+#   - frontend: React SPA served by nginx (internal)
 #   - backend: Node.js/Express API (internal port 5000)
 #   - mysql: MySQL 8.0 database (optional, internal port 3306)
 #
@@ -43,55 +43,80 @@
 #   - Dynamic configuration updates without container restarts
 #   - Better support for microservices and load balancing
 #
+# Build Optimizations:
+#   - BuildKit cache mounts for faster rebuilds
+#   - Multi-stage builds to minimize image size
+#   - Pinned base image versions for reproducibility
+#   - Production-only dependencies in final images
+#
 # =============================================================================
+
+# YAML anchors for common configurations
+x-traefik-common: &traefik-common
+  image: traefik:v3.2
+  restart: unless-stopped
+  command:
+    - "--api.dashboard=false"
+    - "--providers.docker=true"
+    - "--providers.docker.exposedbydefault=false"
+    - "--providers.docker.network=notehub-network"
+    - "--providers.file.directory=/etc/traefik/dynamic"
+    - "--providers.file.watch=true"
+    - "--entrypoints.web.address=:80"
+    - "--entrypoints.websecure.address=:443"
+    - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+    - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+    - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
+    - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    - "--log.level=INFO"
+    - "--accesslog=true"
+    - "--ping=true"
+    - "--metrics.prometheus=true"
+    - "--metrics.prometheus.addEntryPointsLabels=true"
+    - "--metrics.prometheus.addServicesLabels=true"
+    - "--entrypoints.metrics.address=:9091"
+  environment:
+    - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+  networks:
+    - notehub-network
+  healthcheck:
+    test: ["CMD", "traefik", "healthcheck", "--ping"]
+    interval: 30s
+    timeout: 5s
+    retries: 3
+    start_period: 5s
+  deploy:
+    resources:
+      limits:
+        memory: 256M
+      reservations:
+        memory: 64M
+
+x-build-args: &build-args
+  # Enable BuildKit features
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
 services:
   # ==========================================================================
   # Traefik - Reverse Proxy and Load Balancer with SSL/HTTPS
   # ==========================================================================
   traefik:
-    image: traefik:v2.11
+    <<: *traefik-common
     container_name: notehub-traefik
-    restart: unless-stopped
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=notehub-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--ping=true"
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.addEntryPointsLabels=true"
-      - "--metrics.prometheus.addServicesLabels=true"
-      - "--entrypoints.metrics.address=:9091"
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
       - ./letsencrypt:/letsencrypt
-    networks:
-      - notehub-network
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+
   # ==========================================================================
   # Frontend - React SPA (Development)
   # ==========================================================================
@@ -101,6 +126,11 @@ services:
       dockerfile: Dockerfile.frontend.traefik
       args:
         - VITE_API_URL=
+      # Enable BuildKit cache
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/frontend:cache
+      cache_to:
+        - type=inline
     container_name: notehub-frontend
     restart: unless-stopped
     env_file:
@@ -118,6 +148,12 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
@@ -146,6 +182,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend.node
+      # Enable BuildKit cache
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/backend:cache
+      cache_to:
+        - type=inline
     container_name: notehub-backend
     restart: unless-stopped
     env_file:
@@ -180,6 +221,12 @@ services:
       start_period: 20s
     networks:
       - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
@@ -227,50 +274,17 @@ services:
   # Traefik - Reverse Proxy (Production) with SSL/HTTPS
   # ==========================================================================
   traefik-prod:
-    image: traefik:v2.11
+    <<: *traefik-common
     container_name: notehub-traefik-prod
-    restart: unless-stopped
     profiles:
       - production
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=notehub-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--ping=true"
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.addEntryPointsLabels=true"
-      - "--metrics.prometheus.addServicesLabels=true"
-      - "--entrypoints.metrics.address=:9091"
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
       - ./letsencrypt:/letsencrypt
-    networks:
-      - notehub-network
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
 
   # ==========================================================================
   # Frontend - React SPA (Production)
@@ -281,6 +295,10 @@ services:
       dockerfile: Dockerfile.frontend.traefik
       args:
         - VITE_API_URL=${VITE_API_URL:-}
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/frontend:cache
+      cache_to:
+        - type=inline
     container_name: notehub-frontend-prod
     restart: unless-stopped
     profiles:
@@ -300,6 +318,12 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
     labels:
       - "traefik.enable=true"
 
@@ -327,6 +351,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend.node
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/backend:cache
+      cache_to:
+        - type=inline
     container_name: notehub-backend-prod
     restart: unless-stopped
     profiles:
@@ -370,6 +398,12 @@ services:
       start_period: 30s
     networks:
       - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
     labels:
       - "traefik.enable=true"
 
@@ -416,50 +450,17 @@ services:
   # Traefik - Reverse Proxy (MySQL Profile) with SSL/HTTPS
   # ==========================================================================
   traefik-mysql:
-    image: traefik:v2.11
+    <<: *traefik-common
     container_name: notehub-traefik-mysql
-    restart: unless-stopped
     profiles:
       - mysql
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=notehub-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--ping=true"
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.addEntryPointsLabels=true"
-      - "--metrics.prometheus.addServicesLabels=true"
-      - "--entrypoints.metrics.address=:9091"
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
       - ./letsencrypt:/letsencrypt
-    networks:
-      - notehub-network
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
 
   # ==========================================================================
   # Backend with MySQL - Node.js/Express API (use --profile mysql)
@@ -468,6 +469,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend.node
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/backend:cache
+      cache_to:
+        - type=inline
     container_name: notehub-backend-mysql
     restart: unless-stopped
     profiles:
@@ -511,6 +516,12 @@ services:
       start_period: 30s
     networks:
       - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
     labels:
       - "traefik.enable=true"
 
@@ -557,7 +568,7 @@ services:
   # MySQL Database (use --profile mysql)
   # ==========================================================================
   mysql:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: notehub-mysql
     restart: unless-stopped
     profiles:
@@ -579,6 +590,12 @@ services:
       start_period: 60s
     networks:
       - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
 
   # ==========================================================================
   # Frontend with MySQL Backend (use --profile mysql)
@@ -589,6 +606,10 @@ services:
       dockerfile: Dockerfile.frontend.traefik
       args:
         - VITE_API_URL=
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/frontend:cache
+      cache_to:
+        - type=inline
     container_name: notehub-frontend-mysql
     restart: unless-stopped
     profiles:
@@ -608,6 +629,12 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
     labels:
       - "traefik.enable=true"
 

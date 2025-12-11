@@ -1,37 +1,56 @@
-# NoteHub Frontend Dockerfile
+# =============================================================================
+# NoteHub Frontend - Optimized Production Build
 # Build React app and serve with nginx
+# =============================================================================
 
+# -----------------------------------------------------------------------------
 # Stage 1: Build the React app
-FROM node:20-alpine AS builder
+# -----------------------------------------------------------------------------
+FROM node:22.12.0-alpine3.21 AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files for better layer caching
 COPY frontend/package*.json ./
 
-# Install dependencies
-RUN npm i
+# Install dependencies with cache mount
+# Include dev dependencies needed for build (Vite, TypeScript, etc.)
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --prefer-offline --no-audit --include=dev
 
 # Copy source code
 COPY frontend/ ./
 
-# Build the app
+# Build the app for production
 ARG VITE_API_URL=""
-ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL \
+    NODE_ENV=production
 RUN npm run build
 
-# Stage 2: Serve with nginx
-FROM nginx:alpine
+# -----------------------------------------------------------------------------
+# Stage 2: Production - Serve with nginx
+# -----------------------------------------------------------------------------
+FROM nginx:1.27-alpine
 
-# Copy nginx configuration template
+# Copy custom nginx configuration
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 
 # Copy built app from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Set default backend values (can be overridden via environment variables)
-ENV BACKEND_HOST=backend
-ENV BACKEND_PORT=5000
+ENV BACKEND_HOST=backend \
+    BACKEND_PORT=5000
+
+# Create non-root user for nginx
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid
+
+# Use non-root user
+USER nginx
 
 # Expose port 80
 EXPOSE 80
@@ -40,5 +59,5 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
 
-# Start nginx - nginx will automatically substitute environment variables in templates
+# Start nginx - will automatically substitute environment variables in templates
 CMD ["nginx", "-g", "daemon off;"]
