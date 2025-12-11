@@ -894,7 +894,7 @@ class Database {
     } finally {
       // Record metrics
       const duration = Date.now() - startTime;
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics(operation, duration, success);
     }
   }
@@ -930,7 +930,7 @@ class Database {
     } finally {
       // Record metrics
       const duration = Date.now() - startTime;
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics(operation, duration, success);
     }
   }
@@ -959,7 +959,7 @@ class Database {
     } finally {
       // Record metrics
       const duration = Date.now() - startTime;
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics(operation, duration, success);
     }
   }

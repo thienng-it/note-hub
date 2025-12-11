@@ -283,7 +283,7 @@ class ElasticsearchService {
     } finally {
       // Record metrics
       const duration = Date.now() - startTime;
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('elasticsearch', duration, success);
     }
   }

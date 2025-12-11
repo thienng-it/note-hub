@@ -99,7 +99,7 @@ class RedisCache {
    */
   async get(key) {
     if (!this.enabled || !this.client) {
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('get', 'disabled');
       return null;
     }
@@ -107,12 +107,12 @@ class RedisCache {
     try {
       const value = await this.client.get(key);
       const result = value ? 'hit' : 'miss';
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('get', result);
       return value ? JSON.parse(value) : null;
     } catch (error) {
       console.error(`Cache get error for key ${key}:`, error.message);
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('get', 'error');
       return null;
     }
@@ -123,19 +123,19 @@ class RedisCache {
    */
   async set(key, value, ttl = 3600) {
     if (!this.enabled || !this.client) {
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('set', 'disabled');
       return false;
     }
 
     try {
       await this.client.setex(key, ttl, JSON.stringify(value));
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('set', 'success');
       return true;
     } catch (error) {
       console.error(`Cache set error for key ${key}:`, error.message);
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('set', 'error');
       return false;
     }
@@ -146,19 +146,19 @@ class RedisCache {
    */
   async del(key) {
     if (!this.enabled || !this.client) {
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('del', 'disabled');
       return false;
     }
 
     try {
       await this.client.del(key);
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('del', 'success');
       return true;
     } catch (error) {
       console.error(`Cache del error for key ${key}:`, error.message);
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('del', 'error');
       return false;
     }
