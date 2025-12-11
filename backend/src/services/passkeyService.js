@@ -8,6 +8,7 @@ import {
   verifyAuthenticationResponse,
   verifyRegistrationResponse,
 } from '@simplewebauthn/server';
+import { isoUint8Array } from '@simplewebauthn/server/helpers';
 
 import db from '../config/database.js';
 
@@ -47,7 +48,7 @@ export default class PasskeyService {
     const options = await generateRegistrationOptions({
       rpName,
       rpID,
-      userID: userId.toString(),
+      userID: isoUint8Array.fromUTF8String(userId.toString()),
       userName: username,
       attestationType: 'none',
       excludeCredentials: existingCredentials.map((cred) => ({
