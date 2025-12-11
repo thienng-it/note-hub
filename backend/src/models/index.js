@@ -5,8 +5,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import logger from '../config/logger.js';
 import { DataTypes, Sequelize } from 'sequelize';
+import logger from '../config/logger.js';
 
 let sequelize = null;
 

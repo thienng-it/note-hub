@@ -4,7 +4,6 @@
  */
 
 import { marked } from 'marked';
-import logger from '../config/logger.js';
 import sanitizeHtml from 'sanitize-html';
 import { CACHE_TTL, SEARCH_MIN_LENGTH } from '../config/constants.js';
 import db from '../config/database.js';

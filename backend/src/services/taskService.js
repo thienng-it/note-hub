@@ -2,7 +2,6 @@
  * Task Service for task management operations.
  */
 import db from '../config/database.js';
-import logger from '../config/logger.js';
 
 export default class TaskService {
   /**

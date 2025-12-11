@@ -32,6 +32,7 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
     const { username, password, totp_code } = req.body;
 
     if (!username || !password) {
+      recordAuthAttempt('password', false, 'password_required');
       return responseHandler.validationError(res, {
         missingFields: ['username', 'password'],
         message: 'Username/email and password required',
@@ -47,6 +48,8 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
 
     // Check 2FA if enabled
     if (user.totp_secret && !totp_code) {
+      record2FAOperation('verify', false);
+      recordAuthAttempt('password', false, '2fa_code_required');
       return responseHandler.error(res, '2FA code required', {
         statusCode: 401,
         errorCode: 'REQUIRES_2FA',

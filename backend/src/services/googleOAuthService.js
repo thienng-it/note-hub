@@ -4,8 +4,8 @@
  */
 
 import axios from 'axios';
-import logger from '../config/logger.js';
 import { google } from 'googleapis';
+import logger from '../config/logger.js';
 
 class GoogleOAuthService {
   constructor() {

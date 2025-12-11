@@ -3,9 +3,9 @@
  */
 
 import crypto from 'node:crypto';
-import logger from '../config/logger.js';
 import bcrypt from 'bcryptjs';
 import db from '../config/database.js';
+import logger from '../config/logger.js';
 
 export default class AuthService {
   /**

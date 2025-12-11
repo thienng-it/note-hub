@@ -3,9 +3,9 @@
  */
 
 import crypto from 'node:crypto';
-import logger from '../config/logger.js';
 import jwt from 'jsonwebtoken';
 import db from '../config/database.js';
+import logger from '../config/logger.js';
 
 class JWTService {
   constructor() {

@@ -3,8 +3,8 @@
  * Provides caching for frequently accessed data.
  */
 import Redis from 'ioredis';
-import logger from './logger.js';
 import { REDIS } from './constants.js';
+import logger from './logger.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordCacheOperation = null;

@@ -3,12 +3,12 @@
  * Handles passkey registration and authentication using FIDO2/WebAuthn standards.
  */
 import {
-import logger from '../config/logger.js';
   generateAuthenticationOptions,
   generateRegistrationOptions,
   verifyAuthenticationResponse,
   verifyRegistrationResponse,
 } from '@simplewebauthn/server';
+
 import db from '../config/database.js';
 
 export default class PasskeyService {
@@ -180,8 +180,8 @@ export default class PasskeyService {
 
     // Update counter and last used timestamp
     await db.run(
-      `UPDATE webauthn_credentials 
-       SET counter = ?, last_used_at = CURRENT_TIMESTAMP 
+      `UPDATE webauthn_credentials
+       SET counter = ?, last_used_at = CURRENT_TIMESTAMP
        WHERE id = ?`,
       [verification.authenticationInfo.newCounter, credential.id],
     );
@@ -195,7 +195,7 @@ export default class PasskeyService {
   static async getUserCredentials(userId) {
     const credentials = await db.query(
       `SELECT id, device_name, created_at, last_used_at, transports
-       FROM webauthn_credentials 
+       FROM webauthn_credentials
        WHERE user_id = ?
        ORDER BY created_at DESC`,
       [userId],
@@ -220,8 +220,8 @@ export default class PasskeyService {
    */
   static async updateCredentialName(userId, credentialId, deviceName) {
     const result = await db.run(
-      `UPDATE webauthn_credentials 
-       SET device_name = ? 
+      `UPDATE webauthn_credentials
+       SET device_name = ?
        WHERE id = ? AND user_id = ?`,
       [deviceName, credentialId, userId],
     );

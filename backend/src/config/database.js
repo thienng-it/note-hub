@@ -6,8 +6,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import logger from './logger.js';
 import replication from './databaseReplication.js';
+import logger from './logger.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordDbQuery = null;

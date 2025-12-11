@@ -3,8 +3,8 @@
  * Provides full-text search capabilities.
  */
 import { Client } from '@elastic/elasticsearch';
-import logger from './logger.js';
 import { ELASTICSEARCH, SEARCH_MIN_LENGTH } from './constants.js';
+import logger from './logger.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordSearchOperation = null;
