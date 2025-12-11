@@ -11,7 +11,6 @@ export default {
   testTimeout: 10000,
   forceExit: true,
   detectOpenHandles: false,
-  // ESM support
+  // ESM support - transform is empty to use native ESM
   transform: {},
-  extensionsToTreatAsEsm: ['.js'],
 };
