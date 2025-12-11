@@ -77,10 +77,32 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 - Production dependencies only: `npm ci --omit=dev`
 - Cache mount for npm packages
 - Signal handling with dumb-init
+- **Volume permission handling**: Custom entrypoint script fixes permissions for mounted volumes
 
 **Size Reduction**:
 - Before: ~250MB
 - After: ~180MB (28% reduction)
+
+**Volume Permissions Fix**:
+The non-root user security improvement required a custom entrypoint script to fix volume permissions:
+```dockerfile
+# Install su-exec for user switching
+RUN apk add --no-cache wget dumb-init su-exec
+
+# Copy entrypoint script
+COPY backend/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Start as root, entrypoint fixes permissions then switches to appuser
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/usr/local/bin/docker-entrypoint.sh"]
+CMD ["node", "src/index.js"]
+```
+
+The entrypoint script:
+1. Runs as root on container start
+2. Fixes ownership of `/app/data` and `/app/uploads` volumes
+3. Switches to `appuser` for running the application
+4. Maintains security while ensuring SQLite database is writable
 
 ### 3. Docker Compose Enhancements
 
@@ -331,6 +353,54 @@ docker builder prune
 1. Check internet connection
 2. Login to registry if using private images
 3. Use previous version tags if latest is broken
+
+### SQLite Database Permission Error
+**Issue**: `SQLITE_READONLY: attempt to write a readonly database` when running with Docker
+
+**Root Cause**: 
+When using non-root users in Docker containers, mounted volumes (like `/app/data`) are often owned by root, preventing the non-root user from writing to the SQLite database.
+
+**Solution**:
+The optimized Dockerfiles include a custom entrypoint script that automatically fixes this:
+
+1. **Automatic Fix** (already implemented):
+   - Container starts as root
+   - Entrypoint script (`docker-entrypoint.sh`) fixes volume permissions
+   - Application runs as non-root user (`appuser`)
+
+2. **Manual Fix** (if needed):
+   ```bash
+   # Stop containers
+   docker compose down
+   
+   # Fix volume permissions on host
+   docker volume inspect notehub-data  # Get mount point
+   sudo chown -R 1000:1000 /var/lib/docker/volumes/notehub-data/_data
+   
+   # Restart containers
+   docker compose up -d
+   ```
+
+3. **Verify Fix**:
+   ```bash
+   # Check container logs
+   docker compose logs backend | grep "Fixed permissions"
+   
+   # Should see:
+   # Running as root, fixing permissions for appuser...
+   # Fixed permissions for /app/data
+   # Switching to appuser and starting application...
+   ```
+
+4. **Disable Non-Root User** (not recommended for security):
+   If you absolutely cannot use the entrypoint fix, you can revert to running as root:
+   ```dockerfile
+   # Remove these lines from Dockerfile:
+   # RUN adduser --disabled-password --gecos '' appuser
+   # Entrypoint script will skip user switching
+   ```
+
+**Note**: The entrypoint script approach maintains security (app runs as non-root) while ensuring database writability.
 
 ## Monitoring and Optimization
 

@@ -50,8 +50,8 @@ COPY backend/scripts ./scripts
 # -----------------------------------------------------------------------------
 FROM node:20.18.1-alpine AS production
 
-# Install wget for healthcheck and dumb-init for proper signal handling
-RUN apk add --no-cache wget dumb-init
+# Install wget for healthcheck, dumb-init for signal handling, and su-exec for user switching
+RUN apk add --no-cache wget dumb-init su-exec
 
 # Set environment variables
 ENV NODE_ENV=production \
@@ -67,13 +67,16 @@ COPY --from=backend-builder /backend/scripts ./scripts
 # Copy built frontend from stage 1
 COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
+# Copy entrypoint script for fixing volume permissions
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Create data directory for SQLite
 RUN mkdir -p /app/data
 
-# Create non-root user for security
+# Create non-root user for security (but start as root to fix permissions)
 RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app
-USER appuser
 
 # Expose the port
 EXPOSE 8080
@@ -82,8 +85,8 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
 
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+# Use custom entrypoint that fixes permissions, then dumb-init for signal handling
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/usr/local/bin/docker-entrypoint.sh"]
 
 # Start the Node.js server
 CMD ["node", "src/index.js"]
