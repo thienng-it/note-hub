@@ -2,8 +2,8 @@
  * Google OAuth Service for Single Sign-On (SSO).
  * Handles Google OAuth 2.0 authentication flow.
  */
-const { google } = require('googleapis');
-const axios = require('axios');
+import {  google  } from 'googleapis';
+import axios from 'axios';
 
 class GoogleOAuthService {
   constructor() {
@@ -138,4 +138,4 @@ class GoogleOAuthService {
 // Singleton instance
 const googleOAuthService = new GoogleOAuthService();
 
-module.exports = googleOAuthService;
+export default googleOAuthService;

@@ -38,4 +38,4 @@ function securityHeadersMiddleware(_req, res, next) {
   next();
 }
 
-module.exports = securityHeadersMiddleware;
+export default securityHeadersMiddleware;

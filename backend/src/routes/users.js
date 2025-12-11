@@ -1,10 +1,10 @@
 /**
  * User Routes - Public user information and search.
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { jwtRequired } = require('../middleware/auth');
-const db = require('../config/database');
+import {  jwtRequired  } from '../middleware/auth.js';
+import db from '../config/database.js';
 
 /**
  * GET /api/users/search - Search for users (for share autocomplete)
@@ -93,4 +93,4 @@ router.get('/:id', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

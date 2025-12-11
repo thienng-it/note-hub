@@ -2,15 +2,15 @@
  * Redis cache configuration and connection management.
  * Provides caching for frequently accessed data.
  */
-const Redis = require('ioredis');
-const { REDIS } = require('./constants');
+import Redis from 'ioredis';
+import {  REDIS  } from './constants.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordCacheOperation = null;
-function getMetrics() {
+async function getMetrics() {
   if (!recordCacheOperation) {
     try {
-      const metrics = require('../middleware/metrics');
+      const metrics = await import('../middleware/metrics.js');
       recordCacheOperation = metrics.recordCacheOperation;
     } catch (_error) {
       // Metrics not available yet, use noop
@@ -233,4 +233,4 @@ class RedisCache {
 // Singleton instance
 const cache = new RedisCache();
 
-module.exports = cache;
+export default cache;

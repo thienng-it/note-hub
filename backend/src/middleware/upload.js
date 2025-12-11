@@ -1,12 +1,12 @@
 /**
  * File upload middleware using multer
  */
-const multer = require('multer');
-const path = require('node:path');
-const fs = require('node:fs');
+import multer from 'multer';
+import path from 'node:path';
+import fs from 'node:fs';
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '../../uploads');
+export const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
@@ -37,15 +37,10 @@ const fileFilter = (_req, file, cb) => {
 };
 
 // Configure multer
-const upload = multer({
+export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
 });
-
-module.exports = {
-  upload,
-  uploadsDir,
-};

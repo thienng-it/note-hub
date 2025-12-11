@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   testEnvironment: 'node',
   coverageDirectory: 'coverage',
   collectCoverageFrom: ['src/**/*.js', '!src/index.js'],
@@ -11,4 +11,7 @@ module.exports = {
   testTimeout: 10000,
   forceExit: true,
   detectOpenHandles: false,
+  // ESM support
+  transform: {},
+  extensionsToTreatAsEsm: ['.js'],
 };

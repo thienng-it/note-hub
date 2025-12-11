@@ -12,8 +12,8 @@
  * - Replica lag monitoring
  */
 
-const path = require('node:path');
-const fs = require('node:fs');
+import path from 'node:path';
+import fs from 'node:fs';
 
 class DatabaseReplication {
   constructor() {
@@ -86,7 +86,7 @@ class DatabaseReplication {
       return;
     }
 
-    const Database = require('better-sqlite3');
+    const Database = (await import('better-sqlite3')).default;
     const paths = replicaPaths.split(',').map((p) => p.trim());
 
     for (const replicaPath of paths) {
@@ -129,7 +129,7 @@ class DatabaseReplication {
       return;
     }
 
-    const mysql = require('mysql2/promise');
+    const mysql = (await import('mysql2/promise')).default;
     const hosts = replicaHosts.split(',').map((h) => h.trim());
     const ports = (process.env.MYSQL_REPLICA_PORTS || '').split(',').map((p) => p.trim());
     const user = process.env.MYSQL_REPLICA_USER || process.env.MYSQL_USER || 'root';
@@ -459,4 +459,4 @@ class DatabaseReplication {
 // Singleton instance
 const databaseReplication = new DatabaseReplication();
 
-module.exports = databaseReplication;
+export default databaseReplication;

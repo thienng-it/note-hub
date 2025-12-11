@@ -1,11 +1,11 @@
 /**
  * Profile and User Routes.
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { jwtRequired } = require('../middleware/auth');
-const db = require('../config/database');
-const crypto = require('node:crypto');
+import {  jwtRequired  } from '../middleware/auth.js';
+import db from '../config/database.js';
+import crypto from 'node:crypto';
 
 /**
  * GET /api/profile - Get current user's profile
@@ -288,4 +288,4 @@ router.get('/:id', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

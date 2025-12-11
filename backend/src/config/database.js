@@ -3,16 +3,16 @@
  * Supports both SQLite (default) and MySQL.
  * Supports read replicas for improved performance and high availability.
  */
-const path = require('node:path');
-const fs = require('node:fs');
-const replication = require('./databaseReplication');
+import path from 'node:path';
+import fs from 'node:fs';
+import replication from './databaseReplication.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordDbQuery = null;
-function getMetrics() {
+async function getMetrics() {
   if (!recordDbQuery) {
     try {
-      const metrics = require('../middleware/metrics');
+      const metrics = await import('../middleware/metrics.js');
       recordDbQuery = metrics.recordDbQuery;
     } catch (_error) {
       // Metrics not available yet, use noop
@@ -68,8 +68,8 @@ class Database {
   /**
    * Connect to SQLite database.
    */
-  connectSQLite(dbPath) {
-    const Database = require('better-sqlite3');
+  async connectSQLite(dbPath) {
+    const Database = (await import('better-sqlite3')).default;
 
     // Ensure directory exists
     const dir = path.dirname(dbPath);
@@ -90,7 +90,7 @@ class Database {
    * Connect to MySQL database.
    */
   async connectMySQL() {
-    const mysql = require('mysql2/promise');
+    const mysql = (await import('mysql2/promise')).default;
 
     const config = {
       host: process.env.MYSQL_HOST || 'localhost',
@@ -1020,4 +1020,4 @@ class Database {
 // Singleton instance
 const database = new Database();
 
-module.exports = database;
+export default database;

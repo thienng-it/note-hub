@@ -1,12 +1,12 @@
 /**
  * Upload Routes
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { jwtRequired } = require('../middleware/auth');
-const { upload } = require('../middleware/upload');
-const path = require('node:path');
-const fs = require('node:fs');
+import {  jwtRequired  } from '../middleware/auth.js';
+import {  upload  } from '../middleware/upload.js';
+import path from 'node:path';
+import fs from 'node:fs';
 
 /**
  * POST /api/upload/image - Upload an image
@@ -82,4 +82,4 @@ router.delete('/:filename', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

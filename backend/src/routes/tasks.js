@@ -1,10 +1,10 @@
 /**
  * Tasks Routes.
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const TaskService = require('../services/taskService');
-const { jwtRequired } = require('../middleware/auth');
+import TaskService from '../services/taskService.js';
+import {  jwtRequired  } from '../middleware/auth.js';
 
 /**
  * GET /api/tasks - List all tasks for user
@@ -195,4 +195,4 @@ router.delete('/:id', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

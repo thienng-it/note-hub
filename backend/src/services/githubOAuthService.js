@@ -2,11 +2,12 @@
  * GitHub OAuth Service for user authentication.
  * Handles GitHub OAuth 2.0 flow for user login and registration.
  */
-const axios = require('axios');
-const crypto = require('node:crypto');
-const db = require('../config/database');
+import axios from 'axios';
+import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
+import db from '../config/database.js';
 
-class GitHubOAuthService {
+export default class GitHubOAuthService {
   /**
    * Check if GitHub OAuth is configured and enabled.
    */
@@ -168,7 +169,6 @@ class GitHubOAuthService {
 
     // Create new user with random password (they'll use GitHub OAuth to login)
     const randomPassword = crypto.randomBytes(32).toString('hex');
-    const bcrypt = require('bcryptjs');
     const passwordHash = await bcrypt.hash(randomPassword, 14);
 
     const result = await db.run(
@@ -212,5 +212,3 @@ class GitHubOAuthService {
     return user;
   }
 }
-
-module.exports = GitHubOAuthService;

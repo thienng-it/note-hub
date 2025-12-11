@@ -1,24 +1,25 @@
 /**
  * Authentication Routes.
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const AuthService = require('../services/authService');
-const jwtService = require('../services/jwtService');
-const googleOAuthService = require('../services/googleOAuthService');
-const { jwtRequired } = require('../middleware/auth');
-const responseHandler = require('../utils/responseHandler');
-const {
+import AuthService from '../services/authService.js';
+import jwtService from '../services/jwtService.js';
+import googleOAuthService from '../services/googleOAuthService.js';
+import {  jwtRequired  } from '../middleware/auth.js';
+import * as responseHandler from '../utils/responseHandler.js';
+import { 
   validateRequiredFields,
   sanitizeStrings,
   validateEmail,
   validateLength,
-} = require('../middleware/validation');
-const db = require('../config/database');
-const { authenticator } = require('otplib');
-const QRCode = require('qrcode');
-const crypto = require('node:crypto');
-const { recordAuthAttempt, record2FAOperation } = require('../middleware/metrics');
+ } from '../middleware/validation.js';
+import db from '../config/database.js';
+import {  authenticator  } from 'otplib';
+import QRCode from 'qrcode';
+import crypto from 'node:crypto';
+import jwt from 'jsonwebtoken';
+import {  recordAuthAttempt, record2FAOperation  } from '../middleware/metrics.js';
 
 /**
  * POST /api/auth/login - User login
@@ -510,7 +511,7 @@ router.get('/google/status', (_req, res) => {
 /**
  * GitHub OAuth Routes
  */
-const githubOAuthService = require('../services/githubOAuthService');
+import githubOAuthService from '../services/githubOAuthService.js';
 
 /**
  * GET /api/auth/github/status - Check if GitHub OAuth is configured
@@ -628,7 +629,6 @@ router.post('/logout', jwtRequired, async (req, res) => {
 
     if (refresh_token) {
       // Decode to get token ID
-      const jwt = require('jsonwebtoken');
       try {
         const decoded = jwt.decode(refresh_token);
         if (decoded?.jti) {
@@ -696,4 +696,4 @@ router.get('/sessions', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -2,15 +2,15 @@
  * Note Service for note management operations.
  * Integrated with Redis caching and Elasticsearch for enhanced performance.
  */
-const db = require('../config/database');
-const cache = require('../config/redis');
-const elasticsearch = require('../config/elasticsearch');
-const { SEARCH_MIN_LENGTH, CACHE_TTL } = require('../config/constants');
-const { marked } = require('marked');
-const sanitizeHtml = require('sanitize-html');
-const { validateEmail } = require('../utils/common');
+import db from '../config/database.js';
+import cache from '../config/redis.js';
+import elasticsearch from '../config/elasticsearch.js';
+import {  SEARCH_MIN_LENGTH, CACHE_TTL  } from '../config/constants.js';
+import {  marked  } from 'marked';
+import sanitizeHtml from 'sanitize-html';
+import {  validateEmail  } from '../utils/common.js';
 
-class NoteService {
+export default class NoteService {
   /**
    * Get all notes for a user with optional filters.
    * Uses Elasticsearch for full-text search if available, otherwise falls back to SQL.
@@ -584,5 +584,3 @@ class NoteService {
     });
   }
 }
-
-module.exports = NoteService;

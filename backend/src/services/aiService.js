@@ -3,12 +3,12 @@
  * Supports: OpenAI, Google Gemini, and local Ollama
  */
 
-const axios = require('axios');
+import axios from 'axios';
 
 /**
  * AI Provider Configuration
  */
-const AI_PROVIDERS = {
+export const AI_PROVIDERS = {
   OPENAI: 'openai',
   GEMINI: 'gemini',
   OLLAMA: 'ollama',
@@ -32,7 +32,7 @@ function getAIConfig() {
 /**
  * Check if AI features are enabled
  */
-function isAIEnabled() {
+export function isAIEnabled() {
   const config = getAIConfig();
   const { provider, openaiApiKey, geminiApiKey } = config;
 
@@ -176,7 +176,7 @@ async function callAI(systemPrompt, userContent) {
 /**
  * Proofread text - fix grammar, spelling, and punctuation
  */
-async function proofreadText(text) {
+export async function proofreadText(text) {
   if (!isAIEnabled()) {
     throw new Error('AI features are not enabled. Please configure an AI provider.');
   }
@@ -189,7 +189,7 @@ async function proofreadText(text) {
 /**
  * Summarize text - create a concise summary
  */
-async function summarizeText(text) {
+export async function summarizeText(text) {
   if (!isAIEnabled()) {
     throw new Error('AI features are not enabled. Please configure an AI provider.');
   }
@@ -202,7 +202,7 @@ async function summarizeText(text) {
 /**
  * Rewrite text - improve clarity and style
  */
-async function rewriteText(text, style = 'professional') {
+export async function rewriteText(text, style = 'professional') {
   if (!isAIEnabled()) {
     throw new Error('AI features are not enabled. Please configure an AI provider.');
   }
@@ -230,7 +230,7 @@ async function rewriteText(text, style = 'professional') {
 /**
  * Get AI status and configuration
  */
-function getAIStatus() {
+export function getAIStatus() {
   const config = getAIConfig();
   const enabled = isAIEnabled();
 
@@ -260,12 +260,3 @@ function getAIStatus() {
     ],
   };
 }
-
-module.exports = {
-  AI_PROVIDERS,
-  isAIEnabled,
-  proofreadText,
-  summarizeText,
-  rewriteText,
-  getAIStatus,
-};

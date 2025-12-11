@@ -2,16 +2,16 @@
  * Sequelize ORM Models
  * Provides a consistent interface for database operations across SQLite and MySQL.
  */
-const { Sequelize, DataTypes, Op } = require('sequelize');
-const path = require('node:path');
-const fs = require('node:fs');
+import {  Sequelize, DataTypes, Op  } from 'sequelize';
+import path from 'node:path';
+import fs from 'node:fs';
 
 let sequelize = null;
 
 /**
  * Initialize Sequelize connection based on environment.
  */
-async function initializeSequelize() {
+export async function initializeSequelize() {
   const dbPath = process.env.NOTES_DB_PATH;
   const mysqlHost = process.env.MYSQL_HOST;
   const databaseUrl = process.env.DATABASE_URL;
@@ -509,7 +509,7 @@ function defineModels() {
 /**
  * Sync database schema.
  */
-async function syncDatabase(options = {}) {
+export async function syncDatabase(options = {}) {
   if (!sequelize) {
     throw new Error('Sequelize not initialized. Call initializeSequelize first.');
   }
@@ -521,25 +521,17 @@ async function syncDatabase(options = {}) {
 /**
  * Get Sequelize instance.
  */
-function getSequelize() {
+export function getSequelize() {
   return sequelize;
 }
 
 /**
  * Close database connection.
  */
-async function closeDatabase() {
+export async function closeDatabase() {
   if (sequelize) {
     await sequelize.close();
     sequelize = null;
     console.log('📴 Database connection closed');
   }
 }
-
-module.exports = {
-  initializeSequelize,
-  syncDatabase,
-  getSequelize,
-  closeDatabase,
-  Op,
-};

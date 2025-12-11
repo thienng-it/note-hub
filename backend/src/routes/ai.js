@@ -1,10 +1,10 @@
 /**
  * AI Routes - Text improvement features using AI
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const AIService = require('../services/aiService');
-const { jwtRequired } = require('../middleware/auth');
+import * as AIService from '../services/aiService.js';
+import {  jwtRequired  } from '../middleware/auth.js';
 
 /**
  * GET /api/ai/status - Get AI status and configuration
@@ -95,4 +95,4 @@ router.post('/rewrite', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

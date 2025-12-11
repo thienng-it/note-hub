@@ -3,7 +3,7 @@
  *
  * Express middleware for logging API requests and responses.
  */
-const logger = require('../config/logger');
+import logger from '../config/logger.js';
 
 // Paths to exclude from logging in production (too noisy)
 const EXCLUDED_PATHS_PRODUCTION = ['/api/health', '/metrics'];
@@ -12,7 +12,7 @@ const EXCLUDED_PATHS_PRODUCTION = ['/api/health', '/metrics'];
  * Request logging middleware
  * Logs API requests with method, path, status code, and duration
  */
-function requestLogger(req, res, next) {
+export function requestLogger(req, res, next) {
   const startTime = Date.now();
 
   // Skip logging for excluded paths in production (too noisy)
@@ -56,7 +56,3 @@ function requestLogger(req, res, next) {
 
   next();
 }
-
-module.exports = {
-  requestLogger,
-};

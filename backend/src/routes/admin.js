@@ -1,11 +1,11 @@
 /**
  * Admin Routes.
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { jwtRequired, adminRequired } = require('../middleware/auth');
-const db = require('../config/database');
-const { record2FAOperation } = require('../middleware/metrics');
+import {  jwtRequired, adminRequired  } from '../middleware/auth.js';
+import db from '../config/database.js';
+import {  record2FAOperation  } from '../middleware/metrics.js';
 
 /**
  * GET /api/admin/users - List all users (admin only)
@@ -403,4 +403,4 @@ router.get('/health', async (_req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

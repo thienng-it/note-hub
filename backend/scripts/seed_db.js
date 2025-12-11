@@ -4,10 +4,11 @@
  * Creates default admin and demo users with sample data.
  * Run with: npm run seed
  */
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const db = require('../src/config/database');
-const bcrypt = require('bcryptjs');
+import db from '../src/config/database.js';
+import bcrypt from 'bcryptjs';
 
 async function seed() {
   try {

@@ -4,11 +4,11 @@
  * Collects and exposes application metrics for Prometheus scraping.
  * Provides default Node.js metrics and custom application metrics.
  */
-const promClient = require('prom-client');
-const logger = require('../config/logger');
+import promClient from 'prom-client';
+import logger from '../config/logger.js';
 
 // Create a Registry to register metrics
-const register = new promClient.Registry();
+export const register = new promClient.Registry();
 
 // Add default metrics (CPU, memory, event loop, etc.)
 promClient.collectDefaultMetrics({ register });
@@ -187,7 +187,7 @@ const searchDuration = new promClient.Histogram({
 /**
  * Middleware to track HTTP request metrics
  */
-function metricsMiddleware(req, res, next) {
+export function metricsMiddleware(req, res, next) {
   // Skip metrics endpoint itself
   if (req.path === '/metrics' || req.path === '/api/metrics') {
     return next();
@@ -296,7 +296,7 @@ function normalizeRoute(path) {
 /**
  * Update database metrics
  */
-function recordDbQuery(operation, duration, success = true) {
+export function recordDbQuery(operation, duration, success = true) {
   const status = success ? 'success' : 'error';
 
   dbQueryDuration.observe({ operation, status }, duration / 1000); // Convert to seconds
@@ -306,14 +306,14 @@ function recordDbQuery(operation, duration, success = true) {
 /**
  * Update cache metrics
  */
-function recordCacheOperation(operation, result) {
+export function recordCacheOperation(operation, result) {
   cacheOperations.inc({ operation, result });
 }
 
 /**
  * Update application-specific metrics
  */
-function updateApplicationMetrics(metrics) {
+export function updateApplicationMetrics(metrics) {
   if (metrics.notes !== undefined) {
     notesTotal.set(metrics.notes);
   }
@@ -339,7 +339,7 @@ function updateApplicationMetrics(metrics) {
 /**
  * Record authentication attempt
  */
-function recordAuthAttempt(method, success, reason = 'none') {
+export function recordAuthAttempt(method, success, reason = 'none') {
   const status = success ? 'success' : 'failure';
   authAttempts.inc({ method, status, reason });
 }
@@ -347,7 +347,7 @@ function recordAuthAttempt(method, success, reason = 'none') {
 /**
  * Record 2FA operation
  */
-function record2FAOperation(operation, success) {
+export function record2FAOperation(operation, success) {
   const status = success ? 'success' : 'failure';
   twoFactorUsage.inc({ operation, status });
 }
@@ -355,7 +355,7 @@ function record2FAOperation(operation, success) {
 /**
  * Record note operation
  */
-function recordNoteOperation(operation, success = true) {
+export function recordNoteOperation(operation, success = true) {
   const status = success ? 'success' : 'failure';
   noteOperations.inc({ operation, status });
 }
@@ -363,14 +363,14 @@ function recordNoteOperation(operation, success = true) {
 /**
  * Record tag operation
  */
-function recordTagOperation(operation) {
+export function recordTagOperation(operation) {
   tagUsage.inc({ operation });
 }
 
 /**
  * Record search operation
  */
-function recordSearchOperation(engine, duration, success = true) {
+export function recordSearchOperation(engine, duration, success = true) {
   const status = success ? 'success' : 'failure';
   searchOperations.inc({ engine, status });
   searchDuration.observe({ engine }, duration / 1000); // Convert to seconds
@@ -379,7 +379,7 @@ function recordSearchOperation(engine, duration, success = true) {
 /**
  * Update database connection pool metrics
  */
-function updateDbPoolMetrics(active, idle, total) {
+export function updateDbPoolMetrics(active, idle, total) {
   dbConnectionPoolSize.set({ status: 'active' }, active);
   dbConnectionPoolSize.set({ status: 'idle' }, idle);
   dbConnectionPoolSize.set({ status: 'total' }, total);
@@ -388,7 +388,7 @@ function updateDbPoolMetrics(active, idle, total) {
 /**
  * Metrics endpoint handler
  */
-async function metricsEndpoint(_req, res) {
+export async function metricsEndpoint(_req, res) {
   try {
     // Set response headers
     res.setHeader('Content-Type', register.contentType);
@@ -403,18 +403,3 @@ async function metricsEndpoint(_req, res) {
     res.status(500).end('Error collecting metrics');
   }
 }
-
-module.exports = {
-  metricsMiddleware,
-  metricsEndpoint,
-  recordDbQuery,
-  recordCacheOperation,
-  updateApplicationMetrics,
-  recordAuthAttempt,
-  record2FAOperation,
-  recordNoteOperation,
-  recordTagOperation,
-  recordSearchOperation,
-  updateDbPoolMetrics,
-  register,
-};

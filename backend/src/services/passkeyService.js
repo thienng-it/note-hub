@@ -2,15 +2,15 @@
  * Passkey (WebAuthn) Service
  * Handles passkey registration and authentication using FIDO2/WebAuthn standards.
  */
-const {
+import { 
   generateRegistrationOptions,
   verifyRegistrationResponse,
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
-} = require('@simplewebauthn/server');
-const db = require('../config/database');
+ } from '@simplewebauthn/server';
+import db from '../config/database.js';
 
-class PasskeyService {
+export default class PasskeyService {
   /**
    * Get the Relying Party configuration from environment.
    */
@@ -228,5 +228,3 @@ class PasskeyService {
     return result.affectedRows > 0 || result.changes > 0;
   }
 }
-
-module.exports = PasskeyService;

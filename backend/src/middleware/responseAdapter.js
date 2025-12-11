@@ -8,7 +8,7 @@
 /**
  * Middleware to detect if request is to a v1 endpoint
  */
-function markAsV1(_req, res, next) {
+export function markAsV1(_req, res, next) {
   res.locals.isV1 = true;
   next();
 }
@@ -16,7 +16,7 @@ function markAsV1(_req, res, next) {
 /**
  * Intercept res.json to adapt responses for legacy endpoints
  */
-function legacyResponseAdapter(_req, res, next) {
+export function legacyResponseAdapter(_req, res, next) {
   // Store original json method
   const originalJson = res.json.bind(res);
 
@@ -105,8 +105,3 @@ function legacyResponseAdapter(_req, res, next) {
 
   next();
 }
-
-module.exports = {
-  markAsV1,
-  legacyResponseAdapter,
-};

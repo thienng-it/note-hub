@@ -1,15 +1,15 @@
 /**
  * Passkey (WebAuthn) Authentication Routes.
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const PasskeyService = require('../services/passkeyService');
-const jwtService = require('../services/jwtService');
-const AuthService = require('../services/authService');
-const { jwtRequired } = require('../middleware/auth');
-const responseHandler = require('../utils/responseHandler');
-const { storeChallenge, getAndRemoveChallenge } = require('../services/challengeStorage');
-const logger = require('../config/logger');
+import PasskeyService from '../services/passkeyService.js';
+import jwtService from '../services/jwtService.js';
+import AuthService from '../services/authService.js';
+import {  jwtRequired  } from '../middleware/auth.js';
+import * as responseHandler from '../utils/responseHandler.js';
+import {  storeChallenge, getAndRemoveChallenge  } from '../services/challengeStorage.js';
+import logger from '../config/logger.js';
 
 /**
  * GET /api/auth/passkey/status - Check if passkey authentication is enabled
@@ -328,4 +328,4 @@ router.patch('/credentials/:id', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,9 +1,9 @@
 /**
  * JWT Service for token generation and validation with refresh token rotation.
  */
-const jwt = require('jsonwebtoken');
-const crypto = require('node:crypto');
-const db = require('../config/database');
+import jwt from 'jsonwebtoken';
+import crypto from 'node:crypto';
+import db from '../config/database.js';
 
 class JWTService {
   constructor() {
@@ -320,4 +320,5 @@ class JWTService {
   }
 }
 
-module.exports = new JWTService();
+const jwtService = new JWTService();
+export default jwtService;

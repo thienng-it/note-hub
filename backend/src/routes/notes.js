@@ -1,12 +1,12 @@
 /**
  * Notes Routes.
  */
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const NoteService = require('../services/noteService');
-const { jwtRequired } = require('../middleware/auth');
-const db = require('../config/database');
-const { recordNoteOperation, recordTagOperation } = require('../middleware/metrics');
+import NoteService from '../services/noteService.js';
+import {  jwtRequired  } from '../middleware/auth.js';
+import db from '../config/database.js';
+import {  recordNoteOperation, recordTagOperation  } from '../middleware/metrics.js';
 
 /**
  * GET /api/notes - List all notes for user
@@ -430,4 +430,4 @@ router.delete('/:id/share/:shareId', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

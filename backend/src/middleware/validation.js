@@ -3,14 +3,14 @@
  *
  * Provides common validation functions for request input.
  */
-const responseHandler = require('../utils/responseHandler');
+import * as responseHandler from '../utils/responseHandler.js';
 
 /**
  * Validate required fields in request body
  * @param {Array<string>} requiredFields - Array of required field names
  * @returns {Function} Express middleware
  */
-function validateRequiredFields(requiredFields) {
+export function validateRequiredFields(requiredFields) {
   return (req, res, next) => {
     const missingFields = [];
 
@@ -36,7 +36,7 @@ function validateRequiredFields(requiredFields) {
  * @param {string} fieldName - Name of the field to validate (default: 'email')
  * @returns {Function} Express middleware
  */
-function validateEmail(fieldName = 'email') {
+export function validateEmail(fieldName = 'email') {
   return (req, res, next) => {
     const email = req.body[fieldName];
 
@@ -65,7 +65,7 @@ function validateEmail(fieldName = 'email') {
  * @param {number} options.max - Maximum length
  * @returns {Function} Express middleware
  */
-function validateLength(fieldName, options = {}) {
+export function validateLength(fieldName, options = {}) {
   const { min, max } = options;
 
   return (req, res, next) => {
@@ -105,7 +105,7 @@ function validateLength(fieldName, options = {}) {
  * @param {Array<string>} fields - Fields to sanitize
  * @returns {Function} Express middleware
  */
-function sanitizeStrings(fields) {
+export function sanitizeStrings(fields) {
   return (req, _res, next) => {
     for (const field of fields) {
       if (req.body[field] && typeof req.body[field] === 'string') {
@@ -115,10 +115,3 @@ function sanitizeStrings(fields) {
     next();
   };
 }
-
-module.exports = {
-  validateRequiredFields,
-  validateEmail,
-  validateLength,
-  sanitizeStrings,
-};

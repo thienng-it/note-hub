@@ -1,11 +1,11 @@
 /**
  * Authentication Service for user management.
  */
-const bcrypt = require('bcryptjs');
-const crypto = require('node:crypto');
-const db = require('../config/database');
+import bcrypt from 'bcryptjs';
+import crypto from 'node:crypto';
+import db from '../config/database.js';
 
-class AuthService {
+export default class AuthService {
   /**
    * Password policy enforcement.
    */
@@ -237,5 +237,3 @@ class AuthService {
     return { success: true };
   }
 }
-
-module.exports = AuthService;

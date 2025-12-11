@@ -2,15 +2,15 @@
  * Elasticsearch configuration and connection management.
  * Provides full-text search capabilities.
  */
-const { Client } = require('@elastic/elasticsearch');
-const { ELASTICSEARCH, SEARCH_MIN_LENGTH } = require('./constants');
+import {  Client  } from '@elastic/elasticsearch';
+import {  ELASTICSEARCH, SEARCH_MIN_LENGTH  } from './constants.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordSearchOperation = null;
-function getMetrics() {
+async function getMetrics() {
   if (!recordSearchOperation) {
     try {
-      const metrics = require('../middleware/metrics');
+      const metrics = await import('../middleware/metrics.js');
       recordSearchOperation = metrics.recordSearchOperation;
     } catch (_error) {
       // Metrics not available yet, use noop
@@ -345,4 +345,4 @@ class ElasticsearchService {
 // Singleton instance
 const elasticsearch = new ElasticsearchService();
 
-module.exports = elasticsearch;
+export default elasticsearch;
