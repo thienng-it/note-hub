@@ -80,7 +80,9 @@ router.get('/data', jwtRequired, async (req, res) => {
       tasks,
     };
 
-    logger.info(`User ${req.user.username} exported ${notes.length} notes and ${tasks.length} tasks`);
+    logger.info(
+      `User ${req.user.username} exported ${notes.length} notes and ${tasks.length} tasks`,
+    );
 
     return responseHandler.success(res, exportData, {
       message: 'Data exported successfully',

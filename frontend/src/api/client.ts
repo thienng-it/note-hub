@@ -566,11 +566,7 @@ export const exportApi = {
     return apiRequest(`${API_VERSION}/export/data`);
   },
 
-  async importData(data: {
-    notes?: Note[];
-    tasks?: Task[];
-    overwrite?: boolean;
-  }): Promise<{
+  async importData(data: { notes?: Note[]; tasks?: Task[]; overwrite?: boolean }): Promise<{
     imported: { notes: number; tasks: number };
     skipped: { notes: number; tasks: number };
   }> {

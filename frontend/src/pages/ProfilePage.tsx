@@ -24,7 +24,7 @@ export function ProfilePage() {
     setIsExporting(true);
     try {
       const data = await exportApi.exportData();
-      
+
       // Create a JSON file and download it
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -70,7 +70,7 @@ export function ProfilePage() {
 
       setImportMessage(
         `Successfully imported ${result.imported.notes} notes and ${result.imported.tasks} tasks. ` +
-        `Skipped ${result.skipped.notes} existing notes and ${result.skipped.tasks} existing tasks.`
+          `Skipped ${result.skipped.notes} existing notes and ${result.skipped.tasks} existing tasks.`,
       );
     } catch (error) {
       setImportError(error instanceof Error ? error.message : 'Import failed');
