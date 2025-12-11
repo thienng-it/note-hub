@@ -1,32 +1,52 @@
+# =============================================================================
 # Docker ignore file for optimized builds
+# =============================================================================
 
-# Git
+# Git files
 .git
 .gitignore
+.gitattributes
+.github
 
 # Documentation
 docs/
-\*.md
+*.md
 !README.md
 
 # IDE and editor files
 .vscode/
 .idea/
-_.swp
-_.swo
+*.swp
+*.swo
+*~
+.DS_Store
 
 # Node modules (will be installed in build stage)
 node_modules/
 frontend/node_modules/
 backend/node_modules/
-frontend/dist/
 
-# Test files
+# Build outputs (will be generated during build)
+frontend/dist/
+frontend/build/
+backend/dist/
+backend/build/
+*.tsbuildinfo
+
+# Test files and coverage
 tests/
 backend/tests/
-_.test.js
-_.spec.ts
-\*.spec.tsx
+frontend/tests/
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
+__tests__/
+coverage/
+.nyc_output/
+*.coverage
 
 # Deployment configs (not needed in container)
 netlify.toml
@@ -36,18 +56,56 @@ infra/
 deployment_guides/
 config/
 
-# Environment files
-#.env
+# Docker files (not needed inside container)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Environment files (should be passed via env vars or mounted)
+.env
 .env.*
+!.env.example
 
-# Coverage reports
-coverage/
-.nyc_output/
+# CI/CD files
+.drone.yml
+.drone.yml.example
+.github/workflows/
 
-# Logs
-\*.log
+# Logs and temp files
+*.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
 
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Lock files (use package-lock.json only)
+yarn.lock
+pnpm-lock.yaml
+
+# Misc
+.editorconfig
+.prettierrc
+.eslintrc*
+.biomeignore
+biome.json
+
+# Data directories (should be mounted as volumes)
+data/
+uploads/
+letsencrypt/
+letsencrypt-drone/
+
+# Local development
+*.local

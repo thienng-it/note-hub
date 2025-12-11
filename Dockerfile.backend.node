@@ -1,23 +1,35 @@
-# NoteHub Backend - Node.js
-FROM node:20-alpine
+# =============================================================================
+# NoteHub Backend - Node.js - Optimized Production Build
+# =============================================================================
+FROM node:20.18.1-alpine
+
+# Install system dependencies for healthcheck and signal handling
+RUN apk add --no-cache wget dumb-init
 
 WORKDIR /app
 
-# Install dependencies
+# Copy package files for better layer caching
 COPY backend/package*.json ./
-RUN npm i --only=production
+
+# Install production dependencies only with cache mount
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev --prefer-offline --no-audit
 
 # Copy source code
 COPY backend/src ./src
-COPY scripts ./scripts
-COPY .env ./.env
+COPY backend/scripts ./scripts
 
 # Create data directory for SQLite and uploads directory for file uploads
 RUN mkdir -p /app/data /app/uploads
 
-# Set default environment variables
-ENV NODE_ENV=production
-ENV PORT=5000
+# Set environment variables
+ENV NODE_ENV=production \
+    PORT=5000
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
 
 # Expose port
 EXPOSE 5000
@@ -25,6 +37,9 @@ EXPOSE 5000
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:5000/api/health || exit 1
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 # Start the server
 CMD ["node", "src/index.js"]

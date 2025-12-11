@@ -8,15 +8,17 @@
 # -----------------------------------------------------------------------------
 # Stage 1: Build Frontend (Vite + React)
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS frontend-builder
+FROM node:20.18.1-alpine AS frontend-builder
 
 WORKDIR /frontend
 
 # Copy package files first for better caching
 COPY frontend/package*.json ./
 
-# Install dependencies with reduced memory usage
-RUN npm i --prefer-offline --no-audit
+# Install dependencies with cache mount and production optimizations
+# Only install what's needed for build (includes devDependencies for Vite/TypeScript)
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --prefer-offline --no-audit --include=dev
 
 # Copy frontend source code
 COPY frontend/ ./
@@ -28,15 +30,16 @@ RUN npm run build
 # -----------------------------------------------------------------------------
 # Stage 2: Build Backend (Node.js/Express)
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS backend-builder
+FROM node:20.18.1-alpine AS backend-builder
 
 WORKDIR /backend
 
 # Copy package files
 COPY backend/package*.json ./
 
-# Install production dependencies only
-RUN npm i --only=production
+# Install production dependencies only with cache mount
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev --prefer-offline --no-audit
 
 # Copy backend source
 COPY backend/src ./src
@@ -45,7 +48,10 @@ COPY backend/scripts ./scripts
 # -----------------------------------------------------------------------------
 # Stage 3: Production Image
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS production
+FROM node:20.18.1-alpine AS production
+
+# Install wget for healthcheck and dumb-init for proper signal handling
+RUN apk add --no-cache wget dumb-init
 
 # Set environment variables
 ENV NODE_ENV=production \
@@ -75,6 +81,9 @@ EXPOSE 8080
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 # Start the Node.js server
 CMD ["node", "src/index.js"]
