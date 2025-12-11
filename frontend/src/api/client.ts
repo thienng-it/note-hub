@@ -553,3 +553,30 @@ export const uploadApi = {
     }
   },
 };
+
+// Export/Import API
+export const exportApi = {
+  async exportData(): Promise<{
+    version: string;
+    exported_at: string;
+    user: { username: string; email?: string };
+    notes: Note[];
+    tasks: Task[];
+  }> {
+    return apiRequest(`${API_VERSION}/export/data`);
+  },
+
+  async importData(data: {
+    notes?: Note[];
+    tasks?: Task[];
+    overwrite?: boolean;
+  }): Promise<{
+    imported: { notes: number; tasks: number };
+    skipped: { notes: number; tasks: number };
+  }> {
+    return apiRequest(`${API_VERSION}/export/import`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};

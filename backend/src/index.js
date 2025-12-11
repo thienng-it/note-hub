@@ -41,6 +41,7 @@ import adminRoutes from './routes/admin.js';
 import aiRoutes from './routes/ai.js';
 // Import routes
 import authRoutes from './routes/auth.js';
+import exportRoutes from './routes/export.js';
 import notesRoutes from './routes/notes.js';
 import passkeyRoutes from './routes/passkey.js';
 import profileRoutes from './routes/profile.js';
@@ -141,6 +142,7 @@ app.use(`${API_VERSION}/users`, markAsV1, usersRoutes);
 app.use(`${API_VERSION}/admin`, markAsV1, adminRoutes);
 app.use(`${API_VERSION}/ai`, markAsV1, aiRoutes);
 app.use(`${API_VERSION}/upload`, markAsV1, uploadRoutes);
+app.use(`${API_VERSION}/export`, markAsV1, exportRoutes);
 
 // Health check endpoints with standardized response
 import * as responseHandler from './utils/responseHandler.js';
