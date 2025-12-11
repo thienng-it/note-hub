@@ -2,10 +2,11 @@
  * Timestamp Tests for CRUD Operations
  * Tests that created_at and updated_at fields are properly set
  */
-import db from '../src/config/database.js';
-import path from 'node:path';
+
 import fs from 'node:fs';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import db from '../src/config/database.js';
 
 // ESM compatibility
 const __filename = fileURLToPath(import.meta.url);

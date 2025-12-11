@@ -2,8 +2,10 @@
  * 2FA Management Tests
  * Tests for improved 2FA disable flow and admin 2FA management
  */
-import request from 'supertest';
+
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import request from 'supertest';
 
 // Mock the database
 jest.mock('../src/config/database.js');
@@ -33,7 +35,6 @@ describe.skip('2FA Management', () => {
     jest.clearAllMocks();
 
     // Generate test tokens
-    import jwt from 'jsonwebtoken';
     userToken = jwt.sign({ user_id: 1, type: 'access' }, process.env.JWT_SECRET, {
       expiresIn: '24h',
     });

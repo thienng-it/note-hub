@@ -1,13 +1,16 @@
 /**
  * Refresh Token Rotation Tests
  */
-import request from 'supertest';
+
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import request from 'supertest';
 
 // Mock the database
 jest.mock('../src/config/database.js');
 
 import db from '../src/config/database.js';
+import jwtService from '../src/services/jwtService.js';
 
 // Set up environment
 process.env.JWT_SECRET = 'test-secret-key';
@@ -65,9 +68,6 @@ describe.skip('Refresh Token Rotation', () => {
 
   describe('POST /api/auth/refresh', () => {
     it('should rotate refresh token when valid token is provided', async () => {
-      import jwtService from '../src/services/jwtService.js';
-      const _crypto = require('node:crypto');
-
       // Generate a valid refresh token
       const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(1);
       const tokenHash = jwtService.hashToken(tokenId);
@@ -112,7 +112,6 @@ describe.skip('Refresh Token Rotation', () => {
     });
 
     it('should reject expired refresh token', async () => {
-      import jwtService from '../src/services/jwtService.js';
       const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(1);
       const tokenHash = jwtService.hashToken(tokenId);
 
@@ -141,7 +140,6 @@ describe.skip('Refresh Token Rotation', () => {
     });
 
     it('should detect token reuse and revoke all user tokens', async () => {
-      import jwtService from '../src/services/jwtService.js';
       const { token: refreshToken, tokenId } = jwtService.generateRefreshToken(1);
       const tokenHash = jwtService.hashToken(tokenId);
 
@@ -178,7 +176,6 @@ describe.skip('Refresh Token Rotation', () => {
     });
 
     it('should handle legacy tokens without JTI', async () => {
-      import jwt from 'jsonwebtoken';
       const secretKey = process.env.JWT_SECRET;
 
       // Generate legacy token without JTI
@@ -206,8 +203,6 @@ describe.skip('Refresh Token Rotation', () => {
 
   describe('POST /api/auth/logout', () => {
     it('should revoke specific refresh token on logout', async () => {
-      import jwtService from '../src/services/jwtService.js';
-
       // Create access token for authentication
       const accessToken = jwtService.generateToken(1);
       const { token: refreshToken } = jwtService.generateRefreshToken(1);
@@ -233,7 +228,6 @@ describe.skip('Refresh Token Rotation', () => {
 
   describe('POST /api/auth/logout-all', () => {
     it('should revoke all user tokens', async () => {
-      import jwtService from '../src/services/jwtService.js';
       const accessToken = jwtService.generateToken(1);
 
       db.queryOne.mockResolvedValue({
@@ -265,7 +259,6 @@ describe.skip('Refresh Token Rotation', () => {
 
   describe('GET /api/auth/sessions', () => {
     it('should return active sessions for user', async () => {
-      import jwtService from '../src/services/jwtService.js';
       const accessToken = jwtService.generateToken(1);
 
       const activeSessions = [

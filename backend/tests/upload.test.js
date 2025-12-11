@@ -2,10 +2,11 @@
  * Upload Routes Tests
  * Tests for image upload functionality including single/multiple uploads and deletions
  */
-import request from 'supertest';
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import request from 'supertest';
 
 // ESM compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -16,8 +17,6 @@ jest.mock('../src/config/database.js');
 
 // Mock JWT middleware
 jest.mock('../src/middleware/auth.js');
-
-import _db from '../src/config/database.js';
 
 // Set up environment
 process.env.JWT_SECRET = 'test-secret-key';

@@ -8,6 +8,10 @@
  * - Load balancing
  */
 
+import fs from 'node:fs';
+import Database from 'better-sqlite3';
+import mysql from 'mysql2/promise';
+
 // Note: databaseReplication is a singleton, so we'll test it directly
 import databaseReplication from '../src/config/databaseReplication.js';
 
@@ -137,7 +141,6 @@ describe.skip('DatabaseReplication', () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db,/tmp/missing.db';
 
-      const fs = require('node:fs');
       fs.existsSync.mockImplementation((path) => {
         return path === '/tmp/replica1.db';
       });
@@ -150,8 +153,6 @@ describe.skip('DatabaseReplication', () => {
     it('should open SQLite replicas in read-only mode', async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.SQLITE_REPLICA_PATHS = '/tmp/replica1.db';
-
-      import Database from 'better-sqlite3';
 
       await databaseReplication.initialize(mockPrimary, true);
 
@@ -179,8 +180,6 @@ describe.skip('DatabaseReplication', () => {
       process.env.MYSQL_REPLICA_HOSTS = 'replica1,replica2';
       process.env.MYSQL_REPLICA_PORTS = '3307,3308';
 
-      import mysql from 'mysql2/promise';
-
       await databaseReplication.initialize(mockPrimary, false);
 
       expect(mysql.createPool).toHaveBeenCalledWith(expect.objectContaining({ port: 3307 }));
@@ -190,8 +189,6 @@ describe.skip('DatabaseReplication', () => {
     it('should use default port 3306 when not specified', async () => {
       process.env.DB_REPLICATION_ENABLED = 'true';
       process.env.MYSQL_REPLICA_HOSTS = 'replica1';
-
-      import mysql from 'mysql2/promise';
 
       await databaseReplication.initialize(mockPrimary, false);
 

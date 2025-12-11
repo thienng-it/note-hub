@@ -5,7 +5,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { DataTypes, Op, Sequelize } from 'sequelize';
+import { DataTypes, Sequelize } from 'sequelize';
 
 let sequelize = null;
 

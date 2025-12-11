@@ -1,6 +1,8 @@
 /**
  * Authentication Routes Tests
  */
+
+import bcrypt from 'bcryptjs';
 import request from 'supertest';
 
 // Mock the database
@@ -45,7 +47,6 @@ describe('Auth Routes', () => {
     });
 
     it('should return tokens for valid credentials', async () => {
-      import bcrypt from 'bcryptjs';
       const hash = await bcrypt.hash('TestPassword123', 12);
 
       db.queryOne.mockResolvedValue({

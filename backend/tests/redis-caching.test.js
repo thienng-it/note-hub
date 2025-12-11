@@ -1,6 +1,8 @@
 /**
  * Redis Caching Integration Tests
  */
+
+import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
 // Mock Redis
@@ -48,7 +50,6 @@ describe.skip('Redis Caching', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    import jwt from 'jsonwebtoken';
     userToken = jwt.sign({ user_id: 1, type: 'access' }, process.env.JWT_SECRET, {
       expiresIn: '24h',
     });

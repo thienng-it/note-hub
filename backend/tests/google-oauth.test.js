@@ -1,8 +1,10 @@
 /**
  * Google OAuth Integration Tests
  */
-import request from 'supertest';
+
 import bcrypt from 'bcryptjs';
+import { google } from 'googleapis';
+import request from 'supertest';
 
 // Mock googleapis
 jest.mock('googleapis', () => ({
@@ -81,7 +83,6 @@ describe.skip('Google OAuth', () => {
 
       // Need to re-import to pick up env change
       jest.resetModules();
-      import freshApp from '../src/index.js';
 
       const response = await request(freshApp).get('/api/v1/auth/google/status');
 
@@ -106,7 +107,6 @@ describe.skip('Google OAuth', () => {
       delete process.env.GOOGLE_CLIENT_ID;
 
       jest.resetModules();
-      import freshApp from '../src/index.js';
 
       const response = await request(freshApp).get('/api/v1/auth/google');
 
@@ -163,7 +163,6 @@ describe.skip('Google OAuth', () => {
     });
 
     it('should reject unverified Google emails', async () => {
-      import {  google  } from 'googleapis';
       const mockOAuth2 = google.oauth2();
 
       // Mock unverified email
@@ -216,7 +215,6 @@ describe.skip('Google OAuth', () => {
     });
 
     it('should handle OAuth token exchange errors', async () => {
-      import {  google  } from 'googleapis';
       const OAuth2 = google.auth.OAuth2;
       const mockClient = new OAuth2();
 
