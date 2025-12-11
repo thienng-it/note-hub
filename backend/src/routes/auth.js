@@ -397,6 +397,9 @@ router.get('/google', (_req, res) => {
  * POST /api/auth/google/callback - Handle Google OAuth callback
  */
 router.post('/google/callback', async (req, res) => {
+  let user = null;
+  let googleUser = null;
+
   try {
     const { code, id_token } = req.body;
 
@@ -407,8 +410,6 @@ router.post('/google/callback', async (req, res) => {
     if (!googleOAuthService.isEnabled()) {
       return res.status(503).json({ error: 'Google OAuth not configured' });
     }
-
-    let googleUser;
 
     // Method 1: Using authorization code
     if (code) {
@@ -429,7 +430,7 @@ router.post('/google/callback', async (req, res) => {
     }
 
     // Check if user exists by email
-    let user = await db.queryOne(`SELECT * FROM users WHERE email = ?`, [googleUser.email]);
+    user = await db.queryOne(`SELECT * FROM users WHERE email = ?`, [googleUser.email]);
 
     if (!user) {
       // Create new user with Google account
@@ -497,6 +498,20 @@ router.post('/google/callback', async (req, res) => {
     });
   } catch (error) {
     console.error('Google OAuth callback error:', error);
+    
+    // If user was created but token generation/storage failed, still return success
+    // with a note that re-login may be needed
+    if (user && user.id && googleUser) {
+      console.error(
+        `[AUTH] User ${user.username} was created/found but token generation failed. User should retry login.`,
+      );
+      return res.status(500).json({
+        error: 'Account created but authentication failed. Please try logging in again.',
+        user_created: true,
+        username: user.username,
+      });
+    }
+    
     res.status(500).json({ error: 'Authentication failed' });
   }
 });
@@ -555,6 +570,8 @@ router.get('/github', (_req, res) => {
  * Note: Rate limiting is applied globally via apiLimiter middleware in index.js
  */
 router.post('/github/callback', async (req, res) => {
+  let user = null;
+
   try {
     const { code } = req.body;
     // TODO: Validate state parameter for CSRF protection
@@ -568,7 +585,7 @@ router.post('/github/callback', async (req, res) => {
     }
 
     // Authenticate user with GitHub
-    const user = await githubOAuthService.authenticateUser(code);
+    user = await githubOAuthService.authenticateUser(code);
 
     if (!user) {
       return res.status(400).json({ error: 'Failed to authenticate with GitHub' });
@@ -618,6 +635,19 @@ router.post('/github/callback', async (req, res) => {
     });
   } catch (error) {
     console.error('GitHub OAuth callback error:', error);
+    
+    // If user was created/found but token generation/storage failed, still return helpful error
+    if (user && user.id) {
+      console.error(
+        `[AUTH] User ${user.username} was created/found but token generation failed. User should retry login.`,
+      );
+      return res.status(500).json({
+        error: 'Account created but authentication failed. Please try logging in again.',
+        user_created: true,
+        username: user.username,
+      });
+    }
+    
     res.status(500).json({ error: error.message || 'Authentication failed' });
   }
 });
