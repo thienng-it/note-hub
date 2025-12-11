@@ -114,7 +114,54 @@ class PasskeyService {
   }
 
   /**
+   * Get registration options from server (step 1 of registration).
+   * This should be called before showing the UI to get device name,
+   * so that startRegistration can be called immediately from user gesture.
+   */
+  async getRegistrationOptions(): Promise<{
+    options: PublicKeyCredentialCreationOptionsJSON;
+    challengeKey: string;
+  }> {
+    const response = await apiClient.post<{
+      options: PublicKeyCredentialCreationOptionsJSON;
+      challengeKey: string;
+    }>('/api/v1/auth/passkey/register-options', {});
+    return response;
+  }
+
+  /**
+   * Complete passkey registration (step 2 of registration).
+   * This should be called immediately from a user gesture with pre-fetched options.
+   */
+  async completeRegistration(
+    options: PublicKeyCredentialCreationOptionsJSON,
+    challengeKey: string,
+    deviceName?: string,
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Start WebAuthn registration - this must be called from user gesture context
+      const registrationResponse = await startRegistration({ optionsJSON: options });
+
+      // Verify registration with server
+      await apiClient.post(`${API_VERSION}/auth/passkey/register-verify`, {
+        response: registrationResponse,
+        challengeKey,
+        deviceName,
+      });
+
+      return { success: true };
+    } catch (error: unknown) {
+      console.error('Passkey registration error:', error);
+      return {
+        success: false,
+        error: this.handleWebAuthnError(error, 'registration'),
+      };
+    }
+  }
+
+  /**
    * Register a new passkey for the current user.
+   * @deprecated Use getRegistrationOptions + completeRegistration for better user gesture handling
    */
   async register(deviceName?: string): Promise<{ success: boolean; error?: string }> {
     try {

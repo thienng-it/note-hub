@@ -1,3 +1,4 @@
+import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { passkeyService } from '../services/passkeyService';
@@ -24,6 +25,10 @@ export function PasskeyManager() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [deviceNameInput, setDeviceNameInput] = useState('');
+  const [registrationOptions, setRegistrationOptions] = useState<{
+    options: PublicKeyCredentialCreationOptionsJSON;
+    challengeKey: string;
+  } | null>(null);
 
   const checkPasskeyAvailability = useCallback(async () => {
     const available = await passkeyService.isAvailable();
@@ -47,35 +52,61 @@ export function PasskeyManager() {
     checkPasskeyAvailability();
   }, [loadCredentials, checkPasskeyAvailability]);
 
-  const handleRegister = () => {
-    // Show modal to get device name first
-    setDeviceNameInput('');
-    setShowAddModal(true);
+  const handleRegister = async () => {
+    // Pre-fetch registration options before showing modal
+    // This ensures we can call startRegistration immediately when user confirms
+    setError(null);
+    setIsRegistering(true);
+
+    try {
+      const { options, challengeKey } = await passkeyService.getRegistrationOptions();
+      setRegistrationOptions({ options, challengeKey });
+      setDeviceNameInput('');
+      setShowAddModal(true);
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || 'Failed to initialize passkey registration');
+    } finally {
+      setIsRegistering(false);
+    }
   };
 
   const handleRegisterConfirm = async () => {
+    if (!registrationOptions) {
+      setError('Registration options not available. Please try again.');
+      setShowAddModal(false);
+      return;
+    }
+
     setIsRegistering(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const result = await passkeyService.register(deviceNameInput.trim() || undefined);
+      const result = await passkeyService.completeRegistration(
+        registrationOptions.options,
+        registrationOptions.challengeKey,
+        deviceNameInput.trim() || undefined,
+      );
 
       if (result.success) {
         setSuccess('Passkey registered successfully!');
         await loadCredentials();
         setShowAddModal(false);
         setDeviceNameInput('');
+        setRegistrationOptions(null);
       } else {
         setError(result.error || 'Failed to register passkey');
         setShowAddModal(false);
         setDeviceNameInput('');
+        setRegistrationOptions(null);
       }
     } catch (err: unknown) {
       const error = err as { message?: string };
       setError(error.message || 'Failed to register passkey');
       setShowAddModal(false);
       setDeviceNameInput('');
+      setRegistrationOptions(null);
     } finally {
       setIsRegistering(false);
     }
@@ -423,6 +454,7 @@ export function PasskeyManager() {
           if (!isRegistering) {
             setShowAddModal(false);
             setDeviceNameInput('');
+            setRegistrationOptions(null);
           }
         }}
         onConfirm={handleRegisterConfirm}
