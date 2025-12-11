@@ -365,7 +365,7 @@ export default class NoteService {
    */
   static async updateNoteTags(noteId, tagsString) {
     // If tagsString is undefined, do nothing
-    if (tagsString === undefined) return;
+    if (!tagsString) return;
 
     // Clear existing tags
     await db.run(`DELETE FROM note_tag WHERE note_id = ?`, [noteId]);

@@ -72,6 +72,7 @@ describe('Notes Integration Tests', () => {
         .send({
           title: 'Test Note',
           body: 'This is a test note body',
+          tags: undefined,
         });
 
       expect(response.status).toBe(201);
