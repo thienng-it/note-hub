@@ -33,5 +33,3 @@ Thumbs.db
 
 # Test
 *.test.db
-
-package-lock.json
