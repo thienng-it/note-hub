@@ -1,0 +1,70 @@
+# =============================================================================
+# Docker Compose Override for Local Development
+# =============================================================================
+#
+# This file disables registry cache and optimizes for local development.
+# 
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+#
+# Or set COMPOSE_FILE environment variable:
+#   export COMPOSE_FILE=docker-compose.yml:docker-compose.local.yml
+#   docker compose up -d
+#
+# This override:
+#   - Removes cache_from/cache_to to avoid registry warnings
+#   - Keeps BuildKit cache mounts (faster local builds)
+#   - Maintains all other optimizations
+#
+# =============================================================================
+
+services:
+  # Frontend - Remove registry cache
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.traefik
+      args:
+        - VITE_API_URL=
+      # Remove cache_from/cache_to for local development
+      # BuildKit cache mounts in Dockerfile still work
+
+  # Backend - Remove registry cache
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+      # Remove cache_from/cache_to for local development
+      # BuildKit cache mounts in Dockerfile still work
+
+  # Frontend Production - Remove registry cache
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.traefik
+      args:
+        - VITE_API_URL=${VITE_API_URL:-}
+      # Remove cache_from/cache_to for local development
+
+  # Backend Production - Remove registry cache
+  backend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+      # Remove cache_from/cache_to for local development
+
+  # Backend MySQL - Remove registry cache
+  backend-mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+      # Remove cache_from/cache_to for local development
+
+  # Frontend MySQL - Remove registry cache
+  frontend-mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.traefik
+      args:
+        - VITE_API_URL=
+      # Remove cache_from/cache_to for local development

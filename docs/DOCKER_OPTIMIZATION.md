@@ -402,6 +402,58 @@ The optimized Dockerfiles include a custom entrypoint script that automatically 
 
 **Note**: The entrypoint script approach maintains security (app runs as non-root) while ensuring database writability.
 
+### Cache Import Warnings from Registry
+**Issue**: Warning messages like `importing cache manifest from ghcr.io/xxx:cache` or `cache mount not found`
+
+**Root Cause**: 
+The docker-compose.yml includes registry cache configuration (`cache_from`) that tries to pull cached layers from GitHub Container Registry. For local development, these images don't exist, causing warning messages (not errors).
+
+**Understanding the Warnings**:
+These warnings are **expected and harmless** for local development:
+- BuildKit tries to import cache from registry
+- Registry doesn't have the cache images (they're only created in CI/CD)
+- BuildKit falls back to local cache and cache mounts
+- Build continues normally with local optimizations
+
+**Solutions**:
+
+1. **Ignore the Warnings** (Recommended for most users):
+   ```bash
+   # Just build normally - warnings won't affect the build
+   docker compose build
+   docker compose up -d
+   ```
+   The warnings look like this but are safe to ignore:
+   ```
+   => importing cache manifest from ghcr.io/thienng-it/note-hub/backend:cache
+   => [frontend] importing cache manifest from ghcr.io/thienng-it/note-hub/frontend:cache
+   ```
+
+2. **Use Local Development Override** (Clean build output):
+   ```bash
+   # Use the local override file that removes registry cache
+   docker compose -f docker-compose.yml -f docker-compose.local.yml build
+   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+   
+   # Or set environment variable for easier usage:
+   export COMPOSE_FILE=docker-compose.yml:docker-compose.local.yml
+   docker compose build
+   docker compose up -d
+   ```
+
+3. **Disable Cache Completely** (Slower builds):
+   ```bash
+   # Build without any cache
+   docker compose build --no-cache
+   ```
+
+**For CI/CD**:
+The registry cache is beneficial in CI/CD pipelines where images are pushed to GitHub Container Registry. In that environment, subsequent builds can reuse layers, making builds much faster.
+
+**File Locations**:
+- `docker-compose.yml` - Includes registry cache for CI/CD
+- `docker-compose.local.yml` - Overrides to remove registry cache warnings
+
 ## Monitoring and Optimization
 
 ### Check Image Sizes
