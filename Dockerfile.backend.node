@@ -1,7 +1,7 @@
 # =============================================================================
 # NoteHub Backend - Node.js - Optimized Production Build
 # =============================================================================
-FROM node:20.18.1-alpine
+FROM node:22.12.0-alpine3.21
 
 # Install system dependencies for healthcheck, signal handling, and user switching
 RUN apk add --no-cache wget dumb-init su-exec

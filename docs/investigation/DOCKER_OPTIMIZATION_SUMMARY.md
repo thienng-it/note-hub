@@ -44,7 +44,7 @@ Successfully optimized all Docker configurations for the NoteHub application, ac
 **Changes**:
 ```diff
 - FROM node:20-alpine
-+ FROM node:20.18.1-alpine
++ FROM node:22.12.0-alpine3.21-alpine
 + RUN apk add --no-cache wget dumb-init
 
 - RUN npm i --only=production

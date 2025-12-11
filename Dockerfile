@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # Stage 1: Build Frontend (Vite + React)
 # -----------------------------------------------------------------------------
-FROM node:20.18.1-alpine AS frontend-builder
+FROM node:22.12.0-alpine3.21 AS frontend-builder
 
 WORKDIR /frontend
 
@@ -30,7 +30,7 @@ RUN npm run build
 # -----------------------------------------------------------------------------
 # Stage 2: Build Backend (Node.js/Express)
 # -----------------------------------------------------------------------------
-FROM node:20.18.1-alpine AS backend-builder
+FROM node:22.12.0-alpine3.21 AS backend-builder
 
 WORKDIR /backend
 
@@ -48,7 +48,7 @@ COPY backend/scripts ./scripts
 # -----------------------------------------------------------------------------
 # Stage 3: Production Image
 # -----------------------------------------------------------------------------
-FROM node:20.18.1-alpine AS production
+FROM node:22.12.0-alpine3.21 AS production
 
 # Install wget for healthcheck, dumb-init for signal handling, and su-exec for user switching
 RUN apk add --no-cache wget dumb-init su-exec

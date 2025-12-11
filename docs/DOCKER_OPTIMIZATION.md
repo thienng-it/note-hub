@@ -61,7 +61,7 @@ All services now run as non-root users:
 
 **Build Process**:
 ```dockerfile
-FROM node:20.18.1-alpine AS builder
+FROM node:22.12.0-alpine3.21-alpine AS builder
 # Build React app
 RUN npm ci --prefer-offline --no-audit --include=dev
 RUN npm run build
