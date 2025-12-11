@@ -24,6 +24,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [SQL_VS_NOSQL_COMPARISON](investigation/SQL_VS_NOSQL_COMPARISON.md) - Visual comparison and performance analysis
 - [EXECUTIVE_SUMMARY](investigation/EXECUTIVE_SUMMARY.md) - Executive summary of technical investigations
 - [IMPLEMENTATION_SUMMARY](investigation/IMPLEMENTATION_SUMMARY.md) - Implementation summary
+- [DOCKER_OPTIMIZATION_SUMMARY](investigation/DOCKER_OPTIMIZATION_SUMMARY.md) - Complete Docker optimization project summary
 
 ## 🔌 API Documentation
 
