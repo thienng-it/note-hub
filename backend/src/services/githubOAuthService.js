@@ -2,11 +2,14 @@
  * GitHub OAuth Service for user authentication.
  * Handles GitHub OAuth 2.0 flow for user login and registration.
  */
-const axios = require('axios');
-const crypto = require('node:crypto');
-const db = require('../config/database');
 
-class GitHubOAuthService {
+import crypto from 'node:crypto';
+import axios from 'axios';
+import bcrypt from 'bcryptjs';
+import db from '../config/database.js';
+import logger from '../config/logger.js';
+
+export default class GitHubOAuthService {
   /**
    * Check if GitHub OAuth is configured and enabled.
    */
@@ -77,7 +80,7 @@ class GitHubOAuthService {
 
       return response.data.access_token;
     } catch (error) {
-      console.error('GitHub token exchange error:', error.response?.data || error.message);
+      logger.error('GitHub token exchange error:', error.response?.data || error.message);
       throw new Error('Failed to exchange authorization code for token');
     }
   }
@@ -120,7 +123,7 @@ class GitHubOAuthService {
         bio: user.bio,
       };
     } catch (error) {
-      console.error('GitHub API error:', error.response?.data || error.message);
+      logger.error('GitHub API error:', error.response?.data || error.message);
       throw new Error('Failed to fetch user profile from GitHub');
     }
   }
@@ -168,7 +171,6 @@ class GitHubOAuthService {
 
     // Create new user with random password (they'll use GitHub OAuth to login)
     const randomPassword = crypto.randomBytes(32).toString('hex');
-    const bcrypt = require('bcryptjs');
     const passwordHash = await bcrypt.hash(randomPassword, 14);
 
     const result = await db.run(
@@ -179,7 +181,7 @@ class GitHubOAuthService {
     // Fetch and return the created user
     user = await db.queryOne(`SELECT * FROM users WHERE id = ?`, [result.insertId]);
 
-    console.log(`[GitHub OAuth] Created new user: ${finalUsername} (GitHub ID: ${github_id})`);
+    logger.info(`[GitHub OAuth] Created new user: ${finalUsername} (GitHub ID: ${github_id})`);
 
     return user;
   }
@@ -212,5 +214,3 @@ class GitHubOAuthService {
     return user;
   }
 }
-
-module.exports = GitHubOAuthService;

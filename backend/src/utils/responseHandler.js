@@ -14,7 +14,7 @@
  * @param {string} options.message - Optional success message
  * @param {Object} options.meta - Optional metadata (pagination, etc.)
  */
-function success(res, data, options = {}) {
+export function success(res, data, options = {}) {
   const { statusCode = 200, message = 'Success', meta = {} } = options;
 
   const response = {
@@ -45,7 +45,7 @@ function success(res, data, options = {}) {
  * @param {string} options.errorCode - Application-specific error code
  * @param {Object} options.details - Additional error details
  */
-function error(res, message, options = {}) {
+export function error(res, message, options = {}) {
   const { statusCode = 500, errorCode = 'INTERNAL_ERROR', details = null } = options;
 
   const response = {
@@ -74,7 +74,7 @@ function error(res, message, options = {}) {
  * @param {Object} res - Express response object
  * @param {Array|Object} errors - Validation errors
  */
-function validationError(res, errors) {
+export function validationError(res, errors) {
   return error(res, 'Validation failed', {
     statusCode: 400,
     errorCode: 'VALIDATION_ERROR',
@@ -87,7 +87,7 @@ function validationError(res, errors) {
  * @param {Object} res - Express response object
  * @param {string} resource - Resource that was not found
  */
-function notFound(res, resource = 'Resource') {
+export function notFound(res, resource = 'Resource') {
   return error(res, `${resource} not found`, {
     statusCode: 404,
     errorCode: 'NOT_FOUND',
@@ -99,7 +99,7 @@ function notFound(res, resource = 'Resource') {
  * @param {Object} res - Express response object
  * @param {string} message - Optional custom message
  */
-function unauthorized(res, message = 'Unauthorized') {
+export function unauthorized(res, message = 'Unauthorized') {
   return error(res, message, {
     statusCode: 401,
     errorCode: 'UNAUTHORIZED',
@@ -111,7 +111,7 @@ function unauthorized(res, message = 'Unauthorized') {
  * @param {Object} res - Express response object
  * @param {string} message - Optional custom message
  */
-function forbidden(res, message = 'Forbidden') {
+export function forbidden(res, message = 'Forbidden') {
   return error(res, message, {
     statusCode: 403,
     errorCode: 'FORBIDDEN',
@@ -124,7 +124,7 @@ function forbidden(res, message = 'Forbidden') {
  * @param {*} data - Created resource data
  * @param {string} message - Optional success message
  */
-function created(res, data, message = 'Resource created successfully') {
+export function created(res, data, message = 'Resource created successfully') {
   return success(res, data, {
     statusCode: 201,
     message,
@@ -135,7 +135,7 @@ function created(res, data, message = 'Resource created successfully') {
  * No content response for DELETE endpoints
  * @param {Object} res - Express response object
  */
-function noContent(res) {
+export function noContent(res) {
   return res.status(204).send();
 }
 
@@ -148,7 +148,7 @@ function noContent(res) {
  * @param {number} pagination.limit - Items per page
  * @param {number} pagination.total - Total items
  */
-function paginated(res, data, pagination) {
+export function paginated(res, data, pagination) {
   const { page, limit, total } = pagination;
   const totalPages = Math.ceil(total / limit);
 
@@ -165,15 +165,3 @@ function paginated(res, data, pagination) {
     },
   });
 }
-
-module.exports = {
-  success,
-  error,
-  validationError,
-  notFound,
-  unauthorized,
-  forbidden,
-  created,
-  noContent,
-  paginated,
-};

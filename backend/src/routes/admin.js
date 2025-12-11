@@ -1,11 +1,14 @@
 /**
  * Admin Routes.
  */
-const express = require('express');
+import express from 'express';
+import logger from '../config/logger.js';
+
 const router = express.Router();
-const { jwtRequired, adminRequired } = require('../middleware/auth');
-const db = require('../config/database');
-const { record2FAOperation } = require('../middleware/metrics');
+
+import db from '../config/database.js';
+import { adminRequired, jwtRequired } from '../middleware/auth.js';
+import { record2FAOperation } from '../middleware/metrics.js';
 
 /**
  * GET /api/admin/users - List all users (admin only)
@@ -75,7 +78,7 @@ router.get('/users', jwtRequired, adminRequired, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Admin list users error:', error);
+    logger.error('Admin list users error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -112,7 +115,7 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
 
     // Log admin action for audit trail
     // TODO: Consider using a proper logging framework (winston, pino) in production
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
+    logger.info(`[SECURITY AUDIT] Admin ID: ${req.userId} disabled 2FA for user ID: ${userId}`);
 
     record2FAOperation('disable', true);
 
@@ -125,7 +128,7 @@ router.post('/users/:userId/disable-2fa', jwtRequired, adminRequired, async (req
       },
     });
   } catch (error) {
-    console.error('Admin disable 2FA error:', error);
+    logger.error('Admin disable 2FA error:', error);
     record2FAOperation('disable', false);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -165,7 +168,7 @@ router.post('/users/:userId/lock', jwtRequired, adminRequired, async (req, res) 
     await db.run(`UPDATE users SET is_locked = 1 WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} locked user ID: ${userId}`);
+    logger.info(`[SECURITY AUDIT] Admin ID: ${req.userId} locked user ID: ${userId}`);
 
     res.json({
       message: `User ${user.username} locked successfully`,
@@ -176,7 +179,7 @@ router.post('/users/:userId/lock', jwtRequired, adminRequired, async (req, res) 
       },
     });
   } catch (error) {
-    console.error('Admin lock user error:', error);
+    logger.error('Admin lock user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -209,7 +212,7 @@ router.post('/users/:userId/unlock', jwtRequired, adminRequired, async (req, res
     await db.run(`UPDATE users SET is_locked = 0 WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(`[SECURITY AUDIT] Admin ID: ${req.userId} unlocked user ID: ${userId}`);
+    logger.info(`[SECURITY AUDIT] Admin ID: ${req.userId} unlocked user ID: ${userId}`);
 
     res.json({
       message: `User ${user.username} unlocked successfully`,
@@ -220,7 +223,7 @@ router.post('/users/:userId/unlock', jwtRequired, adminRequired, async (req, res
       },
     });
   } catch (error) {
-    console.error('Admin unlock user error:', error);
+    logger.error('Admin unlock user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -257,7 +260,7 @@ router.delete('/users/:userId', jwtRequired, adminRequired, async (req, res) => 
     await db.run(`DELETE FROM users WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(
+    logger.info(
       `[SECURITY AUDIT] Admin ID: ${req.userId} deleted user ID: ${userId} (username: ${user.username})`,
     );
 
@@ -265,7 +268,7 @@ router.delete('/users/:userId', jwtRequired, adminRequired, async (req, res) => 
       message: `User ${user.username} deleted successfully`,
     });
   } catch (error) {
-    console.error('Admin delete user error:', error);
+    logger.error('Admin delete user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -298,7 +301,7 @@ router.post('/users/:userId/grant-admin', jwtRequired, adminRequired, async (req
     await db.run(`UPDATE users SET is_admin = 1 WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(
+    logger.info(
       `[SECURITY AUDIT] Admin ID: ${req.userId} granted admin privileges to user ID: ${userId}`,
     );
 
@@ -311,7 +314,7 @@ router.post('/users/:userId/grant-admin', jwtRequired, adminRequired, async (req
       },
     });
   } catch (error) {
-    console.error('Admin grant privileges error:', error);
+    logger.error('Admin grant privileges error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -354,7 +357,7 @@ router.post('/users/:userId/revoke-admin', jwtRequired, adminRequired, async (re
     await db.run(`UPDATE users SET is_admin = 0 WHERE id = ?`, [userId]);
 
     // Log admin action for audit trail
-    console.log(
+    logger.info(
       `[SECURITY AUDIT] Admin ID: ${req.userId} revoked admin privileges from user ID: ${userId}`,
     );
 
@@ -367,7 +370,7 @@ router.post('/users/:userId/revoke-admin', jwtRequired, adminRequired, async (re
       },
     });
   } catch (error) {
-    console.error('Admin revoke privileges error:', error);
+    logger.error('Admin revoke privileges error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -394,7 +397,7 @@ router.get('/health', async (_req, res) => {
       },
     });
   } catch (error) {
-    console.error('Health check error:', error);
+    logger.error('Health check error:', error);
     res.status(503).json({
       status: 'unhealthy',
       error: error.message,
@@ -403,4 +406,4 @@ router.get('/health', async (_req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

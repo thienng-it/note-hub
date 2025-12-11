@@ -3,8 +3,9 @@
  * Handles storage and retrieval of WebAuthn challenges.
  * Uses Redis when available, falls back to in-memory storage for single-instance deployments.
  */
-const cache = require('../config/redis');
-const logger = require('../config/logger');
+
+import logger from '../config/logger.js';
+import cache from '../config/redis.js';
 
 // Fallback in-memory storage for when Redis is not available
 const memoryStore = new Map();
@@ -16,7 +17,7 @@ const memoryStore = new Map();
  * @param {number} expirationMs - Expiration time in milliseconds (default: 5 minutes)
  * @returns {Promise<boolean>} - Success status
  */
-async function storeChallenge(key, challenge, expirationMs = 5 * 60 * 1000) {
+export async function storeChallenge(key, challenge, expirationMs = 5 * 60 * 1000) {
   const expirationSeconds = Math.floor(expirationMs / 1000);
 
   // Try Redis first
@@ -53,7 +54,7 @@ async function storeChallenge(key, challenge, expirationMs = 5 * 60 * 1000) {
  * @param {string} key - The challenge key
  * @returns {Promise<string|null>} - The challenge value or null if not found/expired
  */
-async function getAndRemoveChallenge(key) {
+export async function getAndRemoveChallenge(key) {
   // Try Redis first
   if (cache.isEnabled()) {
     try {
@@ -84,12 +85,6 @@ async function getAndRemoveChallenge(key) {
  * Check if challenge storage is using Redis.
  * @returns {boolean} - True if using Redis, false if using in-memory storage
  */
-function isUsingRedis() {
+export function isUsingRedis() {
   return cache.isEnabled();
 }
-
-module.exports = {
-  storeChallenge,
-  getAndRemoveChallenge,
-  isUsingRedis,
-};

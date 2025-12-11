@@ -1,11 +1,14 @@
 /**
  * Profile and User Routes.
  */
-const express = require('express');
+import express from 'express';
+import logger from '../config/logger.js';
+
 const router = express.Router();
-const { jwtRequired } = require('../middleware/auth');
-const db = require('../config/database');
-const crypto = require('node:crypto');
+
+import crypto from 'node:crypto';
+import db from '../config/database.js';
+import { jwtRequired } from '../middleware/auth.js';
 
 /**
  * GET /api/profile - Get current user's profile
@@ -86,7 +89,7 @@ router.get('/', jwtRequired, async (req, res) => {
       shared_with_me: sharedWithMe,
     });
   } catch (error) {
-    console.error('Get profile error:', error);
+    logger.error('Get profile error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -175,7 +178,7 @@ router.put('/', jwtRequired, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Update profile error:', error);
+    logger.error('Update profile error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -191,7 +194,7 @@ router.post('/toggle-theme', jwtRequired, async (req, res) => {
 
     res.json({ theme: newTheme });
   } catch (error) {
-    console.error('Toggle theme error:', error);
+    logger.error('Toggle theme error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -214,7 +217,7 @@ router.get('/invitations', jwtRequired, async (req, res) => {
 
     res.json({ invitations });
   } catch (error) {
-    console.error('Get invitations error:', error);
+    logger.error('Get invitations error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -245,7 +248,7 @@ router.post('/invitations', jwtRequired, async (req, res) => {
       invite_url: `${req.protocol}://${req.get('host')}/register?token=${token}`,
     });
   } catch (error) {
-    console.error('Create invitation error:', error);
+    logger.error('Create invitation error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -283,9 +286,9 @@ router.get('/:id', jwtRequired, async (req, res) => {
       is_own_profile: userId === req.userId,
     });
   } catch (error) {
-    console.error('Get user profile error:', error);
+    logger.error('Get user profile error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-module.exports = router;
+export default router;

@@ -2,15 +2,16 @@
  * Elasticsearch configuration and connection management.
  * Provides full-text search capabilities.
  */
-const { Client } = require('@elastic/elasticsearch');
-const { ELASTICSEARCH, SEARCH_MIN_LENGTH } = require('./constants');
+import { Client } from '@elastic/elasticsearch';
+import { ELASTICSEARCH, SEARCH_MIN_LENGTH } from './constants.js';
+import logger from './logger.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordSearchOperation = null;
-function getMetrics() {
+async function getMetrics() {
   if (!recordSearchOperation) {
     try {
-      const metrics = require('../middleware/metrics');
+      const metrics = await import('../middleware/metrics.js');
       recordSearchOperation = metrics.recordSearchOperation;
     } catch (_error) {
       // Metrics not available yet, use noop
@@ -37,7 +38,7 @@ class ElasticsearchService {
     const esNode = process.env.ELASTICSEARCH_NODE;
 
     if (!esNode) {
-      console.log('⚠️  Elasticsearch not configured - full-text search disabled');
+      logger.info('⚠️  Elasticsearch not configured - full-text search disabled');
       this.enabled = false;
       return;
     }
@@ -71,13 +72,13 @@ class ElasticsearchService {
       await this.client.ping();
       this.enabled = true;
 
-      console.log(`🔍 Connected to Elasticsearch: ${esNode}`);
+      logger.info(`🔍 Connected to Elasticsearch: ${esNode}`);
 
       // Initialize index
       await this.initializeIndex();
     } catch (error) {
-      console.error('⚠️  Elasticsearch connection failed:', error.message);
-      console.log('⚠️  Continuing without full-text search - basic search still available');
+      logger.error('⚠️  Elasticsearch connection failed:', error.message);
+      logger.info('⚠️  Continuing without full-text search - basic search still available');
       this.enabled = false;
       this.client = null;
     }
@@ -142,10 +143,10 @@ class ElasticsearchService {
           },
         });
 
-        console.log(`✅ Created Elasticsearch index: ${this.indexName}`);
+        logger.info(`✅ Created Elasticsearch index: ${this.indexName}`);
       }
     } catch (error) {
-      console.error('Elasticsearch index initialization error:', error.message);
+      logger.error('Elasticsearch index initialization error:', error.message);
     }
   }
 
@@ -176,7 +177,7 @@ class ElasticsearchService {
 
       return true;
     } catch (error) {
-      console.error(`Elasticsearch index error for note ${note.id}:`, error.message);
+      logger.error(`Elasticsearch index error for note ${note.id}:`, error.message);
       return false;
     }
   }
@@ -197,7 +198,7 @@ class ElasticsearchService {
     } catch (error) {
       // Ignore not found errors
       if (error.meta?.statusCode !== 404) {
-        console.error(`Elasticsearch delete error for note ${noteId}:`, error.message);
+        logger.error(`Elasticsearch delete error for note ${noteId}:`, error.message);
       }
       return false;
     }
@@ -277,13 +278,13 @@ class ElasticsearchService {
         })),
       };
     } catch (error) {
-      console.error('Elasticsearch search error:', error.message);
+      logger.error('Elasticsearch search error:', error.message);
       success = false;
       return null;
     } finally {
       // Record metrics
       const duration = Date.now() - startTime;
-      const recordMetrics = getMetrics();
+      const recordMetrics = await getMetrics();
       recordMetrics('elasticsearch', duration, success);
     }
   }
@@ -318,7 +319,7 @@ class ElasticsearchService {
 
       return true;
     } catch (error) {
-      console.error('Elasticsearch bulk index error:', error.message);
+      logger.error('Elasticsearch bulk index error:', error.message);
       return false;
     }
   }
@@ -345,4 +346,4 @@ class ElasticsearchService {
 // Singleton instance
 const elasticsearch = new ElasticsearchService();
 
-module.exports = elasticsearch;
+export default elasticsearch;

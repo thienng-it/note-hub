@@ -5,9 +5,10 @@
  * Supports multiple formats and transports for different environments.
  * Includes optional Graylog integration via GELF protocol.
  */
-const winston = require('winston');
-const WinstonGraylog2 = require('winston-graylog2');
-const os = require('node:os');
+
+import os from 'node:os';
+import winston from 'winston';
+import WinstonGraylog2 from 'winston-graylog2';
 
 // Get log configuration from environment
 const LOG_LEVEL =
@@ -66,6 +67,7 @@ const logger = winston.createLogger({
     }),
   ],
   exitOnError: false,
+  silent: process.env.JEST_WORKER_ID !== undefined,
 });
 
 // Optional: Add file transport for production
@@ -200,4 +202,4 @@ logger.config = {
 };
 
 // Export logger
-module.exports = logger;
+export default logger;

@@ -2,16 +2,18 @@
  * Sequelize ORM Models
  * Provides a consistent interface for database operations across SQLite and MySQL.
  */
-const { Sequelize, DataTypes, Op } = require('sequelize');
-const path = require('node:path');
-const fs = require('node:fs');
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { DataTypes, Sequelize } from 'sequelize';
+import logger from '../config/logger.js';
 
 let sequelize = null;
 
 /**
  * Initialize Sequelize connection based on environment.
  */
-async function initializeSequelize() {
+export async function initializeSequelize() {
   const dbPath = process.env.NOTES_DB_PATH;
   const mysqlHost = process.env.MYSQL_HOST;
   const databaseUrl = process.env.DATABASE_URL;
@@ -19,7 +21,7 @@ async function initializeSequelize() {
   // Production: Use DATABASE_URL if provided
   if (databaseUrl) {
     sequelize = new Sequelize(databaseUrl, {
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      logging: process.env.NODE_ENV === 'development' ? (msg) => logger.debug(msg) : false,
       dialectOptions: {
         ssl: {
           require: true,
@@ -27,7 +29,7 @@ async function initializeSequelize() {
         },
       },
     });
-    console.log('🌐 Connected to cloud database via DATABASE_URL');
+    logger.info('🌐 Connected to cloud database via DATABASE_URL');
   }
   // MySQL if MYSQL_HOST is set and no NOTES_DB_PATH
   else if (mysqlHost && !dbPath) {
@@ -47,7 +49,7 @@ async function initializeSequelize() {
       username: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PASSWORD || '',
       database: process.env.MYSQL_DATABASE || 'notehub',
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      logging: process.env.NODE_ENV === 'development' ? (msg) => logger.debug(msg) : false,
       dialectOptions: sslDisabled
         ? {}
         : {
@@ -63,7 +65,7 @@ async function initializeSequelize() {
         idle: 10000,
       },
     });
-    console.log(`🐬 Connected to MySQL: ${mysqlHost}`);
+    logger.info(`🐬 Connected to MySQL: ${mysqlHost}`);
   }
   // Default: SQLite
   else {
@@ -82,17 +84,18 @@ async function initializeSequelize() {
     sequelize = new Sequelize({
       dialect: 'sqlite',
       storage: resolvedPath,
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      logging: process.env.NODE_ENV === 'development' ? (msg) => logger.debug(msg) : false,
     });
-    console.log(`📦 Connected to SQLite: ${resolvedPath}`);
+    logger.info(`📦 Connected to SQLite: ${resolvedPath}`);
   }
 
   // Define models
-  defineModels();
+  const models = defineModels();
+  ({ User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag } = models);
 
   // Test connection
   await sequelize.authenticate();
-  console.log('✅ Database connection established');
+  logger.info('✅ Database connection established');
 
   return sequelize;
 }
@@ -496,50 +499,41 @@ function defineModels() {
   Invitation.belongsTo(User, { foreignKey: 'used_by_id', as: 'usedBy' });
 
   // Export models
-  module.exports.User = User;
-  module.exports.Tag = Tag;
-  module.exports.Note = Note;
-  module.exports.Task = Task;
-  module.exports.ShareNote = ShareNote;
-  module.exports.PasswordResetToken = PasswordResetToken;
-  module.exports.Invitation = Invitation;
-  module.exports.NoteTag = NoteTag;
+  return { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag };
 }
+
+// Module-level model exports
+let User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag;
 
 /**
  * Sync database schema.
  */
-async function syncDatabase(options = {}) {
+export async function syncDatabase(options = {}) {
   if (!sequelize) {
     throw new Error('Sequelize not initialized. Call initializeSequelize first.');
   }
 
   await sequelize.sync(options);
-  console.log('✅ Database schema synchronized');
+  logger.info('✅ Database schema synchronized');
 }
 
 /**
  * Get Sequelize instance.
  */
-function getSequelize() {
+export function getSequelize() {
   return sequelize;
 }
 
 /**
  * Close database connection.
  */
-async function closeDatabase() {
+export async function closeDatabase() {
   if (sequelize) {
     await sequelize.close();
     sequelize = null;
-    console.log('📴 Database connection closed');
+    logger.info('📴 Database connection closed');
   }
 }
 
-module.exports = {
-  initializeSequelize,
-  syncDatabase,
-  getSequelize,
-  closeDatabase,
-  Op,
-};
+// Export models
+export { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag };

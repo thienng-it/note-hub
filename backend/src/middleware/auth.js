@@ -1,14 +1,15 @@
 /**
  * JWT Authentication Middleware.
  */
-const jwtService = require('../services/jwtService');
-const db = require('../config/database');
-const responseHandler = require('../utils/responseHandler');
+
+import db from '../config/database.js';
+import jwtService from '../services/jwtService.js';
+import * as responseHandler from '../utils/responseHandler.js';
 
 /**
  * Middleware that requires a valid JWT token.
  */
-const jwtRequired = async (req, res, next) => {
+export const jwtRequired = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -57,7 +58,7 @@ const jwtRequired = async (req, res, next) => {
 /**
  * Optional JWT middleware - doesn't require auth but adds user if present.
  */
-const jwtOptional = async (req, _res, next) => {
+export const jwtOptional = async (req, _res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
@@ -89,15 +90,9 @@ const jwtOptional = async (req, _res, next) => {
 /**
  * Admin-only middleware.
  */
-const adminRequired = async (req, res, next) => {
+export const adminRequired = async (req, res, next) => {
   if (!req.user || !req.user.is_admin) {
     return responseHandler.forbidden(res, 'Admin privileges required');
   }
   next();
-};
-
-module.exports = {
-  jwtRequired,
-  jwtOptional,
-  adminRequired,
 };

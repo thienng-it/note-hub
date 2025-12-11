@@ -1,9 +1,11 @@
 /**
  * JWT Service for token generation and validation with refresh token rotation.
  */
-const jwt = require('jsonwebtoken');
-const crypto = require('node:crypto');
-const db = require('../config/database');
+
+import crypto from 'node:crypto';
+import jwt from 'jsonwebtoken';
+import db from '../config/database.js';
+import logger from '../config/logger.js';
 
 class JWTService {
   constructor() {
@@ -79,7 +81,7 @@ class JWTService {
             err.message &&
             (err.message.includes('no such table') || err.message.includes('refresh_tokens'))
           ) {
-            console.warn('[JWT] Refresh tokens table not available - token rotation disabled');
+            logger.warn('[JWT] Refresh tokens table not available - token rotation disabled');
             return { success: false, silent: true };
           }
           throw err;
@@ -91,7 +93,7 @@ class JWTService {
 
       return { success: true };
     } catch (error) {
-      console.error('[JWT] Failed to store refresh token:', error);
+      logger.error('[JWT] Failed to store refresh token:', error);
       return { success: false, error: error.message };
     }
   }
@@ -136,7 +138,7 @@ class JWTService {
 
       if (!tokenId) {
         // Legacy token without JTI - allow it but generate new one with rotation
-        console.log('[JWT] Legacy refresh token detected, upgrading to rotation');
+        logger.info('[JWT] Legacy refresh token detected, upgrading to rotation');
         const newAccessToken = this.generateToken(userId);
         const { token: newRefreshToken, tokenId: newTokenId } = this.generateRefreshToken(userId);
 
@@ -175,7 +177,7 @@ class JWTService {
           error.message &&
           (error.message.includes('no such table') || error.message.includes('refresh_tokens'))
         ) {
-          console.warn('[JWT] Refresh tokens table not available - using legacy mode');
+          logger.warn('[JWT] Refresh tokens table not available - using legacy mode');
           const newAccessToken = this.generateToken(userId);
           return {
             success: true,
@@ -193,7 +195,7 @@ class JWTService {
       // Check if token is revoked
       if (storedToken.revoked) {
         // Token reuse detected - revoke all tokens for this user as security measure
-        console.error(`[SECURITY] Refresh token reuse detected for user ${userId}`);
+        logger.error(`[SECURITY] Refresh token reuse detected for user ${userId}`);
         await this.revokeAllUserTokens(userId);
         return { success: false, error: 'Token reuse detected. All sessions revoked.' };
       }
@@ -245,7 +247,7 @@ class JWTService {
       if (error.name === 'TokenExpiredError') {
         return { success: false, error: 'Refresh token expired' };
       }
-      console.error('[JWT] Token refresh error:', error);
+      logger.error('[JWT] Token refresh error:', error);
       return { success: false, error: 'Invalid refresh token' };
     }
   }
@@ -263,7 +265,7 @@ class JWTService {
       ]);
       return { success: true };
     } catch (error) {
-      console.error('[JWT] Failed to revoke token:', error);
+      logger.error('[JWT] Failed to revoke token:', error);
       return { success: false, error: error.message };
     }
   }
@@ -280,7 +282,7 @@ class JWTService {
       );
       return { success: true };
     } catch (error) {
-      console.error('[JWT] Failed to revoke all user tokens:', error);
+      logger.error('[JWT] Failed to revoke all user tokens:', error);
       return { success: false, error: error.message };
     }
   }
@@ -294,7 +296,7 @@ class JWTService {
       const result = await db.run(`DELETE FROM refresh_tokens WHERE expires_at < ?`, [now]);
       return { success: true, deleted: result.affectedRows };
     } catch (error) {
-      console.error('[JWT] Failed to cleanup expired tokens:', error);
+      logger.error('[JWT] Failed to cleanup expired tokens:', error);
       return { success: false, error: error.message };
     }
   }
@@ -314,10 +316,11 @@ class JWTService {
       );
       return { success: true, tokens };
     } catch (error) {
-      console.error('[JWT] Failed to get user tokens:', error);
+      logger.error('[JWT] Failed to get user tokens:', error);
       return { success: false, error: error.message };
     }
   }
 }
 
-module.exports = new JWTService();
+const jwtService = new JWTService();
+export default jwtService;

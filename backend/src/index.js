@@ -5,38 +5,50 @@
  * Supports both SQLite (default) and MySQL databases.
  * Uses Sequelize ORM for database operations.
  */
-const path = require('node:path');
-const fs = require('node:fs');
+
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// ESM compatibility: define __dirname and __filename
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ESM compatibility: create require for package.json
+const require = createRequire(import.meta.url);
 
 // Load .env from project root
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+import dotenv from 'dotenv';
 
-// Logger must be imported after dotenv config
-const logger = require('./config/logger');
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+import cors from 'cors';
 
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 // Database: supports both legacy DB layer and Sequelize ORM
-const db = require('./config/database');
-const { initializeSequelize, syncDatabase, closeDatabase } = require('./models');
+import db from './config/database.js';
+import elasticsearch from './config/elasticsearch.js';
+// Logger must be imported after dotenv config
+import logger from './config/logger.js';
 
 // Cache and search services
-const cache = require('./config/redis');
-const elasticsearch = require('./config/elasticsearch');
-
+import cache from './config/redis.js';
+import { closeDatabase, initializeSequelize, syncDatabase } from './models/index.js';
+import adminRoutes from './routes/admin.js';
+import aiRoutes from './routes/ai.js';
 // Import routes
-const authRoutes = require('./routes/auth');
-const passkeyRoutes = require('./routes/passkey');
-const notesRoutes = require('./routes/notes');
-const tasksRoutes = require('./routes/tasks');
-const profileRoutes = require('./routes/profile');
-const usersRoutes = require('./routes/users');
-const adminRoutes = require('./routes/admin');
-const aiRoutes = require('./routes/ai');
-const uploadRoutes = require('./routes/upload');
+import authRoutes from './routes/auth.js';
+import notesRoutes from './routes/notes.js';
+import passkeyRoutes from './routes/passkey.js';
+import profileRoutes from './routes/profile.js';
+import tasksRoutes from './routes/tasks.js';
+import uploadRoutes from './routes/upload.js';
+import usersRoutes from './routes/users.js';
+// Import passkey services
+import { isUsingRedis } from './services/challengeStorage.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -95,23 +107,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Request ID middleware for tracking
-const requestIdMiddleware = require('./middleware/requestId');
+import requestIdMiddleware from './middleware/requestId.js';
+
 app.use(requestIdMiddleware);
 
 // Additional security headers
-const securityHeadersMiddleware = require('./middleware/securityHeaders');
+import securityHeadersMiddleware from './middleware/securityHeaders.js';
+
 app.use(securityHeadersMiddleware);
 
 // Request logging middleware
-const { requestLogger } = require('./middleware/logging');
+import { requestLogger } from './middleware/logging.js';
+
 app.use(requestLogger);
 
 // Prometheus metrics middleware
-const { metricsMiddleware, metricsEndpoint } = require('./middleware/metrics');
+import { metricsEndpoint, metricsMiddleware } from './middleware/metrics.js';
+
 app.use(metricsMiddleware);
 
 // Response adapter for backward compatibility
-const { markAsV1, legacyResponseAdapter } = require('./middleware/responseAdapter');
+import { legacyResponseAdapter, markAsV1 } from './middleware/responseAdapter.js';
+
 app.use(legacyResponseAdapter);
 
 // API v1 routes (standardized response format)
@@ -126,7 +143,9 @@ app.use(`${API_VERSION}/ai`, markAsV1, aiRoutes);
 app.use(`${API_VERSION}/upload`, markAsV1, uploadRoutes);
 
 // Health check endpoints with standardized response
-const responseHandler = require('./utils/responseHandler');
+import * as responseHandler from './utils/responseHandler.js';
+
+// Load package.json using require (created via createRequire)
 const packageJson = require('../package.json');
 
 // Prometheus metrics endpoint (must be before other routes to avoid auth)
@@ -145,7 +164,8 @@ app.on('connection', (socket) => {
 });
 
 // Update application metrics periodically
-const { updateApplicationMetrics, updateDbPoolMetrics } = require('./middleware/metrics');
+import { updateApplicationMetrics, updateDbPoolMetrics } from './middleware/metrics.js';
+
 async function updateMetricsJob() {
   try {
     // Combine queries for better performance
@@ -321,7 +341,6 @@ async function start() {
     await elasticsearch.connect();
 
     // Log passkey challenge storage mode
-    const { isUsingRedis } = require('./services/challengeStorage');
     const challengeStorage = isUsingRedis()
       ? 'Redis (production-ready)'
       : 'In-memory (single-instance only)';
@@ -369,8 +388,10 @@ process.on('SIGINT', async () => {
 });
 
 // Only start server if this file is run directly (not imported for testing)
-if (require.main === module) {
+// ESM equivalent of require.main === module
+if (import.meta.url === `file://${process.argv[1]}`) {
   start();
 }
 
-module.exports = app;
+// Export for testing
+export default app;

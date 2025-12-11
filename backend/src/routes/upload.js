@@ -1,12 +1,20 @@
 /**
  * Upload Routes
  */
-const express = require('express');
+import express from 'express';
+import logger from '../config/logger.js';
+
 const router = express.Router();
-const { jwtRequired } = require('../middleware/auth');
-const { upload } = require('../middleware/upload');
-const path = require('node:path');
-const fs = require('node:fs');
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { jwtRequired } from '../middleware/auth.js';
+import { upload } from '../middleware/upload.js';
+
+// ESM compatibility: define __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * POST /api/upload/image - Upload an image
@@ -28,7 +36,7 @@ router.post('/image', jwtRequired, upload.single('image'), async (req, res) => {
       mimetype: req.file.mimetype,
     });
   } catch (error) {
-    console.error('Upload error:', error);
+    logger.error('Upload error:', error);
     res.status(500).json({ error: error.message || 'Failed to upload image' });
   }
 });
@@ -54,7 +62,7 @@ router.post('/images', jwtRequired, upload.array('images', 10), async (req, res)
       files,
     });
   } catch (error) {
-    console.error('Upload error:', error);
+    logger.error('Upload error:', error);
     res.status(500).json({ error: error.message || 'Failed to upload images' });
   }
 });
@@ -77,9 +85,9 @@ router.delete('/:filename', jwtRequired, async (req, res) => {
 
     res.json({ success: true, message: 'File deleted successfully' });
   } catch (error) {
-    console.error('Delete error:', error);
+    logger.error('Delete error:', error);
     res.status(500).json({ error: 'Failed to delete image' });
   }
 });
 
-module.exports = router;
+export default router;

@@ -668,14 +668,16 @@ if (isRedisEnabled) {
 
 2. **During Development:**
    - Make small, focused commits
-   - Run linter frequently: `npm run lint`
+   - **ALWAYS run linter after ANY code changes: `npm run lint`**
+   - **Auto-fix linting issues immediately: `npm run lint:fix`**
    - Test changes locally
    - Update types/interfaces as needed
    - Update/add translation keys as we support i18n
    - **Update snapshot tests when UI changes** - run `npm test -- -u` after intentional UI changes
 
 3. **Before Committing:**
-   - Run full linting: `npm run lint`
+   - **MANDATORY: Run full linting: `npm run lint`**
+   - **MANDATORY: Fix ALL linting errors before committing**
    - **Run tests: `npm test` - ALL TESTS MUST BE GREEN ✅**
    - **For UI changes: Review snapshot diffs** - `git diff src/**/__snapshots__/`
    - **Update snapshots if changes are intentional** - `npm test -- -u`
@@ -685,7 +687,14 @@ if (isRedisEnabled) {
    - Update documentation if needed
    - Commit snapshot files with component changes
 
-4. **Commit Messages:**
+4. **Automated Code Quality Checks:**
+   - **Linting is MANDATORY for every code change**
+   - Run `npm run lint` in the appropriate directory (frontend/ or backend/)
+   - Use `npm run lint:fix` to automatically fix most issues
+   - Never commit code with linting errors
+   - Review and fix any remaining linting warnings
+
+5. **Commit Messages:**
    ```
    <type>(<scope>): <subject>
    

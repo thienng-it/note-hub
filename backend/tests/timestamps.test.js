@@ -2,9 +2,15 @@
  * Timestamp Tests for CRUD Operations
  * Tests that created_at and updated_at fields are properly set
  */
-const db = require('../src/config/database');
-const path = require('node:path');
-const fs = require('node:fs');
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import db from '../src/config/database.js';
+
+// ESM compatibility
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 describe('CRUD Timestamp Tests', () => {
   const testDbPath = path.join(__dirname, 'test-timestamps.db');

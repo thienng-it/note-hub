@@ -1,10 +1,13 @@
 /**
  * Tasks Routes.
  */
-const express = require('express');
+import express from 'express';
+import logger from '../config/logger.js';
+
 const router = express.Router();
-const TaskService = require('../services/taskService');
-const { jwtRequired } = require('../middleware/auth');
+
+import { jwtRequired } from '../middleware/auth.js';
+import TaskService from '../services/taskService.js';
 
 /**
  * GET /api/tasks - List all tasks for user
@@ -31,7 +34,7 @@ router.get('/', jwtRequired, async (req, res) => {
       counts,
     });
   } catch (error) {
-    console.error('List tasks error:', error);
+    logger.error('List tasks error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -62,7 +65,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Get task error:', error);
+    logger.error('Get task error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -100,7 +103,7 @@ router.post('/', jwtRequired, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Create task error:', error);
+    logger.error('Create task error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -145,7 +148,7 @@ async function updateTask(req, res) {
       },
     });
   } catch (error) {
-    console.error('Update task error:', error);
+    logger.error('Update task error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -169,7 +172,7 @@ router.post('/:id/toggle', jwtRequired, async (req, res) => {
       message: updatedTask.completed ? 'Task completed' : 'Task marked as active',
     });
   } catch (error) {
-    console.error('Toggle task error:', error);
+    logger.error('Toggle task error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -190,9 +193,9 @@ router.delete('/:id', jwtRequired, async (req, res) => {
 
     res.json({ message: 'Task deleted successfully' });
   } catch (error) {
-    console.error('Delete task error:', error);
+    logger.error('Delete task error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-module.exports = router;
+export default router;

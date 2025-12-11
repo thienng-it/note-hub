@@ -1,24 +1,28 @@
 /**
  * Authentication Routes.
  */
-const express = require('express');
+import express from 'express';
+import logger from '../config/logger.js';
+
 const router = express.Router();
-const AuthService = require('../services/authService');
-const jwtService = require('../services/jwtService');
-const googleOAuthService = require('../services/googleOAuthService');
-const { jwtRequired } = require('../middleware/auth');
-const responseHandler = require('../utils/responseHandler');
-const {
-  validateRequiredFields,
+
+import crypto from 'node:crypto';
+import jwt from 'jsonwebtoken';
+import { authenticator } from 'otplib';
+import QRCode from 'qrcode';
+import db from '../config/database.js';
+import { jwtRequired } from '../middleware/auth.js';
+import { record2FAOperation, recordAuthAttempt } from '../middleware/metrics.js';
+import {
   sanitizeStrings,
   validateEmail,
   validateLength,
-} = require('../middleware/validation');
-const db = require('../config/database');
-const { authenticator } = require('otplib');
-const QRCode = require('qrcode');
-const crypto = require('node:crypto');
-const { recordAuthAttempt, record2FAOperation } = require('../middleware/metrics');
+  validateRequiredFields,
+} from '../middleware/validation.js';
+import AuthService from '../services/authService.js';
+import googleOAuthService from '../services/googleOAuthService.js';
+import jwtService from '../services/jwtService.js';
+import * as responseHandler from '../utils/responseHandler.js';
 
 /**
  * POST /api/auth/login - User login
@@ -28,6 +32,7 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
     const { username, password, totp_code } = req.body;
 
     if (!username || !password) {
+      recordAuthAttempt('password', false, 'password_required');
       return responseHandler.validationError(res, {
         missingFields: ['username', 'password'],
         message: 'Username/email and password required',
@@ -43,6 +48,8 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
 
     // Check 2FA if enabled
     if (user.totp_secret && !totp_code) {
+      record2FAOperation('verify', false);
+      recordAuthAttempt('password', false, '2fa_code_required');
       return responseHandler.error(res, '2FA code required', {
         statusCode: 401,
         errorCode: 'REQUIRES_2FA',
@@ -103,7 +110,7 @@ router.post('/login', sanitizeStrings(['username', 'password']), async (req, res
       { message: 'Login successful' },
     );
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error:', error);
     return responseHandler.error(res, 'Internal server error', {
       statusCode: 500,
       errorCode: 'LOGIN_ERROR',
@@ -140,7 +147,7 @@ router.post(
         'Registration successful',
       );
     } catch (error) {
-      console.error('Registration error:', error);
+      logger.error('Registration error:', error);
       return responseHandler.error(res, 'Internal server error', {
         statusCode: 500,
         errorCode: 'REGISTRATION_ERROR',
@@ -228,14 +235,14 @@ router.post('/forgot-password', async (req, res) => {
     const token = await AuthService.generateResetToken(user.id);
 
     // In production, this would be sent via email
-    console.log(`[SECURITY] Password reset token for '${user.username}': ${token}`);
+    logger.info(`[SECURITY] Password reset token for '${user.username}': ${token}`);
 
     res.json({
       message: 'Reset token generated',
       token, // Only for development - remove in production
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
+    logger.error('Forgot password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -259,7 +266,7 @@ router.post('/reset-password', async (req, res) => {
 
     res.json({ message: 'Password reset successful' });
   } catch (error) {
-    console.error('Reset password error:', error);
+    logger.error('Reset password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -283,7 +290,7 @@ router.post('/change-password', jwtRequired, async (req, res) => {
 
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
-    console.error('Change password error:', error);
+    logger.error('Change password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -303,7 +310,7 @@ router.get('/2fa/setup', jwtRequired, async (req, res) => {
       qr_code: qrCodeDataUrl.split(',')[1], // Remove data:image/png;base64, prefix
     });
   } catch (error) {
-    console.error('2FA setup error:', error);
+    logger.error('2FA setup error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -335,7 +342,7 @@ router.post('/2fa/enable', jwtRequired, async (req, res) => {
       has_2fa: true,
     });
   } catch (error) {
-    console.error('2FA enable error:', error);
+    logger.error('2FA enable error:', error);
     record2FAOperation('enable', false);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -358,7 +365,7 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
 
     // Log security event
     // TODO: Consider using a proper logging framework (winston, pino) in production
-    console.log(`[SECURITY] 2FA disabled by user ID: ${req.userId}`);
+    logger.info(`[SECURITY] 2FA disabled by user ID: ${req.userId}`);
 
     record2FAOperation('disable', true);
 
@@ -367,7 +374,7 @@ router.post('/2fa/disable', jwtRequired, async (req, res) => {
       has_2fa: false,
     });
   } catch (error) {
-    console.error('2FA disable error:', error);
+    logger.error('2FA disable error:', error);
     record2FAOperation('disable', false);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -385,7 +392,7 @@ router.get('/google', (_req, res) => {
     const authUrl = googleOAuthService.getAuthUrl();
     res.json({ auth_url: authUrl });
   } catch (error) {
-    console.error('Google OAuth URL error:', error);
+    logger.error('Google OAuth URL error:', error);
     res.status(500).json({ error: 'Failed to generate OAuth URL' });
   }
 });
@@ -394,6 +401,9 @@ router.get('/google', (_req, res) => {
  * POST /api/auth/google/callback - Handle Google OAuth callback
  */
 router.post('/google/callback', async (req, res) => {
+  let user = null;
+  let googleUser = null;
+
   try {
     const { code, id_token } = req.body;
 
@@ -404,8 +414,6 @@ router.post('/google/callback', async (req, res) => {
     if (!googleOAuthService.isEnabled()) {
       return res.status(503).json({ error: 'Google OAuth not configured' });
     }
-
-    let googleUser;
 
     // Method 1: Using authorization code
     if (code) {
@@ -426,7 +434,7 @@ router.post('/google/callback', async (req, res) => {
     }
 
     // Check if user exists by email
-    let user = await db.queryOne(`SELECT * FROM users WHERE email = ?`, [googleUser.email]);
+    user = await db.queryOne(`SELECT * FROM users WHERE email = ?`, [googleUser.email]);
 
     if (!user) {
       // Create new user with Google account
@@ -452,9 +460,9 @@ router.post('/google/callback', async (req, res) => {
 
       user = await db.queryOne(`SELECT * FROM users WHERE id = ?`, [result.insertId]);
 
-      console.log(`[AUTH] New user created via Google OAuth: ${username} (${googleUser.email})`);
+      logger.info(`[AUTH] New user created via Google OAuth: ${username} (${googleUser.email})`);
     } else {
-      console.log(`[AUTH] User logged in via Google OAuth: ${user.username} (${googleUser.email})`);
+      logger.info(`[AUTH] User logged in via Google OAuth: ${user.username} (${googleUser.email})`);
     }
 
     // Generate tokens with rotation (no 2FA for Google OAuth users)
@@ -493,7 +501,21 @@ router.post('/google/callback', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Google OAuth callback error:', error);
+    logger.error('Google OAuth callback error:', error);
+
+    // If user was created but token generation/storage failed, still return success
+    // with a note that re-login may be needed
+    if (user?.id && googleUser) {
+      logger.error(
+        `[AUTH] User ${user.username} was created/found but token generation failed. User should retry login.`,
+      );
+      return res.status(500).json({
+        error: 'Account created but authentication failed. Please try logging in again.',
+        user_created: true,
+        username: user.username,
+      });
+    }
+
     res.status(500).json({ error: 'Authentication failed' });
   }
 });
@@ -510,7 +532,7 @@ router.get('/google/status', (_req, res) => {
 /**
  * GitHub OAuth Routes
  */
-const githubOAuthService = require('../services/githubOAuthService');
+import githubOAuthService from '../services/githubOAuthService.js';
 
 /**
  * GET /api/auth/github/status - Check if GitHub OAuth is configured
@@ -542,7 +564,7 @@ router.get('/github', (_req, res) => {
       state: state,
     });
   } catch (error) {
-    console.error('GitHub OAuth URL error:', error);
+    logger.error('GitHub OAuth URL error:', error);
     res.status(500).json({ error: 'Failed to generate OAuth URL' });
   }
 });
@@ -552,6 +574,8 @@ router.get('/github', (_req, res) => {
  * Note: Rate limiting is applied globally via apiLimiter middleware in index.js
  */
 router.post('/github/callback', async (req, res) => {
+  let user = null;
+
   try {
     const { code } = req.body;
     // TODO: Validate state parameter for CSRF protection
@@ -565,7 +589,7 @@ router.post('/github/callback', async (req, res) => {
     }
 
     // Authenticate user with GitHub
-    const user = await githubOAuthService.authenticateUser(code);
+    user = await githubOAuthService.authenticateUser(code);
 
     if (!user) {
       return res.status(400).json({ error: 'Failed to authenticate with GitHub' });
@@ -597,7 +621,7 @@ router.post('/github/callback', async (req, res) => {
     // Update last login
     await AuthService.updateLastLogin(user.id);
 
-    console.log(`[AUTH] User logged in via GitHub OAuth: ${user.username}`);
+    logger.info(`[AUTH] User logged in via GitHub OAuth: ${user.username}`);
 
     res.json({
       access_token: accessToken,
@@ -614,7 +638,20 @@ router.post('/github/callback', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('GitHub OAuth callback error:', error);
+    logger.error('GitHub OAuth callback error:', error);
+
+    // If user was created/found but token generation/storage failed, still return helpful error
+    if (user?.id) {
+      logger.error(
+        `[AUTH] User ${user.username} was created/found but token generation failed. User should retry login.`,
+      );
+      return res.status(500).json({
+        error: 'Account created but authentication failed. Please try logging in again.',
+        user_created: true,
+        username: user.username,
+      });
+    }
+
     res.status(500).json({ error: error.message || 'Authentication failed' });
   }
 });
@@ -628,7 +665,6 @@ router.post('/logout', jwtRequired, async (req, res) => {
 
     if (refresh_token) {
       // Decode to get token ID
-      const jwt = require('jsonwebtoken');
       try {
         const decoded = jwt.decode(refresh_token);
         if (decoded?.jti) {
@@ -643,7 +679,7 @@ router.post('/logout', jwtRequired, async (req, res) => {
       message: 'Logged out successfully',
     });
   } catch (error) {
-    console.error('Logout error:', error);
+    logger.error('Logout error:', error);
     return responseHandler.error(res, 'Internal server error', {
       statusCode: 500,
       errorCode: 'LOGOUT_ERROR',
@@ -662,7 +698,7 @@ router.post('/logout-all', jwtRequired, async (req, res) => {
       message: 'Logged out from all devices successfully',
     });
   } catch (error) {
-    console.error('Logout all error:', error);
+    logger.error('Logout all error:', error);
     return responseHandler.error(res, 'Internal server error', {
       statusCode: 500,
       errorCode: 'LOGOUT_ALL_ERROR',
@@ -688,7 +724,7 @@ router.get('/sessions', jwtRequired, async (req, res) => {
       sessions: result.tokens,
     });
   } catch (error) {
-    console.error('Get sessions error:', error);
+    logger.error('Get sessions error:', error);
     return responseHandler.error(res, 'Internal server error', {
       statusCode: 500,
       errorCode: 'SESSIONS_ERROR',
@@ -696,4 +732,4 @@ router.get('/sessions', jwtRequired, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,9 +1,9 @@
 /**
  * Task Service for task management operations.
  */
-const db = require('../config/database');
+import db from '../config/database.js';
 
-class TaskService {
+export default class TaskService {
   /**
    * Get all tasks for a user with optional filter.
    */
@@ -182,5 +182,3 @@ class TaskService {
     return new Date(task.due_date) < new Date();
   }
 }
-
-module.exports = TaskService;

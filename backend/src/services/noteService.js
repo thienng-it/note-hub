@@ -2,15 +2,16 @@
  * Note Service for note management operations.
  * Integrated with Redis caching and Elasticsearch for enhanced performance.
  */
-const db = require('../config/database');
-const cache = require('../config/redis');
-const elasticsearch = require('../config/elasticsearch');
-const { SEARCH_MIN_LENGTH, CACHE_TTL } = require('../config/constants');
-const { marked } = require('marked');
-const sanitizeHtml = require('sanitize-html');
-const { validateEmail } = require('../utils/common');
 
-class NoteService {
+import { marked } from 'marked';
+import sanitizeHtml from 'sanitize-html';
+import { CACHE_TTL, SEARCH_MIN_LENGTH } from '../config/constants.js';
+import db from '../config/database.js';
+import elasticsearch from '../config/elasticsearch.js';
+import cache from '../config/redis.js';
+import { validateEmail } from '../utils/common.js';
+
+export default class NoteService {
   /**
    * Get all notes for a user with optional filters.
    * Uses Elasticsearch for full-text search if available, otherwise falls back to SQL.
@@ -363,11 +364,17 @@ class NoteService {
    * Update note tags.
    */
   static async updateNoteTags(noteId, tagsString) {
+    // If tagsString is undefined, do nothing
+    if (tagsString === undefined) return;
+
     // Clear existing tags
     await db.run(`DELETE FROM note_tag WHERE note_id = ?`, [noteId]);
 
     // Parse and add new tags
     const tagNames = tagsString
+      .join('')
+      .trim()
+      .toString()
       .split(',')
       .map((t) => t.trim().toLowerCase())
       .filter((t) => t.length > 0);
@@ -584,5 +591,3 @@ class NoteService {
     });
   }
 }
-
-module.exports = NoteService;

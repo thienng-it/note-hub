@@ -1,11 +1,13 @@
 /**
  * Authentication Service for user management.
  */
-const bcrypt = require('bcryptjs');
-const crypto = require('node:crypto');
-const db = require('../config/database');
 
-class AuthService {
+import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
+import db from '../config/database.js';
+import logger from '../config/logger.js';
+
+export default class AuthService {
   /**
    * Password policy enforcement.
    */
@@ -89,7 +91,7 @@ class AuthService {
     // Note: Runs asynchronously during login. Adds ~200ms but acceptable tradeoff.
     // TODO: Consider using a proper logging framework (winston, pino) in production
     if (AuthService.needsRehash(user.password_hash)) {
-      console.log(`[SECURITY] Upgrading password hash for user ID: ${user.id}`);
+      logger.info(`[SECURITY] Upgrading password hash for user ID: ${user.id}`);
       const newHash = await AuthService.hashPassword(password);
       await db.run(`UPDATE users SET password_hash = ? WHERE id = ?`, [newHash, user.id]);
       user.password_hash = newHash;
@@ -237,5 +239,3 @@ class AuthService {
     return { success: true };
   }
 }
-
-module.exports = AuthService;

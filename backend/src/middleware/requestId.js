@@ -4,7 +4,7 @@
  * Generates a unique request ID for each incoming request.
  * This helps with debugging and log correlation.
  */
-const { v4: uuidv4 } = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Middleware to add unique request ID to each request
@@ -22,4 +22,4 @@ function requestIdMiddleware(req, res, next) {
   next();
 }
 
-module.exports = requestIdMiddleware;
+export default requestIdMiddleware;

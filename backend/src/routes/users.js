@@ -1,10 +1,13 @@
 /**
  * User Routes - Public user information and search.
  */
-const express = require('express');
+import express from 'express';
+import logger from '../config/logger.js';
+
 const router = express.Router();
-const { jwtRequired } = require('../middleware/auth');
-const db = require('../config/database');
+
+import db from '../config/database.js';
+import { jwtRequired } from '../middleware/auth.js';
 
 /**
  * GET /api/users/search - Search for users (for share autocomplete)
@@ -51,7 +54,7 @@ router.get('/search', jwtRequired, async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error('User search error:', error);
+    logger.error('User search error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -88,9 +91,9 @@ router.get('/:id', jwtRequired, async (req, res) => {
       is_own_profile: userId === req.userId,
     });
   } catch (error) {
-    console.error('Get user profile error:', error);
+    logger.error('Get user profile error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-module.exports = router;
+export default router;
