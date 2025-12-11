@@ -25,6 +25,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [EXECUTIVE_SUMMARY](investigation/EXECUTIVE_SUMMARY.md) - Executive summary of technical investigations
 - [IMPLEMENTATION_SUMMARY](investigation/IMPLEMENTATION_SUMMARY.md) - Implementation summary
 - [DOCKER_OPTIMIZATION_SUMMARY](investigation/DOCKER_OPTIMIZATION_SUMMARY.md) - Complete Docker optimization project summary
+- [THIRD_PARTY_PERMISSION_ANALYSIS](investigation/THIRD_PARTY_PERMISSION_ANALYSIS.md) - Permission analysis for third-party services
 
 ## 🔌 API Documentation
 
