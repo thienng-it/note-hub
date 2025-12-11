@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 /**
  * 2FA Management Tests
  * Tests for improved 2FA disable flow and admin 2FA management
@@ -8,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
 // Mock the database
-jest.mock('../src/config/database.js');
+// jest.mock('../src/config/database.js');
 
 import db from '../src/config/database.js';
 

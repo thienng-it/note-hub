@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 /**
  * Database Replication Tests
  *

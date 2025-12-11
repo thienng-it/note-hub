@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 /**
  * Refresh Token Rotation Tests
  */
@@ -7,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
 // Mock the database
-jest.mock('../src/config/database.js');
+// jest.mock('../src/config/database.js');
 
 import db from '../src/config/database.js';
 import jwtService from '../src/services/jwtService.js';

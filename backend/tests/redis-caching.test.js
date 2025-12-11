@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 /**
  * Redis Caching Integration Tests
  */

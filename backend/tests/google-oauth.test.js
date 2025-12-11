@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 /**
  * Google OAuth Integration Tests
  */
