@@ -58,7 +58,8 @@ export default class PasskeyService {
       authenticatorSelection: {
         residentKey: 'preferred',
         userVerification: 'preferred',
-        authenticatorAttachment: 'platform', // Prefer platform authenticators (Face ID, Touch ID, Windows Hello)
+        // No authenticatorAttachment specified - allows both platform and cross-platform authenticators
+        // (e.g., Touch ID, Face ID, Windows Hello, Microsoft Authenticator, Apple Password)
       },
     });
 
