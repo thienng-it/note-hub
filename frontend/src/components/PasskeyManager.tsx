@@ -1,3 +1,4 @@
+import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { passkeyService } from '../services/passkeyService';
@@ -22,6 +23,12 @@ export function PasskeyManager() {
   const [newName, setNewName] = useState('');
   const [deleteModal, setDeleteModal] = useState<{ id: number } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [deviceNameInput, setDeviceNameInput] = useState('');
+  const [registrationOptions, setRegistrationOptions] = useState<{
+    options: PublicKeyCredentialCreationOptionsJSON;
+    challengeKey: string;
+  } | null>(null);
 
   const checkPasskeyAvailability = useCallback(async () => {
     const available = await passkeyService.isAvailable();
@@ -46,24 +53,60 @@ export function PasskeyManager() {
   }, [loadCredentials, checkPasskeyAvailability]);
 
   const handleRegister = async () => {
+    // Pre-fetch registration options before showing modal
+    // This ensures we can call startRegistration immediately when user confirms
+    setError(null);
+    setIsRegistering(true);
+
+    try {
+      const { options, challengeKey } = await passkeyService.getRegistrationOptions();
+      setRegistrationOptions({ options, challengeKey });
+      setDeviceNameInput('');
+      setShowAddModal(true);
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || 'Failed to initialize passkey registration');
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
+  const handleRegisterConfirm = async () => {
+    if (!registrationOptions) {
+      setError('Registration options not available. Please try again.');
+      setShowAddModal(false);
+      return;
+    }
+
     setIsRegistering(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const deviceName = prompt('Enter a name for this passkey (e.g., "My iPhone")');
-
-      const result = await passkeyService.register(deviceName || undefined);
+      const result = await passkeyService.completeRegistration(
+        registrationOptions.options,
+        registrationOptions.challengeKey,
+        deviceNameInput.trim() || undefined,
+      );
 
       if (result.success) {
         setSuccess('Passkey registered successfully!');
         await loadCredentials();
+        setShowAddModal(false);
+        setDeviceNameInput('');
+        setRegistrationOptions(null);
       } else {
         setError(result.error || 'Failed to register passkey');
+        setShowAddModal(false);
+        setDeviceNameInput('');
+        setRegistrationOptions(null);
       }
     } catch (err: unknown) {
       const error = err as { message?: string };
       setError(error.message || 'Failed to register passkey');
+      setShowAddModal(false);
+      setDeviceNameInput('');
+      setRegistrationOptions(null);
     } finally {
       setIsRegistering(false);
     }
@@ -403,6 +446,43 @@ export function PasskeyManager() {
           </div>
         </div>
       </div>
+
+      {/* Add Passkey Modal */}
+      <ConfirmModal
+        isOpen={showAddModal}
+        onClose={() => {
+          if (!isRegistering) {
+            setShowAddModal(false);
+            setDeviceNameInput('');
+            setRegistrationOptions(null);
+          }
+        }}
+        onConfirm={handleRegisterConfirm}
+        title={t('passkey.addPasskeyTitle')}
+        message={t('passkey.addPasskeyMessage')}
+        confirmText={t('passkey.addPasskey')}
+        cancelText={t('common.cancel')}
+        variant="info"
+        isLoading={isRegistering}
+      >
+        <div className="mt-4">
+          <label
+            htmlFor="deviceName"
+            className="block text-sm font-medium mb-2 text-[var(--text-primary)]"
+          >
+            {t('passkey.deviceNameLabel')}
+          </label>
+          <input
+            id="deviceName"
+            type="text"
+            value={deviceNameInput}
+            onChange={(e) => setDeviceNameInput(e.target.value)}
+            placeholder={t('passkey.deviceNamePlaceholder')}
+            className="w-full px-4 py-2 border rounded-lg border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-2">{t('passkey.deviceNameHint')}</p>
+        </div>
+      </ConfirmModal>
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
