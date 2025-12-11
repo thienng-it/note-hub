@@ -364,17 +364,17 @@ export default class NoteService {
    * Update note tags.
    */
   static async updateNoteTags(noteId, tagsString) {
-    // If tagsString is undefined, do nothing
+    // If tagsString is undefined, null, or empty, do nothing
     if (!tagsString) return;
 
     // Clear existing tags
     await db.run(`DELETE FROM note_tag WHERE note_id = ?`, [noteId]);
 
     // Parse and add new tags
-    const tagNames = tagsString
-      .join('')
+    // Handle both string and array inputs
+    const tagsStr = Array.isArray(tagsString) ? tagsString.join(',') : tagsString;
+    const tagNames = tagsStr
       .trim()
-      .toString()
       .split(',')
       .map((t) => t.trim().toLowerCase())
       .filter((t) => t.length > 0);
