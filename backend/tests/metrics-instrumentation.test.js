@@ -44,11 +44,7 @@ describe('Metrics Instrumentation', () => {
       await db.query('SELECT * FROM users');
 
       // Verify metrics were recorded
-      expect(metrics.recordDbQuery).toHaveBeenCalledWith(
-        'SELECT',
-        expect.any(Number),
-        true,
-      );
+      expect(metrics.recordDbQuery).toHaveBeenCalledWith('SELECT', expect.any(Number), true);
     });
 
     it('should record metrics for failed query', async () => {
@@ -65,11 +61,7 @@ describe('Metrics Instrumentation', () => {
       await expect(db.query('SELECT * FROM users')).rejects.toThrow('Query failed');
 
       // Verify metrics were recorded with failure
-      expect(metrics.recordDbQuery).toHaveBeenCalledWith(
-        'SELECT',
-        expect.any(Number),
-        false,
-      );
+      expect(metrics.recordDbQuery).toHaveBeenCalledWith('SELECT', expect.any(Number), false);
     });
 
     it('should record metrics for queryOne', async () => {
@@ -84,11 +76,7 @@ describe('Metrics Instrumentation', () => {
       await db.queryOne('SELECT * FROM users WHERE id = ?', [1]);
 
       // Verify metrics were recorded
-      expect(metrics.recordDbQuery).toHaveBeenCalledWith(
-        'SELECT',
-        expect.any(Number),
-        true,
-      );
+      expect(metrics.recordDbQuery).toHaveBeenCalledWith('SELECT', expect.any(Number), true);
     });
 
     it('should record metrics for run operations', async () => {
@@ -103,11 +91,7 @@ describe('Metrics Instrumentation', () => {
       await db.run('INSERT INTO users (name) VALUES (?)', ['test']);
 
       // Verify metrics were recorded
-      expect(metrics.recordDbQuery).toHaveBeenCalledWith(
-        'INSERT',
-        expect.any(Number),
-        true,
-      );
+      expect(metrics.recordDbQuery).toHaveBeenCalledWith('INSERT', expect.any(Number), true);
     });
   });
 
