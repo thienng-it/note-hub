@@ -18,7 +18,7 @@ describe('Tasks Integration Tests', () => {
   const testDbPath = path.join(__dirname, 'test-tasks.db');
   let app;
   let authToken;
-  let userId;
+  let _userId;
 
   beforeAll(async () => {
     // Set up test database
@@ -39,7 +39,7 @@ describe('Tasks Integration Tests', () => {
       `INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)`,
       ['tasksuser', hashedPassword, 'tasksuser@example.com'],
     );
-    userId = result.insertId;
+    _userId = result.insertId;
 
     // Login to get token
     const loginResponse = await request(app)

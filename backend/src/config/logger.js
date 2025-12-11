@@ -67,6 +67,7 @@ const logger = winston.createLogger({
     }),
   ],
   exitOnError: false,
+  silent: process.env.JEST_WORKER_ID !== undefined,
 });
 
 // Optional: Add file transport for production

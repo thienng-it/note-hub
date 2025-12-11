@@ -498,10 +498,10 @@ router.post('/google/callback', async (req, res) => {
     });
   } catch (error) {
     console.error('Google OAuth callback error:', error);
-    
+
     // If user was created but token generation/storage failed, still return success
     // with a note that re-login may be needed
-    if (user && user.id && googleUser) {
+    if (user?.id && googleUser) {
       console.error(
         `[AUTH] User ${user.username} was created/found but token generation failed. User should retry login.`,
       );
@@ -511,7 +511,7 @@ router.post('/google/callback', async (req, res) => {
         username: user.username,
       });
     }
-    
+
     res.status(500).json({ error: 'Authentication failed' });
   }
 });
@@ -635,9 +635,9 @@ router.post('/github/callback', async (req, res) => {
     });
   } catch (error) {
     console.error('GitHub OAuth callback error:', error);
-    
+
     // If user was created/found but token generation/storage failed, still return helpful error
-    if (user && user.id) {
+    if (user?.id) {
       console.error(
         `[AUTH] User ${user.username} was created/found but token generation failed. User should retry login.`,
       );
@@ -647,7 +647,7 @@ router.post('/github/callback', async (req, res) => {
         username: user.username,
       });
     }
-    
+
     res.status(500).json({ error: error.message || 'Authentication failed' });
   }
 });

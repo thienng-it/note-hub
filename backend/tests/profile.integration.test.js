@@ -17,7 +17,7 @@ describe('Profile Integration Tests', () => {
   const testDbPath = path.join(__dirname, 'test-profile.db');
   let app;
   let authToken;
-  let userId;
+  let _userId;
 
   beforeAll(async () => {
     // Set up test database
@@ -33,7 +33,7 @@ describe('Profile Integration Tests', () => {
     app = (await import('../src/index.js')).default;
 
     // Create test user and login
-    const registerRes = await request(app).post('/api/v1/auth/register').send({
+    await request(app).post('/api/v1/auth/register').send({
       username: 'profileuser',
       password: 'SecurePass123!',
       email: 'profile@test.com',
@@ -45,20 +45,20 @@ describe('Profile Integration Tests', () => {
     });
 
     authToken = loginRes.body.data.access_token;
-    userId = loginRes.body.data.user.id;
-    
+    _userId = loginRes.body.data.user.id;
+
     // Create some test data
     // Create notes
     await request(app)
       .post('/api/v1/notes')
       .set('Authorization', `Bearer ${authToken}`)
       .send({ title: 'Test Note 1', content: 'Content 1' });
-    
+
     await request(app)
       .post('/api/v1/notes')
       .set('Authorization', `Bearer ${authToken}`)
       .send({ title: 'Test Note 2', content: 'Content 2', tags: ['work'] });
-    
+
     // Create a task
     await request(app)
       .post('/api/v1/tasks')
@@ -90,7 +90,7 @@ describe('Profile Integration Tests', () => {
       expect(res.body).toHaveProperty('stats');
       expect(res.body.user.username).toBe('profileuser');
       expect(res.body.user.email).toBe('profile@test.com');
-      
+
       // Check stats
       expect(res.body.stats.total_notes).toBeGreaterThanOrEqual(2);
       expect(res.body.stats).toHaveProperty('favorite_notes');
@@ -117,12 +117,12 @@ describe('Profile Integration Tests', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.message).toBeTruthy();
-      
+
       // Verify changes
       const profileRes = await request(app)
         .get('/api/v1/profile')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(profileRes.body.user.bio).toBe('Updated bio');
       expect(profileRes.body.user.theme).toBe('dark');
       expect(profileRes.body.user.preferred_language).toBe('es');
