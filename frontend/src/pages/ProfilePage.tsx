@@ -1,5 +1,7 @@
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { exportApi } from '../api/client';
 import { PasskeyManager } from '../components/PasskeyManager';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -8,10 +10,78 @@ export function ProfilePage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importMessage, setImportMessage] = useState('');
+  const [importError, setImportError] = useState('');
 
   if (!user) {
     return null;
   }
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const data = await exportApi.exportData();
+
+      // Create a JSON file and download it
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `notehub-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : 'Export failed');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setImportMessage('');
+    setImportError('');
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      if (!data.notes && !data.tasks) {
+        throw new Error('Invalid backup file format');
+      }
+
+      const result = await exportApi.importData({
+        notes: data.notes,
+        tasks: data.tasks,
+        overwrite: false, // Don't overwrite existing items by default
+      });
+
+      setImportMessage(
+        `Successfully imported ${result.imported.notes} notes and ${result.imported.tasks} tasks. ` +
+          `Skipped ${result.skipped.notes} existing notes and ${result.skipped.tasks} existing tasks.`,
+      );
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : 'Import failed');
+    } finally {
+      setIsImporting(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   return (
     <div>
@@ -160,6 +230,93 @@ export function ProfilePage() {
           {/* Passkey Management */}
           <div className="py-3">
             <PasskeyManager />
+          </div>
+        </div>
+      </div>
+
+      {/* Export/Import Data Card */}
+      <div className="glass-card p-6 rounded-xl">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+          <i className="glass-i fas fa-file-export mr-2 text-purple-600"></i>
+          Data Management
+        </h3>
+
+        <div className="space-y-4">
+          {/* Export Data */}
+          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
+            <div className="flex-1">
+              <span className="font-medium text-[var(--text-primary)]">Export Data</span>
+              <p className="text-sm text-[var(--text-muted)]">
+                Download all your notes and tasks as a JSON file
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={isExporting}
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isExporting ? (
+                <>
+                  <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <i className="glass-i fas fa-download mr-2"></i>
+                  Export
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Import Data */}
+          <div className="py-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex-1">
+                <span className="font-medium text-[var(--text-primary)]">Import Data</span>
+                <p className="text-sm text-[var(--text-muted)]">
+                  Upload a backup file to restore your notes and tasks
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleImportClick}
+                disabled={isImporting}
+                className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isImporting ? (
+                  <>
+                    <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
+                    Importing...
+                  </>
+                ) : (
+                  <>
+                    <i className="glass-i fas fa-upload mr-2"></i>
+                    Import
+                  </>
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json,.json"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+            {importMessage && (
+              <div className="mt-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 text-sm">
+                <i className="glass-i fas fa-check-circle mr-2"></i>
+                {importMessage}
+              </div>
+            )}
+            {importError && (
+              <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">
+                <i className="glass-i fas fa-exclamation-circle mr-2"></i>
+                {importError}
+              </div>
+            )}
           </div>
         </div>
       </div>

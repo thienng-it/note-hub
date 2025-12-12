@@ -368,14 +368,25 @@ export function Layout() {
               <i className="glass-i fas fa-plus text-white text-lg" aria-hidden="true"></i>
             </div>
           </Link>
-          <Link
-            to="/?view=favorites"
-            className={`mobile-nav-item ${isActive('/', 'favorites') ? 'active' : ''}`}
-            aria-current={isActive('/', 'favorites') ? 'page' : undefined}
-          >
-            <i className="glass-i fas fa-heart" aria-hidden="true"></i>
-            <span>{t('notes.favorites')}</span>
-          </Link>
+          {user.is_admin ? (
+            <Link
+              to="/admin"
+              className={`mobile-nav-item ${isActive('/admin') ? 'active' : ''}`}
+              aria-current={isActive('/admin') ? 'page' : undefined}
+            >
+              <i className="glass-i fas fa-users-cog" aria-hidden="true"></i>
+              <span>{t('admin.title')}</span>
+            </Link>
+          ) : (
+            <Link
+              to="/?view=favorites"
+              className={`mobile-nav-item ${isActive('/', 'favorites') ? 'active' : ''}`}
+              aria-current={isActive('/', 'favorites') ? 'page' : undefined}
+            >
+              <i className="glass-i fas fa-heart" aria-hidden="true"></i>
+              <span>{t('notes.favorites')}</span>
+            </Link>
+          )}
           <Link
             to="/profile"
             className={`mobile-nav-item ${isActive('/profile') ? 'active' : ''}`}

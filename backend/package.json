@@ -1,6 +1,6 @@
 {
   "name": "notehub-backend",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "NoteHub Backend - Node.js/Express API",
   "type": "module",
   "main": "src/index.js",

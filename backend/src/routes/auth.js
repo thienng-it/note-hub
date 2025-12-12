@@ -202,6 +202,7 @@ router.get('/validate', jwtRequired, (req, res) => {
         theme: req.user.theme,
         preferred_language: req.user.preferred_language || 'en',
         has_2fa: !!req.user.totp_secret,
+        is_admin: req.user.is_admin || false,
         created_at: req.user.created_at,
       },
     },
