@@ -94,6 +94,8 @@ Each audit log entry includes:
 
 ### API Methods
 
+### Service Methods (Backend)
+
 ```javascript
 // Log operations
 await AuditService.logNoteAccess(userId, noteId, ipAddress, userAgent);
@@ -116,6 +118,27 @@ const entityLogs = await AuditService.getEntityAuditLogs(entityType, entityId, l
 // Cleanup old logs (data retention)
 const deletedCount = await AuditService.cleanOldAuditLogs(retentionDays);
 ```
+
+### Admin API Endpoints (HTTP)
+
+**NEW:** Comprehensive admin endpoints for viewing, filtering, and exporting audit logs.
+
+- `GET /api/admin/audit-logs` - List audit logs with filtering
+- `GET /api/admin/audit-logs/user/:userId` - Get logs for specific user
+- `GET /api/admin/audit-logs/entity/:type/:id` - Get logs for specific entity
+- `GET /api/admin/audit-logs/stats` - Get aggregate statistics
+- `GET /api/admin/audit-logs/export` - Export logs to CSV/JSON
+- `DELETE /api/admin/audit-logs/cleanup` - Clean old logs
+
+**See:** [Audit Logging API Documentation](../api/AUDIT_LOGGING_API.md) for complete API reference with examples.
+
+**Features:**
+- ✅ Advanced filtering (user, entity, action, date range)
+- ✅ Pagination support
+- ✅ Export to CSV or JSON
+- ✅ Aggregate statistics and reports
+- ✅ Most active users tracking
+- ✅ Automatic cleanup with retention policy
 
 ## Compliance Benefits
 
@@ -289,17 +312,29 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 );
 ```
 
+## Implemented Enhancements ✅
+
+The following features have been implemented in the enhanced audit logging system:
+
+1. ✅ **Admin API Endpoints** - View audit logs via REST API
+2. ✅ **Advanced Filtering** - Filter by user, entity, action, date range
+3. ✅ **Export Functionality** - Export to CSV or JSON format
+4. ✅ **Aggregate Statistics** - User activity reports and analytics
+5. ✅ **Pagination** - Efficient browsing of large log sets
+6. ✅ **Data Retention** - Automatic cleanup with configurable retention
+
+**See:** [Audit Logging API Documentation](../api/AUDIT_LOGGING_API.md) for complete API reference.
+
 ## Future Enhancements
 
 Possible additions for future versions:
 
-1. **Admin Dashboard** - View audit logs in web UI
-2. **Alerts** - Notify on suspicious activity patterns
-3. **Export** - Export audit logs for external analysis
-4. **Filtering** - Advanced filtering by date range, action type, etc.
-5. **Statistics** - Aggregate statistics on user activity
-6. **Real-time monitoring** - Live dashboard of activity
-7. **Integration** - Send logs to external SIEM systems
+1. **Admin Web UI** - Dashboard to view audit logs in web interface
+2. **Real-time Alerts** - Notify admins on suspicious activity patterns
+3. **Anomaly Detection** - ML-based detection of unusual access patterns
+4. **Live Monitoring** - Real-time activity dashboard with WebSocket
+5. **SIEM Integration** - Send logs to external security systems (Splunk, etc.)
+6. **Compliance Reports** - Automated GDPR/HIPAA compliance report generation
 
 ## Security Considerations
 

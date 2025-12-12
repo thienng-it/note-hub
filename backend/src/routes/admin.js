@@ -3,6 +3,7 @@
  */
 import express from 'express';
 import logger from '../config/logger.js';
+import AuditService from '../services/auditService.js';
 
 const router = express.Router();
 
@@ -371,6 +372,427 @@ router.post('/users/:userId/revoke-admin', jwtRequired, adminRequired, async (re
     });
   } catch (error) {
     logger.error('Admin revoke privileges error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/admin/audit-logs - Get audit logs with filtering (admin only)
+ */
+router.get('/audit-logs', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const {
+      user_id,
+      entity_type,
+      entity_id,
+      action,
+      start_date,
+      end_date,
+      page = 1,
+      per_page = 50,
+    } = req.query;
+
+    const offset = (parseInt(page, 10) - 1) * parseInt(per_page, 10);
+    const limit = parseInt(per_page, 10);
+
+    // Build WHERE clause
+    const conditions = [];
+    const params = [];
+
+    if (user_id) {
+      conditions.push('user_id = ?');
+      params.push(parseInt(user_id, 10));
+    }
+
+    if (entity_type) {
+      conditions.push('entity_type = ?');
+      params.push(entity_type);
+    }
+
+    if (entity_id) {
+      conditions.push('entity_id = ?');
+      params.push(parseInt(entity_id, 10));
+    }
+
+    if (action) {
+      conditions.push('action = ?');
+      params.push(action);
+    }
+
+    if (start_date) {
+      conditions.push('created_at >= ?');
+      params.push(start_date);
+    }
+
+    if (end_date) {
+      conditions.push('created_at <= ?');
+      params.push(end_date);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    // Get logs with user information
+    const sql = `
+      SELECT 
+        al.id,
+        al.user_id,
+        u.username,
+        al.entity_type,
+        al.entity_id,
+        al.action,
+        al.ip_address,
+        al.user_agent,
+        al.metadata,
+        al.created_at
+      FROM audit_logs al
+      LEFT JOIN users u ON al.user_id = u.id
+      ${whereClause}
+      ORDER BY al.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    const countSql = `SELECT COUNT(*) as count FROM audit_logs al ${whereClause}`;
+
+    const logs = await db.query(sql, [...params, limit, offset]);
+    const totalCount = await db.queryOne(countSql, params);
+
+    // Parse metadata
+    const parsedLogs = logs.map((log) => ({
+      ...log,
+      metadata: log.metadata ? JSON.parse(log.metadata) : null,
+    }));
+
+    res.json({
+      logs: parsedLogs,
+      pagination: {
+        page: parseInt(page, 10),
+        per_page: limit,
+        total_count: totalCount?.count || 0,
+        total_pages: Math.ceil((totalCount?.count || 0) / limit),
+      },
+    });
+  } catch (error) {
+    logger.error('Admin get audit logs error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/admin/audit-logs/user/:userId - Get audit logs for a specific user (admin only)
+ */
+router.get('/audit-logs/user/:userId', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    const { limit = 100, offset = 0 } = req.query;
+
+    const logs = await AuditService.getUserAuditLogs(
+      userId,
+      parseInt(limit, 10),
+      parseInt(offset, 10),
+    );
+
+    res.json({
+      logs,
+      user_id: userId,
+      count: logs.length,
+    });
+  } catch (error) {
+    logger.error('Admin get user audit logs error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/admin/audit-logs/entity/:entityType/:entityId - Get audit logs for a specific entity (admin only)
+ */
+router.get(
+  '/audit-logs/entity/:entityType/:entityId',
+  jwtRequired,
+  adminRequired,
+  async (req, res) => {
+    try {
+      const { entityType, entityId } = req.params;
+      const { limit = 50 } = req.query;
+
+      const logs = await AuditService.getEntityAuditLogs(
+        entityType,
+        parseInt(entityId, 10),
+        parseInt(limit, 10),
+      );
+
+      res.json({
+        logs,
+        entity_type: entityType,
+        entity_id: parseInt(entityId, 10),
+        count: logs.length,
+      });
+    } catch (error) {
+      logger.error('Admin get entity audit logs error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+);
+
+/**
+ * GET /api/admin/audit-logs/stats - Get audit log statistics (admin only)
+ */
+router.get('/audit-logs/stats', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const { start_date, end_date } = req.query;
+
+    const conditions = [];
+    const params = [];
+
+    if (start_date) {
+      conditions.push('created_at >= ?');
+      params.push(start_date);
+    }
+
+    if (end_date) {
+      conditions.push('created_at <= ?');
+      params.push(end_date);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    // Total logs
+    const totalLogs = await db.queryOne(
+      `SELECT COUNT(*) as count FROM audit_logs ${whereClause}`,
+      params,
+    );
+
+    // Logs by action
+    const logsByAction = await db.query(
+      `SELECT action, COUNT(*) as count 
+       FROM audit_logs ${whereClause}
+       GROUP BY action 
+       ORDER BY count DESC`,
+      params,
+    );
+
+    // Logs by entity type
+    const logsByEntity = await db.query(
+      `SELECT entity_type, COUNT(*) as count 
+       FROM audit_logs ${whereClause}
+       GROUP BY entity_type 
+       ORDER BY count DESC`,
+      params,
+    );
+
+    // Most active users
+    const mostActiveUsers = await db.query(
+      `SELECT u.id, u.username, COUNT(*) as action_count 
+       FROM audit_logs al
+       JOIN users u ON al.user_id = u.id
+       ${whereClause}
+       GROUP BY al.user_id, u.id, u.username
+       ORDER BY action_count DESC
+       LIMIT 10`,
+      params,
+    );
+
+    // Recent activity (last 24 hours)
+    const recentActivity = await db.queryOne(
+      `SELECT COUNT(*) as count 
+       FROM audit_logs 
+       WHERE created_at >= datetime('now', '-24 hours')`,
+    );
+
+    res.json({
+      total_logs: totalLogs?.count || 0,
+      recent_activity_24h: recentActivity?.count || 0,
+      by_action: logsByAction,
+      by_entity_type: logsByEntity,
+      most_active_users: mostActiveUsers,
+      date_range: {
+        start: start_date || null,
+        end: end_date || null,
+      },
+    });
+  } catch (error) {
+    logger.error('Admin get audit log stats error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/admin/audit-logs/export - Export audit logs to CSV or JSON (admin only)
+ */
+router.get('/audit-logs/export', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const {
+      format = 'json',
+      user_id,
+      entity_type,
+      entity_id,
+      action,
+      start_date,
+      end_date,
+      limit = 1000,
+    } = req.query;
+
+    // Build WHERE clause
+    const conditions = [];
+    const params = [];
+
+    if (user_id) {
+      conditions.push('user_id = ?');
+      params.push(parseInt(user_id, 10));
+    }
+
+    if (entity_type) {
+      conditions.push('entity_type = ?');
+      params.push(entity_type);
+    }
+
+    if (entity_id) {
+      conditions.push('entity_id = ?');
+      params.push(parseInt(entity_id, 10));
+    }
+
+    if (action) {
+      conditions.push('action = ?');
+      params.push(action);
+    }
+
+    if (start_date) {
+      conditions.push('created_at >= ?');
+      params.push(start_date);
+    }
+
+    if (end_date) {
+      conditions.push('created_at <= ?');
+      params.push(end_date);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    // Get logs with user information
+    const sql = `
+      SELECT 
+        al.id,
+        al.user_id,
+        u.username,
+        al.entity_type,
+        al.entity_id,
+        al.action,
+        al.ip_address,
+        al.user_agent,
+        al.metadata,
+        al.created_at
+      FROM audit_logs al
+      LEFT JOIN users u ON al.user_id = u.id
+      ${whereClause}
+      ORDER BY al.created_at DESC
+      LIMIT ?
+    `;
+
+    const logs = await db.query(sql, [...params, parseInt(limit, 10)]);
+
+    // Parse metadata
+    const parsedLogs = logs.map((log) => ({
+      ...log,
+      metadata: log.metadata ? JSON.parse(log.metadata) : null,
+    }));
+
+    if (format === 'csv') {
+      // Convert to CSV
+      const headers = [
+        'ID',
+        'User ID',
+        'Username',
+        'Entity Type',
+        'Entity ID',
+        'Action',
+        'IP Address',
+        'User Agent',
+        'Metadata',
+        'Created At',
+      ];
+
+      const csvRows = [headers.join(',')];
+
+      for (const log of parsedLogs) {
+        const row = [
+          log.id,
+          log.user_id,
+          `"${log.username || ''}"`,
+          log.entity_type,
+          log.entity_id || '',
+          log.action,
+          `"${log.ip_address || ''}"`,
+          `"${(log.user_agent || '').replace(/"/g, '""')}"`,
+          `"${JSON.stringify(log.metadata || {}).replace(/"/g, '""')}"`,
+          log.created_at,
+        ];
+        csvRows.push(row.join(','));
+      }
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="audit_logs_${Date.now()}.csv"`);
+      res.send(csvRows.join('\n'));
+    } else {
+      // JSON format
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="audit_logs_${Date.now()}.json"`);
+      res.json({
+        export_date: new Date().toISOString(),
+        filters: {
+          user_id,
+          entity_type,
+          entity_id,
+          action,
+          start_date,
+          end_date,
+        },
+        count: parsedLogs.length,
+        logs: parsedLogs,
+      });
+    }
+
+    // Log the export action
+    await AuditService.logDataExport(
+      req.userId,
+      'audit_logs',
+      req.ip || req.socket?.remoteAddress,
+      {
+        format,
+        filters: { user_id, entity_type, entity_id, action, start_date, end_date },
+        count: parsedLogs.length,
+      },
+    );
+  } catch (error) {
+    logger.error('Admin export audit logs error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * DELETE /api/admin/audit-logs/cleanup - Clean old audit logs (admin only)
+ */
+router.delete('/audit-logs/cleanup', jwtRequired, adminRequired, async (req, res) => {
+  try {
+    const { retention_days = 365 } = req.query;
+    const retentionDays = parseInt(retention_days, 10);
+
+    if (retentionDays < 30) {
+      return res.status(400).json({ error: 'Retention period must be at least 30 days' });
+    }
+
+    const deletedCount = await AuditService.cleanOldAuditLogs(retentionDays);
+
+    // Log the cleanup action
+    logger.info(
+      `[SECURITY AUDIT] Admin ID: ${req.userId} cleaned ${deletedCount} audit logs older than ${retentionDays} days`,
+    );
+
+    res.json({
+      message: `Cleaned ${deletedCount} audit log entries older than ${retentionDays} days`,
+      deleted_count: deletedCount,
+      retention_days: retentionDays,
+    });
+  } catch (error) {
+    logger.error('Admin cleanup audit logs error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
