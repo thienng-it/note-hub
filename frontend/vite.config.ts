@@ -84,6 +84,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/folders': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 
