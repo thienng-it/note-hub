@@ -54,6 +54,11 @@ import { isUsingRedis } from './services/challengeStorage.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy - Required when running behind reverse proxy (Docker, Traefik, nginx)
+// This allows Express to read X-Forwarded-* headers to get the real client IP
+// Without this, req.ip returns the Docker network IP instead of the real user IP
+app.set('trust proxy', true);
+
 // API version prefix - centralized for easy updates
 const API_VERSION = '/api/v1';
 
