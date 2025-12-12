@@ -6,6 +6,69 @@ This directory contains in-depth technical investigations and analyses for NoteH
 
 ## 📋 Available Investigations
 
+### Data Compliance & Security (December 2024) ⭐ NEW
+
+**Status**: ✅ Complete  
+**Decision**: Do NOT hash notes/tasks. Optionally add encryption at rest.
+
+Investigation into data compliance requirements and whether user content should be hashed in the database.
+
+#### Documents
+
+1. **[DATA_COMPLIANCE_SUMMARY.md](DATA_COMPLIANCE_SUMMARY.md)** ⭐ Start here
+   - Quick answer to "Should we hash notes?"
+   - Hashing vs encryption comparison
+   - Compliance analysis (GDPR, HIPAA, CCPA)
+   - Clear recommendations
+   - **Read time**: 10 minutes
+
+2. **[DATA_COMPLIANCE_INVESTIGATION.md](DATA_COMPLIANCE_INVESTIGATION.md)**
+   - Complete technical analysis (12,874 bytes)
+   - Real-world compliance requirements
+   - Industry best practices analysis
+   - Detailed recommendations with implementation plan
+   - **Read time**: 30 minutes
+
+3. **[../security/DATABASE_ENCRYPTION_AT_REST.md](../security/DATABASE_ENCRYPTION_AT_REST.md)**
+   - Implementation guide for database encryption
+   - SQLite and MySQL encryption options
+   - Key management best practices
+   - Production deployment checklist
+   - **Read time**: 45 minutes
+
+#### Key Findings
+
+```
+❌ DO NOT Hash Notes/Tasks
+• Hashing is one-way → content becomes unreadable
+• Notes must be readable to be useful
+• No major notes app hashes content
+• Not a compliance requirement
+
+✅ Current Security is Excellent
+• Passwords: bcrypt with 14 rounds ✅
+• HTTPS/TLS encryption ✅
+• SQL injection protection ✅
+• XSS protection ✅
+• Security Grade: A-
+
+⚠️ Optional Enhancement
+• Database encryption at rest (recommended)
+• No code changes required
+• Deployment configuration only
+```
+
+#### Quick Comparison
+
+| Data Type | Hash? | Encrypt? | Why |
+|-----------|-------|----------|-----|
+| **Password** | ✅ YES | ❌ No | One-way verification only |
+| **Note Body** | ❌ NO | ⚠️ Optional | Needs to be readable |
+| **Task Description** | ❌ NO | ⚠️ Optional | Needs to be readable |
+| **Email** | ❌ NO | ⚠️ Optional | Needed for auth |
+
+---
+
 ### NoSQL Database Evaluation (December 2025)
 
 **Status**: ✅ Complete  
@@ -74,7 +137,28 @@ Why Not NoSQL:
 
 ## 🎯 How to Use These Documents
 
-### For Decision Makers
+### For Security/Compliance Questions
+
+#### "Should we hash user content?"
+1. Read [DATA_COMPLIANCE_SUMMARY.md](DATA_COMPLIANCE_SUMMARY.md)
+2. Answer: NO - see "Why Hashing Notes is Wrong" section
+3. Done! (5 minutes)
+
+#### "Are we GDPR compliant?"
+1. Read [DATA_COMPLIANCE_INVESTIGATION.md](DATA_COMPLIANCE_INVESTIGATION.md)
+2. Check "Real-World Data Compliance Analysis" section
+3. Review current security measures
+4. Total time: 15 minutes
+
+#### "How to add database encryption?"
+1. Read [../security/DATABASE_ENCRYPTION_AT_REST.md](../security/DATABASE_ENCRYPTION_AT_REST.md)
+2. Choose SQLite or MySQL implementation
+3. Follow step-by-step guide
+4. Total time: 2-3 hours (implementation)
+
+### For Database Architecture Questions
+
+#### For Decision Makers
 1. Read [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)
 2. Review the decision matrix and cost-benefit analysis
 3. Done! (5 minutes)
