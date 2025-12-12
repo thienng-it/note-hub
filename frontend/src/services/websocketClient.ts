@@ -98,7 +98,6 @@ class WebSocketClient {
     this.socket.on('connect', () => {
       console.log('WebSocket connected');
       this.connectionStatus = 'connected';
-      this.reconnectAttempts = 0;
       this.emit('connection-status', 'connected');
     });
 
