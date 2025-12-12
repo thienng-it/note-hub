@@ -171,57 +171,36 @@ app.on('connection', (socket) => {
 });
 
 // Update application metrics periodically
-import { updateApplicationMetrics, updateDbPoolMetrics } from './middleware/metrics.js';
+import { updateApplicationMetrics } from './middleware/metrics.js';
 
 async function updateMetricsJob() {
   try {
-    // Combine queries for better performance
+    // Wait for database to be ready
+    if (!db || !db.db) {
+      logger.warn('Database not ready yet, skipping metrics update');
+      return;
+    }
+
+    // Simplified query - removed tasks and notes by status
     const counts = await db.query(`
       SELECT
         (SELECT COUNT(*) FROM users) as users,
         (SELECT COUNT(*) FROM notes) as notes,
-        (SELECT COUNT(*) FROM tasks) as tasks,
-        (SELECT COUNT(DISTINCT id) FROM tags) as tags,
-        (SELECT COUNT(*) FROM notes WHERE favorite = 1) as favorite_notes,
-        (SELECT COUNT(*) FROM notes WHERE pinned = 1) as pinned_notes,
-        (SELECT COUNT(*) FROM notes WHERE favorite = 0 AND pinned = 0) as normal_notes
+        (SELECT COUNT(DISTINCT id) FROM tags) as tags
     `);
 
     const metrics = counts?.[0] || {
       users: 0,
       notes: 0,
-      tasks: 0,
       tags: 0,
-      favorite_notes: 0,
-      pinned_notes: 0,
-      normal_notes: 0,
     };
-
-    // Notes by status (non-overlapping categories)
-    const notesByStatus = {
-      favorite: metrics.favorite_notes || 0,
-      pinned: metrics.pinned_notes || 0,
-      normal: metrics.normal_notes || 0,
-    };
-
-    logger.info('Current metrics', metrics);
-    logger.info('Current notesByStatus', notesByStatus);
-    logger.info('Current activeSessions', activeSessions);
 
     updateApplicationMetrics({
       users: metrics.users || 0,
       notes: metrics.notes || 0,
-      tasks: metrics.tasks || 0,
       tags: metrics.tags || 0,
-      notesByStatus: notesByStatus,
       activeSessions: activeSessions,
     });
-
-    // Update database pool metrics (MySQL only)
-    const poolMetrics = db.getPoolMetrics();
-    if (poolMetrics) {
-      updateDbPoolMetrics(poolMetrics.active, poolMetrics.idle, poolMetrics.total);
-    }
   } catch (error) {
     logger.error('Error updating application metrics', { error: error.message });
   }
@@ -229,8 +208,8 @@ async function updateMetricsJob() {
 
 // Update metrics every 30 seconds
 setInterval(updateMetricsJob, 30000);
-// Initial update
-updateMetricsJob();
+// Initial update after delay to ensure database is ready
+setTimeout(updateMetricsJob, 5000);
 
 // Shared health check logic
 async function getHealthStatus() {

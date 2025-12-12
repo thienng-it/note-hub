@@ -9,7 +9,7 @@ This directory contains pre-built Grafana dashboards for NoteHub monitoring.
 - **Metrics**:
   - HTTP request rate and latency (p95, p99)
   - Active connections
-  - Application stats (users, notes, tasks)
+  - Application stats (users, notes)
   - Backend CPU and memory usage
 - **Best for**: Daily monitoring, quick health checks
 
@@ -28,21 +28,23 @@ This directory contains pre-built Grafana dashboards for NoteHub monitoring.
 - **Purpose**: Database performance and caching
 - **Metrics**:
   - Database query rate and duration (p95, p99)
-  - Connection pool status (active, idle, total)
   - Cache hit rate and operations
   - Database query errors
 - **Best for**: Performance tuning, identifying slow queries, optimizing cache usage
 
+**Note**: Connection pool metrics are no longer available as they were MySQL-specific and caused confusion for SQLite users (the default database).
+
 ### notehub-business.json
 - **Purpose**: Business metrics and user activity
 - **Metrics**:
-  - Total users, notes, tasks, and tags
+  - Total users, notes, and tags
   - Note operations rate (create, update, delete)
   - Note operations distribution
-  - Notes by status (favorite, pinned, normal)
   - Tag operations
   - Search operations rate and duration
 - **Best for**: Product analytics, understanding user behavior, tracking feature adoption
+
+**Note**: Tasks total and notes by status metrics have been removed as they provided minimal observability value.
 
 ## Customizing Dashboards
 

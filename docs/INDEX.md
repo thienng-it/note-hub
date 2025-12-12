@@ -89,6 +89,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 ### Monitoring & Logging
 - [LOKI_SETUP](guides/LOKI_SETUP.md) - Grafana Loki log aggregation setup (replaces Graylog)
 - [MONITORING_AND_LOGGING_STACK](guides/MONITORING_AND_LOGGING_STACK.md) - Integration guide for monitoring and logging stacks
+- [METRICS](monitoring/METRICS.md) - Prometheus metrics documentation and usage guide
 
 ### Other
 - [PERFORMANCE_GUIDE](guides/PERFORMANCE_GUIDE.md) - Performance optimization guide
