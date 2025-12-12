@@ -5,7 +5,8 @@
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Use relative URL in production (same origin), absolute in development
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 let socket: Socket | null = null;
 

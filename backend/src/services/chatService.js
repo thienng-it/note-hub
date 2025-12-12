@@ -129,14 +129,6 @@ export async function getUserChatRooms(userId) {
           ],
         },
       ],
-      order: [
-        [
-          { model: ChatRoom, as: 'room' },
-          { model: ChatMessage, as: 'messages' },
-          'created_at',
-          'DESC',
-        ],
-      ],
     });
 
     // Process rooms with unread counts
