@@ -151,7 +151,10 @@ The chat uses WebSocket technology for real-time communication:
 1. Check your internet connection
 2. Wait for automatic reconnection (15-30 seconds)
 3. Refresh the page if it doesn't reconnect
-4. Contact system administrator if problem persists
+4. **Development Setup**: If running in development mode, ensure `VITE_API_URL=http://localhost:5000` is set in `frontend/.env` file
+5. Contact system administrator if problem persists
+
+**Development Note**: The chat feature requires WebSocket connections. In development, the frontend and backend run on different ports. You must set `VITE_API_URL` in your `.env` file to point to the backend server (typically `http://localhost:5000`). Without this, Socket.io will try to connect to the frontend dev server instead of the backend.
 
 ### User Not Found
 

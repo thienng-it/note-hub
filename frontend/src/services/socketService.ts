@@ -6,6 +6,8 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 
 // Use relative URL in production (same origin), absolute in development
+// In development, VITE_API_URL should be set to the backend URL (e.g., http://localhost:5000)
+// In production, leave it empty to connect to the same origin
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 let socket: Socket | null = null;
