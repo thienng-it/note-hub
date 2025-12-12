@@ -11,8 +11,7 @@ const API_VERSION = '/api/v1';
  * Get all chat rooms for current user
  */
 export async function getChatRooms(): Promise<ChatRoom[]> {
-  const response = await apiClient(`${API_VERSION}/chat/rooms`);
-  return response.data;
+  return apiClient.get<ChatRoom[]>(`${API_VERSION}/chat/rooms`);
 }
 
 /**
