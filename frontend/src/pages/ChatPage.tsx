@@ -33,7 +33,7 @@ export function ChatPage() {
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [availableUsers, setAvailableUsers] = useState<ChatUser[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
 
   // Load rooms on mount
   useEffect(() => {

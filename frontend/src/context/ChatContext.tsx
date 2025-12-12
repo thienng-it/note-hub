@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { chatApi } from '../api/chat';
+import { getStoredToken } from '../api/client';
 import * as socketService from '../services/socketService';
 import type {
   ChatMessage,
@@ -38,7 +39,7 @@ interface ChatContextType {
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export function ChatProvider({ children }: { children: ReactNode }) {
-  const { user, accessToken } = useAuth();
+  const { user } = useAuth();
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [currentRoom, setCurrentRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -53,7 +54,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   // Initialize socket connection
   useEffect(() => {
-    if (!user || !accessToken) {
+    if (!user) {
+      return;
+    }
+
+    const accessToken = getStoredToken();
+    if (!accessToken) {
       return;
     }
 
@@ -144,7 +150,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       setSocket(null);
       setIsConnected(false);
     };
-  }, [user, accessToken, currentRoom]);
+  }, [user, currentRoom]);
 
   // Load chat rooms
   const loadRooms = useCallback(async () => {

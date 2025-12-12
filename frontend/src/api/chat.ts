@@ -19,11 +19,7 @@ export async function getChatRooms(): Promise<ChatRoom[]> {
  * @param userId - User ID to chat with
  */
 export async function createDirectChat(userId: number): Promise<ChatRoom> {
-  const response = await apiClient(`${API_VERSION}/chat/rooms/direct`, {
-    method: 'POST',
-    body: JSON.stringify({ userId }),
-  });
-  return response.data;
+  return apiClient.post<ChatRoom>(`${API_VERSION}/chat/rooms/direct`, { userId });
 }
 
 /**
@@ -37,10 +33,9 @@ export async function getRoomMessages(
   limit = 50,
   offset = 0,
 ): Promise<ChatMessage[]> {
-  const response = await apiClient(
+  return apiClient.get<ChatMessage[]>(
     `${API_VERSION}/chat/rooms/${roomId}/messages?limit=${limit}&offset=${offset}`,
   );
-  return response.data;
 }
 
 /**
@@ -49,11 +44,7 @@ export async function getRoomMessages(
  * @param message - Message content
  */
 export async function sendMessage(roomId: number, message: string): Promise<ChatMessage> {
-  const response = await apiClient(`${API_VERSION}/chat/rooms/${roomId}/messages`, {
-    method: 'POST',
-    body: JSON.stringify({ message }),
-  });
-  return response.data;
+  return apiClient.post<ChatMessage>(`${API_VERSION}/chat/rooms/${roomId}/messages`, { message });
 }
 
 /**
@@ -61,17 +52,14 @@ export async function sendMessage(roomId: number, message: string): Promise<Chat
  * @param roomId - Chat room ID
  */
 export async function markMessagesAsRead(roomId: number): Promise<void> {
-  await apiClient(`${API_VERSION}/chat/rooms/${roomId}/read`, {
-    method: 'PUT',
-  });
+  await apiClient.put<void>(`${API_VERSION}/chat/rooms/${roomId}/read`);
 }
 
 /**
  * Get all users available for chat
  */
 export async function getAvailableUsers(): Promise<ChatUser[]> {
-  const response = await apiClient(`${API_VERSION}/chat/users`);
-  return response.data;
+  return apiClient.get<ChatUser[]>(`${API_VERSION}/chat/users`);
 }
 
 export const chatApi = {
