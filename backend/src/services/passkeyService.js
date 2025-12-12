@@ -51,6 +51,11 @@ export default class PasskeyService {
       userID: isoUint8Array.fromUTF8String(userId.toString()),
       userName: username,
       attestationType: 'none',
+      // Timeout in milliseconds - give users enough time to interact with the authenticator
+      // macOS browsers may have different timeout handling than iOS
+      // 2 minutes (120000ms) is a reasonable timeout for user interaction
+      // Too long timeouts may be rejected by some browsers
+      timeout: 120000,
       // In v13+, excludeCredentials expects id to be Base64URLString directly
       excludeCredentials: existingCredentials.map((cred) => ({
         id: cred.credential_id, // Already Base64URL-encoded string
