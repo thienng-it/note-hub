@@ -509,6 +509,46 @@ export const adminApi = {
       method: 'POST',
     });
   },
+
+  // Audit Log APIs
+  async getAuditLogs(params: URLSearchParams): Promise<import('../types').AuditLogsResponse> {
+    return apiRequest<import('../types').AuditLogsResponse>(
+      `${API_VERSION}/admin/audit-logs?${params}`,
+    );
+  },
+
+  async getAuditLogStats(params?: URLSearchParams): Promise<import('../types').AuditLogStats> {
+    const query = params ? `?${params}` : '';
+    return apiRequest<import('../types').AuditLogStats>(
+      `${API_VERSION}/admin/audit-logs/stats${query}`,
+    );
+  },
+
+  async exportAuditLogs(format: 'json' | 'csv', params?: URLSearchParams): Promise<Blob> {
+    const query = params || new URLSearchParams();
+    query.set('format', format);
+
+    const token = getStoredToken();
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/admin/audit-logs/export?${query}`, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to export audit logs');
+    }
+
+    return response.blob();
+  },
+
+  async cleanupAuditLogs(
+    retentionDays: number,
+  ): Promise<{ deleted_count: number; message: string }> {
+    return apiRequest(`${API_VERSION}/admin/audit-logs/cleanup?retention_days=${retentionDays}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // Upload API

@@ -20,12 +20,13 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ## 🔬 Technical Investigations
 
-- [NOSQL_INVESTIGATION](investigation/NOSQL_INVESTIGATION.md) - Comprehensive analysis of NoSQL suitability for NoteHub
-- [SQL_VS_NOSQL_COMPARISON](investigation/SQL_VS_NOSQL_COMPARISON.md) - Visual comparison and performance analysis
-- [EXECUTIVE_SUMMARY](investigation/EXECUTIVE_SUMMARY.md) - Executive summary of technical investigations
-- [IMPLEMENTATION_SUMMARY](investigation/IMPLEMENTATION_SUMMARY.md) - Implementation summary
-- [DOCKER_OPTIMIZATION_SUMMARY](investigation/DOCKER_OPTIMIZATION_SUMMARY.md) - Complete Docker optimization project summary
-- [THIRD_PARTY_PERMISSION_ANALYSIS](investigation/THIRD_PARTY_PERMISSION_ANALYSIS.md) - Permission analysis for third-party services
+- [Data Compliance Investigation](investigation/DATA_COMPLIANCE_INVESTIGATION.md) - Analysis of data hashing vs encryption requirements
+- [NoSQL Investigation](investigation/NOSQL_INVESTIGATION.md) - Comprehensive analysis of NoSQL suitability for NoteHub
+- [SQL vs NoSQL Comparison](investigation/SQL_VS_NOSQL_COMPARISON.md) - Visual comparison and performance analysis
+- [Executive Summary](investigation/EXECUTIVE_SUMMARY.md) - Executive summary of technical investigations
+- [Implementation Summary](investigation/IMPLEMENTATION_SUMMARY.md) - Implementation summary
+- [Docker Optimization Summary](investigation/DOCKER_OPTIMIZATION_SUMMARY.md) - Complete Docker optimization project summary
+- [Third Party Permission Analysis](investigation/THIRD_PARTY_PERMISSION_ANALYSIS.md) - Permission analysis for third-party services
 
 ## 🔌 API Documentation
 
@@ -95,14 +96,16 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ## 🔒 Security
 
-- [SECURITY](security/SECURITY.md) - Security best practices and guidelines
-- [SECURITY_ATTACK_PREVENTION](security/SECURITY_ATTACK_PREVENTION.md) - Attack prevention strategies
-- [SECURITY_ENHANCEMENTS](security/SECURITY_ENHANCEMENTS.md) - Security enhancements
-- [PASSWORD_SECURITY_IMPROVEMENTS](security/PASSWORD_SECURITY_IMPROVEMENTS.md) - Password security improvements
-- [2FA_IMPROVEMENTS](security/2FA_IMPROVEMENTS.md) - Two-factor authentication improvements
-- [CAPTCHA_IMPLEMENTATION](security/CAPTCHA_IMPLEMENTATION.md) - CAPTCHA implementation details
-- [CAPTCHA_SETUP](security/CAPTCHA_SETUP.md) - CAPTCHA setup guide
-- [SIMPLE_CAPTCHA_GUIDE](security/SIMPLE_CAPTCHA_GUIDE.md) - Simple CAPTCHA guide
+- [Security Policy](security/SECURITY.md) - Comprehensive security documentation
+- [Database Encryption at Rest](security/DATABASE_ENCRYPTION_AT_REST.md) - Implementation guide for SQLite and MySQL encryption
+- [Password Security Improvements](security/PASSWORD_SECURITY_IMPROVEMENTS.md) - Bcrypt implementation and hash upgrades
+- [2FA Improvements](security/2FA_IMPROVEMENTS.md) - Two-factor authentication guide
+- [CAPTCHA Implementation](security/CAPTCHA_IMPLEMENTATION.md) - Bot protection
+- [Security Enhancements](security/SECURITY_ENHANCEMENTS.md) - Security improvements documentation
+- [User Search Security](security/USER_SEARCH_SECURITY.md) - Privacy in user search
+- [Security Attack Prevention](security/SECURITY_ATTACK_PREVENTION.md) - Attack prevention strategies
+- [CAPTCHA Setup](security/CAPTCHA_SETUP.md) - CAPTCHA setup guide
+- [Simple CAPTCHA Guide](security/SIMPLE_CAPTCHA_GUIDE.md) - Simple CAPTCHA implementation
 
 ## 🧪 Testing
 

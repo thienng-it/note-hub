@@ -3,6 +3,7 @@
  */
 import express from 'express';
 import logger from '../config/logger.js';
+import AuditService from '../services/auditService.js';
 
 const router = express.Router();
 
@@ -51,6 +52,14 @@ router.get('/:id', jwtRequired, async (req, res) => {
       return res.status(404).json({ error: 'Task not found or access denied' });
     }
 
+    // Audit log: Task access
+    await AuditService.logTaskAccess(
+      req.userId,
+      taskId,
+      req.ip || req.socket?.remoteAddress,
+      req.get('user-agent'),
+    );
+
     res.json({
       task: {
         id: task.id,
@@ -90,6 +99,14 @@ router.post('/', jwtRequired, async (req, res) => {
       images,
     );
 
+    // Audit log: Task creation
+    await AuditService.logTaskCreation(req.userId, task.id, req.ip || req.socket?.remoteAddress, {
+      title: title.substring(0, 100), // First 100 chars
+      priority,
+      hasDueDate: !!due_date,
+      hasImages: images.length > 0,
+    });
+
     res.status(201).json({
       task: {
         id: task.id,
@@ -125,6 +142,15 @@ async function updateTask(req, res) {
 
     const { title, description, due_date, priority, completed, images } = req.body;
 
+    // Track what changed for audit log
+    const changes = {};
+    if (title !== undefined && title !== task.title) changes.title = true;
+    if (description !== undefined && description !== task.description) changes.description = true;
+    if (due_date !== undefined && due_date !== task.due_date) changes.due_date = true;
+    if (priority !== undefined && priority !== task.priority) changes.priority = priority;
+    if (completed !== undefined && completed !== !!task.completed) changes.completed = completed;
+    if (images !== undefined) changes.images = true;
+
     const updatedTask = await TaskService.updateTask(
       taskId,
       title,
@@ -133,6 +159,15 @@ async function updateTask(req, res) {
       priority,
       completed,
       images,
+    );
+
+    // Audit log: Task modification
+    await AuditService.logTaskModification(
+      req.userId,
+      taskId,
+      changes,
+      req.ip || req.socket?.remoteAddress,
+      req.get('user-agent'),
     );
 
     res.json({
@@ -188,6 +223,13 @@ router.delete('/:id', jwtRequired, async (req, res) => {
     if (!task) {
       return res.status(404).json({ error: 'Task not found or access denied' });
     }
+
+    // Audit log: Task deletion (before deleting)
+    await AuditService.logTaskDeletion(req.userId, taskId, req.ip || req.socket?.remoteAddress, {
+      title: task.title.substring(0, 100), // First 100 chars
+      wasCompleted: !!task.completed,
+      priority: task.priority,
+    });
 
     await TaskService.deleteTask(taskId);
 

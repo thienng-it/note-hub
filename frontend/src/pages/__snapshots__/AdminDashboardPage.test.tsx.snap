@@ -27,19 +27,36 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             Manage users and view system statistics
           </p>
         </div>
-        <a
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
-          data-discover="true"
-          href="/"
+        <div
+          class="flex gap-2"
         >
-          <i
-            aria-hidden="true"
-            class="glass-i fas fa-arrow-left"
-          />
-          <span>
-            Back to Notes
-          </span>
-        </a>
+          <a
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            data-discover="true"
+            href="/admin/audit-logs"
+          >
+            <i
+              aria-hidden="true"
+              class="glass-i fas fa-clipboard-list"
+            />
+            <span>
+              Audit Logs
+            </span>
+          </a>
+          <a
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
+            data-discover="true"
+            href="/"
+          >
+            <i
+              aria-hidden="true"
+              class="glass-i fas fa-arrow-left"
+            />
+            <span>
+              Back to Notes
+            </span>
+          </a>
+        </div>
       </div>
     </div>
     <div

@@ -3,6 +3,7 @@
  */
 import express from 'express';
 import logger from '../config/logger.js';
+import AuditService from '../services/auditService.js';
 
 const router = express.Router();
 
@@ -59,6 +60,14 @@ router.get('/:id', jwtRequired, async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
+    // Audit log: Note access
+    await AuditService.logNoteAccess(
+      req.userId,
+      noteId,
+      req.ip || req.socket?.remoteAddress,
+      req.get('user-agent'),
+    );
+
     res.json({
       note: {
         id: note.id,
@@ -111,6 +120,13 @@ router.post('/', jwtRequired, async (req, res) => {
       images,
     );
 
+    // Audit log: Note creation
+    await AuditService.logNoteCreation(req.userId, note.id, req.ip || req.socket?.remoteAddress, {
+      title: title.substring(0, 100), // First 100 chars
+      hasImages: images.length > 0,
+      tagCount: tags ? tags.split(',').filter((t) => t.trim()).length : 0,
+    });
+
     // Record metrics
     recordNoteOperation('create', true);
     if (tags && tags.length > 0) {
@@ -162,6 +178,16 @@ async function updateNote(req, res) {
 
     const { title, body, tags, images, pinned, favorite, archived } = req.body;
 
+    // Track what changed for audit log
+    const changes = {};
+    if (title !== undefined && title !== note.title) changes.title = true;
+    if (body !== undefined && body !== note.body) changes.body = true;
+    if (pinned !== undefined && pinned !== !!note.pinned) changes.pinned = pinned;
+    if (favorite !== undefined && favorite !== !!note.favorite) changes.favorite = favorite;
+    if (archived !== undefined && archived !== !!note.archived) changes.archived = archived;
+    if (tags !== undefined) changes.tags = true;
+    if (images !== undefined) changes.images = true;
+
     const updatedNote = await NoteService.updateNote(
       noteId,
       title,
@@ -171,6 +197,15 @@ async function updateNote(req, res) {
       favorite,
       archived,
       images,
+    );
+
+    // Audit log: Note modification
+    await AuditService.logNoteModification(
+      req.userId,
+      noteId,
+      changes,
+      req.ip || req.socket?.remoteAddress,
+      req.get('user-agent'),
     );
 
     // Record metrics
@@ -216,6 +251,12 @@ router.delete('/:id', jwtRequired, async (req, res) => {
     if (note.owner_id !== req.userId) {
       return res.status(403).json({ error: 'Only the note owner can delete it' });
     }
+
+    // Audit log: Note deletion (before deleting)
+    await AuditService.logNoteDeletion(req.userId, noteId, req.ip || req.socket?.remoteAddress, {
+      title: note.title.substring(0, 100), // First 100 chars
+      hadTags: note.tags && note.tags.length > 0,
+    });
 
     await NoteService.deleteNote(noteId, req.userId);
 

@@ -439,17 +439,99 @@ note-hub/
    });
    ```
 
-2. **Snapshot Tests - REQUIRED for UI Changes:**
-   **IMPORTANT**: Always update/add snapshot tests when making UI changes to ensure visual consistency and catch unintended regressions.
-
+2. **Snapshot Tests - MANDATORY for ALL UI Changes:**
+   **CRITICAL REQUIREMENT**: Snapshot tests are MANDATORY for any UI changes. ALL tests MUST pass (green ✅) before committing.
+   
    **When to Add/Update Snapshots:**
-   - ✅ **Always** when creating new components
-   - ✅ **Always** when modifying component structure, classes, or styling
-   - ✅ **Always** when adding/removing elements or changing layout
-   - ✅ **Always** when updating props that affect rendering
-   - ✅ **Always** before completing a PR with UI changes
+   - ✅ **MANDATORY** when creating new pages or components
+   - ✅ **MANDATORY** when modifying component structure, classes, or styling
+   - ✅ **MANDATORY** when adding/removing elements or changing layout
+   - ✅ **MANDATORY** when updating props that affect rendering
+   - ✅ **MANDATORY** before completing ANY PR with UI changes
+   - ✅ **MANDATORY** when adding new routes or pages to the application
 
-   **Snapshot Test Pattern:**
+   **Snapshot Test Pattern for Pages:**
+   ```typescript
+   import { render, screen, waitFor } from '@testing-library/react';
+   import { BrowserRouter } from 'react-router-dom';
+   import { beforeEach, describe, expect, it, vi } from 'vitest';
+   import { AuthProvider } from '../context/AuthContext';
+   import { ThemeProvider } from '../context/ThemeContext';
+   import { YourPage } from './YourPage';
+   
+   // Mock useAuth
+   const mockUser = { id: 1, username: 'testuser', is_admin: true };
+   vi.mock('../context/AuthContext', async () => {
+     const actual = await vi.importActual('../context/AuthContext');
+     return {
+       ...actual,
+       useAuth: () => ({
+         user: mockUser,
+         isAuthenticated: true,
+       }),
+     };
+   });
+   
+   // Mock fetch
+   global.fetch = vi.fn();
+   
+   const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+     <BrowserRouter>
+       <ThemeProvider>
+         <AuthProvider>{children}</AuthProvider>
+       </ThemeProvider>
+     </BrowserRouter>
+   );
+   
+   describe('YourPage', () => {
+     beforeEach(() => {
+       vi.clearAllMocks();
+       localStorage.setItem('notehub_access_token', 'test-token');
+       
+       // Mock API responses
+       (global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url) => {
+         return Promise.resolve({
+           ok: true,
+           json: async () => ({ /* mock data */ }),
+         });
+       });
+     });
+     
+     it('renders page correctly', async () => {
+       render(
+         <TestWrapper>
+           <YourPage />
+         </TestWrapper>,
+       );
+       
+       await waitFor(() => {
+         expect(screen.getByText('Page Title')).toBeInTheDocument();
+       });
+     });
+     
+     it('matches snapshot - default state', async () => {
+       const { container } = render(
+         <TestWrapper>
+           <YourPage />
+         </TestWrapper>,
+       );
+       
+       // Wait for loading to complete
+       await waitFor(() => {
+         expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+       });
+       
+       // Wait for data to render
+       await waitFor(() => {
+         expect(screen.getByText('Expected Content')).toBeInTheDocument();
+       });
+       
+       expect(container).toMatchSnapshot();
+     });
+   });
+   ```
+
+   **Snapshot Test Pattern for Components:**
    ```typescript
    import { render } from '@testing-library/react';
    import { describe, it, expect } from 'vitest';
@@ -498,6 +580,7 @@ note-hub/
    - Commit snapshot files alongside component changes
    - Never blindly update all snapshots without reviewing each change
    - Add comments in test describing what the snapshot captures
+   - **ALWAYS run tests after creating/updating snapshots to ensure they pass**
 
    **Example - Complete Component Test Suite:**
    ```typescript

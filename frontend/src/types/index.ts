@@ -161,3 +161,39 @@ export interface AIOperationResult {
 
 export type AIOperationType = 'proofread' | 'summarize' | 'rewrite';
 export type AIRewriteStyle = 'professional' | 'casual' | 'concise';
+
+// Audit Log types
+export interface AuditLog {
+  id: number;
+  user_id: number;
+  username?: string;
+  entity_type: string;
+  entity_id: number | null;
+  action: string;
+  ip_address?: string;
+  user_agent?: string;
+  metadata?: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface AuditLogsResponse {
+  logs: AuditLog[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total_count: number;
+    total_pages: number;
+  };
+}
+
+export interface AuditLogStats {
+  total_logs: number;
+  recent_activity_24h: number;
+  by_action: Array<{ action: string; count: number }>;
+  by_entity_type: Array<{ entity_type: string; count: number }>;
+  most_active_users: Array<{ id: number; username: string; action_count: number }>;
+  date_range: {
+    start: string | null;
+    end: string | null;
+  };
+}

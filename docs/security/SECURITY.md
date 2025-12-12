@@ -92,10 +92,12 @@ The Note Hub application takes security very seriously. This document outlines t
 
 ### 5. **Database Security**
 
-- **SQLite Encryption (Optional)**
+- **Encryption at Rest (Recommended)**
 
-  - Consider using encrypted SQLite in production
-  - Or migrate to PostgreSQL with encrypted connections
+  - SQLite: Filesystem encryption or SQLCipher
+  - MySQL: InnoDB transparent encryption
+  - See [Database Encryption at Rest Guide](DATABASE_ENCRYPTION_AT_REST.md) for implementation
+  - Protects against disk theft and unauthorized file access
 
 - **Database Access**
 
@@ -103,10 +105,18 @@ The Note Hub application takes security very seriously. This document outlines t
   - All queries go through authenticated sessions
   - Row-level security through session checks
 
-- **Sensitive Data**
-  - No plaintext storage of secrets
-  - TOTP secrets stored in database
-  - Database file should be backed up securely
+- **Sensitive Data Protection**
+  - ✅ Passwords: Hashed with bcrypt (14 rounds)
+  - ✅ TOTP Secrets: Stored for 2FA functionality
+  - ⚠️ User Content: Stored in plaintext (encrypted at rest recommended)
+  - ⚠️ Email Addresses: Stored in plaintext (required for functionality)
+  - 📖 See [Data Compliance Investigation](../investigation/DATA_COMPLIANCE_INVESTIGATION.md) for analysis
+
+- **Data Compliance**
+  - GDPR: Encryption recommended for personal data
+  - HIPAA: N/A (not a healthcare application)
+  - Note: User content is NOT hashed (would make it unreadable)
+  - Database file should be backed up securely with encryption
 
 ### 6. **HTTPS/TLS**
 
@@ -381,31 +391,55 @@ Instead:
 
 ## 📚 Additional Resources
 
+### Internal Documentation
+
+- [Database Encryption at Rest Guide](DATABASE_ENCRYPTION_AT_REST.md) - Implementation guide for SQLite and MySQL encryption
+- [Data Compliance Investigation](../investigation/DATA_COMPLIANCE_INVESTIGATION.md) - Analysis of data hashing vs encryption requirements
+- [Password Security Improvements](PASSWORD_SECURITY_IMPROVEMENTS.md) - Bcrypt implementation and hash upgrades
+- [2FA Improvements](2FA_IMPROVEMENTS.md) - Two-factor authentication guide
+
 ### Security Standards & Guidelines
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/) - Common web vulnerabilities
 - [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 - [CWE Top 25](https://cwe.mitre.org/top25/) - Most Dangerous Software Weaknesses
+- [GDPR Official Text](https://gdpr-info.eu/) - European data protection regulation
 
 ### Tools & Services
 
 - [OWASP ZAP](https://www.zaproxy.org/) - Security scanning
 - [Burp Suite](https://portswigger.net/burp) - Web security testing
-- [Bandit](https://bandit.readthedocs.io/) - Python security linting
-- [Safety](https://pyup.io/safety/) - Dependency vulnerability scanning
+- [Biome](https://biomejs.dev/) - Fast linter and formatter
+- [CodeQL](https://codeql.github.com/) - Semantic code analysis
 
-### Flask Security
+### Node.js Security
 
-- [Flask Security](https://flask-security-too.readthedocs.io/) - Authentication/authorization
-- [Flask-HTTPAuth](https://flask-httpauthx-docs.readthedocs.io/) - HTTP authentication
-- [Flask-Limiter](https://flask-limiter.readthedocs.io/) - Rate limiting
+- [Express Security Best Practices](https://expressjs.com/en/advanced/best-practice-security.html)
+- [Node.js Security Checklist](https://blog.risingstack.com/node-js-security-checklist/)
+- [Helmet.js](https://helmetjs.github.io/) - Security headers for Express
 
 ---
 
 ## 📝 Change Log
 
-### Version 1.1.0 (Current)
+### Version 1.6.0 (December 2024)
+
+- ✅ Data compliance investigation completed
+- ✅ Database encryption at rest guide added
+- ✅ Security documentation enhanced
+- ✅ Clarified hashing vs encryption for user content
+- ✅ Added GDPR compliance guidance
+
+### Version 1.5.0 (December 2024)
+
+- ✅ Migrated to Node.js/Express backend
+- ✅ JWT authentication with refresh tokens
+- ✅ Bcrypt password hashing (14 rounds)
+- ✅ Google OAuth integration
+- ✅ Enhanced security middleware
+
+### Version 1.1.0
 
 - ✅ Added 2FA with TOTP support
 - ✅ Enhanced input validation
@@ -421,7 +455,7 @@ Instead:
 
 ---
 
-**Last Updated:** November 22, 2025
+**Last Updated:** December 12, 2024
 **Status:** Active & Maintained
 **Contact:** Security team
 
