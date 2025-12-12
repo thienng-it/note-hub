@@ -225,13 +225,22 @@ export function AdminDashboardPage() {
               Manage users and view system statistics
             </p>
           </div>
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
-          >
-            <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
-            <span>{t('admin.backToNotes')}</span>
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              to="/admin/audit-logs"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              <i className="glass-i fas fa-clipboard-list" aria-hidden="true"></i>
+              <span>Audit Logs</span>
+            </Link>
+            <Link
+              to="/"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
+            >
+              <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
+              <span>{t('admin.backToNotes')}</span>
+            </Link>
+          </div>
         </div>
       </div>
 

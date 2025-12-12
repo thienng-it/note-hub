@@ -5,6 +5,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { AuditLogsPage } from './pages/AuditLogsPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
 import { Disable2FAPage } from './pages/Disable2FAPage';
 import { EditProfilePage } from './pages/EditProfilePage';
@@ -79,6 +80,7 @@ function AppRoutes() {
         <Route path="/profile/2fa/disable" element={<Disable2FAPage />} />
         <Route path="/invite" element={<InvitePage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/admin/audit-logs" element={<AuditLogsPage />} />
       </Route>
       <Route path="/error" element={<ErrorPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
