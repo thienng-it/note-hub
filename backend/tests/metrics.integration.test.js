@@ -2,8 +2,8 @@
  * Integration tests for Prometheus metrics
  */
 
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import request from 'supertest';
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 const API_URL = process.env.API_URL || 'http://localhost:5000';
 

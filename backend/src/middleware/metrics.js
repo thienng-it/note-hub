@@ -128,8 +128,6 @@ const apiErrors = new promClient.Counter({
   registers: [register],
 });
 
-
-
 // Search operations (Elasticsearch)
 const searchOperations = new promClient.Counter({
   name: 'notehub_search_operations_total',
