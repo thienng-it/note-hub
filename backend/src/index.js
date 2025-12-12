@@ -318,13 +318,15 @@ app.use((err, req, res, _next) => {
 // Initialize database and start server
 async function start() {
   try {
-    // Initialize Sequelize ORM
-    await initializeSequelize();
-    await syncDatabase();
-
-    // Also initialize legacy DB for backward compatibility
+    // Initialize legacy DB first for backward compatibility and migrations
+    // This must run BEFORE Sequelize sync because the migrations add columns
+    // that Sequelize models depend on (e.g., folder_id in notes/tasks)
     await db.connect();
     await db.initSchema();
+
+    // Initialize Sequelize ORM after migrations are complete
+    await initializeSequelize();
+    await syncDatabase();
 
     // Initialize Redis cache (optional)
     await cache.connect();
