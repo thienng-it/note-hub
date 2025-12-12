@@ -26,6 +26,19 @@ class WebSocketService {
       // Connection settings
       pingTimeout: 60000,
       pingInterval: 25000,
+      // Max HTTP buffer size to prevent large payloads
+      maxHttpBufferSize: 1e6, // 1MB
+      // Transport options
+      transports: ['websocket', 'polling'],
+      // Allow upgrades
+      allowUpgrades: true,
+      // Connection state recovery for reliability
+      connectionStateRecovery: {
+        // Recovery window
+        maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
+        // Skip middlewares on recovery
+        skipMiddlewares: true,
+      },
     });
 
     // Authentication middleware
