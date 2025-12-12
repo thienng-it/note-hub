@@ -15,12 +15,37 @@ Investigation into whether NoteHub should migrate to Kubernetes or continue with
 
 #### Documents
 
-1. **[K8S_DEPLOYMENT_INVESTIGATION.md](K8S_DEPLOYMENT_INVESTIGATION.md)** ⭐ Complete analysis
-   - Comprehensive comparison of Kubernetes vs Docker Compose
-   - Cost-benefit analysis ($1,254/year vs $11,520-15,620/year)
-   - Scale requirements analysis (10-1K users vs 10K+ needed for K8s)
+1. **[K8S_QUICK_REFERENCE.md](K8S_QUICK_REFERENCE.md)** ⭐ Start here - 2 min read
+   - One-page summary card
+   - Quick decision reference
+   - Key metrics and thresholds
+   - Print-friendly format
+   - **Read time**: 2 minutes
+
+2. **[K8S_EXECUTIVE_SUMMARY.md](K8S_EXECUTIVE_SUMMARY.md)** - 10 min read
+   - Decision matrix and scorecard
+   - Cost comparison summary
+   - Scale gap analysis
+   - Risk assessment
+   - Clear recommendations
+   - **Read time**: 10 minutes
+
+3. **[K8S_VISUAL_SUMMARY.md](K8S_VISUAL_SUMMARY.md)** - 15 min read
+   - Visual charts and diagrams
+   - Decision tree
+   - Cost breakdown charts
+   - Timeline projections
+   - Feature comparison matrix
+   - **Read time**: 15 minutes
+
+4. **[K8S_DEPLOYMENT_INVESTIGATION.md](K8S_DEPLOYMENT_INVESTIGATION.md)** - Complete analysis
+   - Comprehensive technical comparison
+   - Detailed cost-benefit analysis (72-136 hours setup)
+   - Scale requirements analysis (10-1K users vs 10K+ needed)
    - Complexity comparison (30 lines vs 150+ lines config)
-   - Clear recommendation with supporting evidence
+   - Deployment workflows comparison
+   - Risk assessment matrix
+   - Complete recommendations
    - **Read time**: 45-60 minutes
 
 #### Key Findings
@@ -61,6 +86,27 @@ Investigation into whether NoteHub should migrate to Kubernetes or continue with
 | **Config Complexity** | 30 lines | 150+ lines | **Compose (5x simpler)** |
 | **Maintenance** | 2 hrs/month | 10 hrs/month | **Compose (5x less)** |
 | **Scale Handled** | 500-1K users | 10K+ users | **Compose (sufficient)** |
+
+#### Reading Path
+
+**For Busy Executives** (5 min):
+1. Read [K8S_QUICK_REFERENCE.md](K8S_QUICK_REFERENCE.md)
+2. Done! Decision is clear.
+
+**For Technical Managers** (15 min):
+1. Read [K8S_QUICK_REFERENCE.md](K8S_QUICK_REFERENCE.md)
+2. Review [K8S_EXECUTIVE_SUMMARY.md](K8S_EXECUTIVE_SUMMARY.md)
+3. Check cost and risk sections
+
+**For Architects** (30 min):
+1. Start with [K8S_EXECUTIVE_SUMMARY.md](K8S_EXECUTIVE_SUMMARY.md)
+2. Review [K8S_VISUAL_SUMMARY.md](K8S_VISUAL_SUMMARY.md)
+3. Check specific sections in full investigation
+
+**For Engineers** (60 min):
+1. Read [K8S_EXECUTIVE_SUMMARY.md](K8S_EXECUTIVE_SUMMARY.md)
+2. Study [K8S_DEPLOYMENT_INVESTIGATION.md](K8S_DEPLOYMENT_INVESTIGATION.md)
+3. Review configuration examples and comparisons
 
 ---
 
