@@ -139,8 +139,18 @@ class PasskeyService {
     deviceName?: string,
   ): Promise<{ success: boolean; error?: string }> {
     try {
+      console.log('[Passkey] Starting registration with options:', {
+        rpId: options.rp.id,
+        rpName: options.rp.name,
+        userName: options.user.name,
+        timeout: options.timeout,
+        authenticatorSelection: options.authenticatorSelection,
+      });
+
       // Start WebAuthn registration - this must be called from user gesture context
       const registrationResponse = await startRegistration({ optionsJSON: options });
+
+      console.log('[Passkey] Registration response received, verifying with server...');
 
       // Verify registration with server
       await apiClient.post(`${API_VERSION}/auth/passkey/register-verify`, {
@@ -149,9 +159,15 @@ class PasskeyService {
         deviceName,
       });
 
+      console.log('[Passkey] Registration successful!');
       return { success: true };
     } catch (error: unknown) {
-      console.error('Passkey registration error:', error);
+      console.error('[Passkey] Registration error details:', {
+        error,
+        errorName: error instanceof Error ? error.name : 'Unknown',
+        errorMessage: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       return {
         success: false,
         error: this.handleWebAuthnError(error, 'registration'),
@@ -198,14 +214,25 @@ class PasskeyService {
     username?: string,
   ): Promise<{ success: boolean; tokens?: PasskeyTokens; error?: string }> {
     try {
+      console.log('[Passkey] Getting authentication options for username:', username || '(none)');
+
       // Get authentication options from server
       const { options, challengeKey } = await apiClient.post<AuthenticationOptions>(
         `${API_VERSION}/auth/passkey/login-options`,
         { username },
       );
 
+      console.log('[Passkey] Starting authentication with options:', {
+        rpId: options.rpId,
+        timeout: options.timeout,
+        userVerification: options.userVerification,
+        allowCredentialsCount: options.allowCredentials?.length || 0,
+      });
+
       // Start WebAuthn authentication
       const authenticationResponse = await startAuthentication({ optionsJSON: options });
+
+      console.log('[Passkey] Authentication response received, verifying with server...');
 
       // Verify authentication with server
       const result = await apiClient.post(`${API_VERSION}/auth/passkey/login-verify`, {
@@ -213,9 +240,15 @@ class PasskeyService {
         challengeKey,
       });
 
+      console.log('[Passkey] Authentication successful!');
       return { success: true, tokens: result as PasskeyTokens };
     } catch (error: unknown) {
-      console.error('Passkey authentication error:', error);
+      console.error('[Passkey] Authentication error details:', {
+        error,
+        errorName: error instanceof Error ? error.name : 'Unknown',
+        errorMessage: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       return {
         success: false,
         error: this.handleWebAuthnError(error, 'authentication'),
