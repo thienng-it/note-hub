@@ -301,6 +301,24 @@ class Database {
       );
       CREATE INDEX IF NOT EXISTS ix_webauthn_user ON webauthn_credentials(user_id);
       CREATE INDEX IF NOT EXISTS ix_webauthn_credential ON webauthn_credentials(credential_id);
+
+      -- Audit logs table for compliance and security monitoring
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        entity_type TEXT NOT NULL,
+        entity_id INTEGER,
+        action TEXT NOT NULL,
+        ip_address TEXT,
+        user_agent TEXT,
+        metadata TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS ix_audit_logs_user ON audit_logs(user_id);
+      CREATE INDEX IF NOT EXISTS ix_audit_logs_entity ON audit_logs(entity_type, entity_id);
+      CREATE INDEX IF NOT EXISTS ix_audit_logs_created ON audit_logs(created_at);
+      CREATE INDEX IF NOT EXISTS ix_audit_logs_action ON audit_logs(action);
     `;
 
     // Execute each statement separately for SQLite
@@ -533,6 +551,24 @@ class Database {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_webauthn_user (user_id),
         INDEX ix_webauthn_credential (credential_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+
+      -- Audit logs table for compliance and security monitoring
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        entity_type VARCHAR(50) NOT NULL,
+        entity_id INT,
+        action VARCHAR(50) NOT NULL,
+        ip_address VARCHAR(45),
+        user_agent VARCHAR(255),
+        metadata JSON,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        INDEX ix_audit_logs_user (user_id),
+        INDEX ix_audit_logs_entity (entity_type, entity_id),
+        INDEX ix_audit_logs_created (created_at),
+        INDEX ix_audit_logs_action (action),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `;
