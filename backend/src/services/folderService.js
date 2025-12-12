@@ -3,6 +3,7 @@
  * Handles business logic for folder operations
  */
 
+import { Op } from 'sequelize';
 import logger from '../config/logger.js';
 import { Folder, Note, Task } from '../models/index.js';
 
@@ -54,7 +55,7 @@ class FolderService {
         where: {
           owner_id: userId,
           folder_id: {
-            [Note.sequelize.Op.ne]: null,
+            [Op.ne]: null,
           },
           archived: false,
         },
@@ -68,7 +69,7 @@ class FolderService {
         where: {
           owner_id: userId,
           folder_id: {
-            [Task.sequelize.Op.ne]: null,
+            [Op.ne]: null,
           },
         },
         group: ['folder_id'],
@@ -209,7 +210,7 @@ class FolderService {
             name: name.trim(),
             parent_id: folder.parent_id,
             id: {
-              [Folder.sequelize.Op.ne]: folderId,
+              [Op.ne]: folderId,
             },
           },
         });
@@ -268,7 +269,7 @@ class FolderService {
           name: folder.name,
           parent_id: newParentId || null,
           id: {
-            [Folder.sequelize.Op.ne]: folderId,
+            [Op.ne]: folderId,
           },
         },
       });
