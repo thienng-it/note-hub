@@ -155,7 +155,9 @@ describe('AuditLogsPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Audit Logs')).toBeInTheDocument();
       expect(
-        screen.getByText('View and analyze system activity logs for compliance and security monitoring'),
+        screen.getByText(
+          'View and analyze system activity logs for compliance and security monitoring',
+        ),
       ).toBeInTheDocument();
     });
   });

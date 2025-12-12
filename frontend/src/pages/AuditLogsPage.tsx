@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { adminApi } from '../api/client';
 import type { AuditLog, AuditLogStats } from '../types';
@@ -198,10 +197,14 @@ export function AuditLogsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="filter-entity-type"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            >
               Entity Type
             </label>
             <select
+              id="filter-entity-type"
               value={filterEntityType}
               onChange={(e) => setFilterEntityType(e.target.value)}
               className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
@@ -214,10 +217,14 @@ export function AuditLogsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="filter-action"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            >
               Action
             </label>
             <select
+              id="filter-action"
               value={filterAction}
               onChange={(e) => setFilterAction(e.target.value)}
               className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
@@ -230,10 +237,14 @@ export function AuditLogsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="filter-start-date"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            >
               Start Date
             </label>
             <input
+              id="filter-start-date"
               type="date"
               value={filterStartDate}
               onChange={(e) => setFilterStartDate(e.target.value)}
@@ -241,10 +252,14 @@ export function AuditLogsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="filter-end-date"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            >
               End Date
             </label>
             <input
+              id="filter-end-date"
               type="date"
               value={filterEndDate}
               onChange={(e) => setFilterEndDate(e.target.value)}

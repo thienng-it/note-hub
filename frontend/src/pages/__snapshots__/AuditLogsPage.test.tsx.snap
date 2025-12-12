@@ -119,11 +119,13 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
         <div>
           <label
             class="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            for="filter-entity-type"
           >
             Entity Type
           </label>
           <select
             class="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+            id="filter-entity-type"
           >
             <option
               value=""
@@ -155,11 +157,13 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
         <div>
           <label
             class="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            for="filter-action"
           >
             Action
           </label>
           <select
             class="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+            id="filter-action"
           >
             <option
               value=""
@@ -191,11 +195,13 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
         <div>
           <label
             class="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            for="filter-start-date"
           >
             Start Date
           </label>
           <input
             class="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+            id="filter-start-date"
             type="date"
             value=""
           />
@@ -203,11 +209,13 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
         <div>
           <label
             class="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            for="filter-end-date"
           >
             End Date
           </label>
           <input
             class="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+            id="filter-end-date"
             type="date"
             value=""
           />
