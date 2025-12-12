@@ -3,10 +3,12 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ChatProvider } from './context/ChatContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { AuditLogsPage } from './pages/AuditLogsPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
+import { ChatPage } from './pages/ChatPage';
 import { Disable2FAPage } from './pages/Disable2FAPage';
 import { EditProfilePage } from './pages/EditProfilePage';
 import { EditTaskPage } from './pages/EditTaskPage';
@@ -73,6 +75,7 @@ function AppRoutes() {
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/tasks/new" element={<EditTaskPage />} />
         <Route path="/tasks/:id/edit" element={<EditTaskPage />} />
+        <Route path="/chat" element={<ChatPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<EditProfilePage />} />
         <Route path="/profile/change-password" element={<ChangePasswordPage />} />
@@ -93,7 +96,9 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AppRoutes />
+          <ChatProvider>
+            <AppRoutes />
+          </ChatProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
