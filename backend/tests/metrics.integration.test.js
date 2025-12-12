@@ -2,7 +2,7 @@
  * Integration tests for Prometheus metrics
  */
 
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import request from 'supertest';
 
 const API_URL = process.env.API_URL || 'http://localhost:5000';
@@ -113,7 +113,7 @@ describe('Metrics Integration Tests', () => {
     it('should record authentication attempts', async () => {
       // Get initial metrics
       const before = await request(API_URL).get('/metrics');
-      const beforeHasAuth = before.text.includes('notehub_auth_attempts_total');
+      before.text.includes('notehub_auth_attempts_total');
 
       // Make a failed login attempt
       await request(API_URL)
