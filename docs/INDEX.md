@@ -56,6 +56,8 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 ### Drone CI
 - [DRONE_CI_README](guides/DRONE_CI_README.md) - Drone CI overview
 - [DRONE_CI_SETUP](guides/DRONE_CI_SETUP.md) - Drone CI setup guide
+- [DRONE_CI_DEPLOYMENT](guides/DRONE_CI_DEPLOYMENT.md) - **Automated deployment guide with Drone CI**
+- [DRONE_CI_DEPLOYMENT_QUICK](guides/DRONE_CI_DEPLOYMENT_QUICK.md) - **Quick setup guide for automated deployment**
 - [DRONE_CI_STANDALONE](guides/DRONE_CI_STANDALONE.md) - Standalone Drone CI deployment
 - [DRONE_CI_IMPLEMENTATION](guides/DRONE_CI_IMPLEMENTATION.md) - Drone CI implementation summary
 - [DRONE_CI_UI](guides/DRONE_CI_UI.md) - Drone CI UI implementation

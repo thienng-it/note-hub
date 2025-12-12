@@ -126,30 +126,43 @@ steps:
   #       - push
 
   # ===========================================================================
-  # Optional: Deploy to Production
+  # Deploy to Production
   # ===========================================================================
-  # Uncomment to enable automatic deployment
+  # Automated deployment to production VPS using SSH
+  # This step runs the deployment script on the production server
+  # 
+  # Required Secrets (configure in Drone UI):
+  #   - production_host: Your production server IP or domain
+  #   - production_username: SSH username (e.g., root or deploy user)
+  #   - production_ssh_key: SSH private key for authentication
   #
-  # - name: deploy-production
-  #   image: appleboy/drone-ssh
-  #   settings:
-  #     host:
-  #       from_secret: production_host
-  #     username:
-  #       from_secret: production_username
-  #     key:
-  #       from_secret: production_ssh_key
-  #     port: 22
-  #     script:
-  #       - cd /opt/note-hub
-  #       - git pull origin main
-  #       - docker compose pull
-  #       - docker compose up -d
-  #   when:
-  #     branch:
-  #       - main
-  #     event:
-  #       - push
+  # To enable deployment:
+  #   1. Add the required secrets in Drone UI (Settings > Secrets)
+  #   2. Ensure the deployment script is executable on the server
+  #   3. Verify SSH access from Drone runner to production server
+  #
+  # To disable deployment:
+  #   Comment out this entire step
+  #
+  - name: deploy-production
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: production_host
+      username:
+        from_secret: production_username
+      key:
+        from_secret: production_ssh_key
+      port: 22
+      script:
+        - cd /opt/note-hub
+        - chmod +x scripts/deploy.sh
+        - ./scripts/deploy.sh
+    when:
+      branch:
+        - main
+      event:
+        - push
 
   # ===========================================================================
   # Notifications (Optional)
