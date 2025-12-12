@@ -6,7 +6,65 @@ This directory contains in-depth technical investigations and analyses for NoteH
 
 ## 📋 Available Investigations
 
-### Data Compliance & Security (December 2024) ⭐ NEW
+### Kubernetes vs Docker Compose (December 2024) ⭐ NEW
+
+**Status**: ✅ Complete  
+**Decision**: Continue with Docker Compose. Kubernetes is not justified.
+
+Investigation into whether NoteHub should migrate to Kubernetes or continue with the current Docker Compose deployment.
+
+#### Documents
+
+1. **[K8S_DEPLOYMENT_INVESTIGATION.md](K8S_DEPLOYMENT_INVESTIGATION.md)** ⭐ Complete analysis
+   - Comprehensive comparison of Kubernetes vs Docker Compose
+   - Cost-benefit analysis ($1,254/year vs $11,520-15,620/year)
+   - Scale requirements analysis (10-1K users vs 10K+ needed for K8s)
+   - Complexity comparison (30 lines vs 150+ lines config)
+   - Clear recommendation with supporting evidence
+   - **Read time**: 45-60 minutes
+
+#### Key Findings
+
+```
+❌ DO NOT Use Kubernetes (Yet)
+• Current scale: 10-1,000 users → K8s needs 10K+
+• Cost: $4.50/month vs $60-135/month (13-30x more)
+• Complexity: 10x simpler with Docker Compose
+• Setup time: 0 hours vs 72-136 hours
+• Maintenance: 2 hrs/month vs 10 hrs/month
+• No benefits at current scale
+
+✅ Current Docker Compose is Perfect
+• Handles 5-10x current traffic ✅
+• Full SSL/TLS with Let's Encrypt ✅
+• Prometheus + Grafana monitoring ✅
+• Zero-downtime deployments ✅
+• High availability features ✅
+• 30-second deployments ✅
+• Cost: $4.50/month ✅
+
+💡 When to Revisit K8s
+• User base exceeds 10,000 concurrent
+• Multi-region deployment needed
+• Budget exceeds $500/month infrastructure
+• Running 15+ microservices
+• Timeline: 3-5+ years (if ever)
+```
+
+#### Quick Comparison
+
+| Aspect | Docker Compose | Kubernetes | Winner |
+|--------|---------------|------------|--------|
+| **Setup Cost** | $0 | $3,600-6,800 | **Compose (∞ cheaper)** |
+| **Monthly Cost** | $4.50 | $60-135 | **Compose (13-30x cheaper)** |
+| **Deployment Time** | 30 seconds | 5-10 minutes | **Compose (10-20x faster)** |
+| **Config Complexity** | 30 lines | 150+ lines | **Compose (5x simpler)** |
+| **Maintenance** | 2 hrs/month | 10 hrs/month | **Compose (5x less)** |
+| **Scale Handled** | 500-1K users | 10K+ users | **Compose (sufficient)** |
+
+---
+
+### Data Compliance & Security (December 2024)
 
 **Status**: ✅ Complete  
 **Decision**: Do NOT hash notes/tasks. Optionally add encryption at rest.

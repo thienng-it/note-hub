@@ -20,6 +20,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ## 🔬 Technical Investigations
 
+- **[K8s vs Docker Compose Investigation](investigation/K8S_DEPLOYMENT_INVESTIGATION.md)** ⭐ NEW - Complete infrastructure deployment comparison
 - [Data Compliance Investigation](investigation/DATA_COMPLIANCE_INVESTIGATION.md) - Analysis of data hashing vs encryption requirements
 - [NoSQL Investigation](investigation/NOSQL_INVESTIGATION.md) - Comprehensive analysis of NoSQL suitability for NoteHub
 - [SQL vs NoSQL Comparison](investigation/SQL_VS_NOSQL_COMPARISON.md) - Visual comparison and performance analysis
