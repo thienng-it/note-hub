@@ -389,9 +389,9 @@ docker compose up -d
 
 See [Hetzner Deployment Guide](docs/guides/HETZNER_DEPLOYMENT.md) for complete setup.
 
-### Option 3: Drone CI for Continuous Integration (Independent)
+### Option 3: Drone CI for Continuous Integration & Deployment
 
-Deploy Drone CI as a **standalone, independent CI/CD platform**. Drone CI does not depend on NoteHub and can be deployed on the same server, a different server, or completely independently.
+Deploy Drone CI as a **standalone, independent CI/CD platform** with **automated deployment** to production. Drone CI does not depend on NoteHub and can be deployed on the same server, a different server, or completely independently.
 
 > 📘 **Note**: Drone CI is a **completely independent application** with its own services, configuration, network, and data storage. It can be deployed anywhere, with or without NoteHub.
 
@@ -401,6 +401,21 @@ Deploy Drone CI as a **standalone, independent CI/CD platform**. Drone CI does n
 - 🚀 Parallel pipeline execution
 - 📊 Beautiful web UI on port 8080
 - ✅ **Completely independent** from NoteHub
+- 🚢 **Automated deployment** to production on push to main
+
+**Automated Deployment Pipeline:**
+```
+Push to main → Tests → Build → Deploy to VPS
+                ✓ Backend tests
+                ✓ Frontend tests
+                ✓ Linting
+                ✓ Type checking
+                        ↓
+                Auto-deploy to production
+                ✓ Zero-downtime deployment
+                ✓ Automatic backups
+                ✓ Health checks
+```
 
 ```bash
 # Setup Drone CI (independent deployment)
@@ -408,13 +423,16 @@ cp .env.drone.example .env.drone
 nano .env.drone  # Configure GitHub OAuth and secrets (separate from NoteHub)
 
 # Deploy Drone CI
-docker compose -f docker-compose.drone.yml up -d
+docker compose --env-file .env.drone -f docker-compose.drone.yml up -d
 
 # Access Drone CI at http://your-server:8080
-# Works with or without NoteHub running
+# Configure deployment secrets in Drone UI
+# Push to main branch → Automatic deployment!
 ```
 
 **Documentation:**
+- **[DRONE_CI_DEPLOYMENT.md](docs/guides/DRONE_CI_DEPLOYMENT.md)** - ⭐ Complete automated deployment guide
+- **[DRONE_CI_DEPLOYMENT_QUICK.md](docs/guides/DRONE_CI_DEPLOYMENT_QUICK.md)** - Quick 5-minute setup
 - **[DRONE_CI_README.md](DRONE_CI_README.md)** - Quick start and overview
 - **[DRONE_CI_UI_IMPLEMENTATION.md](DRONE_CI_UI_IMPLEMENTATION.md)** - UI features and verification
 - **[DRONE_CI_STANDALONE.md](docs/guides/DRONE_CI_STANDALONE.md)** - Complete independence documentation

@@ -126,30 +126,30 @@ steps:
   #       - push
 
   # ===========================================================================
-  # Optional: Deploy to Production
+  # Deploy to Production
   # ===========================================================================
-  # Uncomment to enable automatic deployment
+  # Automated deployment to production VPS using SSH
+  # This step runs the deployment script on the production server
   #
-  # - name: deploy-production
-  #   image: appleboy/drone-ssh
-  #   settings:
-  #     host:
-  #       from_secret: production_host
-  #     username:
-  #       from_secret: production_username
-  #     key:
-  #       from_secret: production_ssh_key
-  #     port: 22
-  #     script:
-  #       - cd /opt/note-hub
-  #       - git pull origin main
-  #       - docker compose pull
-  #       - docker compose up -d
-  #   when:
-  #     branch:
-  #       - main
-  #     event:
-  #       - push
+  - name: deploy-production
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: production_host
+      username:
+        from_secret: production_username
+      key:
+        from_secret: production_ssh_key
+      port: 22
+      script:
+        - cd /opt/note-hub
+        - chmod +x scripts/deploy.sh
+        - ./scripts/deploy.sh
+    when:
+      branch:
+        - main
+      event:
+        - push
 
   # ===========================================================================
   # Notifications (Optional)
