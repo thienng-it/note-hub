@@ -78,46 +78,41 @@ export function PasskeyManager() {
       return;
     }
 
-    // CRITICAL FIX for macOS browsers:
-    // Call WebAuthn API immediately and synchronously, before any state updates.
-    // macOS Safari/Chrome have stricter user gesture (transient activation) requirements.
-    // Any async operations or state updates before the WebAuthn call can cause
-    // the user gesture to expire, resulting in NotAllowedError.
-    let result: { success: boolean; error?: string };
-    try {
-      result = await passkeyService.completeRegistration(
-        registrationOptions.options,
-        registrationOptions.challengeKey,
-        deviceNameInput.trim() || undefined,
-      );
-    } catch (err: unknown) {
-      // If completeRegistration throws, handle it
-      const error = err as { message?: string };
-      setError(error.message || 'Failed to register passkey');
-      setShowAddModal(false);
-      setDeviceNameInput('');
-      setRegistrationOptions(null);
-      return;
-    }
+    // Store values before closing modal
+    const optionsToUse = registrationOptions.options;
+    const challengeKeyToUse = registrationOptions.challengeKey;
+    const deviceNameToUse = deviceNameInput.trim() || undefined;
 
-    // Now update UI state after WebAuthn has been invoked
+    // CRITICAL FIX for macOS browsers:
+    // Close modal FIRST to remove any potential interference with user gesture.
+    // Then immediately call WebAuthn API while user gesture is still active.
+    // macOS Safari/Chrome have very strict user gesture (transient activation) requirements.
+    setShowAddModal(false);
+    setDeviceNameInput('');
+    setRegistrationOptions(null);
+
+    // Set loading state to show user that registration is in progress
     setIsRegistering(true);
     setError(null);
     setSuccess(null);
 
     try {
+      // Call WebAuthn API immediately after closing modal
+      const result = await passkeyService.completeRegistration(
+        optionsToUse,
+        challengeKeyToUse,
+        deviceNameToUse,
+      );
+
       if (result.success) {
         setSuccess('Passkey registered successfully!');
         await loadCredentials();
-        setShowAddModal(false);
-        setDeviceNameInput('');
-        setRegistrationOptions(null);
       } else {
         setError(result.error || 'Failed to register passkey');
-        setShowAddModal(false);
-        setDeviceNameInput('');
-        setRegistrationOptions(null);
       }
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || 'Failed to register passkey');
     } finally {
       setIsRegistering(false);
     }
