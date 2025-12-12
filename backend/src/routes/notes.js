@@ -224,7 +224,8 @@ async function updateNote(req, res) {
     if (favorite !== undefined) noteChanges.favorite = !!updatedNote.favorite;
     if (archived !== undefined) noteChanges.archived = !!updatedNote.archived;
     if (tags !== undefined) noteChanges.tags = updatedNote.tags;
-    if (images !== undefined) noteChanges.images = updatedNote.images ? JSON.parse(updatedNote.images) : [];
+    if (images !== undefined)
+      noteChanges.images = updatedNote.images ? JSON.parse(updatedNote.images) : [];
 
     websocketService.broadcastNoteUpdate(noteId, noteChanges, {
       userId: req.userId,

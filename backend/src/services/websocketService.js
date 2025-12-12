@@ -3,8 +3,8 @@
  * Handles Socket.IO connections, authentication, and real-time note updates.
  */
 
-import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import { Server } from 'socket.io';
 import logger from '../config/logger.js';
 
 class WebSocketService {
@@ -31,7 +31,8 @@ class WebSocketService {
     // Authentication middleware
     this.io.use(async (socket, next) => {
       try {
-        const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
+        const token =
+          socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
 
         if (!token) {
           return next(new Error('Authentication required'));

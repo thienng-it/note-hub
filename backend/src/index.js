@@ -23,9 +23,8 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-import cors from 'cors';
-
 import { createServer } from 'node:http';
+import cors from 'cors';
 
 import express from 'express';
 import rateLimit from 'express-rate-limit';
@@ -39,8 +38,6 @@ import logger from './config/logger.js';
 // Cache and search services
 import cache from './config/redis.js';
 import { closeDatabase, initializeSequelize, syncDatabase } from './models/index.js';
-// WebSocket service
-import websocketService from './services/websocketService.js';
 import adminRoutes from './routes/admin.js';
 import aiRoutes from './routes/ai.js';
 // Import routes
@@ -55,6 +52,8 @@ import uploadRoutes from './routes/upload.js';
 import usersRoutes from './routes/users.js';
 // Import passkey services
 import { isUsingRedis } from './services/challengeStorage.js';
+// WebSocket service
+import websocketService from './services/websocketService.js';
 
 const app = express();
 const httpServer = createServer(app);

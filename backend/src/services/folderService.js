@@ -3,8 +3,8 @@
  * Handles business logic for folder operations
  */
 
-import { Folder, Note, Task } from '../models/index.js';
 import logger from '../config/logger.js';
+import { Folder, Note, Task } from '../models/index.js';
 
 class FolderService {
   /**
@@ -134,7 +134,14 @@ class FolderService {
    */
   async createFolder(userId, data) {
     try {
-      const { name, parent_id = null, description = '', icon = 'folder', color = '#3B82F6', position = 0 } = data;
+      const {
+        name,
+        parent_id = null,
+        description = '',
+        icon = 'folder',
+        color = '#3B82F6',
+        position = 0,
+      } = data;
 
       // Validate parent folder if provided
       if (parent_id) {
