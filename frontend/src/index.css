@@ -35,6 +35,7 @@
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
+  --text-tertiary: #94a3b8;
 
   /* Border colors */
   --border-color: #e2e8f0;
@@ -60,6 +61,7 @@
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
+  --text-tertiary: #64748b;
   --border-color: #475569;
   --glass-bg: rgba(30, 41, 59, 0.85);
   --glass-border: rgba(255, 255, 255, 0.1);
@@ -73,8 +75,8 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 1px;
-  padding: 1px;
+  margin: 0.2rem;
+  padding: 0.1rem;
 }
 
 html {
@@ -124,8 +126,7 @@ body.dark {
   box-shadow: 0 8px 32px 0 var(--glass-shadow);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 1.5rem;
-  padding: 0.5rem;
-  margin: 0.5rem;
+  padding: 1.5rem;
 }
 
 .card:hover {
@@ -152,19 +153,18 @@ body.dark {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-border);
   border-radius: 0.75rem;
-
-  /* ✅ HARD-FIX: space for the icon */
-  padding-left: 3rem; /* 48px */
-  padding-right: 1rem;
-  padding-top: 0.875rem;
-  padding-bottom: 0.875rem;
-
+  padding: 0.875rem 1rem;
   font-size: 1rem;
   color: var(--text-primary);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 44px;
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* Glass Input with icon - use this class when input has an icon */
+.glass-input-with-icon {
+  padding-left: 3rem;
 }
 
 .glass-input:focus {
@@ -181,7 +181,11 @@ body.dark {
 @media (max-width: 640px) {
   .glass-input {
     font-size: 16px; /* Prevents zoom on iOS */
-    padding: 0.875rem 0.875rem;
+    padding: 0.875rem;
+  }
+
+  .glass-input-with-icon {
+    padding-left: 2.75rem; /* Slightly reduced for mobile */
   }
 }
 
@@ -208,7 +212,7 @@ body.dark {
   font-weight: 600;
   border: none;
   border-radius: 0.75rem;
-  padding: 0.5rem 0.5rem;
+  padding: 0.875rem 1.5rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 14px rgba(0, 122, 255, 0.4);
@@ -752,6 +756,7 @@ body.dark {
 /* Mobile Navigation - Hidden by default, shows on phones only */
 .mobile-nav {
   display: none;
+  z-index: 50;
 }
 
 /* Mobile-specific styles (phones only, under 768px) */
@@ -1543,6 +1548,34 @@ body.dark {
   .btn-apple:hover,
   .tag:hover {
     transform: none;
+  }
+
+  /* Better spacing for content */
+  .p-6 {
+    padding: 1rem;
+  }
+
+  /* Optimize grid layouts for mobile */
+  .grid {
+    gap: 1rem;
+  }
+}
+
+/* Tablet optimizations (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Optimize content spacing for tablets */
+  .p-6 {
+    padding: 1.5rem;
+  }
+
+  /* Better grid layouts for tablets */
+  .grid {
+    gap: 1.25rem;
+  }
+
+  /* Adjust card sizing for tablets */
+  .glass-card {
+    padding: 1.25rem;
   }
 }
 
