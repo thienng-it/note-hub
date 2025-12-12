@@ -75,18 +75,25 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
     // Handle real-time messages
     newSocket.on('chat:message', (payload: ChatMessagePayload) => {
-      if (currentRoom && payload.roomId === currentRoom.id) {
-        setMessages((prev) => [...prev, payload.message]);
-      }
+      const roomId = payload.roomId;
+
+      // Add message to current room
+      setMessages((prev) => {
+        // Only add if still viewing this room
+        if (currentRoom?.id === roomId) {
+          return [...prev, payload.message];
+        }
+        return prev;
+      });
+
       // Update room's last message
       setRooms((prev) =>
         prev.map((room) =>
-          room.id === payload.roomId
+          room.id === roomId
             ? {
                 ...room,
                 lastMessage: payload.message,
-                unreadCount:
-                  currentRoom?.id === payload.roomId ? room.unreadCount : room.unreadCount + 1,
+                unreadCount: currentRoom?.id === roomId ? room.unreadCount : room.unreadCount + 1,
               }
             : room,
         ),
@@ -112,7 +119,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     newSocket.on('chat:read', (payload: ChatReadPayload) => {
       if (currentRoom && payload.roomId === currentRoom.id) {
         setMessages((prev) =>
-          prev.map((msg) => (msg.sender.id !== user.id ? { ...msg, is_read: true } : msg)),
+          prev.map((msg) =>
+            msg.sender.id !== user.id && !msg.is_read ? { ...msg, is_read: true } : msg,
+          ),
         );
       }
     });

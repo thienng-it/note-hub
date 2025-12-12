@@ -68,7 +68,11 @@ export function initializeSocketIO(httpServer) {
     socket.on('chat:join', async (roomId) => {
       try {
         // Verify user has access to this room
-        await chatService.getRoomMessages(roomId, userId, 1);
+        const hasAccess = await chatService.checkRoomAccess(roomId, userId);
+        if (!hasAccess) {
+          throw new Error('User does not have access to this room');
+        }
+
         socket.join(`room:${roomId}`);
         socket.emit('chat:joined', { roomId });
         logger.debug('User joined chat room', { userId, roomId });

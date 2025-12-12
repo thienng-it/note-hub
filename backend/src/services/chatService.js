@@ -8,6 +8,32 @@ import logger from '../config/logger.js';
 import { ChatMessage, ChatParticipant, ChatRoom, User } from '../models/index.js';
 
 /**
+ * Check if room is a direct chat between two specific users
+ * @param {Object} room - Chat room object with participants
+ * @param {number} userId1 - First user ID
+ * @param {number} userId2 - Second user ID
+ * @returns {boolean}
+ */
+function isDirectChatBetween(room, userId1, userId2) {
+  if (!room || !room.participants || room.participants.length !== 2) return false;
+  const participantIds = room.participants.map((p) => p.user_id);
+  return participantIds.includes(userId1) && participantIds.includes(userId2);
+}
+
+/**
+ * Check if user has access to a chat room
+ * @param {number} roomId - Chat room ID
+ * @param {number} userId - User ID
+ * @returns {Promise<boolean>}
+ */
+export async function checkRoomAccess(roomId, userId) {
+  const participant = await ChatParticipant.findOne({
+    where: { room_id: roomId, user_id: userId },
+  });
+  return !!participant;
+}
+
+/**
  * Get or create a direct chat room between two users
  * @param {number} userId1 - First user ID
  * @param {number} userId2 - Second user ID
@@ -33,15 +59,8 @@ export async function getOrCreateDirectChat(userId1, userId2) {
     });
 
     // If room exists with exactly 2 participants that match both users
-    if (existingRoom) {
-      const participantIds = existingRoom.participants.map((p) => p.user_id);
-      if (
-        participantIds.length === 2 &&
-        participantIds.includes(userId1) &&
-        participantIds.includes(userId2)
-      ) {
-        return existingRoom;
-      }
+    if (existingRoom && isDirectChatBetween(existingRoom, userId1, userId2)) {
+      return existingRoom;
     }
 
     // Create new direct chat room
@@ -351,4 +370,5 @@ export default {
   markMessagesAsRead,
   getUnreadCount,
   getAvailableUsers,
+  checkRoomAccess,
 };

@@ -6,11 +6,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chatApi } from '../api/chat';
+import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
 import type { ChatUser } from '../types/chat';
 
 export function ChatPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const {
     rooms,
     currentRoom,
@@ -106,8 +108,8 @@ export function ChatPage() {
 
   // Get other participant in direct chat
   const getOtherParticipant = (room: (typeof rooms)[0]) => {
-    if (room.is_group) return null;
-    return room.participants.find((p) => p.id !== room.participants[0]?.id);
+    if (room.is_group || !user) return null;
+    return room.participants.find((p) => p.id !== user.id);
   };
 
   return (
@@ -235,7 +237,7 @@ export function ChatPage() {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((message, index) => {
-                  const isSender = message.sender.id === rooms[0]?.participants[0]?.id;
+                  const isSender = user && message.sender.id === user.id;
                   return (
                     <div
                       key={message.id || index}
