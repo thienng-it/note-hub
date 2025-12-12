@@ -75,7 +75,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       setIsConnected(false);
     });
 
-    newSocket.on('connect_error', () => {
+    newSocket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error.message);
       setError('Connection error. Trying to reconnect...');
     });
 
