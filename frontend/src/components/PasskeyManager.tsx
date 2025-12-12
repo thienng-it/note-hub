@@ -78,17 +78,34 @@ export function PasskeyManager() {
       return;
     }
 
+    // CRITICAL FIX for macOS browsers:
+    // Call WebAuthn API immediately and synchronously, before any state updates.
+    // macOS Safari/Chrome have stricter user gesture (transient activation) requirements.
+    // Any async operations or state updates before the WebAuthn call can cause
+    // the user gesture to expire, resulting in NotAllowedError.
+    let result: { success: boolean; error?: string };
+    try {
+      result = await passkeyService.completeRegistration(
+        registrationOptions.options,
+        registrationOptions.challengeKey,
+        deviceNameInput.trim() || undefined,
+      );
+    } catch (err: unknown) {
+      // If completeRegistration throws, handle it
+      const error = err as { message?: string };
+      setError(error.message || 'Failed to register passkey');
+      setShowAddModal(false);
+      setDeviceNameInput('');
+      setRegistrationOptions(null);
+      return;
+    }
+
+    // Now update UI state after WebAuthn has been invoked
     setIsRegistering(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const result = await passkeyService.completeRegistration(
-        registrationOptions.options,
-        registrationOptions.challengeKey,
-        deviceNameInput.trim() || undefined,
-      );
-
       if (result.success) {
         setSuccess('Passkey registered successfully!');
         await loadCredentials();
@@ -101,12 +118,6 @@ export function PasskeyManager() {
         setDeviceNameInput('');
         setRegistrationOptions(null);
       }
-    } catch (err: unknown) {
-      const error = err as { message?: string };
-      setError(error.message || 'Failed to register passkey');
-      setShowAddModal(false);
-      setDeviceNameInput('');
-      setRegistrationOptions(null);
     } finally {
       setIsRegistering(false);
     }
