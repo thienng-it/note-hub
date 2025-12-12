@@ -715,6 +715,59 @@ class Database {
         this.db.exec(`ALTER TABLE users ADD COLUMN preferred_language TEXT DEFAULT 'en'`);
       }
 
+      // Create folders table if it doesn't exist
+      const foldersTableExists = this.db
+        .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='folders'")
+        .get();
+
+      if (!foldersTableExists) {
+        logger.info('🔄 Migrating: creating folders table');
+        this.db.exec(`
+          CREATE TABLE IF NOT EXISTS folders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
+            parent_id INTEGER DEFAULT NULL,
+            description TEXT,
+            icon TEXT DEFAULT 'folder',
+            color TEXT DEFAULT '#3B82F6',
+            position INTEGER DEFAULT 0,
+            is_expanded INTEGER DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE,
+            UNIQUE(user_id, name, parent_id)
+          )
+        `);
+        this.db.exec('CREATE INDEX IF NOT EXISTS ix_folders_user ON folders(user_id)');
+        this.db.exec('CREATE INDEX IF NOT EXISTS ix_folders_parent ON folders(parent_id)');
+        this.db.exec(
+          'CREATE INDEX IF NOT EXISTS ix_folders_user_parent ON folders(user_id, parent_id)',
+        );
+        logger.info('  ✅ Migration: folders table created');
+      }
+
+      // Add folder_id column to notes table if missing
+      const noteColumns = this.db.prepare('PRAGMA table_info(notes)').all();
+      const noteHasFolderId = noteColumns.some((col) => col.name === 'folder_id');
+      if (!noteHasFolderId) {
+        logger.info('🔄 Migrating notes table: adding folder_id column');
+        this.db.exec('ALTER TABLE notes ADD COLUMN folder_id INTEGER DEFAULT NULL');
+        this.db.exec('CREATE INDEX IF NOT EXISTS ix_notes_folder ON notes(folder_id)');
+        logger.info('  ✅ Migration: notes.folder_id column added');
+      }
+
+      // Add folder_id column to tasks table if missing
+      const taskColumns = this.db.prepare('PRAGMA table_info(tasks)').all();
+      const taskHasFolderId = taskColumns.some((col) => col.name === 'folder_id');
+      if (!taskHasFolderId) {
+        logger.info('🔄 Migrating tasks table: adding folder_id column');
+        this.db.exec('ALTER TABLE tasks ADD COLUMN folder_id INTEGER DEFAULT NULL');
+        this.db.exec('CREATE INDEX IF NOT EXISTS ix_tasks_folder ON tasks(folder_id)');
+        logger.info('  ✅ Migration: tasks.folder_id column added');
+      }
+
       logger.info('✅ SQLite schema migration completed');
     } catch (error) {
       logger.error('⚠️ SQLite migration error (non-fatal):', error.message);
@@ -893,6 +946,64 @@ class Database {
 
       // Add missing preferred_language column to users table
       await addColumnIfMissing('users', 'preferred_language', 'users');
+
+      // Create folders table if it doesn't exist
+      const [foldersTable] = await this.db.query(
+        `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES 
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'folders'`,
+      );
+
+      if (foldersTable.length === 0) {
+        logger.info('🔄 Migrating: creating folders table');
+        await this.db.query(`
+          CREATE TABLE folders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            user_id INT NOT NULL,
+            parent_id INT DEFAULT NULL,
+            description TEXT,
+            icon VARCHAR(50) DEFAULT 'folder',
+            color VARCHAR(20) DEFAULT '#3B82F6',
+            position INT DEFAULT 0,
+            is_expanded BOOLEAN DEFAULT TRUE,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX ix_folders_user (user_id),
+            INDEX ix_folders_parent (parent_id),
+            INDEX ix_folders_user_parent (user_id, parent_id),
+            UNIQUE KEY unique_folder_name (user_id, name, parent_id),
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
+          )
+        `);
+        logger.info('  ✅ Migration: folders table created');
+      }
+
+      // Add folder_id column to notes table if missing
+      const [notesFolderId] = await this.db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'notes' AND COLUMN_NAME = 'folder_id'`,
+      );
+
+      if (notesFolderId.length === 0) {
+        logger.info('🔄 Migrating notes table: adding folder_id column');
+        await this.db.query('ALTER TABLE notes ADD COLUMN folder_id INT DEFAULT NULL');
+        await this.db.query('CREATE INDEX ix_notes_folder ON notes(folder_id)');
+        logger.info('  ✅ Migration: notes.folder_id column added');
+      }
+
+      // Add folder_id column to tasks table if missing
+      const [tasksFolderId] = await this.db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tasks' AND COLUMN_NAME = 'folder_id'`,
+      );
+
+      if (tasksFolderId.length === 0) {
+        logger.info('🔄 Migrating tasks table: adding folder_id column');
+        await this.db.query('ALTER TABLE tasks ADD COLUMN folder_id INT DEFAULT NULL');
+        await this.db.query('CREATE INDEX ix_tasks_folder ON tasks(folder_id)');
+        logger.info('  ✅ Migration: tasks.folder_id column added');
+      }
 
       logger.info('✅ MySQL schema migration completed');
     } catch (error) {
