@@ -303,7 +303,7 @@ export default class NoteService {
    * Update an existing note.
    * Invalidates cache and updates Elasticsearch index.
    */
-  static async updateNote(noteId, title, body, tags, pinned, favorite, archived, images) {
+  static async updateNote(noteId, title, body, tags, pinned, favorite, archived, images, folderId) {
     const updates = [];
     const params = [];
 
@@ -330,6 +330,10 @@ export default class NoteService {
     if (archived !== undefined) {
       updates.push('archived = ?');
       params.push(archived ? 1 : 0);
+    }
+    if (folderId !== undefined) {
+      updates.push('folder_id = ?');
+      params.push(folderId || null);
     }
 
     if (updates.length > 0) {

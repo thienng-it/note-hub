@@ -25,6 +25,8 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 import cors from 'cors';
 
+import { createServer } from 'node:http';
+
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
@@ -37,11 +39,14 @@ import logger from './config/logger.js';
 // Cache and search services
 import cache from './config/redis.js';
 import { closeDatabase, initializeSequelize, syncDatabase } from './models/index.js';
+// WebSocket service
+import websocketService from './services/websocketService.js';
 import adminRoutes from './routes/admin.js';
 import aiRoutes from './routes/ai.js';
 // Import routes
 import authRoutes from './routes/auth.js';
 import exportRoutes from './routes/export.js';
+import foldersRoutes from './routes/folders.js';
 import notesRoutes from './routes/notes.js';
 import passkeyRoutes from './routes/passkey.js';
 import profileRoutes from './routes/profile.js';
@@ -52,6 +57,7 @@ import usersRoutes from './routes/users.js';
 import { isUsingRedis } from './services/challengeStorage.js';
 
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
 // Trust proxy - Required when running behind reverse proxy (Docker, Traefik, nginx)
@@ -71,7 +77,7 @@ app.use(
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", 'ws:', 'wss:'],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
@@ -142,6 +148,7 @@ app.use(`${API_VERSION}/auth`, markAsV1, authRoutes);
 app.use(`${API_VERSION}/auth/passkey`, markAsV1, passkeyRoutes);
 app.use(`${API_VERSION}/notes`, markAsV1, notesRoutes);
 app.use(`${API_VERSION}/tasks`, markAsV1, tasksRoutes);
+app.use(`${API_VERSION}/folders`, markAsV1, foldersRoutes);
 app.use(`${API_VERSION}/profile`, markAsV1, profileRoutes);
 app.use(`${API_VERSION}/users`, markAsV1, usersRoutes);
 app.use(`${API_VERSION}/admin`, markAsV1, adminRoutes);
@@ -332,7 +339,10 @@ async function start() {
       : 'In-memory (single-instance only)';
     logger.info('🔐 Passkey challenge storage', { mode: challengeStorage });
 
-    app.listen(PORT, () => {
+    // Initialize WebSocket service
+    websocketService.initialize(httpServer);
+
+    httpServer.listen(PORT, () => {
       logger.info('🚀 NoteHub API server started', {
         port: PORT,
         database: db.isSQLite ? 'SQLite' : 'MySQL',
@@ -340,6 +350,7 @@ async function start() {
         cache: cache.isEnabled() ? 'Redis (enabled)' : 'Disabled',
         search: elasticsearch.isEnabled() ? 'Elasticsearch (enabled)' : 'SQL LIKE (fallback)',
         passkeyStorage: challengeStorage,
+        websocket: 'Enabled (Socket.IO)',
         environment: process.env.NODE_ENV || 'development',
         logLevel: logger.config.level,
         logFormat: logger.config.format,
@@ -357,6 +368,7 @@ async function start() {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM received, shutting down gracefully...');
+  await websocketService.close();
   await closeDatabase();
   await db.close();
   await cache.close();
@@ -366,6 +378,7 @@ process.on('SIGTERM', async () => {
 
 process.on('SIGINT', async () => {
   logger.info('SIGINT received, shutting down gracefully...');
+  await websocketService.close();
   await closeDatabase();
   await db.close();
   await cache.close();

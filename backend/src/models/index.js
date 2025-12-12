@@ -91,7 +91,7 @@ export async function initializeSequelize() {
 
   // Define models
   const models = defineModels();
-  ({ User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag } = models);
+  ({ User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder } = models);
 
   // Test connection
   await sequelize.authenticate();
@@ -198,6 +198,71 @@ function defineModels() {
     },
   );
 
+  // Folder Model
+  const Folder = sequelize.define(
+    'Folder',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      parent_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+        references: {
+          model: 'folders',
+          key: 'id',
+        },
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      icon: {
+        type: DataTypes.STRING(50),
+        defaultValue: 'folder',
+      },
+      color: {
+        type: DataTypes.STRING(20),
+        defaultValue: '#3B82F6',
+      },
+      position: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      is_expanded: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
+    },
+    {
+      tableName: 'folders',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [
+        { fields: ['user_id'] },
+        { fields: ['parent_id'] },
+        { fields: ['user_id', 'parent_id'] },
+        { unique: true, fields: ['user_id', 'name', 'parent_id'] },
+      ],
+    },
+  );
+
   // Note Model
   const Note = sequelize.define(
     'Note',
@@ -242,13 +307,22 @@ function defineModels() {
           key: 'id',
         },
       },
+      folder_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+        references: {
+          model: 'folders',
+          key: 'id',
+        },
+      },
     },
     {
       tableName: 'notes',
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
-      indexes: [{ fields: ['owner_id'] }, { fields: ['archived'] }],
+      indexes: [{ fields: ['owner_id'] }, { fields: ['archived'] }, { fields: ['folder_id'] }],
     },
   );
 
@@ -298,13 +372,22 @@ function defineModels() {
           key: 'id',
         },
       },
+      folder_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+        references: {
+          model: 'folders',
+          key: 'id',
+        },
+      },
     },
     {
       tableName: 'tasks',
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
-      indexes: [{ fields: ['owner_id'] }],
+      indexes: [{ fields: ['owner_id'] }, { fields: ['folder_id'] }],
     },
   );
 
@@ -498,12 +581,25 @@ function defineModels() {
   Invitation.belongsTo(User, { foreignKey: 'inviter_id', as: 'inviter' });
   Invitation.belongsTo(User, { foreignKey: 'used_by_id', as: 'usedBy' });
 
+  // Folder associations
+  User.hasMany(Folder, { foreignKey: 'user_id', as: 'folders' });
+  Folder.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+  Folder.hasMany(Folder, { foreignKey: 'parent_id', as: 'children' });
+  Folder.belongsTo(Folder, { foreignKey: 'parent_id', as: 'parent' });
+
+  Folder.hasMany(Note, { foreignKey: 'folder_id', as: 'notes' });
+  Note.belongsTo(Folder, { foreignKey: 'folder_id', as: 'folder' });
+
+  Folder.hasMany(Task, { foreignKey: 'folder_id', as: 'tasks' });
+  Task.belongsTo(Folder, { foreignKey: 'folder_id', as: 'folder' });
+
   // Export models
-  return { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag };
+  return { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder };
 }
 
 // Module-level model exports
-let User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag;
+let User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder;
 
 /**
  * Sync database schema.
@@ -536,4 +632,4 @@ export async function closeDatabase() {
 }
 
 // Export models
-export { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag };
+export { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder };

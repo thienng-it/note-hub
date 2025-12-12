@@ -4,6 +4,7 @@
 import express from 'express';
 import logger from '../config/logger.js';
 import AuditService from '../services/auditService.js';
+import websocketService from '../services/websocketService.js';
 
 const router = express.Router();
 
@@ -17,9 +18,9 @@ import NoteService from '../services/noteService.js';
  */
 router.get('/', jwtRequired, async (req, res) => {
   try {
-    const { view = 'all', q = '', tag = '' } = req.query;
+    const { view = 'all', q = '', tag = '', folder_id = '' } = req.query;
 
-    const notes = await NoteService.getNotesForUser(req.userId, view, q, tag);
+    const notes = await NoteService.getNotesForUser(req.userId, view, q, tag, folder_id);
     const tags = await NoteService.getTagsForUser(req.userId);
 
     res.json({
@@ -32,6 +33,7 @@ router.get('/', jwtRequired, async (req, res) => {
         pinned: !!note.pinned,
         favorite: !!note.favorite,
         archived: !!note.archived,
+        folder_id: note.folder_id,
         created_at: note.created_at,
         updated_at: note.updated_at,
         tags: note.tags,
@@ -214,6 +216,21 @@ async function updateNote(req, res) {
       recordTagOperation('update');
     }
 
+    // Broadcast update to WebSocket clients
+    const noteChanges = {};
+    if (title !== undefined) noteChanges.title = updatedNote.title;
+    if (body !== undefined) noteChanges.body = updatedNote.body;
+    if (pinned !== undefined) noteChanges.pinned = !!updatedNote.pinned;
+    if (favorite !== undefined) noteChanges.favorite = !!updatedNote.favorite;
+    if (archived !== undefined) noteChanges.archived = !!updatedNote.archived;
+    if (tags !== undefined) noteChanges.tags = updatedNote.tags;
+    if (images !== undefined) noteChanges.images = updatedNote.images ? JSON.parse(updatedNote.images) : [];
+
+    websocketService.broadcastNoteUpdate(noteId, noteChanges, {
+      userId: req.userId,
+      username: req.user?.username || 'Unknown',
+    });
+
     res.json({
       note: {
         id: updatedNote.id,
@@ -262,6 +279,12 @@ router.delete('/:id', jwtRequired, async (req, res) => {
 
     // Record metrics
     recordNoteOperation('delete', true);
+
+    // Broadcast deletion to WebSocket clients
+    websocketService.broadcastNoteDeleted(noteId, {
+      userId: req.userId,
+      username: req.user?.username || 'Unknown',
+    });
 
     res.json({ message: 'Note deleted successfully' });
   } catch (error) {
@@ -372,6 +395,45 @@ router.post('/:id/toggle-archive', jwtRequired, async (req, res) => {
     });
   } catch (error) {
     logger.error('Toggle archive error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/notes/:id/move - Move note to folder
+ */
+router.post('/:id/move', jwtRequired, async (req, res) => {
+  try {
+    const noteId = parseInt(req.params.id, 10);
+    const { folder_id } = req.body;
+    const note = await NoteService.getNoteById(noteId);
+
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    if (note.owner_id !== req.userId) {
+      return res.status(403).json({ error: 'Only the note owner can move it' });
+    }
+
+    const updatedNote = await NoteService.updateNote(
+      noteId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      folder_id,
+    );
+
+    res.json({
+      folder_id: updatedNote.folder_id,
+      message: 'Note moved successfully',
+    });
+  } catch (error) {
+    logger.error('Move note error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
