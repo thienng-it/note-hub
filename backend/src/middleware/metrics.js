@@ -64,24 +64,16 @@ const cacheOperations = new promClient.Counter({
   registers: [register],
 });
 
-// Notes metrics
+// Application entity metrics
 const notesTotal = new promClient.Gauge({
   name: 'notehub_notes_total',
   help: 'Total number of notes in the system',
   registers: [register],
 });
 
-// Users metrics
 const usersTotal = new promClient.Gauge({
   name: 'notehub_users_total',
   help: 'Total number of users in the system',
-  registers: [register],
-});
-
-// Tasks metrics
-const tasksTotal = new promClient.Gauge({
-  name: 'notehub_tasks_total',
-  help: 'Total number of tasks in the system',
   registers: [register],
 });
 
@@ -114,13 +106,6 @@ const noteOperations = new promClient.Counter({
   registers: [register],
 });
 
-const notesByStatus = new promClient.Gauge({
-  name: 'notehub_notes_by_status',
-  help: 'Number of notes by status',
-  labelNames: ['status'],
-  registers: [register],
-});
-
 // Business metrics - Tags
 const tagsTotal = new promClient.Gauge({
   name: 'notehub_tags_total',
@@ -143,30 +128,7 @@ const apiErrors = new promClient.Counter({
   registers: [register],
 });
 
-// Request size metrics
-const requestSize = new promClient.Histogram({
-  name: 'http_request_size_bytes',
-  help: 'Size of HTTP requests in bytes',
-  labelNames: ['method', 'route'],
-  buckets: [100, 1000, 10000, 100000, 1000000], // Bytes
-  registers: [register],
-});
 
-const responseSize = new promClient.Histogram({
-  name: 'http_response_size_bytes',
-  help: 'Size of HTTP responses in bytes',
-  labelNames: ['method', 'route', 'status_code'],
-  buckets: [100, 1000, 10000, 100000, 1000000], // Bytes
-  registers: [register],
-});
-
-// Database connection pool metrics
-const dbConnectionPoolSize = new promClient.Gauge({
-  name: 'db_connection_pool_size',
-  help: 'Database connection pool size',
-  labelNames: ['status'],
-  registers: [register],
-});
 
 // Search operations (Elasticsearch)
 const searchOperations = new promClient.Counter({
@@ -202,12 +164,6 @@ export function metricsMiddleware(req, res, next) {
   // Normalize route to avoid high cardinality
   const route = normalizeRoute(req.path);
 
-  // Track request size
-  const reqSize = +(req.get('content-length') || '0');
-  if (reqSize > 0) {
-    requestSize.observe({ method: req.method, route }, reqSize);
-  }
-
   // Override res.end to capture metrics after response
   const originalEnd = res.end;
   res.end = (...args) => {
@@ -229,12 +185,6 @@ export function metricsMiddleware(req, res, next) {
       route: route,
       status_code: res.statusCode,
     });
-
-    // Track response size
-    const resSize = +(res.get('content-length') || '0');
-    if (resSize > 0) {
-      responseSize.observe({ method: req.method, route, status_code: res.statusCode }, resSize);
-    }
 
     // Track errors (4xx and 5xx)
     if (res.statusCode >= 400) {
@@ -320,19 +270,11 @@ export function updateApplicationMetrics(metrics) {
   if (metrics.users !== undefined) {
     usersTotal.set(metrics.users);
   }
-  if (metrics.tasks !== undefined) {
-    tasksTotal.set(metrics.tasks);
-  }
   if (metrics.tags !== undefined) {
     tagsTotal.set(metrics.tags);
   }
   if (metrics.activeSessions !== undefined) {
     authActiveSessions.set(metrics.activeSessions);
-  }
-  if (metrics.notesByStatus) {
-    Object.keys(metrics.notesByStatus).forEach((status) => {
-      notesByStatus.set({ status }, metrics.notesByStatus[status]);
-    });
   }
 }
 
@@ -374,15 +316,6 @@ export function recordSearchOperation(engine, duration, success = true) {
   const status = success ? 'success' : 'failure';
   searchOperations.inc({ engine, status });
   searchDuration.observe({ engine }, duration / 1000); // Convert to seconds
-}
-
-/**
- * Update database connection pool metrics
- */
-export function updateDbPoolMetrics(active, idle, total) {
-  dbConnectionPoolSize.set({ status: 'active' }, active);
-  dbConnectionPoolSize.set({ status: 'idle' }, idle);
-  dbConnectionPoolSize.set({ status: 'total' }, total);
 }
 
 /**
