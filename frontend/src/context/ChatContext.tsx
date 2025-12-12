@@ -4,7 +4,7 @@
  */
 
 import type { ReactNode } from 'react';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { chatApi } from '../api/chat';
 import { getStoredToken } from '../api/client';
@@ -52,6 +52,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
 
+  // Use ref to track current room for event handlers
+  const currentRoomRef = useRef<ChatRoom | null>(null);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    currentRoomRef.current = currentRoom;
+  }, [currentRoom]);
+
   // Initialize socket connection
   useEffect(() => {
     if (!user) {
@@ -86,8 +94,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
       // Add message to current room
       setMessages((prev) => {
-        // Only add if still viewing this room
-        if (currentRoom?.id === roomId) {
+        // Only add if still viewing this room - use ref to get latest value
+        if (currentRoomRef.current?.id === roomId) {
           return [...prev, payload.message];
         }
         return prev;
@@ -100,7 +108,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
             ? {
                 ...room,
                 lastMessage: payload.message,
-                unreadCount: currentRoom?.id === roomId ? room.unreadCount : room.unreadCount + 1,
+                unreadCount:
+                  currentRoomRef.current?.id === roomId ? room.unreadCount : room.unreadCount + 1,
               }
             : room,
         ),
@@ -109,7 +118,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
     // Handle typing indicators
     newSocket.on('chat:typing', (payload: ChatTypingPayload) => {
-      if (currentRoom && payload.roomId === currentRoom.id) {
+      if (currentRoomRef.current && payload.roomId === currentRoomRef.current.id) {
         setTypingUsers((prev) => {
           const newMap = new Map(prev);
           if (payload.isTyping) {
@@ -124,7 +133,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
     // Handle read receipts
     newSocket.on('chat:read', (payload: ChatReadPayload) => {
-      if (currentRoom && payload.roomId === currentRoom.id) {
+      if (currentRoomRef.current && payload.roomId === currentRoomRef.current.id) {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.sender.id !== user.id && !msg.is_read ? { ...msg, is_read: true } : msg,
