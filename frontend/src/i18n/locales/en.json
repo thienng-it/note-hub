@@ -361,7 +361,9 @@
     "deleteFolderConfirm": "Are you sure you want to delete this folder? Notes in this folder will be moved to the root.",
     "folderDeleted": "Folder deleted successfully",
     "folderCreated": "Folder created successfully",
-    "folderUpdated": "Folder updated successfully"
+    "folderUpdated": "Folder updated successfully",
+    "hideFolders": "Hide Folders",
+    "showFolders": "Show Folders"
   },
   "aria": {
     "closeModal": "Close modal",

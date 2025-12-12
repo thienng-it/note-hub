@@ -304,10 +304,18 @@ export const profileApi = {
 
 // Notes API
 export const notesApi = {
-  async list(view: NoteViewType = 'all', query?: string, tag?: string): Promise<Note[]> {
+  async list(
+    view: NoteViewType = 'all',
+    query?: string,
+    tag?: string,
+    folder_id?: number | null,
+  ): Promise<Note[]> {
     const params = new URLSearchParams({ view });
     if (query) params.append('q', query);
     if (tag) params.append('tag', tag);
+    if (folder_id !== undefined && folder_id !== null) {
+      params.append('folder_id', folder_id.toString());
+    }
 
     const response = await apiRequest<NotesResponse>(`${API_VERSION}/notes?${params}`);
     return response.notes;
