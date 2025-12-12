@@ -7,6 +7,7 @@ import { notesApi, profileApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import { ImageModal } from '../components/ImageModal';
 import { useAuth } from '../context/AuthContext';
+import { useWebSocket } from '../services/useWebSocket';
 import type { Note } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
@@ -35,6 +36,19 @@ export function NoteViewPage() {
     } catch {
       return false;
     }
+  });
+
+  // Real-time collaboration via WebSocket
+  const { isConnected, activeUsers } = useWebSocket({
+    noteId: id ? parseInt(id, 10) : undefined,
+    onNoteUpdate: () => {
+      // Refresh note when changes are received
+      loadNote();
+    },
+    onNoteDeleted: () => {
+      // Navigate away if note is deleted
+      navigate('/');
+    },
   });
 
   const syncHiddenNotesToBackend = async (hiddenNoteIds: number[]) => {
@@ -213,6 +227,23 @@ export function NoteViewPage() {
                 {note.archived && (
                   <span className="text-gray-500" title={t('notes.archived')}>
                     <i className="glass-i fas fa-archive"></i>
+                  </span>
+                )}
+                {/* Real-time Connection Status */}
+                {isConnected && (
+                  <span className="text-green-600 text-xs" title="Connected for real-time updates">
+                    <i className="fas fa-circle animate-pulse mr-1"></i>
+                    Live
+                  </span>
+                )}
+                {/* Active Users Indicator */}
+                {isConnected && activeUsers.length > 1 && (
+                  <span
+                    className="text-blue-600 text-xs"
+                    title={`${activeUsers.length} users viewing`}
+                  >
+                    <i className="fas fa-users mr-1"></i>
+                    {activeUsers.length}
                   </span>
                 )}
               </div>

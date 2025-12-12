@@ -138,7 +138,17 @@
     "deleteTooltip": "Delete",
     "pinTooltip": "Pin",
     "unpinTooltip": "Unpin",
-    "backToNotes": "Back to Notes"
+    "backToNotes": "Back to Notes",
+    "realtime": {
+      "connected": "Connected",
+      "disconnected": "Offline",
+      "live": "Live",
+      "connectedTooltip": "Connected for real-time collaboration",
+      "disconnectedTooltip": "Disconnected - changes will be saved when you submit",
+      "activeUsers": "{{count}} users viewing",
+      "activeUsersOne": "1 user viewing",
+      "activeUsersOther": "{{count}} users viewing"
+    }
   },
   "tasks": {
     "title": "Tasks",

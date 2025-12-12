@@ -7,6 +7,7 @@ import { notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import { ImageUpload } from '../components/ImageUpload';
 import { MarkdownToolbar } from '../components/MarkdownToolbar';
+import { useWebSocket } from '../services/useWebSocket';
 import type { Note } from '../types';
 import { type NoteTemplate, noteTemplates } from '../utils/templates';
 
@@ -30,6 +31,32 @@ export function NoteEditPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [showTemplates, setShowTemplates] = useState(isNew);
   const [hasAppliedTemplate, setHasAppliedTemplate] = useState(false);
+
+  // Real-time collaboration via WebSocket
+  const { isConnected, activeUsers } = useWebSocket({
+    noteId: id ? parseInt(id, 10) : undefined,
+    onNoteUpdate: (data) => {
+      // Update local state when remote changes are received
+      if (data.changes.title !== undefined) setTitle(data.changes.title);
+      if (data.changes.body !== undefined) setBody(data.changes.body);
+      if (data.changes.tags !== undefined) {
+        // Convert tags array to comma-separated string
+        const tagsArray = data.changes.tags;
+        if (Array.isArray(tagsArray)) {
+          setTags(tagsArray.map((t: { name: string }) => t.name).join(', '));
+        } else if (typeof tagsArray === 'string') {
+          setTags(tagsArray);
+        }
+      }
+      if (data.changes.pinned !== undefined) setPinned(data.changes.pinned);
+      if (data.changes.favorite !== undefined) setFavorite(data.changes.favorite);
+      if (data.changes.archived !== undefined) setArchived(data.changes.archived);
+    },
+    onNoteDeleted: () => {
+      // Navigate away if note is deleted while editing
+      navigate('/');
+    },
+  });
 
   const loadNote = useCallback(async () => {
     if (!id) return;
@@ -142,10 +169,36 @@ export function NoteEditPage() {
 
       <div className="glass-card rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-[var(--border-color)]">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-            <i className={`fas ${isNew ? 'fa-plus' : 'fa-edit'} mr-2 text-blue-600`}></i>
-            {isNew ? 'Create New Note' : 'Edit Note'}
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+              <i className={`fas ${isNew ? 'fa-plus' : 'fa-edit'} mr-2 text-blue-600`}></i>
+              {isNew ? 'Create New Note' : 'Edit Note'}
+            </h1>
+            {!isNew && (
+              <div className="flex items-center gap-3">
+                {/* Connection Status */}
+                <div
+                  className={`flex items-center gap-2 text-sm ${
+                    isConnected ? 'text-green-600' : 'text-gray-400'
+                  }`}
+                  title={isConnected ? 'Connected for real-time collaboration' : 'Disconnected'}
+                >
+                  <i className={`fas fa-circle text-xs ${isConnected ? 'animate-pulse' : ''}`}></i>
+                  {isConnected ? 'Connected' : 'Offline'}
+                </div>
+                {/* Active Users Indicator */}
+                {isConnected && activeUsers.length > 1 && (
+                  <div
+                    className="flex items-center gap-2 text-sm text-blue-600"
+                    title={`${activeUsers.length} users viewing this note`}
+                  >
+                    <i className="fas fa-users"></i>
+                    {activeUsers.length}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
