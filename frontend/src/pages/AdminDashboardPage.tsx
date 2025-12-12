@@ -477,58 +477,53 @@ export function AdminDashboardPage() {
                         <td className="px-4 sm:px-6 py-4">
                           <div className="flex flex-wrap gap-2">
                             {/* Lock/Unlock */}
-                            {u.username !== 'admin' && (
-                              <>
-                                {u.is_locked ? (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleUnlockUser(u.id, u.username)}
-                                    className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20 transition-colors"
-                                    title="Unlock user account"
-                                  >
-                                    <i className="fas fa-unlock mr-1.5" aria-hidden="true"></i>
-                                    Unlock
-                                  </button>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleLockUser(u.id, u.username)}
-                                    className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500/20 transition-colors"
-                                    title="Lock user account"
-                                  >
-                                    <i className="fas fa-lock mr-1.5" aria-hidden="true"></i>
-                                    Lock
-                                  </button>
-                                )}
-                              </>
-                            )}
+                            {u.username !== 'admin' &&
+                              (u.is_locked ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleUnlockUser(u.id, u.username)}
+                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20 transition-colors"
+                                  title="Unlock user account"
+                                >
+                                  <i className="fas fa-unlock mr-1.5" aria-hidden="true"></i>
+                                  Unlock
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleLockUser(u.id, u.username)}
+                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500/20 transition-colors"
+                                  title="Lock user account"
+                                >
+                                  <i className="fas fa-lock mr-1.5" aria-hidden="true"></i>
+                                  Lock
+                                </button>
+                              ))}
 
                             {/* Admin Grant/Revoke */}
-                            {u.username !== 'admin' && user?.id !== u.id && (
-                              <>
-                                {u.is_admin ? (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRevokeAdmin(u.id, u.username)}
-                                    className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
-                                    title="Revoke admin privileges"
-                                  >
-                                    <i className="fas fa-crown mr-1.5" aria-hidden="true"></i>
-                                    Revoke
-                                  </button>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleGrantAdmin(u.id, u.username)}
-                                    className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors"
-                                    title="Grant admin privileges"
-                                  >
-                                    <i className="fas fa-crown mr-1.5" aria-hidden="true"></i>
-                                    Grant
-                                  </button>
-                                )}
-                              </>
-                            )}
+                            {u.username !== 'admin' &&
+                              user?.id !== u.id &&
+                              (u.is_admin ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRevokeAdmin(u.id, u.username)}
+                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+                                  title="Revoke admin privileges"
+                                >
+                                  <i className="fas fa-crown mr-1.5" aria-hidden="true"></i>
+                                  Revoke
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleGrantAdmin(u.id, u.username)}
+                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors"
+                                  title="Grant admin privileges"
+                                >
+                                  <i className="fas fa-crown mr-1.5" aria-hidden="true"></i>
+                                  Grant
+                                </button>
+                              ))}
 
                             {/* Disable 2FA */}
                             {u.has_2fa && (
