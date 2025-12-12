@@ -3,7 +3,7 @@
  * Handles real-time communication with the server using Socket.IO
  */
 
-import { io, Socket } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 
 interface NoteUpdate {
   noteId: number;
@@ -55,11 +55,13 @@ interface NoteDeleted {
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'error';
 
+// biome-ignore lint/suspicious/noExplicitAny: Generic event callback
+type EventCallback = (data?: any) => void;
+
 class WebSocketClient {
   private socket: Socket | null = null;
-  private listeners: Map<string, Set<Function>> = new Map();
+  private listeners: Map<string, Set<EventCallback>> = new Map();
   private connectionStatus: ConnectionStatus = 'disconnected';
-  private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 
   /**
@@ -109,7 +111,6 @@ class WebSocketClient {
     this.socket.on('connect_error', (error) => {
       console.error('WebSocket connection error:', error);
       this.connectionStatus = 'error';
-      this.reconnectAttempts++;
       this.emit('connection-status', 'error');
     });
 
@@ -189,6 +190,7 @@ class WebSocketClient {
   /**
    * Send note update to other users
    */
+  // biome-ignore lint/suspicious/noExplicitAny: Flexible note changes structure
   sendNoteUpdate(noteId: number, changes: any, version?: number): void {
     if (!this.socket?.connected) {
       console.warn('Cannot send update: WebSocket not connected');
@@ -205,7 +207,11 @@ class WebSocketClient {
   /**
    * Send cursor position for collaborative editing
    */
-  sendCursorPosition(noteId: number, position: number, selection?: { start: number; end: number }): void {
+  sendCursorPosition(
+    noteId: number,
+    position: number,
+    selection?: { start: number; end: number },
+  ): void {
     if (!this.socket?.connected) {
       return;
     }
@@ -220,7 +226,7 @@ class WebSocketClient {
   /**
    * Subscribe to an event
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: EventCallback): void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
@@ -230,13 +236,14 @@ class WebSocketClient {
   /**
    * Unsubscribe from an event
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: EventCallback): void {
     this.listeners.get(event)?.delete(callback);
   }
 
   /**
    * Emit event to local listeners
    */
+  // biome-ignore lint/suspicious/noExplicitAny: Generic event data
   private emit(event: string, data?: any): void {
     this.listeners.get(event)?.forEach((callback) => {
       try {
@@ -279,11 +286,4 @@ class WebSocketClient {
 export const websocketClient = new WebSocketClient();
 
 // Export types
-export type {
-  NoteUpdate,
-  UserJoined,
-  UserLeft,
-  RoomMembers,
-  NoteDeleted,
-  ConnectionStatus,
-};
+export type { NoteUpdate, UserJoined, UserLeft, RoomMembers, NoteDeleted, ConnectionStatus };
