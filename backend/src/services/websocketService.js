@@ -321,6 +321,57 @@ class WebSocketService {
   }
 
   /**
+   * Broadcast folder creation to all connected users
+   */
+  broadcastFolderCreated(userId, folder) {
+    if (!this.io) {
+      return;
+    }
+
+    this.io.emit('folder-created', {
+      userId,
+      folder,
+      timestamp: new Date().toISOString(),
+    });
+
+    logger.debug('Broadcasted folder creation', { folderId: folder.id, userId });
+  }
+
+  /**
+   * Broadcast folder update to all connected users
+   */
+  broadcastFolderUpdated(userId, folder) {
+    if (!this.io) {
+      return;
+    }
+
+    this.io.emit('folder-updated', {
+      userId,
+      folder,
+      timestamp: new Date().toISOString(),
+    });
+
+    logger.debug('Broadcasted folder update', { folderId: folder.id, userId });
+  }
+
+  /**
+   * Broadcast folder deletion to all connected users
+   */
+  broadcastFolderDeleted(userId, folderId) {
+    if (!this.io) {
+      return;
+    }
+
+    this.io.emit('folder-deleted', {
+      userId,
+      folderId,
+      timestamp: new Date().toISOString(),
+    });
+
+    logger.debug('Broadcasted folder deletion', { folderId, userId });
+  }
+
+  /**
    * Broadcast note deletion to all users in a note room
    */
   broadcastNoteDeleted(noteId, deletedBy) {

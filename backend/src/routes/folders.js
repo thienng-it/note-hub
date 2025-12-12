@@ -5,6 +5,7 @@ import express from 'express';
 import logger from '../config/logger.js';
 import { jwtRequired } from '../middleware/auth.js';
 import FolderService from '../services/folderService.js';
+import websocketService from '../services/websocketService.js';
 
 const router = express.Router();
 
@@ -79,6 +80,9 @@ router.post('/', jwtRequired, async (req, res) => {
       position,
     });
 
+    // Broadcast folder creation to all connected users
+    websocketService.broadcastFolderCreated(req.userId, folder);
+
     res.status(201).json({
       folder,
       message: 'Folder created successfully',
@@ -115,6 +119,9 @@ router.put('/:id', jwtRequired, async (req, res) => {
       is_expanded,
     });
 
+    // Broadcast folder update to all connected users
+    websocketService.broadcastFolderUpdated(req.userId, folder);
+
     res.json({
       folder,
       message: 'Folder updated successfully',
@@ -143,6 +150,9 @@ router.post('/:id/move', jwtRequired, async (req, res) => {
     const { parent_id } = req.body;
 
     const folder = await FolderService.moveFolder(folderId, req.userId, parent_id);
+
+    // Broadcast folder update to all connected users
+    websocketService.broadcastFolderUpdated(req.userId, folder);
 
     res.json({
       folder,
@@ -175,6 +185,9 @@ router.delete('/:id', jwtRequired, async (req, res) => {
     const folderId = parseInt(req.params.id, 10);
 
     await FolderService.deleteFolder(folderId, req.userId);
+
+    // Broadcast folder deletion to all connected users
+    websocketService.broadcastFolderDeleted(req.userId, folderId);
 
     res.json({ message: 'Folder deleted successfully' });
   } catch (error) {

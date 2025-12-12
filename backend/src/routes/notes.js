@@ -257,6 +257,37 @@ async function updateNote(req, res) {
 /**
  * DELETE /api/notes/:id - Delete a note
  */
+/**
+ * POST /api/notes/:id/move - Move note to a folder
+ */
+router.post('/:id/move', jwtRequired, async (req, res) => {
+  try {
+    const noteId = parseInt(req.params.id, 10);
+    const { folder_id } = req.body;
+
+    const note = await NoteService.getNoteById(noteId);
+
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    if (note.owner_id !== req.userId) {
+      return res.status(403).json({ error: 'Only the note owner can move it' });
+    }
+
+    // Update note's folder
+    await NoteService.updateNote(noteId, req.userId, { folder_id: folder_id || null });
+
+    res.json({
+      message: 'Note moved successfully',
+      folder_id: folder_id || null,
+    });
+  } catch (error) {
+    logger.error('Move note error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 router.delete('/:id', jwtRequired, async (req, res) => {
   try {
     const noteId = parseInt(req.params.id, 10);

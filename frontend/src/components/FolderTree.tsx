@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { foldersApi } from '../api/folders';
 import type { Folder } from '../types/folder';
+import { websocketClient } from '../services/websocketClient';
 
 interface FolderTreeProps {
   selectedFolderId?: number | null;
@@ -15,6 +16,7 @@ export function FolderTree({ selectedFolderId, onFolderSelect, onCreateFolder }:
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
 
   const loadFolders = useCallback(async () => {
     try {
@@ -41,6 +43,29 @@ export function FolderTree({ selectedFolderId, onFolderSelect, onCreateFolder }:
 
   useEffect(() => {
     loadFolders();
+
+    // Listen for real-time folder updates
+    const handleFolderCreated = () => {
+      loadFolders();
+    };
+
+    const handleFolderUpdated = () => {
+      loadFolders();
+    };
+
+    const handleFolderDeleted = () => {
+      loadFolders();
+    };
+
+    websocketClient.on('folder-created', handleFolderCreated);
+    websocketClient.on('folder-updated', handleFolderUpdated);
+    websocketClient.on('folder-deleted', handleFolderDeleted);
+
+    return () => {
+      websocketClient.off('folder-created', handleFolderCreated);
+      websocketClient.off('folder-updated', handleFolderUpdated);
+      websocketClient.off('folder-deleted', handleFolderDeleted);
+    };
   }, [loadFolders]);
 
   const toggleFolder = async (folderId: number) => {
@@ -63,10 +88,39 @@ export function FolderTree({ selectedFolderId, onFolderSelect, onCreateFolder }:
     }
   };
 
+  const handleDrop = async (e: React.DragEvent, folderId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverFolderId(null);
+
+    try {
+      const noteId = e.dataTransfer.getData('noteId');
+      if (noteId) {
+        await foldersApi.moveNote(Number.parseInt(noteId, 10), folderId);
+        loadFolders();
+      }
+    } catch (err) {
+      console.error('Failed to move note to folder:', err);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent, folderId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverFolderId(folderId);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverFolderId(null);
+  };
+
   const renderFolder = (folder: Folder, level = 0) => {
     const isExpanded = expandedFolders.has(folder.id);
     const isSelected = selectedFolderId === folder.id;
     const hasChildren = folders.some((f) => f.parent_id === folder.id);
+    const isDragOver = dragOverFolderId === folder.id;
 
     const indentStyle = {
       paddingLeft: `${level * 1.5 + 0.5}rem`,
@@ -77,9 +131,12 @@ export function FolderTree({ selectedFolderId, onFolderSelect, onCreateFolder }:
         <div
           className={`folder-row flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
             isSelected ? 'bg-blue-100 dark:bg-blue-900/30' : ''
-          }`}
+          } ${isDragOver ? 'bg-blue-200 dark:bg-blue-800/50 border-2 border-blue-400' : ''}`}
           style={indentStyle}
           onClick={() => onFolderSelect(folder.id)}
+          onDrop={(e) => handleDrop(e, folder.id)}
+          onDragOver={(e) => handleDragOver(e, folder.id)}
+          onDragLeave={handleDragLeave}
         >
           {hasChildren && (
             <button

@@ -417,7 +417,15 @@ export function NotesPage() {
             /* Notes Grid */
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {notes.map((note) => (
-                <div key={note.id} className="glass-card p-4 rounded-xl relative group">
+                <div
+                  key={note.id}
+                  className="glass-card p-4 rounded-xl relative group"
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('noteId', note.id.toString());
+                    e.dataTransfer.effectAllowed = 'move';
+                  }}
+                >
                   {/* Pin and Favorite Icons */}
                   <div className="absolute top-3 right-3 flex space-x-2">
                     {note.pinned && (

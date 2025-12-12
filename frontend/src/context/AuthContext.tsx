@@ -2,6 +2,7 @@ import { createContext, type ReactNode, useContext, useEffect, useState } from '
 import { useTranslation } from 'react-i18next';
 import { authApi, clearStoredAuth, getStoredToken, getStoredUser } from '../api/client';
 import type { AuthError, LoginCredentials, User } from '../types';
+import { websocketClient } from '../services/websocketClient';
 
 interface AuthContextType {
   user: User | null;
@@ -37,6 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           ) {
             i18n.changeLanguage(response.user.preferred_language);
           }
+          // Initialize WebSocket connection
+          websocketClient.connect(token);
         } catch {
           clearStoredAuth();
           setUser(null);
@@ -58,6 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.user.preferred_language && response.user.preferred_language !== i18n.language) {
         i18n.changeLanguage(response.user.preferred_language);
       }
+      // Initialize WebSocket connection after login
+      const token = getStoredToken();
+      if (token) {
+        websocketClient.connect(token);
+      }
       return { success: true };
     } catch (err) {
       const error = err as AuthError & { status?: number };
@@ -71,6 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     authApi.logout();
     setUser(null);
+    // Disconnect WebSocket on logout
+    websocketClient.disconnect();
   };
 
   const refreshUser = async () => {

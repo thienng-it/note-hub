@@ -159,6 +159,22 @@ class WebSocketClient {
       console.log('Connection confirmed:', data);
       this.emit('connected', data);
     });
+
+    // Folder events
+    this.socket.on('folder-created', (data) => {
+      console.log('Folder created:', data);
+      this.emit('folder-created', data);
+    });
+
+    this.socket.on('folder-updated', (data) => {
+      console.log('Folder updated:', data);
+      this.emit('folder-updated', data);
+    });
+
+    this.socket.on('folder-deleted', (data) => {
+      console.log('Folder deleted:', data);
+      this.emit('folder-deleted', data);
+    });
   }
 
   /**
