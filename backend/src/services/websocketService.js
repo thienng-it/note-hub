@@ -286,6 +286,11 @@ class WebSocketService {
    * Used by the REST API when a note is updated
    */
   broadcastNoteUpdate(noteId, changes, updatedBy) {
+    // Skip broadcasting if WebSocket is not initialized (e.g., in tests)
+    if (!this.io) {
+      return;
+    }
+
     const roomName = `note:${noteId}`;
 
     this.io.to(roomName).emit('note-updated', {
@@ -306,6 +311,11 @@ class WebSocketService {
    * Broadcast note deletion to all users in a note room
    */
   broadcastNoteDeleted(noteId, deletedBy) {
+    // Skip broadcasting if WebSocket is not initialized (e.g., in tests)
+    if (!this.io) {
+      return;
+    }
+
     const roomName = `note:${noteId}`;
 
     this.io.to(roomName).emit('note-deleted', {
