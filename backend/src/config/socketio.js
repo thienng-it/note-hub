@@ -3,12 +3,11 @@
  * Real-time WebSocket communication for chat
  */
 
-import jwt from 'jsonwebtoken';
 import { Server } from 'socket.io';
+import db from '../config/database.js';
 import logger from '../config/logger.js';
 import * as chatService from '../services/chatService.js';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'notehub-secret-key';
+import jwtService from '../services/jwtService.js';
 
 // Store connected users (userId -> socketId mapping)
 const connectedUsers = new Map();
@@ -28,7 +27,7 @@ export function initializeSocketIO(httpServer) {
   });
 
   // Authentication middleware
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
 
     if (!token) {
@@ -36,9 +35,23 @@ export function initializeSocketIO(httpServer) {
     }
 
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      socket.userId = decoded.userId;
-      socket.username = decoded.username;
+      // Validate token using jwtService
+      const result = jwtService.validateToken(token);
+      if (!result.valid) {
+        return next(new Error(result.error || 'Invalid authentication token'));
+      }
+
+      // Get user from database
+      const user = await db.queryOne('SELECT id, username FROM users WHERE id = ?', [
+        result.userId,
+      ]);
+
+      if (!user) {
+        return next(new Error('User not found'));
+      }
+
+      socket.userId = user.id;
+      socket.username = user.username;
       next();
     } catch (error) {
       logger.error('Socket authentication failed', { error: error.message });
