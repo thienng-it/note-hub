@@ -35,7 +35,8 @@
     "highPriority": "High",
     "removeImage": "Remove image",
     "noPasskeys": "No passkeys registered yet",
-    "created": "Created"
+    "created": "Created",
+    "retry": "Retry"
   },
   "auth": {
     "login": {

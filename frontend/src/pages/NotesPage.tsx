@@ -20,7 +20,11 @@ export function NotesPage() {
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
   const [folderFilter, setFolderFilter] = useState<number | null>(() => {
     const folderId = searchParams.get('folder_id');
-    return folderId ? Number.parseInt(folderId, 10) : null;
+    if (folderId) {
+      const parsed = Number.parseInt(folderId, 10);
+      return !Number.isNaN(parsed) ? parsed : null;
+    }
+    return null;
   });
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [showFolderSidebar, setShowFolderSidebar] = useState(true);

@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { foldersApi } from '../api/folders';
 import type { Folder } from '../types/folder';
+import { FOLDER_COLORS } from '../types/folder';
 
 interface FolderModalProps {
   isOpen: boolean;
@@ -12,15 +13,6 @@ interface FolderModalProps {
 }
 
 const FOLDER_ICONS = ['📁', '📂', '📋', '📌', '🗂️', '📦', '🎯', '⭐', '💼', '🏠', '🔥', '✨'];
-const FOLDER_COLORS = [
-  '#6b7280', // gray
-  '#ef4444', // red
-  '#f59e0b', // amber
-  '#10b981', // green
-  '#3b82f6', // blue
-  '#8b5cf6', // purple
-  '#ec4899', // pink
-];
 
 export function FolderModal({
   isOpen,
@@ -164,18 +156,18 @@ export function FolderModal({
             <label className="block text-sm font-medium mb-2 text-neutral-700 dark:text-neutral-300">
               {t('folders.color', 'Color')}
             </label>
-            <div className="grid grid-cols-7 gap-2">
-              {FOLDER_COLORS.map((c) => (
+            <div className="grid grid-cols-8 gap-2">
+              {FOLDER_COLORS.map((colorOption) => (
                 <button
-                  key={c}
+                  key={colorOption.value}
                   type="button"
-                  onClick={() => setColor(c)}
+                  onClick={() => setColor(colorOption.value)}
                   className={`w-8 h-8 rounded-full ${
-                    color === c ? 'ring-2 ring-offset-2 ring-blue-500' : ''
+                    color === colorOption.value ? 'ring-2 ring-offset-2 ring-blue-500' : ''
                   }`}
-                  style={{ backgroundColor: c }}
+                  style={{ backgroundColor: colorOption.value }}
                   disabled={isLoading}
-                  title={c}
+                  title={colorOption.name}
                 />
               ))}
             </div>
