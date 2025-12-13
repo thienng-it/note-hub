@@ -1,9 +1,11 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { notesApi, profileApi } from '../api/client';
+import { foldersApi, notesApi, profileApi } from '../api/client';
+import { FolderModal } from '../components/FolderModal';
+import { FolderTree } from '../components/FolderTree';
 import { useAuth } from '../context/AuthContext';
-import type { Note, NoteViewType, Tag } from '../types';
+import type { Folder, Note, NoteViewType, Tag } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
 export function NotesPage() {
@@ -16,6 +18,11 @@ export function NotesPage() {
   const [error, setError] = useState('');
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [showFolderModal, setShowFolderModal] = useState(false);
+  const [folderToEdit, setFolderToEdit] = useState<Folder | null>(null);
+  const [folderParentId, setFolderParentId] = useState<number | null>(null);
   const [hiddenNotes, setHiddenNotes] = useState<Set<number>>(() => {
     try {
       // First try to load from user profile
@@ -101,9 +108,19 @@ export function NotesPage() {
     }
   }, [view, query, tagFilter]);
 
+  const loadFolders = useCallback(async () => {
+    try {
+      const { folders: fetchedFolders } = await foldersApi.list();
+      setFolders(fetchedFolders);
+    } catch (err) {
+      console.error('Failed to load folders:', err);
+    }
+  }, []);
+
   useEffect(() => {
     loadNotes();
-  }, [loadNotes]);
+    loadFolders();
+  }, [loadNotes, loadFolders]);
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -133,6 +150,59 @@ export function NotesPage() {
       setNotes((prevNotes) => prevNotes.map((n) => (n.id === note.id ? { ...n, ...updated } : n)));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update note');
+    }
+  };
+
+  // Folder handlers
+  const handleSelectFolder = (folder: Folder | null) => {
+    setSelectedFolder(folder);
+  };
+
+  const handleCreateFolder = (parentId?: number | null) => {
+    setFolderParentId(parentId ?? null);
+    setFolderToEdit(null);
+    setShowFolderModal(true);
+  };
+
+  const handleEditFolder = (folder: Folder) => {
+    setFolderToEdit(folder);
+    setFolderParentId(folder.parent_id);
+    setShowFolderModal(true);
+  };
+
+  const handleDeleteFolder = async (folder: Folder) => {
+    if (!confirm(t('folders.deleteConfirm') + '\n\n' + t('folders.deleteWarning'))) {
+      return;
+    }
+    try {
+      await foldersApi.delete(folder.id);
+      await loadFolders();
+      if (selectedFolder?.id === folder.id) {
+        setSelectedFolder(null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('folders.deleteError'));
+    }
+  };
+
+  const handleSaveFolder = async (name: string, icon: string, color: string) => {
+    try {
+      if (folderToEdit) {
+        await foldersApi.update(folderToEdit.id, { name, icon, color });
+      } else {
+        await foldersApi.create({
+          name,
+          parent_id: folderParentId,
+          icon,
+          color,
+        });
+      }
+      await loadFolders();
+      setShowFolderModal(false);
+      setFolderToEdit(null);
+      setFolderParentId(null);
+    } catch (err) {
+      throw err;
     }
   };
 
@@ -209,8 +279,25 @@ export function NotesPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header with Search */}
+    <div className="flex gap-6 p-6">
+      {/* Folder Sidebar */}
+      <div className="w-64 flex-shrink-0 hidden lg:block">
+        <div className="glass-card p-4 rounded-xl sticky top-6">
+          <FolderTree
+            folders={folders}
+            selectedFolderId={selectedFolder?.id}
+            onSelectFolder={handleSelectFolder}
+            onCreateFolder={handleCreateFolder}
+            onEditFolder={handleEditFolder}
+            onDeleteFolder={handleDeleteFolder}
+            onMoveFolder={() => {}}
+          />
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 space-y-6">
+        {/* Header with Search */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h1 className="text-3xl font-bold flex items-center">
@@ -330,10 +417,16 @@ export function NotesPage() {
         <div className="flex items-center justify-center py-12">
           <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
         </div>
-      ) : notes.length > 0 ? (
-        /* Notes Grid */
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {notes.map((note) => (
+      ) : (() => {
+        // Filter notes by selected folder
+        const filteredNotes = selectedFolder
+          ? notes.filter((note) => note.folder_id === selectedFolder.id)
+          : notes;
+        
+        return filteredNotes.length > 0 ? (
+          /* Notes Grid */
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredNotes.map((note) => (
             <div key={note.id} className="glass-card p-4 rounded-xl relative group">
               {/* Pin and Favorite Icons */}
               <div className="absolute top-3 right-3 flex space-x-2">
@@ -466,9 +559,33 @@ export function NotesPage() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
+            ))}
+          </div>
+        ) : (
+          /* Empty State when filtered by folder */
+          <div className="glass-card p-12 rounded-2xl text-center">
+            <i className="glass-i fas fa-folder-open text-6xl mb-4 text-[var(--text-muted)]"></i>
+            <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">
+              {selectedFolder ? `No notes in "${selectedFolder.name}"` : t('notes.noNotes')}
+            </h3>
+            <p className="text-[var(--text-secondary)] mb-6">
+              {selectedFolder
+                ? 'Create a note or move existing notes to this folder'
+                : 'Start creating notes to organize them'}
+            </p>
+            <Link to="/notes/new" className="btn-apple inline-flex items-center">
+              <i className="glass-i fas fa-plus mr-2"></i>
+              {t('common.addNote')}
+            </Link>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
+{/* Empty State - original */
+false && (
         /* Empty State */
         <div className="glass-card glass-div-center">
           <div className="max-w-md mx-auto">
@@ -508,33 +625,48 @@ export function NotesPage() {
         </div>
       )}
 
-      {/* Tags Sidebar */}
-      {allTags.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-4 flex items-center text-[var(--text-primary)]">
-            <i className="glass-i fas fa-tags mr-2 text-blue-600"></i>Popular Tags
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {allTags.slice(0, 10).map((tag) => (
-              <button
-                type="button"
-                key={tag.id}
-                onClick={() => {
-                  setTagFilter(tag.name);
-                  const params = new URLSearchParams();
-                  if (view !== 'all') params.set('view', view);
-                  params.set('tag', tag.name);
-                  setSearchParams(params);
-                }}
-                className={`px-3 py-1.5 text-sm font-medium rounded-full border transition-transform hover:scale-105 ${getTagColor(tag.name)}`}
-              >
-                {tag.name}
-                <span className="ml-1 opacity-75">({tag.note_count})</span>
-              </button>
-            ))}
+        {/* Tags Sidebar */}
+        {allTags.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold mb-4 flex items-center text-[var(--text-primary)]">
+              <i className="glass-i fas fa-tags mr-2 text-blue-600"></i>Popular Tags
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {allTags.slice(0, 10).map((tag) => (
+                <button
+                  type="button"
+                  key={tag.id}
+                  onClick={() => {
+                    setTagFilter(tag.name);
+                    const params = new URLSearchParams();
+                    if (view !== 'all') params.set('view', view);
+                    params.set('tag', tag.name);
+                    setSearchParams(params);
+                  }}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-full border transition-transform hover:scale-105 ${getTagColor(tag.name)}`}
+                >
+                  {tag.name}
+                  <span className="ml-1 opacity-75">({tag.note_count})</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Folder Modal */}
+        {showFolderModal && (
+          <FolderModal
+            folder={folderToEdit}
+            parentId={folderParentId}
+            onSave={handleSaveFolder}
+            onClose={() => {
+              setShowFolderModal(false);
+              setFolderToEdit(null);
+              setFolderParentId(null);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }
