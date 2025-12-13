@@ -61,7 +61,8 @@ export function UserAvatar({
     setImageError(true);
   };
 
-  const showInitials = !avatarUrl || imageError;
+  // Check for empty string as well as falsy values
+  const showInitials = !avatarUrl || avatarUrl.trim() === '' || imageError;
 
   return (
     <div className={`relative ${className}`}>

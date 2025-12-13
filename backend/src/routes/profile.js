@@ -11,6 +11,27 @@ import db from '../config/database.js';
 import { jwtRequired } from '../middleware/auth.js';
 
 /**
+ * Validate avatar URL format
+ * @param {string} avatarUrl - URL to validate
+ * @returns {Object} { valid: boolean, error?: string }
+ */
+function validateAvatarUrl(avatarUrl) {
+  if (!avatarUrl || !avatarUrl.trim()) {
+    return { valid: true }; // Empty is valid (will be stored as null)
+  }
+
+  try {
+    const url = new URL(avatarUrl);
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      return { valid: false, error: 'Avatar URL must be HTTP or HTTPS' };
+    }
+    return { valid: true };
+  } catch {
+    return { valid: false, error: 'Invalid avatar URL format' };
+  }
+}
+
+/**
  * GET /api/profile - Get current user's profile
  */
 router.get('/', jwtRequired, async (req, res) => {
@@ -156,22 +177,12 @@ router.put('/', jwtRequired, async (req, res) => {
       params.push(preferred_language);
     }
     if (avatar_url !== undefined) {
-      // Validate avatar URL format
-      if (avatar_url && avatar_url.trim()) {
-        try {
-          const url = new URL(avatar_url);
-          if (!['http:', 'https:'].includes(url.protocol)) {
-            return res.status(400).json({ error: 'Avatar URL must be HTTP or HTTPS' });
-          }
-          updates.push('avatar_url = ?');
-          params.push(avatar_url.trim());
-        } catch {
-          return res.status(400).json({ error: 'Invalid avatar URL format' });
-        }
-      } else {
-        updates.push('avatar_url = ?');
-        params.push(null);
+      const validation = validateAvatarUrl(avatar_url);
+      if (!validation.valid) {
+        return res.status(400).json({ error: validation.error });
       }
+      updates.push('avatar_url = ?');
+      params.push(avatar_url && avatar_url.trim() ? avatar_url.trim() : null);
     }
     if (status !== undefined && ['online', 'offline', 'away', 'busy'].includes(status)) {
       updates.push('status = ?');
