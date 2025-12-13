@@ -267,7 +267,8 @@ router.put('/status', jwtRequired, async (req, res) => {
         .json({ error: 'Invalid status. Must be one of: online, offline, away, busy' });
     }
 
-    await db.query('UPDATE users SET status = ? WHERE id = ?', [status, req.userId]);
+    // Use db.run for proper compatibility with both SQLite and MySQL
+    await db.run('UPDATE users SET status = ? WHERE id = ?', [status, req.userId]);
 
     logger.info('User status updated', { userId: req.userId, status });
 
