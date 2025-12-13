@@ -1834,23 +1834,23 @@ body.dark {
 }
 
 /* Hide on mobile */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .hide-mobile {
-    display: none !important;
+    display: none;
   }
 }
 
 /* Hide on tablet */
 @media (min-width: 768px) and (max-width: 1023px) {
   .hide-tablet {
-    display: none !important;
+    display: none;
   }
 }
 
 /* Hide on desktop */
 @media (min-width: 1024px) {
   .hide-desktop {
-    display: none !important;
+    display: none;
   }
 }
 
@@ -1861,7 +1861,7 @@ body.dark {
 
 @media (min-width: 768px) {
   .show-mobile {
-    display: none !important;
+    display: none;
   }
 }
 
@@ -1872,7 +1872,7 @@ body.dark {
 
 @media (min-width: 768px) and (max-width: 1023px) {
   .show-tablet {
-    display: block !important;
+    display: block;
   }
 }
 
@@ -1883,7 +1883,7 @@ body.dark {
 
 @media (min-width: 1024px) {
   .show-desktop {
-    display: block !important;
+    display: block;
   }
 }
 
