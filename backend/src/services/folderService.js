@@ -22,7 +22,9 @@ export default class FolderService {
       return cached;
     }
 
-    // Query folders with note counts
+    // Query folders with note counts (all notes, including archived)
+    // Note: Counts include all items (archived/completed) to show true folder contents
+    // UI can filter the displayed items separately based on user preference
     const sql = `
       SELECT 
         f.id, f.name, f.parent_id, f.description, f.icon, f.color, 
@@ -30,8 +32,8 @@ export default class FolderService {
         COUNT(DISTINCT n.id) as note_count,
         COUNT(DISTINCT t.id) as task_count
       FROM folders f
-      LEFT JOIN notes n ON n.folder_id = f.id AND n.archived = 0
-      LEFT JOIN tasks t ON t.folder_id = f.id AND t.completed = 0
+      LEFT JOIN notes n ON n.folder_id = f.id
+      LEFT JOIN tasks t ON t.folder_id = f.id
       WHERE f.user_id = ?
       GROUP BY f.id
       ORDER BY f.position, f.name
@@ -403,7 +405,21 @@ export default class FolderService {
   static async invalidateCache(userId) {
     const cacheKey = `folders:user:${userId}`;
     await cache.del(cacheKey);
+    
     // Also invalidate notes cache as folder changes affect note queries
-    await cache.del(`notes:user:${userId}:*`);
+    // Note: This invalidates multiple keys by pattern matching
+    // If cache implementation doesn't support glob patterns, 
+    // we'll need to track and delete specific keys individually
+    try {
+      // Try pattern-based deletion (works with Redis KEYS/DEL)
+      const notesPattern = `notes:user:${userId}:*`;
+      await cache.del(notesPattern);
+    } catch (error) {
+      // If pattern deletion fails, fall back to known cache keys
+      const viewTypes = ['all', 'favorites', 'archived'];
+      for (const view of viewTypes) {
+        await cache.del(`notes:user:${userId}:${view}::`);
+      }
+    }
   }
 }

@@ -10,7 +10,7 @@ interface FolderItemProps {
   onCreate: (parentId: number) => void;
   onEdit: (folder: Folder) => void;
   onDelete: (folder: Folder) => void;
-  onMove: (folder: Folder, newParentId: number | null) => void;
+  onMove?: (folder: Folder, newParentId: number | null) => void; // Optional for now, will be used in Phase 3 for drag-and-drop
 }
 
 // Icon mapping for folder icons
@@ -125,6 +125,7 @@ export function FolderItem({
   onCreate,
   onEdit,
   onDelete,
+  onMove,
 }: FolderItemProps) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(folder.is_expanded);
@@ -202,9 +203,9 @@ export function FolderItem({
         {/* Folder name and count */}
         <div className="flex-1 flex items-center justify-between min-w-0">
           <span className="text-sm font-medium truncate">{folder.name}</span>
-          {(folder.note_count! > 0 || folder.task_count! > 0) && (
+          {((folder.note_count ?? 0) > 0 || (folder.task_count ?? 0) > 0) && (
             <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-              {folder.note_count! + folder.task_count!}
+              {(folder.note_count ?? 0) + (folder.task_count ?? 0)}
             </span>
           )}
         </div>
@@ -229,7 +230,14 @@ export function FolderItem({
             <div
               className="fixed inset-0 z-10"
               onClick={() => setShowMenu(false)}
-              onKeyDown={() => {}}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setShowMenu(false);
+                }
+              }}
+              role="button"
+              tabIndex={-1}
+              aria-label="Close menu"
             />
             <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[150px]">
               <button
