@@ -373,18 +373,23 @@ export function useNoteCollaboration(noteId: number, onUpdate: (changes: any) =>
     socket.on('note:update', handleNoteUpdate);
 
     // Listen for users joining/leaving
-    socket.on('note:user-joined', (payload) => {
+    const handleUserJoined = (payload: any) => {
       console.log(`${payload.username} joined`);
-    });
+    };
 
-    socket.on('note:user-left', (payload) => {
+    const handleUserLeft = (payload: any) => {
       console.log(`${payload.username} left`);
-    });
+    };
+
+    socket.on('note:user-joined', handleUserJoined);
+    socket.on('note:user-left', handleUserLeft);
 
     // Cleanup
     return () => {
       leaveNoteRoom(noteId);
       socket.off('note:update', handleNoteUpdate);
+      socket.off('note:user-joined', handleUserJoined);
+      socket.off('note:user-left', handleUserLeft);
     };
   }, [noteId, onUpdate]);
 
