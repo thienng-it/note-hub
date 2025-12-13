@@ -174,6 +174,26 @@ class Database {
       );
       CREATE INDEX IF NOT EXISTS ix_tags_name ON tags(name);
 
+      -- Folders table
+      CREATE TABLE IF NOT EXISTS folders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        parent_id INTEGER DEFAULT NULL,
+        description TEXT,
+        icon TEXT DEFAULT 'folder',
+        color TEXT DEFAULT '#3B82F6',
+        position INTEGER DEFAULT 0,
+        is_expanded INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS idx_folders_user ON folders(user_id);
+      CREATE INDEX IF NOT EXISTS idx_folders_parent ON folders(parent_id);
+      CREATE INDEX IF NOT EXISTS idx_folders_user_parent ON folders(user_id, parent_id);
+
       -- Notes table
       CREATE TABLE IF NOT EXISTS notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -184,9 +204,11 @@ class Database {
         archived INTEGER DEFAULT 0,
         favorite INTEGER DEFAULT 0,
         owner_id INTEGER,
+        folder_id INTEGER DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (owner_id) REFERENCES users(id)
+        FOREIGN KEY (owner_id) REFERENCES users(id),
+        FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL
       );
       CREATE INDEX IF NOT EXISTS ix_notes_owner ON notes(owner_id);
       CREATE INDEX IF NOT EXISTS ix_notes_archived ON notes(archived);
@@ -229,9 +251,11 @@ class Database {
         due_date DATETIME,
         priority TEXT DEFAULT 'medium',
         owner_id INTEGER NOT NULL,
+        folder_id INTEGER DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (owner_id) REFERENCES users(id)
+        FOREIGN KEY (owner_id) REFERENCES users(id),
+        FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL
       );
       CREATE INDEX IF NOT EXISTS ix_tasks_owner ON tasks(owner_id);
 
@@ -420,6 +444,49 @@ class Database {
       // Non-fatal: schema might already be up-to-date
     }
 
+    // Auto-migration: Add folder_id columns to notes and tasks if they don't exist
+    try {
+      const notesColumns = this.db.prepare('PRAGMA table_info(notes)').all();
+      const hasFolderId = notesColumns.some((col) => col.name === 'folder_id');
+
+      if (!hasFolderId) {
+        logger.info('  🔄 Migrating: Adding folder_id column to notes table...');
+        this.db.exec('ALTER TABLE notes ADD COLUMN folder_id INTEGER DEFAULT NULL');
+        logger.info('  ✅ Migration: folder_id column added to notes');
+      }
+
+      // Add indexes for folder_id if they don't exist
+      try {
+        this.db.exec('CREATE INDEX IF NOT EXISTS idx_notes_folder ON notes(folder_id)');
+        this.db.exec('CREATE INDEX IF NOT EXISTS idx_notes_user_folder ON notes(owner_id, folder_id)');
+      } catch (indexError) {
+        logger.warn('  ⚠️  Could not create notes folder indexes:', indexError.message);
+      }
+    } catch (error) {
+      logger.warn('  ⚠️  Auto-migration warning (notes):', error.message);
+    }
+
+    try {
+      const tasksColumns = this.db.prepare('PRAGMA table_info(tasks)').all();
+      const hasFolderId = tasksColumns.some((col) => col.name === 'folder_id');
+
+      if (!hasFolderId) {
+        logger.info('  🔄 Migrating: Adding folder_id column to tasks table...');
+        this.db.exec('ALTER TABLE tasks ADD COLUMN folder_id INTEGER DEFAULT NULL');
+        logger.info('  ✅ Migration: folder_id column added to tasks');
+      }
+
+      // Add indexes for folder_id if they don't exist
+      try {
+        this.db.exec('CREATE INDEX IF NOT EXISTS idx_tasks_folder ON tasks(folder_id)');
+        this.db.exec('CREATE INDEX IF NOT EXISTS idx_tasks_user_folder ON tasks(owner_id, folder_id)');
+      } catch (indexError) {
+        logger.warn('  ⚠️  Could not create tasks folder indexes:', indexError.message);
+      }
+    } catch (error) {
+      logger.warn('  ⚠️  Auto-migration warning (tasks):', error.message);
+    }
+
     logger.info('✅ SQLite schema initialized');
   }
 
@@ -459,6 +526,27 @@ class Database {
         INDEX ix_tags_name (name)
       );
 
+      -- Folders table
+      CREATE TABLE IF NOT EXISTS folders (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        user_id INT NOT NULL,
+        parent_id INT DEFAULT NULL,
+        description TEXT,
+        icon VARCHAR(50) DEFAULT 'folder',
+        color VARCHAR(20) DEFAULT '#3B82F6',
+        position INT DEFAULT 0,
+        is_expanded TINYINT DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE,
+        INDEX idx_folders_user (user_id),
+        INDEX idx_folders_parent (parent_id),
+        INDEX idx_folders_user_parent (user_id, parent_id),
+        UNIQUE KEY idx_folders_unique_name (user_id, name, parent_id)
+      );
+
       -- Notes table
       CREATE TABLE IF NOT EXISTS notes (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -469,15 +557,19 @@ class Database {
         archived BOOLEAN DEFAULT FALSE,
         favorite BOOLEAN DEFAULT FALSE,
         owner_id INT,
+        folder_id INT DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_notes_owner (owner_id),
         INDEX ix_notes_archived (archived),
+        INDEX idx_notes_folder (folder_id),
+        INDEX idx_notes_user_folder (owner_id, folder_id),
         INDEX ix_notes_owner_archived (owner_id, archived),
         INDEX ix_notes_owner_favorite (owner_id, favorite),
         INDEX ix_notes_owner_pinned_updated (owner_id, pinned, updated_at),
         INDEX ix_notes_updated_at (updated_at),
-        FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
+        FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL,
+        FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL
       );
 
       -- Note-Tag junction table
@@ -513,10 +605,14 @@ class Database {
         due_date DATETIME,
         priority VARCHAR(20) DEFAULT 'medium',
         owner_id INT NOT NULL,
+        folder_id INT DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_tasks_owner (owner_id),
-        FOREIGN KEY (owner_id) REFERENCES users(id)
+        INDEX idx_tasks_folder (folder_id),
+        INDEX idx_tasks_user_folder (owner_id, folder_id),
+        FOREIGN KEY (owner_id) REFERENCES users(id),
+        FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL
       );
 
       -- Task sharing table (Phase 2: Task Collaboration)
@@ -661,6 +757,57 @@ class Database {
     } catch (error) {
       logger.warn('  ⚠️  Auto-migration warning:', error.message);
       // Non-fatal: schema might already be up-to-date
+    }
+
+    // Auto-migration: Add folder_id columns to notes and tasks if they don't exist
+    try {
+      const [notesFolderColumn] = await this.db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'notes' AND COLUMN_NAME = 'folder_id'`,
+        [process.env.MYSQL_DATABASE || 'notehub'],
+      );
+
+      if (notesFolderColumn.length === 0) {
+        logger.info('  🔄 Migrating: Adding folder_id column to notes table...');
+        await this.db.query('ALTER TABLE notes ADD COLUMN folder_id INT DEFAULT NULL');
+        logger.info('  ✅ Migration: folder_id column added to notes');
+      }
+
+      // Add indexes for folder_id
+      try {
+        await this.db.query('CREATE INDEX idx_notes_folder ON notes(folder_id)');
+        await this.db.query('CREATE INDEX idx_notes_user_folder ON notes(owner_id, folder_id)');
+      } catch (indexError) {
+        // Index might already exist, ignore error
+        logger.debug('Notes folder indexes already exist or could not be created');
+      }
+    } catch (error) {
+      logger.warn('  ⚠️  Auto-migration warning (notes):', error.message);
+    }
+
+    try {
+      const [tasksFolderColumn] = await this.db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'tasks' AND COLUMN_NAME = 'folder_id'`,
+        [process.env.MYSQL_DATABASE || 'notehub'],
+      );
+
+      if (tasksFolderColumn.length === 0) {
+        logger.info('  🔄 Migrating: Adding folder_id column to tasks table...');
+        await this.db.query('ALTER TABLE tasks ADD COLUMN folder_id INT DEFAULT NULL');
+        logger.info('  ✅ Migration: folder_id column added to tasks');
+      }
+
+      // Add indexes for folder_id
+      try {
+        await this.db.query('CREATE INDEX idx_tasks_folder ON tasks(folder_id)');
+        await this.db.query('CREATE INDEX idx_tasks_user_folder ON tasks(owner_id, folder_id)');
+      } catch (indexError) {
+        // Index might already exist, ignore error
+        logger.debug('Tasks folder indexes already exist or could not be created');
+      }
+    } catch (error) {
+      logger.warn('  ⚠️  Auto-migration warning (tasks):', error.message);
     }
 
     logger.info('✅ MySQL schema initialized');
