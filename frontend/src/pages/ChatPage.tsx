@@ -19,7 +19,6 @@ export function ChatPage() {
     currentRoom,
     messages,
     typingUsers,
-    onlineUsers,
     isConnected,
     isLoading,
     error,
