@@ -185,7 +185,7 @@ export function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col min-h-0">
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -244,7 +244,7 @@ export function ChatPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      <div className="flex-1 flex overflow-hidden">
         {/* Rooms list - Hidden on mobile when chat is selected */}
         <div
           className={`w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 ${
@@ -324,7 +324,7 @@ export function ChatPage() {
 
         {/* Chat area - Full width on mobile when chat is selected */}
         <div
-          className={`flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 min-w-0 ${
+          className={`flex-1 flex flex-col bg-gray-100 dark:bg-gray-900 overflow-hidden ${
             currentRoom ? 'block' : 'hidden md:flex'
           }`}
         >
@@ -401,10 +401,10 @@ export function ChatPage() {
                         )}
                         <div className="relative">
                           <div
-                            className={`px-3 py-2 md:px-4 rounded-lg ${
+                            className={`px-3 py-2 md:px-4 rounded-lg shadow-sm ${
                               isSender
                                 ? 'bg-blue-600 text-white'
-                                : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+                                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
                             }`}
                           >
                             <p className="break-words whitespace-pre-wrap text-sm md:text-base">
