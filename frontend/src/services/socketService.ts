@@ -117,6 +117,102 @@ export function markAsRead(roomId: number): void {
   }
 }
 
+// ==================== NOTES COLLABORATION ====================
+
+/**
+ * Join a note editing room
+ * @param noteId - Note ID
+ */
+export function joinNoteRoom(noteId: number): void {
+  if (socket) {
+    socket.emit('note:join', noteId);
+  }
+}
+
+/**
+ * Leave a note editing room
+ * @param noteId - Note ID
+ */
+export function leaveNoteRoom(noteId: number): void {
+  if (socket) {
+    socket.emit('note:leave', noteId);
+  }
+}
+
+/**
+ * Send note update to other collaborators
+ * @param noteId - Note ID
+ * @param changes - Changes to the note (title, body, tags, etc.)
+ */
+export function sendNoteUpdate(
+  noteId: number,
+  changes: {
+    title?: string;
+    body?: string;
+    tags?: string[];
+    pinned?: boolean;
+    favorite?: boolean;
+    archived?: boolean;
+  },
+): void {
+  if (socket) {
+    socket.emit('note:update', { noteId, changes });
+  }
+}
+
+/**
+ * Send cursor position in note
+ * @param noteId - Note ID
+ * @param position - Cursor position
+ */
+export function sendNoteCursor(noteId: number, position: number): void {
+  if (socket) {
+    socket.emit('note:cursor', { noteId, position });
+  }
+}
+
+// ==================== TASKS COLLABORATION ====================
+
+/**
+ * Join a task room
+ * @param taskId - Task ID
+ */
+export function joinTaskRoom(taskId: number): void {
+  if (socket) {
+    socket.emit('task:join', taskId);
+  }
+}
+
+/**
+ * Leave a task room
+ * @param taskId - Task ID
+ */
+export function leaveTaskRoom(taskId: number): void {
+  if (socket) {
+    socket.emit('task:leave', taskId);
+  }
+}
+
+/**
+ * Send task update to other collaborators
+ * @param taskId - Task ID
+ * @param changes - Changes to the task (title, description, completed, etc.)
+ */
+export function sendTaskUpdate(
+  taskId: number,
+  changes: {
+    title?: string;
+    description?: string;
+    completed?: boolean;
+    priority?: string;
+    due_date?: string;
+  },
+): void {
+  if (socket) {
+    socket.emit('task:update', { taskId, changes });
+  }
+}
+
 export default {
   initializeSocket,
   getSocket,
@@ -126,4 +222,11 @@ export default {
   sendMessage,
   sendTypingIndicator,
   markAsRead,
+  joinNoteRoom,
+  leaveNoteRoom,
+  sendNoteUpdate,
+  sendNoteCursor,
+  joinTaskRoom,
+  leaveTaskRoom,
+  sendTaskUpdate,
 };

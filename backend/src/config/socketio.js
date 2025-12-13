@@ -187,6 +187,188 @@ export function initializeSocketIO(httpServer) {
       }
     });
 
+    // ==================== NOTES COLLABORATION ====================
+
+    // Handle joining note editing room
+    socket.on('note:join', async (noteId) => {
+      try {
+        // Verify user has access to this note
+        const note = await db.queryOne('SELECT id FROM notes WHERE id = ? AND user_id = ?', [
+          noteId,
+          userId,
+        ]);
+
+        if (!note) {
+          // Check if shared with user
+          const sharedNote = await db.queryOne(
+            'SELECT id FROM share_notes WHERE note_id = ? AND shared_with_id = ?',
+            [noteId, userId],
+          );
+          if (!sharedNote) {
+            throw new Error('User does not have access to this note');
+          }
+        }
+
+        socket.join(`note:${noteId}`);
+        socket.emit('note:joined', { noteId });
+
+        // Notify others in the room that user joined
+        socket.to(`note:${noteId}`).emit('note:user-joined', {
+          noteId,
+          userId,
+          username: socket.username,
+        });
+
+        logger.debug('User joined note room', { userId, noteId });
+      } catch (error) {
+        socket.emit('note:error', {
+          message: 'Failed to join note room',
+          error: error.message,
+        });
+      }
+    });
+
+    // Handle leaving note editing room
+    socket.on('note:leave', (noteId) => {
+      socket.leave(`note:${noteId}`);
+
+      // Notify others that user left
+      socket.to(`note:${noteId}`).emit('note:user-left', {
+        noteId,
+        userId,
+        username: socket.username,
+      });
+
+      logger.debug('User left note room', { userId, noteId });
+    });
+
+    // Handle real-time note updates
+    socket.on('note:update', async ({ noteId, changes }) => {
+      try {
+        // Verify access
+        const note = await db.queryOne('SELECT id FROM notes WHERE id = ? AND user_id = ?', [
+          noteId,
+          userId,
+        ]);
+
+        if (!note) {
+          // Check if user has edit permission via share
+          const sharedNote = await db.queryOne(
+            'SELECT can_edit FROM share_notes WHERE note_id = ? AND shared_with_id = ?',
+            [noteId, userId],
+          );
+          if (!sharedNote || !sharedNote.can_edit) {
+            throw new Error('User does not have edit permission for this note');
+          }
+        }
+
+        // Broadcast changes to all users in the room except sender
+        socket.to(`note:${noteId}`).emit('note:update', {
+          noteId,
+          userId,
+          username: socket.username,
+          changes,
+          timestamp: new Date().toISOString(),
+        });
+
+        logger.debug('Note updated via WebSocket', { noteId, userId });
+      } catch (error) {
+        socket.emit('note:error', {
+          message: 'Failed to update note',
+          error: error.message,
+        });
+      }
+    });
+
+    // Handle cursor position updates
+    socket.on('note:cursor', ({ noteId, position }) => {
+      socket.to(`note:${noteId}`).emit('note:cursor', {
+        noteId,
+        userId,
+        username: socket.username,
+        position,
+      });
+    });
+
+    // ==================== TASKS COLLABORATION ====================
+
+    // Handle joining task room
+    socket.on('task:join', async (taskId) => {
+      try {
+        // Verify user has access to this task
+        const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND user_id = ?', [
+          taskId,
+          userId,
+        ]);
+
+        if (!task) {
+          throw new Error('User does not have access to this task');
+        }
+
+        socket.join(`task:${taskId}`);
+        socket.emit('task:joined', { taskId });
+
+        // Notify others in the room that user joined
+        socket.to(`task:${taskId}`).emit('task:user-joined', {
+          taskId,
+          userId,
+          username: socket.username,
+        });
+
+        logger.debug('User joined task room', { userId, taskId });
+      } catch (error) {
+        socket.emit('task:error', {
+          message: 'Failed to join task room',
+          error: error.message,
+        });
+      }
+    });
+
+    // Handle leaving task room
+    socket.on('task:leave', (taskId) => {
+      socket.leave(`task:${taskId}`);
+
+      // Notify others that user left
+      socket.to(`task:${taskId}`).emit('task:user-left', {
+        taskId,
+        userId,
+        username: socket.username,
+      });
+
+      logger.debug('User left task room', { userId, taskId });
+    });
+
+    // Handle real-time task updates
+    socket.on('task:update', async ({ taskId, changes }) => {
+      try {
+        // Verify access (tasks don't have sharing yet, so only owner can edit)
+        const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND user_id = ?', [
+          taskId,
+          userId,
+        ]);
+
+        if (!task) {
+          throw new Error('User does not have access to this task');
+        }
+
+        // Broadcast changes to all users in the room except sender
+        socket.to(`task:${taskId}`).emit('task:update', {
+          taskId,
+          userId,
+          username: socket.username,
+          changes,
+          timestamp: new Date().toISOString(),
+        });
+
+        logger.debug('Task updated via WebSocket', { taskId, userId });
+      } catch (error) {
+        socket.emit('task:error', {
+          message: 'Failed to update task',
+          error: error.message,
+        });
+      }
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
       connectedUsers.delete(userId);
