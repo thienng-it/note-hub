@@ -11,6 +11,7 @@ interface NavItem {
   label: string;
   view?: string;
   adminOnly?: boolean;
+  color?: string;
 }
 
 export function LiquidGlassNav() {
@@ -20,18 +21,20 @@ export function LiquidGlassNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isDockVisible, setIsDockVisible] = useState(true);
+  const [isDockExpanded, setIsDockExpanded] = useState(true);
+  const [isHoveringDock, setIsHoveringDock] = useState(false);
 
   const view = new URLSearchParams(location.search).get('view');
 
   const navItems: NavItem[] = [
-    { id: 'home', path: '/', icon: 'fa-home', label: t('notes.allNotes') },
+    { id: 'home', path: '/', icon: 'fa-home', label: t('notes.allNotes'), color: '#007aff' },
     {
       id: 'favorites',
       path: '/?view=favorites',
       icon: 'fa-heart',
       label: t('notes.favorites'),
       view: 'favorites',
+      color: '#ff2d55',
     },
     {
       id: 'archived',
@@ -39,6 +42,7 @@ export function LiquidGlassNav() {
       icon: 'fa-archive',
       label: t('notes.archived'),
       view: 'archived',
+      color: '#8e8e93',
     },
     {
       id: 'shared',
@@ -46,18 +50,32 @@ export function LiquidGlassNav() {
       icon: 'fa-share-alt',
       label: t('notes.sharedWithMe'),
       view: 'shared',
+      color: '#5856d6',
     },
-    { id: 'tasks', path: '/tasks', icon: 'fa-tasks', label: t('tasks.title') },
-    { id: 'new-note', path: '/notes/new', icon: 'fa-plus', label: t('notes.newNote') },
-    { id: 'chat', path: '/chat', icon: 'fa-comments', label: t('chat.title') },
+    { id: 'tasks', path: '/tasks', icon: 'fa-tasks', label: t('tasks.title'), color: '#34c759' },
+    {
+      id: 'new-note',
+      path: '/notes/new',
+      icon: 'fa-plus',
+      label: t('notes.newNote'),
+      color: '#ff9500',
+    },
+    { id: 'chat', path: '/chat', icon: 'fa-comments', label: t('chat.title'), color: '#af52de' },
     {
       id: 'admin',
       path: '/admin',
       icon: 'fa-users-cog',
       label: t('admin.title'),
       adminOnly: true,
+      color: '#ff3b30',
     },
-    { id: 'profile', path: '/profile', icon: 'fa-user-circle', label: t('profile.title') },
+    {
+      id: 'profile',
+      path: '/profile',
+      icon: 'fa-user-circle',
+      label: t('profile.title'),
+      color: '#30b0c7',
+    },
   ];
 
   const filteredNavItems = navItems.filter((item) => {
@@ -91,21 +109,25 @@ export function LiquidGlassNav() {
     return 0;
   };
 
-  // Auto-hide functionality - show dock on mouse movement, hide after inactivity
+  // Auto-minimize functionality - minimize dock after inactivity, expand on hover
   useEffect(() => {
     let timeout: NodeJS.Timeout | null = null;
 
     const handleMouseMove = () => {
-      setIsDockVisible(true);
+      if (!isHoveringDock) {
+        setIsDockExpanded(true);
+      }
 
       // Clear existing timeout
       if (timeout) {
         clearTimeout(timeout);
       }
 
-      // Set new timeout to hide dock after 3 seconds of inactivity
+      // Set new timeout to minimize dock after 3 seconds of inactivity
       timeout = setTimeout(() => {
-        setIsDockVisible(false);
+        if (!isHoveringDock) {
+          setIsDockExpanded(false);
+        }
       }, 3000);
     };
 
@@ -119,83 +141,149 @@ export function LiquidGlassNav() {
         clearTimeout(timeout);
       }
     };
-  }, []);
+  }, [isHoveringDock]);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  // Color constants for additional buttons
+  const THEME_TOGGLE_COLOR = '#ffcc00';
+  const LOGOUT_COLOR = '#ff453a';
+
+  // Find the currently active item for minimized state
+  const activeItem = filteredNavItems.find((item) => isActive(item)) || filteredNavItems[0];
+
   return (
     <nav
-      className={`liquid-glass-nav ${isDockVisible ? 'dock-visible' : 'dock-hidden'}`}
+      className={`liquid-glass-nav ${isDockExpanded ? 'dock-expanded' : 'dock-minimized'}`}
       aria-label="Mac-style navigation dock"
       onMouseEnter={() => {
-        setIsDockVisible(true);
+        setIsHoveringDock(true);
+        setIsDockExpanded(true);
       }}
       onMouseLeave={() => {
+        setIsHoveringDock(false);
         setHoveredIndex(null);
       }}
     >
-      <div className="liquid-glass-nav-container">
-        {filteredNavItems.map((item, index) => (
+      {/* Minimized State - Show only active item */}
+      {!isDockExpanded && (
+        <div className="liquid-glass-nav-minimized-container">
           <Link
-            key={item.id}
-            to={item.path}
-            className={`liquid-glass-nav-item ${isActive(item) ? 'active' : ''}`}
-            onMouseEnter={() => setHoveredIndex(index)}
-            aria-current={isActive(item) ? 'page' : undefined}
-            aria-label={item.label}
+            to={activeItem.path}
+            className="liquid-glass-nav-item active minimized"
+            aria-current="page"
+            aria-label={activeItem.label}
+          >
+            <div
+              className="liquid-glass-nav-icon-wrapper"
+              style={
+                activeItem.color
+                  ? {
+                      background: `linear-gradient(135deg, ${activeItem.color}dd, ${activeItem.color}bb)`,
+                      borderColor: `${activeItem.color}80`,
+                    }
+                  : undefined
+              }
+            >
+              <i className={`fas ${activeItem.icon} liquid-glass-nav-icon`} aria-hidden="true"></i>
+            </div>
+          </Link>
+        </div>
+      )}
+
+      {/* Expanded State - Show all items */}
+      {isDockExpanded && (
+        <div className="liquid-glass-nav-container">
+          {filteredNavItems.map((item, index) => (
+            <Link
+              key={item.id}
+              to={item.path}
+              className={`liquid-glass-nav-item ${isActive(item) ? 'active' : ''}`}
+              onMouseEnter={() => setHoveredIndex(index)}
+              aria-current={isActive(item) ? 'page' : undefined}
+              aria-label={item.label}
+              style={{
+                transform: `scale(${getIconScale(index)}) translateY(${getIconTranslateY(index)}px)`,
+              }}
+            >
+              <div
+                className="liquid-glass-nav-icon-wrapper"
+                style={
+                  item.color && !isActive(item)
+                    ? {
+                        borderColor: `${item.color}40`,
+                        boxShadow: `0 4px 16px ${item.color}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
+                      }
+                    : item.color && isActive(item)
+                      ? {
+                          background: `linear-gradient(135deg, ${item.color}dd, ${item.color}bb)`,
+                          borderColor: `${item.color}80`,
+                          boxShadow: `0 8px 24px ${item.color}60, inset 0 1px 0 rgba(255, 255, 255, 0.3)`,
+                        }
+                      : undefined
+                }
+              >
+                <i className={`fas ${item.icon} liquid-glass-nav-icon`} aria-hidden="true"></i>
+              </div>
+              <span className="liquid-glass-nav-label">{item.label}</span>
+            </Link>
+          ))}
+
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="liquid-glass-nav-item"
+            onMouseEnter={() => setHoveredIndex(filteredNavItems.length)}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             style={{
-              transform: `scale(${getIconScale(index)}) translateY(${getIconTranslateY(index)}px)`,
+              transform: `scale(${getIconScale(filteredNavItems.length)}) translateY(${getIconTranslateY(filteredNavItems.length)}px)`,
             }}
           >
-            <div className="liquid-glass-nav-icon-wrapper">
-              <i className={`fas ${item.icon} liquid-glass-nav-icon`} aria-hidden="true"></i>
+            <div
+              className="liquid-glass-nav-icon-wrapper"
+              style={{
+                borderColor: `${THEME_TOGGLE_COLOR}40`,
+                boxShadow: `0 4px 16px ${THEME_TOGGLE_COLOR}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
+              }}
+            >
+              <i
+                className={`fas fa-${theme === 'dark' ? 'sun' : 'moon'} liquid-glass-nav-icon`}
+                aria-hidden="true"
+              ></i>
             </div>
-            <span className="liquid-glass-nav-label">{item.label}</span>
-          </Link>
-        ))}
+            <span className="liquid-glass-nav-label">
+              {theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}
+            </span>
+          </button>
 
-        {/* Theme Toggle Button */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="liquid-glass-nav-item"
-          onMouseEnter={() => setHoveredIndex(filteredNavItems.length)}
-          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          style={{
-            transform: `scale(${getIconScale(filteredNavItems.length)}) translateY(${getIconTranslateY(filteredNavItems.length)}px)`,
-          }}
-        >
-          <div className="liquid-glass-nav-icon-wrapper">
-            <i
-              className={`fas fa-${theme === 'dark' ? 'sun' : 'moon'} liquid-glass-nav-icon`}
-              aria-hidden="true"
-            ></i>
-          </div>
-          <span className="liquid-glass-nav-label">
-            {theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}
-          </span>
-        </button>
-
-        {/* Logout Button */}
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="liquid-glass-nav-item"
-          onMouseEnter={() => setHoveredIndex(filteredNavItems.length + 1)}
-          aria-label="Sign out"
-          style={{
-            transform: `scale(${getIconScale(filteredNavItems.length + 1)}) translateY(${getIconTranslateY(filteredNavItems.length + 1)}px)`,
-          }}
-        >
-          <div className="liquid-glass-nav-icon-wrapper">
-            <i className="fas fa-sign-out-alt liquid-glass-nav-icon" aria-hidden="true"></i>
-          </div>
-          <span className="liquid-glass-nav-label">{t('auth.logout')}</span>
-        </button>
-      </div>
+          {/* Logout Button */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="liquid-glass-nav-item"
+            onMouseEnter={() => setHoveredIndex(filteredNavItems.length + 1)}
+            aria-label="Sign out"
+            style={{
+              transform: `scale(${getIconScale(filteredNavItems.length + 1)}) translateY(${getIconTranslateY(filteredNavItems.length + 1)}px)`,
+            }}
+          >
+            <div
+              className="liquid-glass-nav-icon-wrapper"
+              style={{
+                borderColor: `${LOGOUT_COLOR}40`,
+                boxShadow: `0 4px 16px ${LOGOUT_COLOR}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
+              }}
+            >
+              <i className="fas fa-sign-out-alt liquid-glass-nav-icon" aria-hidden="true"></i>
+            </div>
+            <span className="liquid-glass-nav-label">{t('auth.logout')}</span>
+          </button>
+        </div>
+      )}
     </nav>
   );
 }

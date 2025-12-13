@@ -1503,20 +1503,19 @@ body.dark {
     opacity 0.3s ease;
 }
 
-/* Dock visible state */
-.liquid-glass-nav.dock-visible {
+/* Dock expanded state - show all items */
+.liquid-glass-nav.dock-expanded {
   transform: translateY(0);
   opacity: 1;
 }
 
-/* Dock hidden state - slides down and fades out */
-.liquid-glass-nav.dock-hidden {
-  transform: translateY(150%);
-  opacity: 0;
-  pointer-events: none;
+/* Dock minimized state - show only active item */
+.liquid-glass-nav.dock-minimized {
+  transform: translateY(0);
+  opacity: 1;
 }
 
-/* Navigation Container with Liquid Glass Effect */
+/* Navigation Container with Liquid Glass Effect - Expanded State */
 .liquid-glass-nav-container {
   display: flex;
   align-items: flex-end;
@@ -1537,6 +1536,35 @@ body.dark {
   overflow-y: visible;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Navigation Container - Minimized State */
+.liquid-glass-nav-minimized-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.15),
+    0 20px 60px 0 rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 4rem;
+  height: 4rem;
+}
+
+.dark .liquid-glass-nav-minimized-container {
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.4),
+    0 20px 60px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Hide scrollbar for Chrome, Safari, Opera */
@@ -1591,6 +1619,18 @@ body.dark {
     0 4px 16px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Icon wrapper in minimized state */
+.liquid-glass-nav-item.minimized .liquid-glass-nav-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+}
+
+.liquid-glass-nav-item.minimized .liquid-glass-nav-icon {
+  font-size: 1.5rem;
+  color: white;
 }
 
 .dark .liquid-glass-nav-icon-wrapper {
@@ -1739,17 +1779,30 @@ body.dark {
     bottom: 1rem;
     left: 50%;
     right: auto;
+  }
+
+  .liquid-glass-nav.dock-expanded {
     transform: translateX(-50%);
   }
 
-  .liquid-glass-nav.dock-hidden {
-    transform: translate(-50%, 150%);
+  .liquid-glass-nav.dock-minimized {
+    transform: translateX(-50%);
   }
 
   .liquid-glass-nav-container {
     gap: 0.375rem;
     padding: 0.625rem 1rem;
     max-width: 90vw;
+  }
+
+  .liquid-glass-nav-minimized-container {
+    width: 4.25rem;
+    height: 4.25rem;
+  }
+
+  .liquid-glass-nav-item.minimized .liquid-glass-nav-icon-wrapper {
+    width: 3.25rem;
+    height: 3.25rem;
   }
 
   .liquid-glass-nav-icon-wrapper {
@@ -1772,17 +1825,34 @@ body.dark {
     bottom: 1.5rem;
     left: 50%;
     right: auto;
+  }
+
+  .liquid-glass-nav.dock-expanded {
     transform: translateX(-50%);
   }
 
-  .liquid-glass-nav.dock-hidden {
-    transform: translate(-50%, 150%);
+  .liquid-glass-nav.dock-minimized {
+    transform: translateX(-50%);
   }
 
   .liquid-glass-nav-container {
     gap: 0.5rem;
     padding: 0.75rem 1.25rem;
     max-width: none;
+  }
+
+  .liquid-glass-nav-minimized-container {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .liquid-glass-nav-item.minimized .liquid-glass-nav-icon-wrapper {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .liquid-glass-nav-item.minimized .liquid-glass-nav-icon {
+    font-size: 1.75rem;
   }
 
   .liquid-glass-nav-icon-wrapper {

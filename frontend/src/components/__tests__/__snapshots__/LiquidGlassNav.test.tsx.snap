@@ -3,7 +3,7 @@
 exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
 <nav
   aria-label="Mac-style navigation dock"
-  class="liquid-glass-nav dock-visible"
+  class="liquid-glass-nav dock-expanded"
 >
   <div
     class="liquid-glass-nav-container"
@@ -18,6 +18,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="background: linear-gradient(135deg, rgba(0, 122, 255, 0.867), rgba(0, 122, 255, 0.733)); border-color: rgba(0, 122, 255, 0.5); box-shadow: 0 8px 24px #007aff60, inset 0 1px 0 rgba(255, 255, 255, 0.3);"
       >
         <i
           aria-hidden="true"
@@ -39,6 +40,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 45, 85, 0.25); box-shadow: 0 4px 16px #ff2d5520, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -60,6 +62,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(142, 142, 147, 0.25); box-shadow: 0 4px 16px #8e8e9320, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -81,6 +84,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(88, 86, 214, 0.25); box-shadow: 0 4px 16px #5856d620, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -102,6 +106,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(52, 199, 89, 0.25); box-shadow: 0 4px 16px #34c75920, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -123,6 +128,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 149, 0, 0.25); box-shadow: 0 4px 16px #ff950020, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -144,6 +150,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(175, 82, 222, 0.25); box-shadow: 0 4px 16px #af52de20, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -165,6 +172,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 59, 48, 0.25); box-shadow: 0 4px 16px #ff3b3020, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -186,6 +194,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(48, 176, 199, 0.25); box-shadow: 0 4px 16px #30b0c720, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -206,6 +215,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 204, 0, 0.25); box-shadow: 0 4px 16px #ffcc0020, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -226,6 +236,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 69, 58, 0.25); box-shadow: 0 4px 16px #ff453a20, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -245,7 +256,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
 exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
 <nav
   aria-label="Mac-style navigation dock"
-  class="liquid-glass-nav dock-visible"
+  class="liquid-glass-nav dock-expanded"
 >
   <div
     class="liquid-glass-nav-container"
@@ -260,6 +271,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="background: linear-gradient(135deg, rgba(0, 122, 255, 0.867), rgba(0, 122, 255, 0.733)); border-color: rgba(0, 122, 255, 0.5); box-shadow: 0 8px 24px #007aff60, inset 0 1px 0 rgba(255, 255, 255, 0.3);"
       >
         <i
           aria-hidden="true"
@@ -281,6 +293,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 45, 85, 0.25); box-shadow: 0 4px 16px #ff2d5520, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -302,6 +315,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(142, 142, 147, 0.25); box-shadow: 0 4px 16px #8e8e9320, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -323,6 +337,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(88, 86, 214, 0.25); box-shadow: 0 4px 16px #5856d620, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -344,6 +359,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(52, 199, 89, 0.25); box-shadow: 0 4px 16px #34c75920, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -365,6 +381,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 149, 0, 0.25); box-shadow: 0 4px 16px #ff950020, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -386,6 +403,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(175, 82, 222, 0.25); box-shadow: 0 4px 16px #af52de20, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -407,6 +425,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 59, 48, 0.25); box-shadow: 0 4px 16px #ff3b3020, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -428,6 +447,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(48, 176, 199, 0.25); box-shadow: 0 4px 16px #30b0c720, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -448,6 +468,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 204, 0, 0.25); box-shadow: 0 4px 16px #ffcc0020, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
@@ -468,6 +489,7 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
+        style="border-color: rgba(255, 69, 58, 0.25); box-shadow: 0 4px 16px #ff453a20, inset 0 1px 0 rgba(255, 255, 255, 0.5);"
       >
         <i
           aria-hidden="true"
