@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -18,9 +18,9 @@ export function LiquidGlassNav() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isDockVisible, setIsDockVisible] = useState(true);
-  const [hideTimeout, setHideTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const view = new URLSearchParams(location.search).get('view');
 
@@ -93,20 +93,20 @@ export function LiquidGlassNav() {
 
   // Auto-hide functionality - show dock on mouse movement, hide after inactivity
   useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
+
     const handleMouseMove = () => {
       setIsDockVisible(true);
 
       // Clear existing timeout
-      if (hideTimeout) {
-        clearTimeout(hideTimeout);
+      if (timeout) {
+        clearTimeout(timeout);
       }
 
       // Set new timeout to hide dock after 3 seconds of inactivity
-      const timeout = setTimeout(() => {
+      timeout = setTimeout(() => {
         setIsDockVisible(false);
       }, 3000);
-
-      setHideTimeout(timeout);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -115,15 +115,15 @@ export function LiquidGlassNav() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchstart', handleMouseMove);
-      if (hideTimeout) {
-        clearTimeout(hideTimeout);
+      if (timeout) {
+        clearTimeout(timeout);
       }
     };
-  }, [hideTimeout]);
+  }, []);
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   return (
@@ -132,17 +132,9 @@ export function LiquidGlassNav() {
       aria-label="Mac-style navigation dock"
       onMouseEnter={() => {
         setIsDockVisible(true);
-        if (hideTimeout) {
-          clearTimeout(hideTimeout);
-          setHideTimeout(null);
-        }
       }}
       onMouseLeave={() => {
         setHoveredIndex(null);
-        const timeout = setTimeout(() => {
-          setIsDockVisible(false);
-        }, 3000);
-        setHideTimeout(timeout);
       }}
     >
       <div className="liquid-glass-nav-container">

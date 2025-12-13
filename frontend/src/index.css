@@ -1729,7 +1729,7 @@ body.dark {
 
   /* Add padding to main content for dock space */
   #main-content {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
 }
 

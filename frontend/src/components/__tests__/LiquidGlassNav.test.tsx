@@ -63,7 +63,7 @@ describe('LiquidGlassNav', () => {
     expect(screen.getByLabelText(/chat/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/admin/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/profile/i)).toBeInTheDocument();
-    
+
     // Check for theme toggle and logout buttons
     expect(screen.getByLabelText(/switch to.*mode/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/sign out/i)).toBeInTheDocument();
