@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface NavItem {
   id: string;
@@ -14,9 +15,12 @@ interface NavItem {
 
 export function LiquidGlassNav() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isDockVisible, setIsDockVisible] = useState(true);
+  const [hideTimeout, setHideTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const view = new URLSearchParams(location.search).get('view');
 
@@ -28,6 +32,20 @@ export function LiquidGlassNav() {
       icon: 'fa-heart',
       label: t('notes.favorites'),
       view: 'favorites',
+    },
+    {
+      id: 'archived',
+      path: '/?view=archived',
+      icon: 'fa-archive',
+      label: t('notes.archived'),
+      view: 'archived',
+    },
+    {
+      id: 'shared',
+      path: '/?view=shared',
+      icon: 'fa-share-alt',
+      label: t('notes.sharedWithMe'),
+      view: 'shared',
     },
     { id: 'tasks', path: '/tasks', icon: 'fa-tasks', label: t('tasks.title') },
     { id: 'new-note', path: '/notes/new', icon: 'fa-plus', label: t('notes.newNote') },
@@ -73,11 +91,59 @@ export function LiquidGlassNav() {
     return 0;
   };
 
+  // Auto-hide functionality - show dock on mouse movement, hide after inactivity
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setIsDockVisible(true);
+
+      // Clear existing timeout
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+      }
+
+      // Set new timeout to hide dock after 3 seconds of inactivity
+      const timeout = setTimeout(() => {
+        setIsDockVisible(false);
+      }, 3000);
+
+      setHideTimeout(timeout);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchstart', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchstart', handleMouseMove);
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+      }
+    };
+  }, [hideTimeout]);
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/login';
+  };
+
   return (
     <nav
-      className="liquid-glass-nav"
+      className={`liquid-glass-nav ${isDockVisible ? 'dock-visible' : 'dock-hidden'}`}
       aria-label="Mac-style navigation dock"
-      onMouseLeave={() => setHoveredIndex(null)}
+      onMouseEnter={() => {
+        setIsDockVisible(true);
+        if (hideTimeout) {
+          clearTimeout(hideTimeout);
+          setHideTimeout(null);
+        }
+      }}
+      onMouseLeave={() => {
+        setHoveredIndex(null);
+        const timeout = setTimeout(() => {
+          setIsDockVisible(false);
+        }, 3000);
+        setHideTimeout(timeout);
+      }}
     >
       <div className="liquid-glass-nav-container">
         {filteredNavItems.map((item, index) => (
@@ -98,6 +164,45 @@ export function LiquidGlassNav() {
             <span className="liquid-glass-nav-label">{item.label}</span>
           </Link>
         ))}
+
+        {/* Theme Toggle Button */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="liquid-glass-nav-item"
+          onMouseEnter={() => setHoveredIndex(filteredNavItems.length)}
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          style={{
+            transform: `scale(${getIconScale(filteredNavItems.length)}) translateY(${getIconTranslateY(filteredNavItems.length)}px)`,
+          }}
+        >
+          <div className="liquid-glass-nav-icon-wrapper">
+            <i
+              className={`fas fa-${theme === 'dark' ? 'sun' : 'moon'} liquid-glass-nav-icon`}
+              aria-hidden="true"
+            ></i>
+          </div>
+          <span className="liquid-glass-nav-label">
+            {theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}
+          </span>
+        </button>
+
+        {/* Logout Button */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="liquid-glass-nav-item"
+          onMouseEnter={() => setHoveredIndex(filteredNavItems.length + 1)}
+          aria-label="Sign out"
+          style={{
+            transform: `scale(${getIconScale(filteredNavItems.length + 1)}) translateY(${getIconTranslateY(filteredNavItems.length + 1)}px)`,
+          }}
+        >
+          <div className="liquid-glass-nav-icon-wrapper">
+            <i className="fas fa-sign-out-alt liquid-glass-nav-icon" aria-hidden="true"></i>
+          </div>
+          <span className="liquid-glass-nav-label">{t('auth.logout')}</span>
+        </button>
       </div>
     </nav>
   );

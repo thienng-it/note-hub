@@ -3,7 +3,7 @@
 exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
 <nav
   aria-label="Mac-style navigation dock"
-  class="liquid-glass-nav"
+  class="liquid-glass-nav dock-visible"
 >
   <div
     class="liquid-glass-nav-container"
@@ -49,6 +49,48 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
         class="liquid-glass-nav-label"
       >
         Favorites
+      </span>
+    </a>
+    <a
+      aria-label="Archived"
+      class="liquid-glass-nav-item "
+      data-discover="true"
+      href="/?view=archived"
+      style="transform: scale(1) translateY(0px);"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-archive liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Archived
+      </span>
+    </a>
+    <a
+      aria-label="Shared With Me"
+      class="liquid-glass-nav-item "
+      data-discover="true"
+      href="/?view=shared"
+      style="transform: scale(1) translateY(0px);"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-share-alt liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Shared With Me
       </span>
     </a>
     <a
@@ -156,6 +198,46 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
         Profile
       </span>
     </a>
+    <button
+      aria-label="Switch to dark mode"
+      class="liquid-glass-nav-item"
+      style="transform: scale(1) translateY(0px);"
+      type="button"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-moon liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Dark Mode
+      </span>
+    </button>
+    <button
+      aria-label="Sign out"
+      class="liquid-glass-nav-item"
+      style="transform: scale(1) translateY(0px);"
+      type="button"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-sign-out-alt liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Logout
+      </span>
+    </button>
   </div>
 </nav>
 `;
@@ -163,7 +245,7 @@ exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
 exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
 <nav
   aria-label="Mac-style navigation dock"
-  class="liquid-glass-nav"
+  class="liquid-glass-nav dock-visible"
 >
   <div
     class="liquid-glass-nav-container"
@@ -209,6 +291,48 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
         class="liquid-glass-nav-label"
       >
         Favorites
+      </span>
+    </a>
+    <a
+      aria-label="Archived"
+      class="liquid-glass-nav-item "
+      data-discover="true"
+      href="/?view=archived"
+      style="transform: scale(1) translateY(0px);"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-archive liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Archived
+      </span>
+    </a>
+    <a
+      aria-label="Shared With Me"
+      class="liquid-glass-nav-item "
+      data-discover="true"
+      href="/?view=shared"
+      style="transform: scale(1) translateY(0px);"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-share-alt liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Shared With Me
       </span>
     </a>
     <a
@@ -316,6 +440,46 @@ exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
         Profile
       </span>
     </a>
+    <button
+      aria-label="Switch to dark mode"
+      class="liquid-glass-nav-item"
+      style="transform: scale(1) translateY(0px);"
+      type="button"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-moon liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Dark Mode
+      </span>
+    </button>
+    <button
+      aria-label="Sign out"
+      class="liquid-glass-nav-item"
+      style="transform: scale(1) translateY(0px);"
+      type="button"
+    >
+      <div
+        class="liquid-glass-nav-icon-wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="fas fa-sign-out-alt liquid-glass-nav-icon"
+        />
+      </div>
+      <span
+        class="liquid-glass-nav-label"
+      >
+        Logout
+      </span>
+    </button>
   </div>
 </nav>
 `;
