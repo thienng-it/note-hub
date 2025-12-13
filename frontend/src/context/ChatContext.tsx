@@ -33,6 +33,7 @@ interface ChatContextType {
   error: string | null;
   loadRooms: () => Promise<void>;
   selectRoom: (roomId: number) => void;
+  clearRoom: () => void;
   startChat: (userId: number) => Promise<void>;
   sendMessage: (message: string) => void;
   loadMoreMessages: () => Promise<void>;
@@ -378,6 +379,15 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     [onlineUsers, userStatuses],
   );
 
+  // Clear current room (for mobile back navigation)
+  const clearRoom = useCallback(() => {
+    setCurrentRoom(null);
+    setMessages([]);
+    setTypingUsers(new Map());
+    setOffset(0);
+    setHasMore(true);
+  }, []);
+
   const value: ChatContextType = {
     rooms,
     currentRoom,
@@ -390,6 +400,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     error,
     loadRooms,
     selectRoom,
+    clearRoom,
     startChat,
     sendMessage,
     loadMoreMessages,

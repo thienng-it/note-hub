@@ -303,7 +303,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
               <td
                 class="px-4 py-3 text-sm text-[var(--text-secondary)]"
               >
-                12/12/2024, 10:00:00 AM
+                12/12/2024, 5:00:00 PM
               </td>
               <td
                 class="px-4 py-3 text-sm"
@@ -376,7 +376,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
               <td
                 class="px-4 py-3 text-sm text-[var(--text-secondary)]"
               >
-                12/12/2024, 11:00:00 AM
+                12/12/2024, 6:00:00 PM
               </td>
               <td
                 class="px-4 py-3 text-sm"
