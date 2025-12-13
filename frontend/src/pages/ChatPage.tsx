@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chatApi } from '../api/chat';
+import { UserAvatar } from '../components/UserAvatar';
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
 import type { ChatUser } from '../types/chat';
@@ -29,6 +30,7 @@ export function ChatPage() {
     setTyping,
     deleteMessage,
     deleteRoom,
+    getUserStatus,
   } = useChat();
 
   const [messageInput, setMessageInput] = useState('');
@@ -140,17 +142,17 @@ export function ChatPage() {
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
             <i className="fas fa-comments mr-2"></i>
             {t('chat.title')}
           </h1>
           <button
             type="button"
             onClick={handleOpenNewChat}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-3 py-2 md:px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
           >
-            <i className="fas fa-plus mr-2"></i>
-            {t('chat.newChat')}
+            <i className="fas fa-plus mr-1 md:mr-2"></i>
+            <span className="hidden sm:inline">{t('chat.newChat')}</span>
           </button>
         </div>
         {!isConnected && (
@@ -163,8 +165,12 @@ export function ChatPage() {
 
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Rooms list */}
-        <div className="w-80 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto">
+        {/* Rooms list - Hidden on mobile when chat is selected */}
+        <div
+          className={`w-full md:w-80 lg:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto ${
+            currentRoom ? 'hidden md:block' : 'block'
+          }`}
+        >
           {isLoading && rooms.length === 0 ? (
             <div className="p-4 text-center text-gray-500">
               <i className="fas fa-spinner fa-spin mr-2"></i>
@@ -181,7 +187,9 @@ export function ChatPage() {
               {rooms.map((room) => {
                 const otherUser = getOtherParticipant(room);
                 const displayName = room.is_group ? room.name : otherUser?.username || 'Unknown';
-                const isOnline = otherUser ? onlineUsers.has(otherUser.id) : false;
+                const userStatus = otherUser
+                  ? getUserStatus(otherUser.id, otherUser.status)
+                  : 'offline';
 
                 return (
                   <button
@@ -192,13 +200,21 @@ export function ChatPage() {
                       currentRoom?.id === room.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                     }`}
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      {!room.is_group && otherUser && (
+                        <UserAvatar
+                          username={otherUser.username}
+                          avatarUrl={otherUser.avatar_url}
+                          size="md"
+                          status={userStatus as 'online' | 'offline' | 'away' | 'busy'}
+                          showStatus={true}
+                        />
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-gray-900 dark:text-white truncate">
                             {displayName}
                           </span>
-                          {isOnline && <span className="w-2 h-2 bg-green-500 rounded-full"></span>}
                         </div>
                         {room.lastMessage && (
                           <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-1">
@@ -226,11 +242,15 @@ export function ChatPage() {
           )}
         </div>
 
-        {/* Chat area */}
-        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900">
+        {/* Chat area - Full width on mobile when chat is selected */}
+        <div
+          className={`flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 ${
+            currentRoom ? 'block' : 'hidden md:flex'
+          }`}
+        >
           {!currentRoom ? (
             <div className="flex-1 flex items-center justify-center text-gray-500">
-              <div className="text-center">
+              <div className="text-center px-4">
                 <i className="fas fa-comment-dots text-6xl mb-4 opacity-30"></i>
                 <p className="text-lg">{t('chat.noChatSelected')}</p>
               </div>
@@ -240,8 +260,17 @@ export function ChatPage() {
               {/* Chat header */}
               <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <h2 className="font-semibold text-gray-900 dark:text-white">
+                  {/* Back button for mobile */}
+                  <button
+                    type="button"
+                    onClick={() => setCurrentRoom(null)}
+                    className="md:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    title={t('common.back')}
+                  >
+                    <i className="fas fa-arrow-left"></i>
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="font-semibold text-gray-900 dark:text-white truncate">
                       {currentRoom.is_group
                         ? currentRoom.name
                         : t('chat.chatWith', {
@@ -257,7 +286,7 @@ export function ChatPage() {
                   <button
                     type="button"
                     onClick={() => setShowDeleteRoomConfirm(true)}
-                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex-shrink-0"
                     title={t('chat.deleteChat')}
                   >
                     <i className="fas fa-trash"></i>
@@ -272,11 +301,19 @@ export function ChatPage() {
                   return (
                     <div
                       key={message.id || index}
-                      className={`flex ${isSender ? 'justify-end' : 'justify-start'} group`}
+                      className={`flex ${isSender ? 'justify-end' : 'justify-start'} gap-2 group`}
                     >
+                      {!isSender && (
+                        <UserAvatar
+                          username={message.sender.username}
+                          avatarUrl={message.sender.avatar_url}
+                          size="sm"
+                          className="flex-shrink-0"
+                        />
+                      )}
                       <div className={`max-w-xs lg:max-w-md ${isSender ? 'order-2' : 'order-1'}`}>
                         {!isSender && (
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-1">
                             {message.sender.username}
                           </p>
                         )}
@@ -301,7 +338,7 @@ export function ChatPage() {
                             </button>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 mt-1 ml-1">
                           {formatTime(message.created_at)}
                         </p>
                       </div>
@@ -311,22 +348,22 @@ export function ChatPage() {
               </div>
 
               {/* Message input */}
-              <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+              <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-3 md:p-4">
                 <form onSubmit={handleSendMessage} className="flex gap-2">
                   <input
                     type="text"
                     value={messageInput}
                     onChange={(e) => handleTyping(e.target.value)}
                     placeholder={t('chat.typeMessage')}
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-3 py-2 md:px-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm md:text-base"
                   />
                   <button
                     type="submit"
                     disabled={!messageInput.trim()}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 md:px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base"
                   >
-                    <i className="fas fa-paper-plane mr-2"></i>
-                    {t('chat.send')}
+                    <i className="fas fa-paper-plane md:mr-2"></i>
+                    <span className="hidden md:inline">{t('chat.send')}</span>
                   </button>
                 </form>
               </div>
@@ -364,39 +401,39 @@ export function ChatPage() {
               {filteredUsers.length === 0 ? (
                 <p className="text-center text-gray-500 py-4">{t('chat.selectUser')}</p>
               ) : (
-                filteredUsers.map((user) => (
-                  <button
-                    type="button"
-                    key={user.id}
-                    onClick={() => {
-                      startChat(user.id);
-                      setShowNewChatModal(false);
-                      setSearchQuery('');
-                    }}
-                    className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {user.username}
+                filteredUsers.map((chatUser) => {
+                  const userStatus = getUserStatus(chatUser.id, chatUser.status);
+                  return (
+                    <button
+                      type="button"
+                      key={chatUser.id}
+                      onClick={() => {
+                        startChat(chatUser.id);
+                        setShowNewChatModal(false);
+                        setSearchQuery('');
+                      }}
+                      className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <UserAvatar
+                          username={chatUser.username}
+                          avatarUrl={chatUser.avatar_url}
+                          size="md"
+                          status={userStatus as 'online' | 'offline' | 'away' | 'busy'}
+                          showStatus={true}
+                        />
+                        <div className="flex-1">
+                          <div className="font-semibold text-gray-900 dark:text-white">
+                            {chatUser.username}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {t(`chat.${userStatus}`)}
+                          </div>
+                        </div>
                       </div>
-                      {user.status && (
-                        <span
-                          className={`text-xs px-2 py-1 rounded-full ${
-                            user.status === 'online'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : user.status === 'busy'
-                                ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                                : user.status === 'away'
-                                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
-                                  : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
-                          }`}
-                        >
-                          {t(`chat.${user.status}`)}
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                ))
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>

@@ -42,9 +42,10 @@ export function initializeSocketIO(httpServer) {
       }
 
       // Get user from database
-      const user = await db.queryOne('SELECT id, username FROM users WHERE id = ?', [
-        result.userId,
-      ]);
+      const user = await db.queryOne(
+        'SELECT id, username, avatar_url, status FROM users WHERE id = ?',
+        [result.userId],
+      );
 
       if (!user) {
         return next(new Error('User not found'));
@@ -52,6 +53,8 @@ export function initializeSocketIO(httpServer) {
 
       socket.userId = user.id;
       socket.username = user.username;
+      socket.avatarUrl = user.avatar_url;
+      socket.userStatus = user.status;
       next();
     } catch (error) {
       logger.error('Socket authentication failed', { error: error.message });
@@ -71,8 +74,13 @@ export function initializeSocketIO(httpServer) {
     // Store connected user
     connectedUsers.set(userId, socket.id);
 
-    // Notify user is online
-    socket.broadcast.emit('user:online', { userId, username: socket.username });
+    // Notify user is online (socket connection detected)
+    socket.broadcast.emit('user:online', {
+      userId,
+      username: socket.username,
+      avatarUrl: socket.avatarUrl,
+      status: socket.userStatus,
+    });
 
     // Join user's personal room for direct messages
     socket.join(`user:${userId}`);
@@ -156,10 +164,37 @@ export function initializeSocketIO(httpServer) {
       }
     });
 
+    // Handle user status update
+    socket.on('user:status', async ({ status }) => {
+      try {
+        const validStatuses = ['online', 'offline', 'away', 'busy'];
+        if (validStatuses.includes(status)) {
+          // Update in database
+          await db.run('UPDATE users SET status = ? WHERE id = ?', [status, userId]);
+          socket.userStatus = status;
+
+          // Broadcast to all connected users
+          socket.broadcast.emit('user:status', {
+            userId,
+            username: socket.username,
+            status,
+          });
+
+          logger.debug('User status updated via socket', { userId, status });
+        }
+      } catch (error) {
+        logger.error('Error updating user status', { userId, error: error.message });
+      }
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
       connectedUsers.delete(userId);
-      socket.broadcast.emit('user:offline', { userId, username: socket.username });
+      socket.broadcast.emit('user:offline', {
+        userId,
+        username: socket.username,
+        avatarUrl: socket.avatarUrl,
+      });
       logger.info('User disconnected from WebSocket', {
         userId,
         username: socket.username,
