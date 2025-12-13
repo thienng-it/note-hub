@@ -753,124 +753,8 @@ body.dark {
    MOBILE NAVIGATION & RESPONSIVE ENHANCEMENTS
    ============================================================ */
 
-/* Mobile Navigation - Hidden by default, shows on phones only */
-.mobile-nav {
-  display: none;
-  z-index: 50;
-}
-
-/* Mobile-specific styles (phones only, under 768px) */
-@media (max-width: 767px) {
-  .mobile-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-top: 1px solid var(--glass-border);
-    padding: 0.5rem 0.25rem;
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-    z-index: 50;
-    box-shadow: 0 -4px 24px 0 var(--glass-shadow);
-    justify-content: space-around;
-    align-items: flex-end;
-  }
-
-  .mobile-nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 0.25rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    font-size: 0.65rem;
-    font-weight: 500;
-    position: relative;
-    /* Better touch target - minimum 44x44px for accessibility */
-    min-height: 56px;
-    min-width: 44px;
-    /* Remove tap highlight on mobile */
-    -webkit-tap-highlight-color: transparent;
-    /* Better touch response */
-    touch-action: manipulation;
-  }
-
-  .mobile-nav-item i,
-  .mobile-nav-item svg {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
-    transition: all 0.2s ease;
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .mobile-nav-item span {
-    transition: all 0.2s ease;
-    /* Better text wrapping on small screens */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-  }
-
-  .mobile-nav-item.active {
-    color: var(--primary-color);
-  }
-
-  .mobile-nav-item.active i,
-  .mobile-nav-item.active svg {
-    transform: scale(1.1);
-  }
-
-  .mobile-nav-item.active::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 32px;
-    height: 3px;
-    background: var(--primary-color);
-    border-radius: 0 0 4px 4px;
-  }
-
-  /* Visual feedback on tap */
-  .mobile-nav-item:active {
-    transform: scale(0.95);
-    opacity: 0.7;
-  }
-
-  .mobile-nav-item.create-btn {
-    padding-top: 0;
-  }
-
-  .mobile-nav-item.create-btn span {
-    display: none;
-  }
-
-  /* Add bottom padding for mobile navigation */
-  #main-content {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom));
-  }
-}
-
-/* Small phone adjustments (max 375px) */
-@media (max-width: 375px) {
-  .mobile-nav-item {
-    font-size: 0.625rem;
-    padding: 0.5rem 0.125rem;
-  }
-
-  .mobile-nav {
-    padding: 0.375rem 0.125rem;
-  }
-}
+/* Legacy Mobile Navigation - Removed in favor of unified dock
+   The LiquidGlassNav now handles all screen sizes */
 
 /* Back to Top Button */
 .btn-back-to-top {
@@ -1581,14 +1465,7 @@ body.dark {
 
 /* Landscape phone adjustments */
 @media (max-width: 767px) and (orientation: landscape) {
-  .mobile-nav {
-    padding: 0.25rem 0.125rem;
-  }
-
-  .mobile-nav-item {
-    min-height: 48px;
-    padding: 0.375rem 0.25rem;
-  }
+  /* Dock adjustments handled in main responsive section */
 }
 
 /* Very small screens (< 320px) */
@@ -1606,12 +1483,330 @@ body.dark {
 }
 
 /* ============================================================
+   MAC-STYLE LIQUID GLASS NAVIGATION DOCK
+   ============================================================ */
+
+/* Liquid Glass Navigation - All screen sizes */
+.liquid-glass-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0.5rem;
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease;
+}
+
+/* Dock visible state */
+.liquid-glass-nav.dock-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Dock hidden state - slides down and fades out */
+.liquid-glass-nav.dock-hidden {
+  transform: translateY(150%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Navigation Container with Liquid Glass Effect */
+.liquid-glass-nav-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.15),
+    0 20px 60px 0 rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari, Opera */
+.liquid-glass-nav-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dark mode adjustments */
+.dark .liquid-glass-nav-container {
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.4),
+    0 20px 60px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Navigation Item */
+.liquid-glass-nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  text-decoration: none;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-width: 2.75rem;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Icon Wrapper with Glassmorphism */
+.liquid-glass-nav-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.875rem;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dark .liquid-glass-nav-icon-wrapper {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Icon styling */
+.liquid-glass-nav-icon {
+  font-size: 1.125rem;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Active state */
+.liquid-glass-nav-item.active .liquid-glass-nav-icon-wrapper {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow:
+    0 8px 24px rgba(59, 130, 246, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.liquid-glass-nav-item.active .liquid-glass-nav-icon {
+  color: white;
+}
+
+.liquid-glass-nav-item.active {
+  color: var(--primary-color);
+}
+
+/* Hover effect - enhanced glow (desktop/tablet only) */
+@media (hover: hover) {
+  .liquid-glass-nav-item:hover .liquid-glass-nav-icon-wrapper {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow:
+      0 8px 24px rgba(59, 130, 246, 0.2),
+      0 12px 32px rgba(59, 130, 246, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .dark .liquid-glass-nav-item:hover .liquid-glass-nav-icon-wrapper {
+    background: rgba(71, 85, 105, 0.7);
+    box-shadow:
+      0 8px 24px rgba(59, 130, 246, 0.3),
+      0 12px 32px rgba(59, 130, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Active/tap feedback for touch devices */
+.liquid-glass-nav-item:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* Label - hidden by default, shown on hover (desktop/tablet only) */
+.liquid-glass-nav-label {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.5rem);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+  z-index: 10;
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .liquid-glass-nav-item:hover .liquid-glass-nav-label {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-0.75rem);
+  }
+}
+
+/* Indicator dot for active item */
+.liquid-glass-nav-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0.25rem;
+  height: 0.25rem;
+  background: var(--primary-color);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS FOR DOCK
+   ============================================================ */
+
+/* Mobile (< 768px) - Bottom dock with horizontal scroll */
+@media (max-width: 767px) {
+  .liquid-glass-nav {
+    bottom: 0;
+  }
+
+  .liquid-glass-nav-container {
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 1rem 1rem 0 0;
+    border-bottom: none;
+  }
+
+  .liquid-glass-nav-item {
+    min-width: 3rem;
+    padding: 0.375rem;
+  }
+
+  .liquid-glass-nav-icon-wrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .liquid-glass-nav-icon {
+    font-size: 1rem;
+  }
+
+  /* Add padding to main content for dock space */
+  #main-content {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Tablet (768px - 1024px) - Centered dock */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .liquid-glass-nav {
+    bottom: 1rem;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  .liquid-glass-nav.dock-hidden {
+    transform: translate(-50%, 150%);
+  }
+
+  .liquid-glass-nav-container {
+    gap: 0.375rem;
+    padding: 0.625rem 1rem;
+    max-width: 90vw;
+  }
+
+  .liquid-glass-nav-icon-wrapper {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .liquid-glass-nav-icon {
+    font-size: 1.125rem;
+  }
+
+  .liquid-glass-nav-item {
+    min-width: 3rem;
+  }
+}
+
+/* Desktop (> 1024px) - Centered dock with larger icons */
+@media (min-width: 1024px) {
+  .liquid-glass-nav {
+    bottom: 1.5rem;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  .liquid-glass-nav.dock-hidden {
+    transform: translate(-50%, 150%);
+  }
+
+  .liquid-glass-nav-container {
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    max-width: none;
+  }
+
+  .liquid-glass-nav-icon-wrapper {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .liquid-glass-nav-icon {
+    font-size: 1.25rem;
+  }
+
+  .liquid-glass-nav-item {
+    min-width: 3.5rem;
+  }
+}
+
+/* ============================================================
    PRINT STYLES
    ============================================================ */
 @media print {
   /* Hide navigation and non-essential elements when printing */
   .sidebar,
   .mobile-nav,
+  .liquid-glass-nav,
   .btn-back-to-top,
   button {
     display: none;

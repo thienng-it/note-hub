@@ -740,6 +740,7 @@ function defineModels() {
   Folder.hasMany(Task, { foreignKey: 'folder_id', as: 'tasks' });
   Task.belongsTo(Folder, { foreignKey: 'folder_id', as: 'folder' });
 
+
   // Chat associations
   User.hasMany(ChatRoom, { foreignKey: 'created_by_id', as: 'createdChatRooms' });
   ChatRoom.belongsTo(User, { foreignKey: 'created_by_id', as: 'creator' });
@@ -766,7 +767,10 @@ function defineModels() {
     PasswordResetToken,
     Invitation,
     NoteTag,
+<<<<<<< HEAD
     Folder,
+=======
+>>>>>>> main
     ChatRoom,
     ChatMessage,
     ChatParticipant,
