@@ -1,9 +1,11 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { tasksApi } from '../api/client';
+import { foldersApi, tasksApi } from '../api/client';
+import { FolderModal } from '../components/FolderModal';
+import { FolderTree } from '../components/FolderTree';
 import { ImageUpload } from '../components/ImageUpload';
 import { ConfirmModal } from '../components/Modal';
-import type { Task, TaskFilterType } from '../types';
+import type { Folder, Task, TaskFilterType } from '../types';
 import { type TaskTemplate, taskTemplates } from '../utils/templates';
 
 export function TasksPage() {
@@ -12,6 +14,11 @@ export function TasksPage() {
   const [filter, setFilter] = useState<TaskFilterType>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [showFolderModal, setShowFolderModal] = useState(false);
+  const [folderToEdit, setFolderToEdit] = useState<Folder | null>(null);
+  const [folderParentId, setFolderParentId] = useState<number | null>(null);
 
   // New task form
   const [showForm, setShowForm] = useState(false);
@@ -89,9 +96,72 @@ export function TasksPage() {
     }
   }, [filter]);
 
+  const loadFolders = useCallback(async () => {
+    try {
+      const { folders: fetchedFolders } = await foldersApi.list();
+      setFolders(fetchedFolders);
+    } catch (err) {
+      console.error('Failed to load folders:', err);
+    }
+  }, []);
+
   useEffect(() => {
     loadTasks();
-  }, [loadTasks]);
+    loadFolders();
+  }, [loadTasks, loadFolders]);
+
+  // Folder handlers
+  const handleSelectFolder = (folder: Folder | null) => {
+    setSelectedFolder(folder);
+  };
+
+  const handleCreateFolder = (parentId?: number | null) => {
+    setFolderParentId(parentId ?? null);
+    setFolderToEdit(null);
+    setShowFolderModal(true);
+  };
+
+  const handleEditFolder = (folder: Folder) => {
+    setFolderToEdit(folder);
+    setFolderParentId(folder.parent_id);
+    setShowFolderModal(true);
+  };
+
+  const handleDeleteFolder = async (folder: Folder) => {
+    if (!confirm(t('folders.deleteConfirm') + '\n\n' + t('folders.deleteWarning'))) {
+      return;
+    }
+    try {
+      await foldersApi.delete(folder.id);
+      await loadFolders();
+      if (selectedFolder?.id === folder.id) {
+        setSelectedFolder(null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('folders.deleteError'));
+    }
+  };
+
+  const handleSaveFolder = async (name: string, icon: string, color: string) => {
+    try {
+      if (folderToEdit) {
+        await foldersApi.update(folderToEdit.id, { name, icon, color });
+      } else {
+        await foldersApi.create({
+          name,
+          parent_id: folderParentId,
+          icon,
+          color,
+        });
+      }
+      await loadFolders();
+      setShowFolderModal(false);
+      setFolderToEdit(null);
+      setFolderParentId(null);
+    } catch (err) {
+      throw err;
+    }
+  };
 
   const handleCreateTask = async (e: FormEvent) => {
     e.preventDefault();
@@ -199,8 +269,25 @@ export function TasksPage() {
   };
 
   return (
-    <div className="container-responsive py-4 sm:py-6 space-y-4 sm:space-y-6">
-      {/* Header */}
+    <div className="flex gap-6 p-6">
+      {/* Folder Sidebar */}
+      <div className="w-64 flex-shrink-0 hidden lg:block">
+        <div className="glass-card p-4 rounded-xl sticky top-6">
+          <FolderTree
+            folders={folders}
+            selectedFolderId={selectedFolder?.id}
+            onSelectFolder={handleSelectFolder}
+            onCreateFolder={handleCreateFolder}
+            onEditFolder={handleEditFolder}
+            onDeleteFolder={handleDeleteFolder}
+            onMoveFolder={() => {}}
+          />
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 container-responsive py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {/* Header */}
       <div className="stack-mobile">
         <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i className="glass-i fas fa-tasks mr-2 sm:mr-3 text-blue-600"></i>
@@ -449,9 +536,27 @@ export function TasksPage() {
         <div className="flex items-center justify-center py-12">
           <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
         </div>
-      ) : tasks.length > 0 ? (
-        <div className="space-y-3">
-          {tasks.map((task) => (
+      ) : (() => {
+        // Filter tasks by selected folder
+        const filteredTasks = selectedFolder
+          ? tasks.filter((task) => task.folder_id === selectedFolder.id)
+          : tasks;
+        
+        return filteredTasks.length === 0 ? (
+          <div className="glass-card p-12 rounded-2xl text-center">
+            <i className="glass-i fas fa-folder-open text-6xl mb-4 text-[var(--text-muted)]"></i>
+            <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">
+              {selectedFolder ? `No tasks in "${selectedFolder.name}"` : 'No tasks yet'}
+            </h3>
+            <p className="text-[var(--text-secondary)] mb-6">
+              {selectedFolder
+                ? 'Create a task or move existing tasks to this folder'
+                : 'Create your first task to get started!'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredTasks.map((task) => (
             <div
               key={task.id}
               className={`card p-4 rounded-xl transition-all ${
@@ -620,24 +725,10 @@ export function TasksPage() {
                 </div>
               )}
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="glass-card glass-div-center">
-          <i className="glass-i fas fa-tasks text-6xl mb-4 text-[var(--text-muted)]"></i>
-          <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">No tasks found</h3>
-          <p className="text-[var(--text-secondary)] mb-6">
-            {filter === 'all' ? 'Create your first task to get started' : `No ${filter} tasks`}
-          </p>
-          <button
-            type="button"
-            onClick={() => setShowForm(true)}
-            className="btn-primary inline-flex items-center px-6 py-3 rounded-lg"
-          >
-            <i className="glass-i fas fa-plus mr-2"></i>Create Task
-          </button>
-        </div>
-      )}
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
@@ -651,6 +742,21 @@ export function TasksPage() {
         variant="danger"
         isLoading={isDeleting}
       />
+
+      {/* Folder Modal */}
+      {showFolderModal && (
+        <FolderModal
+          folder={folderToEdit}
+          parentId={folderParentId}
+          onSave={handleSaveFolder}
+          onClose={() => {
+            setShowFolderModal(false);
+            setFolderToEdit(null);
+            setFolderParentId(null);
+          }}
+        />
+      )}
+      </div>
     </div>
   );
 }

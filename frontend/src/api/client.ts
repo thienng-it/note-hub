@@ -2,6 +2,9 @@ import type {
   AIOperationResult,
   AIRewriteStyle,
   AIStatus,
+  Folder,
+  FolderFormData,
+  FoldersResponse,
   LoginCredentials,
   LoginResponse,
   Note,
@@ -389,6 +392,65 @@ export const tasksApi = {
 
   async toggleComplete(task: Task): Promise<Task> {
     return this.update(task.id, { completed: !task.completed });
+  },
+};
+
+// Folders API
+export const foldersApi = {
+  async list(): Promise<FoldersResponse> {
+    return apiRequest<FoldersResponse>(`${API_VERSION}/folders`);
+  },
+
+  async get(id: number): Promise<Folder> {
+    return apiRequest<Folder>(`${API_VERSION}/folders/${id}`);
+  },
+
+  async create(data: FolderFormData): Promise<Folder> {
+    return apiRequest<Folder>(`${API_VERSION}/folders`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async update(id: number, data: Partial<FolderFormData & { is_expanded?: boolean }>): Promise<Folder> {
+    return apiRequest<Folder>(`${API_VERSION}/folders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async delete(id: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/folders/${id}`, { method: 'DELETE' });
+  },
+
+  async move(id: number, parentId: number | null): Promise<Folder> {
+    return apiRequest<Folder>(`${API_VERSION}/folders/${id}/move`, {
+      method: 'POST',
+      body: JSON.stringify({ parent_id: parentId }),
+    });
+  },
+
+  async getPath(id: number): Promise<{ path: Folder[] }> {
+    return apiRequest<{ path: Folder[] }>(`${API_VERSION}/folders/${id}/path`);
+  },
+
+  async getNotes(id: number, recursive = false): Promise<{ notes: Note[] }> {
+    const params = new URLSearchParams({ recursive: String(recursive) });
+    return apiRequest<{ notes: Note[] }>(`${API_VERSION}/folders/${id}/notes?${params}`);
+  },
+
+  async moveNote(noteId: number, folderId: number | null): Promise<void> {
+    await apiRequest(`${API_VERSION}/folders/notes/${noteId}/move`, {
+      method: 'POST',
+      body: JSON.stringify({ folder_id: folderId }),
+    });
+  },
+
+  async moveTask(taskId: number, folderId: number | null): Promise<void> {
+    await apiRequest(`${API_VERSION}/folders/tasks/${taskId}/move`, {
+      method: 'POST',
+      body: JSON.stringify({ folder_id: folderId }),
+    });
   },
 };
 

@@ -43,6 +43,7 @@ import aiRoutes from './routes/ai.js';
 import authRoutes from './routes/auth.js';
 import chatRoutes from './routes/chat.js';
 import exportRoutes from './routes/export.js';
+import foldersRoutes from './routes/folders.js';
 import notesRoutes from './routes/notes.js';
 import passkeyRoutes from './routes/passkey.js';
 import profileRoutes from './routes/profile.js';
@@ -143,6 +144,7 @@ app.use(legacyResponseAdapter);
 // API v1 routes (standardized response format)
 app.use(`${API_VERSION}/auth`, markAsV1, authRoutes);
 app.use(`${API_VERSION}/auth/passkey`, markAsV1, passkeyRoutes);
+app.use(`${API_VERSION}/folders`, markAsV1, foldersRoutes);
 app.use(`${API_VERSION}/notes`, markAsV1, notesRoutes);
 app.use(`${API_VERSION}/tasks`, markAsV1, tasksRoutes);
 app.use(`${API_VERSION}/profile`, markAsV1, profileRoutes);
