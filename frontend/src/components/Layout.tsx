@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { versionApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { LiquidGlassNav } from './LiquidGlassNav';
@@ -9,7 +9,6 @@ declare const __APP_VERSION__: string;
 
 export function Layout() {
   const { user } = useAuth();
-  const location = useLocation();
 
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [backendVersion, setBackendVersion] = useState<string | null>(null);
