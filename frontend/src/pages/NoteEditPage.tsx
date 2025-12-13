@@ -140,15 +140,16 @@ export function NoteEditPage() {
         </Link>
       </div>
 
-      <div className="glass-card rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-[var(--border-color)]">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+      <div className="glass-panel overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-[var(--border-color)]">
+          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
             <i className={`fas ${isNew ? 'fa-plus' : 'fa-edit'} mr-2 text-blue-600`}></i>
-            {isNew ? 'Create New Note' : 'Edit Note'}
+            <span className="hide-mobile sm:inline">{isNew ? 'Create New Note' : 'Edit Note'}</span>
+            <span className="show-mobile">{isNew ? 'New' : 'Edit'}</span>
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {error && (
             <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
               <i className="glass-i fas fa-exclamation-triangle mr-2"></i>

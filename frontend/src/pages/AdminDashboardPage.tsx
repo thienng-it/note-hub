@@ -212,40 +212,41 @@ export function AdminDashboardPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="container-responsive py-4 sm:py-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] flex items-center gap-3">
+      <div className="mb-6 sm:mb-8">
+        <div className="stack-mobile mb-4">
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] flex items-center gap-2 sm:gap-3">
               <i className="glass-i fas fa-users-cog text-blue-600" aria-hidden="true"></i>
-              Admin Dashboard
+              <span className="hide-mobile">Admin Dashboard</span>
+              <span className="show-mobile">Admin</span>
             </h1>
-            <p className="text-[var(--text-secondary)] mt-2">
+            <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-2">
               Manage users and view system statistics
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Link
               to="/admin/audit-logs"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="btn-apple flex-1 sm:flex-initial"
             >
               <i className="glass-i fas fa-clipboard-list" aria-hidden="true"></i>
-              <span>Audit Logs</span>
+              <span className="hide-mobile sm:inline ml-2">Audit Logs</span>
             </Link>
             <Link
               to="/"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
+              className="btn-secondary-glass flex-1 sm:flex-initial"
             >
               <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
-              <span>{t('admin.backToNotes')}</span>
+              <span className="hide-mobile sm:inline ml-2">{t('admin.backToNotes')}</span>
             </Link>
           </div>
         </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div className="responsive-grid mb-6 sm:mb-8">
         <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white">
           <div className="flex items-center justify-between">
             <div>
@@ -308,8 +309,8 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="glass-card p-4 sm:p-6 rounded-xl mb-6">
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
+      <div className="glass-panel p-4 sm:p-6 mb-6">
+        <form onSubmit={handleSearch} className="stack-mobile">
           <div className="flex-1 relative">
             <i
               className="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"
@@ -320,22 +321,22 @@ export function AdminDashboardPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('admin.searchPlaceholder')}
-              className="glass-input w-full pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="glass-input glass-input-with-icon w-full"
             />
           </div>
           <div className="flex gap-2">
-            <button type="submit" className="btn-apple">
+            <button type="submit" className="btn-apple flex-1 sm:flex-initial">
               <i className="glass-i fas fa-search" aria-hidden="true"></i>
-              <span>{t('common.search')}</span>
+              <span className="ml-2">{t('common.search')}</span>
             </button>
             {searchQuery && (
               <button
                 type="button"
                 onClick={clearSearch}
-                className="px-6 py-3 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
+                className="btn-secondary-glass flex-1 sm:flex-initial"
               >
                 <i className="glass-i fas fa-times" aria-hidden="true"></i>
-                <span>{t('common.clear')}</span>
+                <span className="ml-2">{t('common.clear')}</span>
               </button>
             )}
           </div>

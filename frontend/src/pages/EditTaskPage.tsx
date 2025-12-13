@@ -89,9 +89,9 @@ export function EditTaskPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="container-responsive py-4 sm:py-6">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <Link
           to="/tasks"
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
@@ -100,17 +100,18 @@ export function EditTaskPage() {
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Tasks
         </Link>
-        <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
+        <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i
-            className={`fas fa-${isEdit ? 'edit' : 'plus'} mr-3 text-blue-600`}
+            className={`fas fa-${isEdit ? 'edit' : 'plus'} mr-2 sm:mr-3 text-blue-600`}
             aria-hidden="true"
           ></i>
-          {isEdit ? 'Edit Task' : 'Create New Task'}
+          <span className="hide-mobile sm:inline">{isEdit ? 'Edit Task' : 'Create New Task'}</span>
+          <span className="show-mobile">{isEdit ? 'Edit' : 'New'} Task</span>
         </h1>
       </div>
 
       {/* Form */}
-      <div className="glass-card p-6 rounded-xl">
+      <div className="glass-panel p-4 sm:p-6 max-w-2xl mx-auto">
         {error && (
           <div
             className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"

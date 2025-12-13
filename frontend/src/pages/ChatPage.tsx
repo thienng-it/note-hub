@@ -187,16 +187,17 @@ export function ChatPage() {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
-            <i className="fas fa-comments mr-2"></i>
-            {t('chat.title')}
+      <div className="glass-header p-3 md:p-4 flex-shrink-0">
+        <div className="stack-mobile">
+          <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)]">
+            <i className="fas fa-comments mr-2 text-blue-600"></i>
+            <span className="hide-mobile sm:inline">{t('chat.title')}</span>
+            <span className="show-mobile">Chat</span>
           </h1>
           <button
             type="button"
             onClick={handleOpenNewChat}
-            className="px-3 py-1.5 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
+            className="btn-apple text-sm md:text-base"
           >
             <i className="fas fa-plus mr-1 md:mr-2"></i>
             <span className="hidden sm:inline">{t('chat.newChat')}</span>
