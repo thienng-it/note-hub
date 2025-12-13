@@ -41,6 +41,7 @@ import adminRoutes from './routes/admin.js';
 import aiRoutes from './routes/ai.js';
 // Import routes
 import authRoutes from './routes/auth.js';
+import chatRoutes from './routes/chat.js';
 import exportRoutes from './routes/export.js';
 import notesRoutes from './routes/notes.js';
 import passkeyRoutes from './routes/passkey.js';
@@ -148,6 +149,7 @@ app.use(`${API_VERSION}/admin`, markAsV1, adminRoutes);
 app.use(`${API_VERSION}/ai`, markAsV1, aiRoutes);
 app.use(`${API_VERSION}/upload`, markAsV1, uploadRoutes);
 app.use(`${API_VERSION}/export`, markAsV1, exportRoutes);
+app.use(`${API_VERSION}/chat`, markAsV1, chatRoutes);
 
 // Health check endpoints with standardized response
 import * as responseHandler from './utils/responseHandler.js';
@@ -332,7 +334,15 @@ async function start() {
       : 'In-memory (single-instance only)';
     logger.info('🔐 Passkey challenge storage', { mode: challengeStorage });
 
-    app.listen(PORT, () => {
+    // Create HTTP server for Socket.io integration
+    const http = await import('node:http');
+    const httpServer = http.createServer(app);
+
+    // Initialize Socket.io for real-time chat
+    const { initializeSocketIO } = await import('./config/socketio.js');
+    initializeSocketIO(httpServer);
+
+    httpServer.listen(PORT, () => {
       logger.info('🚀 NoteHub API server started', {
         port: PORT,
         database: db.isSQLite ? 'SQLite' : 'MySQL',
@@ -340,11 +350,14 @@ async function start() {
         cache: cache.isEnabled() ? 'Redis (enabled)' : 'Disabled',
         search: elasticsearch.isEnabled() ? 'Elasticsearch (enabled)' : 'SQL LIKE (fallback)',
         passkeyStorage: challengeStorage,
+        chat: 'WebSocket (Socket.io enabled)',
         environment: process.env.NODE_ENV || 'development',
         logLevel: logger.config.level,
         logFormat: logger.config.format,
       });
     });
+
+    return httpServer;
   } catch (error) {
     logger.error('Failed to start server', {
       error: error.message,

@@ -209,10 +209,20 @@ cd frontend
 # Install dependencies
 npm install
 
-# Run development server (proxies API to backend)
+# Configure environment (copy from example)
+cp .env.example .env
+
+# Edit .env and set VITE_API_URL to your backend URL
+# For development: VITE_API_URL=http://localhost:5000
+# For production: Leave empty to use same origin
+nano .env
+
+# Run development server
 npm run dev
-# Frontend runs at http://localhost:3000
+# Frontend runs at http://localhost:5173
 ```
+
+> **Important for Chat Feature**: The `VITE_API_URL` environment variable is required in development for WebSocket connections to work. Without it, Socket.io will try to connect to the frontend dev server instead of the backend.
 
 ### 🐳 Docker Deployment
 

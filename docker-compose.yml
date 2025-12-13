@@ -267,6 +267,18 @@ services:
       - "traefik.http.routers.backend-health.tls=true"
       - "traefik.http.routers.backend-health.tls.certresolver=letsencrypt"
 
+      # Socket.io routing - proxy /socket.io/* to backend (HTTP)
+      - "traefik.http.routers.backend-socketio-http.rule=PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.backend-socketio-http.entrypoints=web"
+      - "traefik.http.routers.backend-socketio-http.priority=10"
+
+      # Socket.io routing - proxy /socket.io/* to backend (HTTPS with WebSocket support)
+      - "traefik.http.routers.backend-socketio.rule=PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.backend-socketio.entrypoints=websecure"
+      - "traefik.http.routers.backend-socketio.priority=10"
+      - "traefik.http.routers.backend-socketio.tls=true"
+      - "traefik.http.routers.backend-socketio.tls.certresolver=letsencrypt"
+
       # Service configuration (shared by all routers)
       - "traefik.http.services.backend.loadbalancer.server.port=5000"
 
