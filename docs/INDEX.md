@@ -78,6 +78,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [DATABASE_REPLICATION_IMPLEMENTATION](guides/DATABASE_REPLICATION_IMPLEMENTATION.md) - Database replication implementation
 
 ### Features & Configuration
+- **[LIQUID_GLASS_NAVBAR](features/LIQUID_GLASS_NAVBAR.md)** ⭐ NEW - Mac-style liquid glass navigation with dock effect
 - [CACHING_AND_SEARCH](guides/CACHING_AND_SEARCH.md) - Caching and search features
 - [CONFIG](guides/CONFIG.md) - Configuration guide
 - [ERROR_HANDLING](guides/ERROR_HANDLING.md) - Error handling guide

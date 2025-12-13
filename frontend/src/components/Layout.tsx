@@ -5,6 +5,7 @@ import { versionApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { LanguageSelector } from './LanguageSelector';
+import { LiquidGlassNav } from './LiquidGlassNav';
 
 // Version is injected at build time by Vite
 declare const __APP_VERSION__: string;
@@ -348,6 +349,9 @@ export function Layout() {
       >
         <i className="glass-i fas fa-arrow-up text-white" aria-hidden="true"></i>
       </button>
+
+      {/* Mac-Style Liquid Glass Navigation - Desktop & Tablet */}
+      {user && <LiquidGlassNav />}
 
       {/* Mobile Bottom Navigation - Only on phones */}
       {user && (
