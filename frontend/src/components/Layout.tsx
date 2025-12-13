@@ -44,7 +44,7 @@ export function Layout() {
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header with Logo and Version - Always visible */}
-        <header className="bg-[var(--bg-secondary)] border-b border-[var(--border-color)] px-4 py-3 safe-area-top flex-shrink-0">
+        <header className="glass-header safe-area-top flex-shrink-0">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
