@@ -126,6 +126,17 @@ router.get('/users', jwtRequired, async (req, res) => {
 });
 
 /**
+ * Helper function to determine appropriate status code for chat errors
+ * @param {Error} error - The error object
+ * @returns {number} HTTP status code
+ */
+function getChatErrorStatusCode(error) {
+  return error.message.includes('not found') || error.message.includes('not authorized')
+    ? 403
+    : 500;
+}
+
+/**
  * DELETE /api/v1/chat/rooms/:roomId/messages/:messageId
  * Delete a specific message
  */
@@ -137,9 +148,7 @@ router.delete('/rooms/:roomId/messages/:messageId', jwtRequired, async (req, res
     await chatService.deleteMessage(roomId, messageId, req.userId);
     return responseHandler.success(res, null, { message: 'Message deleted successfully' });
   } catch (error) {
-    const statusCode =
-      error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
-    return responseHandler.error(res, error.message, { statusCode });
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
   }
 });
 
@@ -154,9 +163,7 @@ router.delete('/rooms/:roomId', jwtRequired, async (req, res) => {
     await chatService.deleteRoom(roomId, req.userId);
     return responseHandler.success(res, null, { message: 'Chat room deleted successfully' });
   } catch (error) {
-    const statusCode =
-      error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
-    return responseHandler.error(res, error.message, { statusCode });
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
   }
 });
 
