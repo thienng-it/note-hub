@@ -400,6 +400,9 @@
     "deleteChatConfirm": "Delete Chat?",
     "deleteChatWarning": "This will permanently delete this chat and all its messages. This action cannot be undone.",
     "away": "Away",
-    "busy": "Busy"
+    "busy": "Busy",
+    "enableNotifications": "Enable notifications for new messages",
+    "notificationDescription": "Get notified when you receive new messages while away",
+    "enable": "Enable"
   }
 }

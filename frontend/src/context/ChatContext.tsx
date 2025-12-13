@@ -8,6 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import type { Socket } from 'socket.io-client';
 import { chatApi } from '../api/chat';
 import { getStoredToken } from '../api/client';
+import { notificationService } from '../services/notificationService';
 import * as socketService from '../services/socketService';
 import type {
   ChatMessage,
@@ -97,29 +98,38 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     // Handle real-time messages
     newSocket.on('chat:message', (payload: ChatMessagePayload) => {
       const roomId = payload.roomId;
+      const isCurrentRoom = currentRoomRef.current?.id === roomId;
 
       // Add message to current room
       setMessages((prev) => {
         // Only add if still viewing this room - use ref to get latest value
-        if (currentRoomRef.current?.id === roomId) {
+        if (isCurrentRoom) {
           return [...prev, payload.message];
         }
         return prev;
       });
 
-      // Update room's last message
+      // Update room's last message and unread count
       setRooms((prev) =>
         prev.map((room) =>
           room.id === roomId
             ? {
                 ...room,
                 lastMessage: payload.message,
-                unreadCount:
-                  currentRoomRef.current?.id === roomId ? room.unreadCount : room.unreadCount + 1,
+                unreadCount: isCurrentRoom ? room.unreadCount : room.unreadCount + 1,
               }
             : room,
         ),
       );
+
+      // Show notification if message is not from current user and not in current room
+      if (user && payload.message.sender.id !== user.id && !isCurrentRoom) {
+        notificationService.notifyNewMessage(
+          payload.message.sender.username,
+          payload.message.message,
+          roomId,
+        );
+      }
     });
 
     // Handle typing indicators
@@ -175,6 +185,17 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       setIsConnected(false);
     };
   }, [user]);
+
+  // Update page title with total unread count
+  useEffect(() => {
+    const totalUnread = rooms.reduce((sum, room) => sum + room.unreadCount, 0);
+    notificationService.updateTitleWithCount(totalUnread);
+
+    return () => {
+      // Reset title on unmount
+      notificationService.updateTitleWithCount(0);
+    };
+  }, [rooms]);
 
   // Load chat rooms
   const loadRooms = useCallback(async () => {

@@ -9,6 +9,7 @@ import { chatApi } from '../api/chat';
 import { UserAvatar } from '../components/UserAvatar';
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
+import { notificationService } from '../services/notificationService';
 import type { ChatUser } from '../types/chat';
 
 export function ChatPage() {
@@ -39,11 +40,37 @@ export function ChatPage() {
   const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
   const [showDeleteRoomConfirm, setShowDeleteRoomConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
+  const [showNotificationBanner, setShowNotificationBanner] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
+    notificationService.getPermission(),
+  );
 
   // Load rooms on mount
   useEffect(() => {
     loadRooms();
   }, [loadRooms]);
+
+  // Check notification permission and show banner if needed
+  useEffect(() => {
+    if (notificationService.isSupported() && notificationPermission === 'default') {
+      setShowNotificationBanner(true);
+    }
+  }, [notificationPermission]);
+
+  // Request notification permission
+  const handleRequestNotificationPermission = async () => {
+    const granted = await notificationService.requestPermission();
+    setNotificationPermission(notificationService.getPermission());
+    setShowNotificationBanner(false);
+    if (granted) {
+      console.log('Notifications enabled');
+    }
+  };
+
+  // Dismiss notification banner
+  const handleDismissNotificationBanner = () => {
+    setShowNotificationBanner(false);
+  };
 
   // Load available users when modal opens
   const handleOpenNewChat = async () => {
@@ -158,6 +185,39 @@ export function ChatPage() {
           <div className="mt-2 text-sm text-yellow-600 dark:text-yellow-400">
             <i className="fas fa-exclamation-triangle mr-1"></i>
             {t('chat.disconnected')} - {t('chat.reconnecting')}
+          </div>
+        )}
+        {showNotificationBanner && (
+          <div className="mt-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2 flex-1">
+                <i className="fas fa-bell text-blue-600 dark:text-blue-400 mt-0.5"></i>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    {t('chat.enableNotifications')}
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                    {t('chat.notificationDescription')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleRequestNotificationPermission}
+                  className="px-3 py-1 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                >
+                  {t('chat.enable')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDismissNotificationBanner}
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
