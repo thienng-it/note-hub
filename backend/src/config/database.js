@@ -246,7 +246,8 @@ class Database {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
         FOREIGN KEY (shared_by_id) REFERENCES users(id),
-        FOREIGN KEY (shared_with_id) REFERENCES users(id)
+        FOREIGN KEY (shared_with_id) REFERENCES users(id),
+        UNIQUE(task_id, shared_with_id)
       );
       CREATE INDEX IF NOT EXISTS ix_share_tasks_task ON share_tasks(task_id);
       CREATE INDEX IF NOT EXISTS ix_share_tasks_shared_with ON share_tasks(shared_with_id);
@@ -529,6 +530,7 @@ class Database {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_share_tasks_task (task_id),
         INDEX ix_share_tasks_shared_with (shared_with_id),
+        UNIQUE KEY uk_task_shared_with (task_id, shared_with_id),
         FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
         FOREIGN KEY (shared_by_id) REFERENCES users(id),
         FOREIGN KEY (shared_with_id) REFERENCES users(id)
