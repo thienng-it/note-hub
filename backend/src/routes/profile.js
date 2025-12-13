@@ -254,6 +254,29 @@ router.post('/invitations', jwtRequired, async (req, res) => {
 });
 
 /**
+ * PUT /api/profile/status - Update user status
+ */
+router.put('/status', jwtRequired, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['online', 'offline', 'away', 'busy'];
+
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status. Must be one of: online, offline, away, busy' });
+    }
+
+    await db.query('UPDATE users SET status = ? WHERE id = ?', [status, req.userId]);
+
+    logger.info('User status updated', { userId: req.userId, status });
+
+    res.json({ success: true, status });
+  } catch (error) {
+    logger.error('Update user status error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/profile/:id - Get user profile (public view)
  * Note: This endpoint is deprecated. Use /api/v1/users/:id instead
  */

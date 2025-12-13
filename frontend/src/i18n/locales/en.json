@@ -387,6 +387,14 @@
     "connectionError": "Connection error. Trying to reconnect...",
     "connected": "Connected",
     "disconnected": "Disconnected",
-    "reconnecting": "Reconnecting..."
+    "reconnecting": "Reconnecting...",
+    "deleteMessage": "Delete message",
+    "deleteMessageConfirm": "Delete Message?",
+    "deleteMessageWarning": "This message will be permanently deleted. This action cannot be undone.",
+    "deleteChat": "Delete chat",
+    "deleteChatConfirm": "Delete Chat?",
+    "deleteChatWarning": "This will permanently delete this chat and all its messages. This action cannot be undone.",
+    "away": "Away",
+    "busy": "Busy"
   }
 }

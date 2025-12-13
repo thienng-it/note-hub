@@ -6,6 +6,7 @@ export interface ChatUser {
   id: number;
   username: string;
   email?: string;
+  status?: 'online' | 'offline' | 'away' | 'busy';
 }
 
 export interface ChatMessage {

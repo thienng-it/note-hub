@@ -125,4 +125,37 @@ router.get('/users', jwtRequired, async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/v1/chat/rooms/:roomId/messages/:messageId
+ * Delete a specific message
+ */
+router.delete('/rooms/:roomId/messages/:messageId', jwtRequired, async (req, res) => {
+  try {
+    const roomId = Number.parseInt(req.params.roomId, 10);
+    const messageId = Number.parseInt(req.params.messageId, 10);
+
+    await chatService.deleteMessage(roomId, messageId, req.userId);
+    return responseHandler.success(res, null, { message: 'Message deleted successfully' });
+  } catch (error) {
+    const statusCode = error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
+    return responseHandler.error(res, error.message, { statusCode });
+  }
+});
+
+/**
+ * DELETE /api/v1/chat/rooms/:roomId
+ * Delete entire chat room and all its messages
+ */
+router.delete('/rooms/:roomId', jwtRequired, async (req, res) => {
+  try {
+    const roomId = Number.parseInt(req.params.roomId, 10);
+
+    await chatService.deleteRoom(roomId, req.userId);
+    return responseHandler.success(res, null, { message: 'Chat room deleted successfully' });
+  } catch (error) {
+    const statusCode = error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
+    return responseHandler.error(res, error.message, { statusCode });
+  }
+});
+
 export default router;

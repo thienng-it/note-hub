@@ -27,6 +27,8 @@ export function ChatPage() {
     startChat,
     sendMessage,
     setTyping,
+    deleteMessage,
+    deleteRoom,
   } = useChat();
 
   const [messageInput, setMessageInput] = useState('');
@@ -34,6 +36,8 @@ export function ChatPage() {
   const [availableUsers, setAvailableUsers] = useState<ChatUser[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
+  const [showDeleteRoomConfirm, setShowDeleteRoomConfirm] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
 
   // Load rooms on mount
   useEffect(() => {
@@ -83,11 +87,30 @@ export function ChatPage() {
     }
   };
 
+  // Handle message deletion
+  const handleDeleteMessage = async (messageId: number) => {
+    try {
+      await deleteMessage(messageId);
+      setMessageToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete message:', err);
+    }
+  };
+
+  // Handle room deletion
+  const handleDeleteRoom = async () => {
+    if (!currentRoom) return;
+    try {
+      await deleteRoom(currentRoom.id);
+      setShowDeleteRoomConfirm(false);
+    } catch (err) {
+      console.error('Failed to delete room:', err);
+    }
+  };
+
   // Filter available users
-  const filteredUsers = availableUsers.filter(
-    (user) =>
-      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredUsers = availableUsers.filter((user) =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Format timestamp
@@ -231,6 +254,14 @@ export function ChatPage() {
                       </p>
                     )}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteRoomConfirm(true)}
+                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    title={t('chat.deleteChat')}
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
                 </div>
               </div>
 
@@ -241,7 +272,7 @@ export function ChatPage() {
                   return (
                     <div
                       key={message.id || index}
-                      className={`flex ${isSender ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${isSender ? 'justify-end' : 'justify-start'} group`}
                     >
                       <div className={`max-w-xs lg:max-w-md ${isSender ? 'order-2' : 'order-1'}`}>
                         {!isSender && (
@@ -249,14 +280,26 @@ export function ChatPage() {
                             {message.sender.username}
                           </p>
                         )}
-                        <div
-                          className={`px-4 py-2 rounded-lg ${
-                            isSender
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
-                          }`}
-                        >
-                          <p className="break-words">{message.message}</p>
+                        <div className="relative">
+                          <div
+                            className={`px-4 py-2 rounded-lg ${
+                              isSender
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+                            }`}
+                          >
+                            <p className="break-words">{message.message}</p>
+                          </div>
+                          {isSender && (
+                            <button
+                              type="button"
+                              onClick={() => setMessageToDelete(message.id)}
+                              className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-red-600 hover:text-red-700"
+                              title={t('chat.deleteMessage')}
+                            >
+                              <i className="fas fa-trash text-sm"></i>
+                            </button>
+                          )}
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
                           {formatTime(message.created_at)}
@@ -332,12 +375,26 @@ export function ChatPage() {
                     }}
                     className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    <div className="font-semibold text-gray-900 dark:text-white">
-                      {user.username}
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-gray-900 dark:text-white">
+                        {user.username}
+                      </div>
+                      {user.status && (
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            user.status === 'online'
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                              : user.status === 'busy'
+                                ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                                : user.status === 'away'
+                                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                                  : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
+                          }`}
+                        >
+                          {t(`chat.${user.status}`)}
+                        </span>
+                      )}
                     </div>
-                    {user.email && (
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{user.email}</div>
-                    )}
                   </button>
                 ))
               )}
@@ -351,6 +408,66 @@ export function ChatPage() {
         <div className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg">
           <i className="fas fa-exclamation-circle mr-2"></i>
           {error}
+        </div>
+      )}
+
+      {/* Delete message confirmation */}
+      {messageToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {t('chat.deleteMessageConfirm')}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              {t('chat.deleteMessageWarning')}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setMessageToDelete(null)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDeleteMessage(messageToDelete)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                {t('common.delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete room confirmation */}
+      {showDeleteRoomConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {t('chat.deleteChatConfirm')}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              {t('chat.deleteChatWarning')}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setShowDeleteRoomConfirm(false)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteRoom}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                {t('common.delete')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -34,6 +34,8 @@ interface ChatContextType {
   sendMessage: (message: string) => void;
   loadMoreMessages: () => Promise<void>;
   setTyping: (isTyping: boolean) => void;
+  deleteMessage: (messageId: number) => Promise<void>;
+  deleteRoom: (roomId: number) => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -278,6 +280,45 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     [currentRoom],
   );
 
+  // Delete a message
+  const deleteMessage = useCallback(
+    async (messageId: number) => {
+      if (!currentRoom) return;
+
+      setError(null);
+      try {
+        await chatApi.deleteMessage(currentRoom.id, messageId);
+        // Remove message from local state
+        setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to delete message');
+        throw err;
+      }
+    },
+    [currentRoom],
+  );
+
+  // Delete a room
+  const deleteRoom = useCallback(
+    async (roomId: number) => {
+      setError(null);
+      try {
+        await chatApi.deleteRoom(roomId);
+        // Remove room from local state
+        setRooms((prev) => prev.filter((room) => room.id !== roomId));
+        // If deleting current room, clear it
+        if (currentRoom?.id === roomId) {
+          setCurrentRoom(null);
+          setMessages([]);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to delete chat room');
+        throw err;
+      }
+    },
+    [currentRoom],
+  );
+
   const value: ChatContextType = {
     rooms,
     currentRoom,
@@ -293,6 +334,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     sendMessage,
     loadMoreMessages,
     setTyping,
+    deleteMessage,
+    deleteRoom,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
