@@ -44,6 +44,37 @@ export interface AuthError {
   requires_2fa?: boolean;
 }
 
+// Folder types
+export interface Folder {
+  id: number;
+  name: string;
+  parent_id: number | null;
+  description?: string;
+  icon: string;
+  color: string;
+  position: number;
+  is_expanded: boolean;
+  created_at?: string;
+  updated_at?: string;
+  note_count?: number;
+  task_count?: number;
+  children?: Folder[];
+}
+
+export interface FolderFormData {
+  name: string;
+  parent_id?: number | null;
+  description?: string;
+  icon?: string;
+  color?: string;
+  position?: number;
+}
+
+export interface FoldersResponse {
+  folders: Folder[];
+  total: number;
+}
+
 // Note types
 export interface Tag {
   id: number;
@@ -60,6 +91,7 @@ export interface Note {
   pinned: boolean;
   favorite: boolean;
   archived: boolean;
+  folder_id?: number | null;
   created_at?: string;
   updated_at?: string;
   tags: Tag[];
@@ -75,6 +107,7 @@ export interface NoteFormData {
   pinned?: boolean;
   favorite?: boolean;
   archived?: boolean;
+  folder_id?: number | null;
 }
 
 // Task types
@@ -86,6 +119,7 @@ export interface Task {
   completed: boolean;
   priority: 'low' | 'medium' | 'high';
   due_date?: string;
+  folder_id?: number | null;
   created_at?: string;
   is_overdue?: boolean;
 }
@@ -96,6 +130,7 @@ export interface TaskFormData {
   images?: string[];
   due_date?: string;
   priority?: 'low' | 'medium' | 'high';
+  folder_id?: number | null;
 }
 
 // API response types
