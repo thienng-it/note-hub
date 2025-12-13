@@ -62,6 +62,23 @@ export async function getAvailableUsers(): Promise<ChatUser[]> {
   return apiClient.get<ChatUser[]>(`${API_VERSION}/chat/users`);
 }
 
+/**
+ * Delete a message
+ * @param roomId - Chat room ID
+ * @param messageId - Message ID to delete
+ */
+export async function deleteMessage(roomId: number, messageId: number): Promise<void> {
+  await apiClient.delete<void>(`${API_VERSION}/chat/rooms/${roomId}/messages/${messageId}`);
+}
+
+/**
+ * Delete a chat room and all its messages
+ * @param roomId - Chat room ID
+ */
+export async function deleteRoom(roomId: number): Promise<void> {
+  await apiClient.delete<void>(`${API_VERSION}/chat/rooms/${roomId}`);
+}
+
 export const chatApi = {
   getChatRooms,
   createDirectChat,
@@ -69,4 +86,6 @@ export const chatApi = {
   sendMessage,
   markMessagesAsRead,
   getAvailableUsers,
+  deleteMessage,
+  deleteRoom,
 };

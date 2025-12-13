@@ -172,6 +172,14 @@ function defineModels() {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      status: {
+        type: DataTypes.STRING(20),
+        defaultValue: 'online',
+        validate: {
+          isIn: [['online', 'offline', 'away', 'busy']],
+        },
+        comment: 'User status: online, offline, away, busy',
+      },
     },
     {
       tableName: 'users',

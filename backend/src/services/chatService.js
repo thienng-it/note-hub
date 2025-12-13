@@ -109,7 +109,7 @@ export async function getUserChatRooms(userId) {
                 {
                   model: User,
                   as: 'user',
-                  attributes: ['id', 'username', 'email'],
+                  attributes: ['id', 'username'],
                 },
               ],
             },
@@ -142,7 +142,6 @@ export async function getUserChatRooms(userId) {
           participants: p.room.participants.map((participant) => ({
             id: participant.user.id,
             username: participant.user.username,
-            email: participant.user.email,
           })),
           lastMessage: p.room.messages[0]
             ? {
@@ -191,7 +190,7 @@ export async function getRoomMessages(roomId, userId, limit = 50, offset = 0) {
         {
           model: User,
           as: 'sender',
-          attributes: ['id', 'username', 'email'],
+          attributes: ['id', 'username'],
         },
       ],
       order: [['created_at', 'DESC']],
@@ -240,7 +239,7 @@ export async function sendMessage(roomId, senderId, message) {
         {
           model: User,
           as: 'sender',
-          attributes: ['id', 'username', 'email'],
+          attributes: ['id', 'username'],
         },
       ],
     });
@@ -340,7 +339,7 @@ export async function getAvailableUsers(currentUserId) {
       where: {
         id: { [Op.ne]: currentUserId },
       },
-      attributes: ['id', 'username', 'email'],
+      attributes: ['id', 'username', 'status'],
       order: [['username', 'ASC']],
     });
 
@@ -348,6 +347,119 @@ export async function getAvailableUsers(currentUserId) {
   } catch (error) {
     logger.error('Error getting available users', {
       currentUserId,
+      error: error.message,
+    });
+    throw error;
+  }
+}
+
+/**
+ * Delete a message
+ * Only the sender or room creator can delete messages
+ * @param {number} roomId - Chat room ID
+ * @param {number} messageId - Message ID
+ * @param {number} userId - User ID (must be sender or room creator)
+ * @returns {Promise<void>}
+ */
+export async function deleteMessage(roomId, messageId, userId) {
+  try {
+    // Get the message
+    const message = await ChatMessage.findOne({
+      where: { id: messageId, room_id: roomId },
+    });
+
+    if (!message) {
+      throw new Error('Message not found');
+    }
+
+    // Check if user is the sender
+    if (message.sender_id !== userId) {
+      // Check if user is room creator (admin privilege)
+      const room = await ChatRoom.findByPk(roomId);
+      if (!room || room.created_by_id !== userId) {
+        throw new Error('User is not authorized to delete this message');
+      }
+    }
+
+    // Delete the message
+    await message.destroy();
+
+    logger.info('Message deleted', {
+      messageId,
+      roomId,
+      deletedBy: userId,
+    });
+  } catch (error) {
+    logger.error('Error deleting message', {
+      messageId,
+      roomId,
+      userId,
+      error: error.message,
+    });
+    throw error;
+  }
+}
+
+/**
+ * Delete a chat room and all its messages
+ * Only room creator or participant can delete (for direct chats, any participant can delete)
+ * @param {number} roomId - Chat room ID
+ * @param {number} userId - User ID
+ * @returns {Promise<void>}
+ */
+export async function deleteRoom(roomId, userId) {
+  try {
+    // Get the room
+    const room = await ChatRoom.findByPk(roomId, {
+      include: [
+        {
+          model: ChatParticipant,
+          as: 'participants',
+          where: { user_id: userId },
+          required: false,
+        },
+      ],
+    });
+
+    if (!room) {
+      throw new Error('Chat room not found');
+    }
+
+    // Check if user has permission
+    const isParticipant = room.participants.length > 0;
+    const isCreator = room.created_by_id === userId;
+
+    if (!isParticipant && !isCreator) {
+      throw new Error('User is not authorized to delete this chat room');
+    }
+
+    // For direct chats, any participant can delete
+    // For group chats, only creator can delete
+    if (room.is_group && !isCreator) {
+      throw new Error('Only the room creator can delete group chats');
+    }
+
+    // Delete all messages in the room
+    await ChatMessage.destroy({
+      where: { room_id: roomId },
+    });
+
+    // Delete all participants
+    await ChatParticipant.destroy({
+      where: { room_id: roomId },
+    });
+
+    // Delete the room
+    await room.destroy();
+
+    logger.info('Chat room deleted', {
+      roomId,
+      deletedBy: userId,
+    });
+  } catch (error) {
+    logger.error('Error deleting chat room', {
+      roomId,
+      userId,
       error: error.message,
     });
     throw error;
@@ -363,4 +475,6 @@ export default {
   getUnreadCount,
   getAvailableUsers,
   checkRoomAccess,
+  deleteMessage,
+  deleteRoom,
 };
