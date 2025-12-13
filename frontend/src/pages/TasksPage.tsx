@@ -229,11 +229,7 @@ export function TasksPage() {
               </button>
             </div>
           )}
-          <button
-            type="button"
-            onClick={() => setShowForm(!showForm)}
-            className="btn-apple"
-          >
+          <button type="button" onClick={() => setShowForm(!showForm)} className="btn-apple">
             <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
             {showForm ? 'Cancel' : 'New Task'}
           </button>

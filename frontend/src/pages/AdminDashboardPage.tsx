@@ -227,17 +227,11 @@ export function AdminDashboardPage() {
             </p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Link
-              to="/admin/audit-logs"
-              className="btn-apple flex-1 sm:flex-initial"
-            >
+            <Link to="/admin/audit-logs" className="btn-apple flex-1 sm:flex-initial">
               <i className="glass-i fas fa-clipboard-list" aria-hidden="true"></i>
               <span className="hide-mobile sm:inline ml-2">Audit Logs</span>
             </Link>
-            <Link
-              to="/"
-              className="btn-secondary-glass flex-1 sm:flex-initial"
-            >
+            <Link to="/" className="btn-secondary-glass flex-1 sm:flex-initial">
               <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
               <span className="hide-mobile sm:inline ml-2">{t('admin.backToNotes')}</span>
             </Link>

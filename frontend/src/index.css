@@ -148,7 +148,7 @@ body.dark {
 
 .card::before,
 .glass-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -268,7 +268,7 @@ body.dark {
 }
 
 .btn-apple::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -508,7 +508,7 @@ body.dark {
 }
 
 .glass-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -647,7 +647,7 @@ body.dark {
 }
 
 .tag::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -1239,7 +1239,7 @@ body.dark {
 }
 
 .glass-modal-content::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -1674,18 +1674,13 @@ body.dark {
 }
 
 .glass-shimmer::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   animation: glass-shimmer 3s infinite;
   pointer-events: none;
 }

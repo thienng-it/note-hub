@@ -205,17 +205,10 @@ export function ChangePasswordPage() {
 
           {/* Buttons */}
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[var(--border-color)]">
-            <Link
-              to="/profile"
-              className="btn-secondary-glass"
-            >
+            <Link to="/profile" className="btn-secondary-glass">
               Cancel
             </Link>
-            <button
-              type="submit"
-              className="btn-apple"
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn-apple" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>

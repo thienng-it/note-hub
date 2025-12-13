@@ -293,10 +293,7 @@ export function NotesPage() {
 
       {/* Quick Filter Tabs */}
       <div className="glass-segmented">
-        <Link
-          to="/"
-          className={`glass-segmented-item ${view === 'all' ? 'active' : ''}`}
-        >
+        <Link to="/" className={`glass-segmented-item ${view === 'all' ? 'active' : ''}`}>
           <i className="glass-i fas fa-home mr-2"></i>All
         </Link>
         <Link

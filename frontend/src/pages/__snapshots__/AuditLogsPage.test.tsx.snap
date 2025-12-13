@@ -106,11 +106,13 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
         <div>
           <label
             class="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            for="filter-user-id"
           >
             User ID
           </label>
           <input
             class="glass-input"
+            id="filter-user-id"
             placeholder="e.g., 42"
             type="text"
             value=""

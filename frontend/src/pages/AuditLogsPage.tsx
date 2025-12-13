@@ -185,10 +185,14 @@ export function AuditLogsPage() {
         <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Filters</h2>
         <div className="responsive-grid">
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="filter-user-id"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            >
               User ID
             </label>
             <input
+              id="filter-user-id"
               type="text"
               value={filterUserId}
               onChange={(e) => setFilterUserId(e.target.value)}
