@@ -70,7 +70,7 @@ export function RegisterPage() {
         </div>
 
         {/* Register Card */}
-        <div className="glass-card">
+        <div className="glass-panel">
           <form onSubmit={handleSubmit} aria-label="Registration form">
             {/* Error Alert */}
             {error && (

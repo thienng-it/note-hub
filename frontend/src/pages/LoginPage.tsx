@@ -154,7 +154,7 @@ export function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="glass-card">
+        <div className="glass-panel">
           <form onSubmit={handleSubmit} aria-label="Login form">
             {/* Error Alert */}
             {error && (
@@ -351,7 +351,7 @@ export function LoginPage() {
                   type="button"
                   onClick={handlePasskeySignIn}
                   disabled={isLoading}
-                  className="w-full py-4 mb-3 flex items-center justify-center gap-3 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 transition-colors text-gray-700 font-medium"
+                  className="w-full py-4 mb-3 flex items-center justify-center gap-3 glass-card hover:scale-[1.01] transition-all text-[var(--text-primary)] font-medium"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <title>Passkey icon</title>
@@ -371,7 +371,7 @@ export function LoginPage() {
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="w-full py-4 mb-3 flex items-center justify-center gap-3 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 transition-colors text-gray-700 font-medium"
+                  className="w-full py-4 mb-3 flex items-center justify-center gap-3 glass-card hover:scale-[1.01] transition-all text-[var(--text-primary)] font-medium"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <title>Google logo</title>
@@ -401,7 +401,7 @@ export function LoginPage() {
                 <button
                   type="button"
                   onClick={handleGitHubSignIn}
-                  className="w-full py-4 mb-5 flex items-center justify-center gap-3 border border-gray-300 rounded-xl bg-[#24292e] hover:bg-[#1b1f23] transition-colors text-white font-medium"
+                  className="w-full py-4 mb-5 flex items-center justify-center gap-3 glass-card hover:scale-[1.01] transition-all bg-[#24292e] hover:bg-[#1b1f23] text-white font-medium"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <title>GitHub logo</title>

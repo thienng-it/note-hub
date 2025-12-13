@@ -91,7 +91,7 @@ export function ProfilePage() {
       </h1>
 
       {/* User Info Card */}
-      <div className="glass-card p-6 rounded-xl">
+      <div className="glass-panel-elevated p-6">
         <div className="flex items-center gap-6 mb-6">
           <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
             {user.username.charAt(0).toUpperCase()}
@@ -139,7 +139,7 @@ export function ProfilePage() {
       </div>
 
       {/* Settings Card */}
-      <div className="glass-card p-6 rounded-xl">
+      <div className="glass-panel p-6">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="glass-i fas fa-cog mr-2"></i>
           {t('profile.settings')}
@@ -155,7 +155,7 @@ export function ProfilePage() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] transition-colors"
+              className="glass-card flex items-center gap-2 px-4 py-2 hover:scale-105 transition-all"
             >
               <i
                 className={`fas fa-${theme === 'dark' ? 'sun text-yellow-500' : 'moon text-blue-500'}`}
