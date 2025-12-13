@@ -91,7 +91,20 @@ export async function initializeSequelize() {
 
   // Define models
   const models = defineModels();
-  ({ User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder } = models);
+  ({
+    User,
+    Tag,
+    Note,
+    Task,
+    ShareNote,
+    PasswordResetToken,
+    Invitation,
+    NoteTag,
+    Folder,
+    ChatRoom,
+    ChatMessage,
+    ChatParticipant,
+  } = models);
 
   // Test connection
   await sequelize.authenticate();
@@ -159,6 +172,19 @@ function defineModels() {
       last_login: {
         type: DataTypes.DATE,
         allowNull: true,
+      },
+      status: {
+        type: DataTypes.STRING(20),
+        defaultValue: 'online',
+        validate: {
+          isIn: [['online', 'offline', 'away', 'busy']],
+        },
+        comment: 'User status: online, offline, away, busy',
+      },
+      avatar_url: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        comment: 'URL or path to user avatar image',
       },
     },
     {
@@ -560,6 +586,126 @@ function defineModels() {
     },
   );
 
+  // ChatRoom Model
+  const ChatRoom = sequelize.define(
+    'ChatRoom',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.STRING(200),
+        allowNull: true,
+        comment: 'Optional name for group chats, null for direct messages',
+      },
+      is_group: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        comment: 'True for group chats, false for direct messages',
+      },
+      created_by_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+    },
+    {
+      tableName: 'chat_rooms',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['created_by_id'] }],
+    },
+  );
+
+  // ChatMessage Model
+  const ChatMessage = sequelize.define(
+    'ChatMessage',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      room_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'chat_rooms',
+          key: 'id',
+        },
+      },
+      sender_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      message: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      is_read: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+    },
+    {
+      tableName: 'chat_messages',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['room_id'] }, { fields: ['sender_id'] }, { fields: ['created_at'] }],
+    },
+  );
+
+  // ChatParticipant Model (junction table for room members)
+  const ChatParticipant = sequelize.define(
+    'ChatParticipant',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      room_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'chat_rooms',
+          key: 'id',
+        },
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      last_read_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        comment: 'Timestamp of last message read by this user',
+      },
+    },
+    {
+      tableName: 'chat_participants',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      indexes: [{ fields: ['room_id', 'user_id'], unique: true }],
+    },
+  );
+
   // Define associations
   User.hasMany(Note, { foreignKey: 'owner_id', as: 'notes' });
   Note.belongsTo(User, { foreignKey: 'owner_id', as: 'owner' });
@@ -594,12 +740,42 @@ function defineModels() {
   Folder.hasMany(Task, { foreignKey: 'folder_id', as: 'tasks' });
   Task.belongsTo(Folder, { foreignKey: 'folder_id', as: 'folder' });
 
+  // Chat associations
+  User.hasMany(ChatRoom, { foreignKey: 'created_by_id', as: 'createdChatRooms' });
+  ChatRoom.belongsTo(User, { foreignKey: 'created_by_id', as: 'creator' });
+
+  ChatRoom.hasMany(ChatMessage, { foreignKey: 'room_id', as: 'messages' });
+  ChatMessage.belongsTo(ChatRoom, { foreignKey: 'room_id', as: 'room' });
+
+  User.hasMany(ChatMessage, { foreignKey: 'sender_id', as: 'sentMessages' });
+  ChatMessage.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
+
+  ChatRoom.hasMany(ChatParticipant, { foreignKey: 'room_id', as: 'participants' });
+  ChatParticipant.belongsTo(ChatRoom, { foreignKey: 'room_id', as: 'room' });
+
+  User.hasMany(ChatParticipant, { foreignKey: 'user_id', as: 'chatParticipations' });
+  ChatParticipant.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
   // Export models
-  return { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder };
+  return {
+    User,
+    Tag,
+    Note,
+    Task,
+    ShareNote,
+    PasswordResetToken,
+    Invitation,
+    NoteTag,
+    Folder,
+    ChatRoom,
+    ChatMessage,
+    ChatParticipant,
+  };
 }
 
 // Module-level model exports
 let User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder;
+let ChatRoom, ChatMessage, ChatParticipant;
 
 /**
  * Sync database schema.
@@ -633,3 +809,4 @@ export async function closeDatabase() {
 
 // Export models
 export { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag, Folder };
+export { ChatRoom, ChatMessage, ChatParticipant };

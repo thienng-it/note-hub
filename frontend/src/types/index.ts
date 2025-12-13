@@ -12,6 +12,8 @@ export interface User {
   has_2fa?: boolean;
   is_admin?: boolean;
   is_locked?: boolean;
+  avatar_url?: string | null;
+  status?: 'online' | 'offline' | 'away' | 'busy';
 }
 
 // Auth types

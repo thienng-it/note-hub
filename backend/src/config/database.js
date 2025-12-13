@@ -158,7 +158,8 @@ class Database {
         is_locked INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        last_login DATETIME
+        last_login DATETIME,
+        status TEXT DEFAULT 'online'
       );
       CREATE INDEX IF NOT EXISTS ix_users_username ON users(username);
       CREATE INDEX IF NOT EXISTS ix_users_email ON users(email);
@@ -383,6 +384,20 @@ class Database {
         this.db.exec('ALTER TABLE users ADD COLUMN is_locked INTEGER DEFAULT 0');
         logger.info('  ✅ Migration: is_locked column added');
       }
+
+      const hasStatus = userColumns.some((col) => col.name === 'status');
+      if (!hasStatus) {
+        logger.info('  🔄 Migrating: Adding status column to users table...');
+        this.db.exec("ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'online'");
+        logger.info('  ✅ Migration: status column added');
+      }
+
+      const hasAvatarUrl = userColumns.some((col) => col.name === 'avatar_url');
+      if (!hasAvatarUrl) {
+        logger.info('  🔄 Migrating: Adding avatar_url column to users table...');
+        this.db.exec('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT NULL');
+        logger.info('  ✅ Migration: avatar_url column added');
+      }
     } catch (error) {
       logger.warn('  ⚠️  Auto-migration warning:', error.message);
       // Non-fatal: schema might already be up-to-date
@@ -412,6 +427,7 @@ class Database {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         last_login DATETIME,
+        status VARCHAR(20) DEFAULT 'online',
         INDEX ix_users_username (username),
         INDEX ix_users_email (email)
       );
@@ -908,6 +924,8 @@ class Database {
           images: 'TEXT',
           hidden_notes: 'TEXT',
           preferred_language: "VARCHAR(10) DEFAULT 'en'",
+          status: "VARCHAR(20) DEFAULT 'online'",
+          avatar_url: 'TEXT',
         };
 
         if (!allowedTables.includes(tableName)) {
@@ -946,6 +964,12 @@ class Database {
 
       // Add missing preferred_language column to users table
       await addColumnIfMissing('users', 'preferred_language', 'users');
+
+      // Add missing status column to users table
+      await addColumnIfMissing('users', 'status', 'users');
+
+      // Add missing avatar_url column to users table
+      await addColumnIfMissing('users', 'avatar_url', 'users');
 
       // Create folders table if it doesn't exist
       const [foldersTable] = await this.db.query(

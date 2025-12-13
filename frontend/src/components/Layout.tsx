@@ -223,6 +223,11 @@ export function Layout() {
                 {!sidebarCollapsed && <span>{t('tasks.title')}</span>}
               </Link>
 
+              <Link to="/chat" className={linkClass(isActive('/chat'), sidebarCollapsed)}>
+                <i className="glass-i fas fa-comments w-5 text-center" aria-hidden="true"></i>
+                {!sidebarCollapsed && <span>{t('chat.title')}</span>}
+              </Link>
+
               <div className="pt-4 mt-4 border-t border-[var(--border-color)] space-y-2">
                 {user.is_admin && (
                   <Link to="/admin" className={linkClass(isActive('/admin'), sidebarCollapsed)}>
@@ -362,6 +367,14 @@ export function Layout() {
           >
             <i className="glass-i fas fa-tasks" aria-hidden="true"></i>
             <span>{t('tasks.title')}</span>
+          </Link>
+          <Link
+            to="/chat"
+            className={`mobile-nav-item ${isActive('/chat') ? 'active' : ''}`}
+            aria-current={isActive('/chat') ? 'page' : undefined}
+          >
+            <i className="glass-i fas fa-comments" aria-hidden="true"></i>
+            <span>{t('chat.title')}</span>
           </Link>
           <Link to="/notes/new" className="mobile-nav-item create-btn" aria-label="Create new note">
             <div className="w-12 h-12 -mt-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">

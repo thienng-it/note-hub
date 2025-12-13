@@ -1,0 +1,153 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UserAvatar > Snapshots > matches snapshot - different sizes > extra-large 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-16 h-16 text-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - different sizes > large 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-12 h-12 text-base rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - different sizes > medium 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - different sizes > small 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-8 h-8 text-xs rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - different statuses > status-away 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+  <span
+    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-yellow-500 rounded-full border-2 border-white dark:border-gray-800"
+    title="away"
+  />
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - different statuses > status-busy 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+  <span
+    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"
+    title="busy"
+  />
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - different statuses > status-offline 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+  <span
+    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-gray-400 rounded-full border-2 border-white dark:border-gray-800"
+    title="offline"
+  />
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - different statuses > status-online 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+  <span
+    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
+    title="online"
+  />
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - with avatar URL 1`] = `
+<div
+  class="relative "
+>
+  <img
+    alt="testuser"
+    class="w-10 h-10 text-sm rounded-full object-cover bg-gray-200 dark:bg-gray-700"
+    src="https://example.com/avatar.jpg"
+  />
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - with status indicator 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    T
+  </div>
+  <span
+    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
+    title="online"
+  />
+</div>
+`;
+
+exports[`UserAvatar > Snapshots > matches snapshot - without avatar URL (initials) 1`] = `
+<div
+  class="relative "
+>
+  <div
+    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+  >
+    JD
+  </div>
+</div>
+`;
