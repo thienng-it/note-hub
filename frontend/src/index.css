@@ -1609,20 +1609,15 @@ body.dark {
    MAC-STYLE LIQUID GLASS NAVIGATION DOCK
    ============================================================ */
 
-/* Liquid Glass Navigation - Desktop & Tablet */
-.liquid-glass-nav {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  padding: 0.5rem;
-  display: none; /* Hidden by default, shown on larger screens */
-}
-
-/* Show on desktop/tablet only (768px and up) */
+/* Liquid Glass Navigation - Desktop & Tablet only (768px and up) */
 @media (min-width: 768px) {
   .liquid-glass-nav {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    padding: 0.5rem;
     display: block;
   }
 }
@@ -1801,13 +1796,6 @@ body.dark {
 
   .liquid-glass-nav-item {
     min-width: 3rem;
-  }
-}
-
-/* Hide on mobile (use existing mobile nav) */
-@media (max-width: 767px) {
-  .liquid-glass-nav {
-    display: none;
   }
 }
 
