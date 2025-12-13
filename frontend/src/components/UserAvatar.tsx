@@ -3,6 +3,8 @@
  * Displays user avatar with fallback to initials
  */
 
+import { useState } from 'react';
+
 interface UserAvatarProps {
   username: string;
   avatarUrl?: string | null;
@@ -42,26 +44,39 @@ export function UserAvatar({
   };
 
   // Get initials from username (first 2 characters)
+  // Handle edge cases: trim spaces, filter empty strings, ensure valid characters
   const initials = username
-    .split(' ')
+    .trim()
+    .split(/\s+/)
+    .filter((n) => n.length > 0)
     .map((n) => n[0])
+    .filter((char) => char && char.length > 0)
     .join('')
     .toUpperCase()
     .slice(0, 2);
 
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const showInitials = !avatarUrl || imageError;
+
   return (
     <div className={`relative ${className}`}>
-      {avatarUrl ? (
+      {!showInitials ? (
         <img
           src={avatarUrl}
           alt={username}
           className={`${sizeClasses[size]} rounded-full object-cover bg-gray-200 dark:bg-gray-700`}
+          onError={handleImageError}
         />
       ) : (
         <div
           className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold`}
         >
-          {initials}
+          {initials || username.substring(0, 2).toUpperCase()}
         </div>
       )}
       {showStatus && status && (

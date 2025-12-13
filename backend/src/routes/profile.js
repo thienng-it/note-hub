@@ -101,7 +101,8 @@ router.get('/', jwtRequired, async (req, res) => {
  */
 router.put('/', jwtRequired, async (req, res) => {
   try {
-    const { username, email, bio, theme, hidden_notes, preferred_language, avatar_url } = req.body;
+    const { username, email, bio, theme, hidden_notes, preferred_language, avatar_url, status } =
+      req.body;
 
     // Check if new username already exists
     if (username && username !== req.user.username) {
@@ -155,8 +156,26 @@ router.put('/', jwtRequired, async (req, res) => {
       params.push(preferred_language);
     }
     if (avatar_url !== undefined) {
-      updates.push('avatar_url = ?');
-      params.push(avatar_url || null);
+      // Validate avatar URL format
+      if (avatar_url && avatar_url.trim()) {
+        try {
+          const url = new URL(avatar_url);
+          if (!['http:', 'https:'].includes(url.protocol)) {
+            return res.status(400).json({ error: 'Avatar URL must be HTTP or HTTPS' });
+          }
+          updates.push('avatar_url = ?');
+          params.push(avatar_url.trim());
+        } catch {
+          return res.status(400).json({ error: 'Invalid avatar URL format' });
+        }
+      } else {
+        updates.push('avatar_url = ?');
+        params.push(null);
+      }
+    }
+    if (status !== undefined && ['online', 'offline', 'away', 'busy'].includes(status)) {
+      updates.push('status = ?');
+      params.push(status);
     }
 
     if (updates.length > 0) {
