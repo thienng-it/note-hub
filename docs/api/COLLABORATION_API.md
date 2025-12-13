@@ -99,6 +99,34 @@ socket.emit('note:cursor', {
 - `noteId` (number): The ID of the note
 - `position` (number): Cursor position in the text
 
+#### Send Typing Indicator (Phase 2)
+Show typing indicator to other collaborators.
+
+```javascript
+socket.emit('note:typing', {
+  noteId: 1,
+  isTyping: true
+});
+```
+
+**Parameters:**
+- `noteId` (number): The ID of the note
+- `isTyping` (boolean): Whether user is currently typing
+
+#### Send Focus Indicator (Phase 2)
+Indicate which section is being focused/edited.
+
+```javascript
+socket.emit('note:focus', {
+  noteId: 1,
+  section: 'body' // or 'title', 'tags', etc.
+});
+```
+
+**Parameters:**
+- `noteId` (number): The ID of the note
+- `section` (string): Section being focused ('title', 'body', 'tags')
+
 ### Server Events (Listen)
 
 #### Note Joined Confirmation
@@ -177,6 +205,40 @@ socket.on('note:cursor', (payload) => {
 });
 ```
 
+#### Typing Indicator Update (Phase 2)
+Receive typing indicator from other collaborators.
+
+```javascript
+socket.on('note:typing', (payload) => {
+  // {
+  //   noteId: 1,
+  //   userId: 2,
+  //   username: 'jane',
+  //   isTyping: true
+  // }
+  
+  // Show/hide typing indicator
+  updateTypingIndicator(payload.userId, payload.username, payload.isTyping);
+});
+```
+
+#### Focus Indicator Update (Phase 2)
+Receive focus/active section indicator from other collaborators.
+
+```javascript
+socket.on('note:focus', (payload) => {
+  // {
+  //   noteId: 1,
+  //   userId: 2,
+  //   username: 'jane',
+  //   section: 'body'
+  // }
+  
+  // Highlight section being edited
+  highlightSection(payload.section, payload.userId, payload.username);
+});
+```
+
 #### Note Error
 Error notification for note operations.
 
@@ -243,7 +305,36 @@ socket.emit('task:update', {
   - `due_date` (string, optional): Due date in ISO format
 
 **Access Control:**
-- Only task owner can make changes
+- Task owner can make changes
+- Shared users with edit permission can make changes (Phase 2)
+
+#### Send Typing Indicator (Phase 2)
+Show typing indicator to other collaborators.
+
+```javascript
+socket.emit('task:typing', {
+  taskId: 1,
+  isTyping: true
+});
+```
+
+**Parameters:**
+- `taskId` (number): The ID of the task
+- `isTyping` (boolean): Whether user is currently typing
+
+#### Send Focus Indicator (Phase 2)
+Indicate which field is being focused/edited.
+
+```javascript
+socket.emit('task:focus', {
+  taskId: 1,
+  field: 'description' // or 'title', 'priority', etc.
+});
+```
+
+**Parameters:**
+- `taskId` (number): The ID of the task
+- `field` (string): Field being focused ('title', 'description', 'priority', 'due_date')
 
 ### Server Events (Listen)
 
@@ -303,6 +394,40 @@ socket.on('task:update', (payload) => {
   
   // Apply changes to local state
   updateTaskLocally(payload.taskId, payload.changes);
+});
+```
+
+#### Typing Indicator Update (Phase 2)
+Receive typing indicator from other collaborators.
+
+```javascript
+socket.on('task:typing', (payload) => {
+  // {
+  //   taskId: 1,
+  //   userId: 2,
+  //   username: 'jane',
+  //   isTyping: true
+  // }
+  
+  // Show/hide typing indicator
+  updateTypingIndicator(payload.userId, payload.username, payload.isTyping);
+});
+```
+
+#### Focus Indicator Update (Phase 2)
+Receive focus/active field indicator from other collaborators.
+
+```javascript
+socket.on('task:focus', (payload) => {
+  // {
+  //   taskId: 1,
+  //   userId: 2,
+  //   username: 'jane',
+  //   field: 'description'
+  // }
+  
+  // Highlight field being edited
+  highlightField(payload.field, payload.userId, payload.username);
 });
 ```
 

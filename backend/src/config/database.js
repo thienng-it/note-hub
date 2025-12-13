@@ -235,6 +235,22 @@ class Database {
       );
       CREATE INDEX IF NOT EXISTS ix_tasks_owner ON tasks(owner_id);
 
+      -- Task sharing table (Phase 2: Task Collaboration)
+      CREATE TABLE IF NOT EXISTS share_tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        task_id INTEGER NOT NULL,
+        shared_by_id INTEGER NOT NULL,
+        shared_with_id INTEGER NOT NULL,
+        can_edit INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+        FOREIGN KEY (shared_by_id) REFERENCES users(id),
+        FOREIGN KEY (shared_with_id) REFERENCES users(id)
+      );
+      CREATE INDEX IF NOT EXISTS ix_share_tasks_task ON share_tasks(task_id);
+      CREATE INDEX IF NOT EXISTS ix_share_tasks_shared_with ON share_tasks(shared_with_id);
+
       -- Password reset tokens table
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -500,6 +516,22 @@ class Database {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_tasks_owner (owner_id),
         FOREIGN KEY (owner_id) REFERENCES users(id)
+      );
+
+      -- Task sharing table (Phase 2: Task Collaboration)
+      CREATE TABLE IF NOT EXISTS share_tasks (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        task_id INT NOT NULL,
+        shared_by_id INT NOT NULL,
+        shared_with_id INT NOT NULL,
+        can_edit BOOLEAN DEFAULT FALSE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX ix_share_tasks_task (task_id),
+        INDEX ix_share_tasks_shared_with (shared_with_id),
+        FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+        FOREIGN KEY (shared_by_id) REFERENCES users(id),
+        FOREIGN KEY (shared_with_id) REFERENCES users(id)
       );
 
       -- Password reset tokens table

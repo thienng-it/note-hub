@@ -81,7 +81,9 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ### Features & Configuration
 - **[LIQUID_GLASS_NAVBAR](features/LIQUID_GLASS_NAVBAR.md)** ⭐ NEW - Mac-style liquid glass navigation with dock effect
-- **[COLLABORATION_TESTING](guides/COLLABORATION_TESTING.md)** ⭐ NEW - Manual testing guide for real-time collaboration
+- **[REAL_TIME_COLLABORATION](features/REAL_TIME_COLLABORATION.md)** ⭐ - Real-time collaboration feature overview
+- **[PHASE_2_ENHANCEMENTS](features/PHASE_2_ENHANCEMENTS.md)** ⭐ NEW - Phase 2: Rich presence and task sharing
+- **[COLLABORATION_TESTING](guides/COLLABORATION_TESTING.md)** ⭐ - Manual testing guide for real-time collaboration
 - [CACHING_AND_SEARCH](guides/CACHING_AND_SEARCH.md) - Caching and search features
 - [CONFIG](guides/CONFIG.md) - Configuration guide
 - [ERROR_HANDLING](guides/ERROR_HANDLING.md) - Error handling guide

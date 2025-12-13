@@ -290,19 +290,46 @@ export function initializeSocketIO(httpServer) {
       });
     });
 
+    // Handle typing indicators for notes (Phase 2)
+    socket.on('note:typing', ({ noteId, isTyping }) => {
+      socket.to(`note:${noteId}`).emit('note:typing', {
+        noteId,
+        userId,
+        username: socket.username,
+        isTyping,
+      });
+    });
+
+    // Handle active section tracking (Phase 2)
+    socket.on('note:focus', ({ noteId, section }) => {
+      socket.to(`note:${noteId}`).emit('note:focus', {
+        noteId,
+        userId,
+        username: socket.username,
+        section, // 'title', 'body', 'tags', etc.
+      });
+    });
+
     // ==================== TASKS COLLABORATION ====================
 
     // Handle joining task room
     socket.on('task:join', async (taskId) => {
       try {
-        // Verify user has access to this task
-        const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND user_id = ?', [
+        // Verify user has access to this task (Phase 2: with sharing support)
+        const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND owner_id = ?', [
           taskId,
           userId,
         ]);
 
         if (!task) {
-          throw new Error('User does not have access to this task');
+          // Check if task is shared with user (Phase 2)
+          const sharedTask = await db.queryOne(
+            'SELECT id FROM share_tasks WHERE task_id = ? AND shared_with_id = ?',
+            [taskId, userId],
+          );
+          if (!sharedTask) {
+            throw new Error('User does not have access to this task');
+          }
         }
 
         socket.join(`task:${taskId}`);
@@ -341,14 +368,21 @@ export function initializeSocketIO(httpServer) {
     // Handle real-time task updates
     socket.on('task:update', async ({ taskId, changes }) => {
       try {
-        // Verify access (tasks don't have sharing yet, so only owner can edit)
-        const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND user_id = ?', [
+        // Verify access with sharing support (Phase 2)
+        const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND owner_id = ?', [
           taskId,
           userId,
         ]);
 
         if (!task) {
-          throw new Error('User does not have access to this task');
+          // Check if user has edit permission via share (Phase 2)
+          const sharedTask = await db.queryOne(
+            'SELECT can_edit FROM share_tasks WHERE task_id = ? AND shared_with_id = ?',
+            [taskId, userId],
+          );
+          if (!sharedTask || !sharedTask.can_edit) {
+            throw new Error('User does not have edit permission for this task');
+          }
         }
 
         // Broadcast changes to all users in the room except sender
@@ -367,6 +401,26 @@ export function initializeSocketIO(httpServer) {
           error: error.message,
         });
       }
+    });
+
+    // Handle typing indicators for tasks (Phase 2)
+    socket.on('task:typing', ({ taskId, isTyping }) => {
+      socket.to(`task:${taskId}`).emit('task:typing', {
+        taskId,
+        userId,
+        username: socket.username,
+        isTyping,
+      });
+    });
+
+    // Handle active field tracking for tasks (Phase 2)
+    socket.on('task:focus', ({ taskId, field }) => {
+      socket.to(`task:${taskId}`).emit('task:focus', {
+        taskId,
+        userId,
+        username: socket.username,
+        field, // 'title', 'description', 'priority', etc.
+      });
     });
 
     // Handle disconnection

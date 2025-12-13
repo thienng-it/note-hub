@@ -171,6 +171,30 @@ export function sendNoteCursor(noteId: number, position: number): void {
   }
 }
 
+// ==================== PHASE 2: RICH PRESENCE ====================
+
+/**
+ * Send typing indicator for note
+ * @param noteId - Note ID
+ * @param isTyping - Whether user is typing
+ */
+export function sendNoteTyping(noteId: number, isTyping: boolean): void {
+  if (socket) {
+    socket.emit('note:typing', { noteId, isTyping });
+  }
+}
+
+/**
+ * Send focus indicator for note section
+ * @param noteId - Note ID
+ * @param section - Section being focused ('title', 'body', 'tags', etc.)
+ */
+export function sendNoteFocus(noteId: number, section: string): void {
+  if (socket) {
+    socket.emit('note:focus', { noteId, section });
+  }
+}
+
 // ==================== TASKS COLLABORATION ====================
 
 /**
@@ -213,6 +237,28 @@ export function sendTaskUpdate(
   }
 }
 
+/**
+ * Send typing indicator for task (Phase 2)
+ * @param taskId - Task ID
+ * @param isTyping - Whether user is typing
+ */
+export function sendTaskTyping(taskId: number, isTyping: boolean): void {
+  if (socket) {
+    socket.emit('task:typing', { taskId, isTyping });
+  }
+}
+
+/**
+ * Send focus indicator for task field (Phase 2)
+ * @param taskId - Task ID
+ * @param field - Field being focused ('title', 'description', 'priority', etc.)
+ */
+export function sendTaskFocus(taskId: number, field: string): void {
+  if (socket) {
+    socket.emit('task:focus', { taskId, field });
+  }
+}
+
 export default {
   initializeSocket,
   getSocket,
@@ -226,7 +272,11 @@ export default {
   leaveNoteRoom,
   sendNoteUpdate,
   sendNoteCursor,
+  sendNoteTyping,
+  sendNoteFocus,
   joinTaskRoom,
   leaveTaskRoom,
   sendTaskUpdate,
+  sendTaskTyping,
+  sendTaskFocus,
 };
