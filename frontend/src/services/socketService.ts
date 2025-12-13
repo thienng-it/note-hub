@@ -117,6 +117,148 @@ export function markAsRead(roomId: number): void {
   }
 }
 
+// ==================== NOTES COLLABORATION ====================
+
+/**
+ * Join a note editing room
+ * @param noteId - Note ID
+ */
+export function joinNoteRoom(noteId: number): void {
+  if (socket) {
+    socket.emit('note:join', noteId);
+  }
+}
+
+/**
+ * Leave a note editing room
+ * @param noteId - Note ID
+ */
+export function leaveNoteRoom(noteId: number): void {
+  if (socket) {
+    socket.emit('note:leave', noteId);
+  }
+}
+
+/**
+ * Send note update to other collaborators
+ * @param noteId - Note ID
+ * @param changes - Changes to the note (title, body, tags, etc.)
+ */
+export function sendNoteUpdate(
+  noteId: number,
+  changes: {
+    title?: string;
+    body?: string;
+    tags?: string[];
+    pinned?: boolean;
+    favorite?: boolean;
+    archived?: boolean;
+  },
+): void {
+  if (socket) {
+    socket.emit('note:update', { noteId, changes });
+  }
+}
+
+/**
+ * Send cursor position in note
+ * @param noteId - Note ID
+ * @param position - Cursor position
+ */
+export function sendNoteCursor(noteId: number, position: number): void {
+  if (socket) {
+    socket.emit('note:cursor', { noteId, position });
+  }
+}
+
+// ==================== PHASE 2: RICH PRESENCE ====================
+
+/**
+ * Send typing indicator for note
+ * @param noteId - Note ID
+ * @param isTyping - Whether user is typing
+ */
+export function sendNoteTyping(noteId: number, isTyping: boolean): void {
+  if (socket) {
+    socket.emit('note:typing', { noteId, isTyping });
+  }
+}
+
+/**
+ * Send focus indicator for note section
+ * @param noteId - Note ID
+ * @param section - Section being focused ('title', 'body', 'tags', etc.)
+ */
+export function sendNoteFocus(noteId: number, section: string): void {
+  if (socket) {
+    socket.emit('note:focus', { noteId, section });
+  }
+}
+
+// ==================== TASKS COLLABORATION ====================
+
+/**
+ * Join a task room
+ * @param taskId - Task ID
+ */
+export function joinTaskRoom(taskId: number): void {
+  if (socket) {
+    socket.emit('task:join', taskId);
+  }
+}
+
+/**
+ * Leave a task room
+ * @param taskId - Task ID
+ */
+export function leaveTaskRoom(taskId: number): void {
+  if (socket) {
+    socket.emit('task:leave', taskId);
+  }
+}
+
+/**
+ * Send task update to other collaborators
+ * @param taskId - Task ID
+ * @param changes - Changes to the task (title, description, completed, etc.)
+ */
+export function sendTaskUpdate(
+  taskId: number,
+  changes: {
+    title?: string;
+    description?: string;
+    completed?: boolean;
+    priority?: string;
+    due_date?: string;
+  },
+): void {
+  if (socket) {
+    socket.emit('task:update', { taskId, changes });
+  }
+}
+
+/**
+ * Send typing indicator for task (Phase 2)
+ * @param taskId - Task ID
+ * @param isTyping - Whether user is typing
+ */
+export function sendTaskTyping(taskId: number, isTyping: boolean): void {
+  if (socket) {
+    socket.emit('task:typing', { taskId, isTyping });
+  }
+}
+
+/**
+ * Send focus indicator for task field (Phase 2)
+ * @param taskId - Task ID
+ * @param field - Field being focused ('title', 'description', 'priority', etc.)
+ */
+export function sendTaskFocus(taskId: number, field: string): void {
+  if (socket) {
+    socket.emit('task:focus', { taskId, field });
+  }
+}
+
 export default {
   initializeSocket,
   getSocket,
@@ -126,4 +268,15 @@ export default {
   sendMessage,
   sendTypingIndicator,
   markAsRead,
+  joinNoteRoom,
+  leaveNoteRoom,
+  sendNoteUpdate,
+  sendNoteCursor,
+  sendNoteTyping,
+  sendNoteFocus,
+  joinTaskRoom,
+  leaveTaskRoom,
+  sendTaskUpdate,
+  sendTaskTyping,
+  sendTaskFocus,
 };
