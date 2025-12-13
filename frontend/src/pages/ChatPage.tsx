@@ -3,7 +3,7 @@
  * Main chat interface with room list and messaging
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chatApi } from '../api/chat';
 import { UserAvatar } from '../components/UserAvatar';
@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
 import { notificationService } from '../services/notificationService';
 import type { ChatUser } from '../types/chat';
+import { linkify } from '../utils/linkify';
 
 export function ChatPage() {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ export function ChatPage() {
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
     notificationService.getPermission(),
   );
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load rooms on mount
   useEffect(() => {
@@ -71,6 +73,24 @@ export function ChatPage() {
   const handleDismissNotificationBanner = () => {
     setShowNotificationBanner(false);
   };
+
+  // Auto-scroll to latest message
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  // Scroll to bottom when room changes
+  useEffect(() => {
+    if (currentRoom) {
+      // Use setTimeout to ensure DOM has updated
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [currentRoom, scrollToBottom]);
 
   // Load available users when modal opens
   const handleOpenNewChat = async () => {
@@ -384,7 +404,9 @@ export function ChatPage() {
                                 : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                             }`}
                           >
-                            <p className="break-words">{message.message}</p>
+                            <p className="break-words whitespace-pre-wrap">
+                              {linkify(message.message)}
+                            </p>
                           </div>
                           {isSender && message.id && (
                             <button
@@ -404,6 +426,8 @@ export function ChatPage() {
                     </div>
                   );
                 })}
+                {/* Scroll target */}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Message input */}
