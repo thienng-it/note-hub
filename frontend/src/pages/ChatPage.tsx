@@ -290,7 +290,7 @@ export function ChatPage() {
                           >
                             <p className="break-words">{message.message}</p>
                           </div>
-                          {isSender && (
+                          {isSender && message.id && (
                             <button
                               type="button"
                               onClick={() => setMessageToDelete(message.id)}

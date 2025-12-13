@@ -299,25 +299,25 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   );
 
   // Delete a room
-  const deleteRoom = useCallback(
-    async (roomId: number) => {
-      setError(null);
-      try {
-        await chatApi.deleteRoom(roomId);
-        // Remove room from local state
-        setRooms((prev) => prev.filter((room) => room.id !== roomId));
-        // If deleting current room, clear it
-        if (currentRoom?.id === roomId) {
-          setCurrentRoom(null);
+  const deleteRoom = useCallback(async (roomId: number) => {
+    setError(null);
+    try {
+      await chatApi.deleteRoom(roomId);
+      // Remove room from local state
+      setRooms((prev) => prev.filter((room) => room.id !== roomId));
+      // If deleting current room, clear it
+      setCurrentRoom((prev) => {
+        if (prev?.id === roomId) {
           setMessages([]);
+          return null;
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to delete chat room');
-        throw err;
-      }
-    },
-    [currentRoom],
-  );
+        return prev;
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete chat room');
+      throw err;
+    }
+  }, []);
 
   const value: ChatContextType = {
     rooms,

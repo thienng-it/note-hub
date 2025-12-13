@@ -131,9 +131,13 @@ router.get('/users', jwtRequired, async (req, res) => {
  * @returns {number} HTTP status code
  */
 function getChatErrorStatusCode(error) {
-  return error.message.includes('not found') || error.message.includes('not authorized')
-    ? 403
-    : 500;
+  if (error.message.includes('not found')) {
+    return 404;
+  }
+  if (error.message.includes('not authorized')) {
+    return 403;
+  }
+  return 500;
 }
 
 /**
