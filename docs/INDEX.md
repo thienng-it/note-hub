@@ -34,6 +34,8 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [API_CHANGELOG](api/API_CHANGELOG.md) - API version history and changes
 - [API_VERSIONING](api/API_VERSIONING.md) - API versioning strategy
 - [JWT_API](api/JWT_API.md) - JWT authentication API documentation
+- **[COLLABORATION_API](api/COLLABORATION_API.md)** ⭐ NEW - Real-time collaboration API for notes and tasks
+- [CHAT_API](api/CHAT_API.md) - Real-time chat API documentation
 
 ## 📚 Guides
 
@@ -79,6 +81,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ### Features & Configuration
 - **[LIQUID_GLASS_NAVBAR](features/LIQUID_GLASS_NAVBAR.md)** ⭐ NEW - Mac-style liquid glass navigation with dock effect
+- **[COLLABORATION_TESTING](guides/COLLABORATION_TESTING.md)** ⭐ NEW - Manual testing guide for real-time collaboration
 - [CACHING_AND_SEARCH](guides/CACHING_AND_SEARCH.md) - Caching and search features
 - [CONFIG](guides/CONFIG.md) - Configuration guide
 - [ERROR_HANDLING](guides/ERROR_HANDLING.md) - Error handling guide
