@@ -162,7 +162,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       setSocket(null);
       setIsConnected(false);
     };
-  }, [user, currentRoom]);
+  }, [user]);
 
   // Load chat rooms
   const loadRooms = useCallback(async () => {

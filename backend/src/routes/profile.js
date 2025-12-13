@@ -262,7 +262,9 @@ router.put('/status', jwtRequired, async (req, res) => {
     const validStatuses = ['online', 'offline', 'away', 'busy'];
 
     if (!status || !validStatuses.includes(status)) {
-      return res.status(400).json({ error: 'Invalid status. Must be one of: online, offline, away, busy' });
+      return res
+        .status(400)
+        .json({ error: 'Invalid status. Must be one of: online, offline, away, busy' });
     }
 
     await db.query('UPDATE users SET status = ? WHERE id = ?', [status, req.userId]);

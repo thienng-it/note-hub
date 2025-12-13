@@ -448,9 +448,7 @@ export function ChatPage() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {t('chat.deleteChatConfirm')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {t('chat.deleteChatWarning')}
-            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">{t('chat.deleteChatWarning')}</p>
             <div className="flex gap-3 justify-end">
               <button
                 type="button"

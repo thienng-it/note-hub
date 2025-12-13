@@ -137,7 +137,8 @@ router.delete('/rooms/:roomId/messages/:messageId', jwtRequired, async (req, res
     await chatService.deleteMessage(roomId, messageId, req.userId);
     return responseHandler.success(res, null, { message: 'Message deleted successfully' });
   } catch (error) {
-    const statusCode = error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
+    const statusCode =
+      error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
     return responseHandler.error(res, error.message, { statusCode });
   }
 });
@@ -153,7 +154,8 @@ router.delete('/rooms/:roomId', jwtRequired, async (req, res) => {
     await chatService.deleteRoom(roomId, req.userId);
     return responseHandler.success(res, null, { message: 'Chat room deleted successfully' });
   } catch (error) {
-    const statusCode = error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
+    const statusCode =
+      error.message.includes('not found') || error.message.includes('not authorized') ? 403 : 500;
     return responseHandler.error(res, error.message, { statusCode });
   }
 });
