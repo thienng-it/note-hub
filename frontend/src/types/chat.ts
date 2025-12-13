@@ -7,6 +7,7 @@ export interface ChatUser {
   username: string;
   email?: string;
   status?: 'online' | 'offline' | 'away' | 'busy';
+  avatar_url?: string | null;
 }
 
 export interface ChatMessage {
@@ -48,4 +49,12 @@ export interface ChatReadPayload {
 export interface UserOnlinePayload {
   userId: number;
   username: string;
+  avatarUrl?: string | null;
+  status?: 'online' | 'offline' | 'away' | 'busy';
+}
+
+export interface UserStatusPayload {
+  userId: number;
+  username: string;
+  status: 'online' | 'offline' | 'away' | 'busy';
 }

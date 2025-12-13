@@ -8,6 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import type { Socket } from 'socket.io-client';
 import { chatApi } from '../api/chat';
 import { getStoredToken } from '../api/client';
+import { notificationService } from '../services/notificationService';
 import * as socketService from '../services/socketService';
 import type {
   ChatMessage,
@@ -16,6 +17,7 @@ import type {
   ChatRoom,
   ChatTypingPayload,
   UserOnlinePayload,
+  UserStatusPayload,
 } from '../types/chat';
 import { useAuth } from './AuthContext';
 
@@ -25,6 +27,7 @@ interface ChatContextType {
   messages: ChatMessage[];
   typingUsers: Map<number, string>;
   onlineUsers: Set<number>;
+  userStatuses: Map<number, string>;
   isConnected: boolean;
   isLoading: boolean;
   error: string | null;
@@ -36,6 +39,7 @@ interface ChatContextType {
   setTyping: (isTyping: boolean) => void;
   deleteMessage: (messageId: number) => Promise<void>;
   deleteRoom: (roomId: number) => Promise<void>;
+  getUserStatus: (userId: number, userSetStatus?: string) => string;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -47,6 +51,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typingUsers, setTypingUsers] = useState<Map<number, string>>(new Map());
   const [onlineUsers, setOnlineUsers] = useState<Set<number>>(new Set());
+  const [userStatuses, setUserStatuses] = useState<Map<number, string>>(new Map());
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -93,29 +98,38 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     // Handle real-time messages
     newSocket.on('chat:message', (payload: ChatMessagePayload) => {
       const roomId = payload.roomId;
+      const isCurrentRoom = currentRoomRef.current?.id === roomId;
 
       // Add message to current room
       setMessages((prev) => {
         // Only add if still viewing this room - use ref to get latest value
-        if (currentRoomRef.current?.id === roomId) {
+        if (isCurrentRoom) {
           return [...prev, payload.message];
         }
         return prev;
       });
 
-      // Update room's last message
+      // Update room's last message and unread count
       setRooms((prev) =>
         prev.map((room) =>
           room.id === roomId
             ? {
                 ...room,
                 lastMessage: payload.message,
-                unreadCount:
-                  currentRoomRef.current?.id === roomId ? room.unreadCount : room.unreadCount + 1,
+                unreadCount: isCurrentRoom ? room.unreadCount : room.unreadCount + 1,
               }
             : room,
         ),
       );
+
+      // Show notification if message is not from current user and not in current room
+      if (user && payload.message.sender.id !== user.id && !isCurrentRoom) {
+        notificationService.notifyNewMessage(
+          payload.message.sender.username,
+          payload.message.message,
+          roomId,
+        );
+      }
     });
 
     // Handle typing indicators
@@ -147,6 +161,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     // Handle user online/offline
     newSocket.on('user:online', (payload: UserOnlinePayload) => {
       setOnlineUsers((prev) => new Set(prev).add(payload.userId));
+      if (payload.status) {
+        setUserStatuses((prev) => new Map(prev).set(payload.userId, payload.status));
+      }
     });
 
     newSocket.on('user:offline', (payload: UserOnlinePayload) => {
@@ -157,12 +174,28 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       });
     });
 
+    // Handle user status changes
+    newSocket.on('user:status', (payload: UserStatusPayload) => {
+      setUserStatuses((prev) => new Map(prev).set(payload.userId, payload.status));
+    });
+
     return () => {
       socketService.disconnectSocket();
       setSocket(null);
       setIsConnected(false);
     };
   }, [user]);
+
+  // Update page title with total unread count
+  useEffect(() => {
+    const totalUnread = rooms.reduce((sum, room) => sum + room.unreadCount, 0);
+    notificationService.updateTitleWithCount(totalUnread);
+
+    return () => {
+      // Reset title on unmount
+      notificationService.updateTitleWithCount(0);
+    };
+  }, [rooms]);
 
   // Load chat rooms
   const loadRooms = useCallback(async () => {
@@ -319,12 +352,39 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  /**
+   * Get user status with proper precedence:
+   * 1. If not connected via socket -> offline
+   * 2. If user set status manually -> use that
+   * 3. If connected via socket -> use detected status or 'online'
+   */
+  const getUserStatus = useCallback(
+    (userId: number, userSetStatus?: string): string => {
+      const isOnline = onlineUsers.has(userId);
+
+      // If not connected, they're offline
+      if (!isOnline) {
+        return 'offline';
+      }
+
+      // If they have a manually set status, use that
+      if (userSetStatus && userSetStatus !== 'online') {
+        return userSetStatus;
+      }
+
+      // Use socket-detected status or default to online
+      return userStatuses.get(userId) || 'online';
+    },
+    [onlineUsers, userStatuses],
+  );
+
   const value: ChatContextType = {
     rooms,
     currentRoom,
     messages,
     typingUsers,
     onlineUsers,
+    userStatuses,
     isConnected,
     isLoading,
     error,
@@ -336,6 +396,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setTyping,
     deleteMessage,
     deleteRoom,
+    getUserStatus,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

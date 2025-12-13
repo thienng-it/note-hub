@@ -180,6 +180,11 @@ function defineModels() {
         },
         comment: 'User status: online, offline, away, busy',
       },
+      avatar_url: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        comment: 'URL or path to user avatar image',
+      },
     },
     {
       tableName: 'users',

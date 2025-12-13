@@ -391,6 +391,13 @@ class Database {
         this.db.exec("ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'online'");
         logger.info('  ✅ Migration: status column added');
       }
+
+      const hasAvatarUrl = userColumns.some((col) => col.name === 'avatar_url');
+      if (!hasAvatarUrl) {
+        logger.info('  🔄 Migrating: Adding avatar_url column to users table...');
+        this.db.exec('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT NULL');
+        logger.info('  ✅ Migration: avatar_url column added');
+      }
     } catch (error) {
       logger.warn('  ⚠️  Auto-migration warning:', error.message);
       // Non-fatal: schema might already be up-to-date
@@ -865,6 +872,7 @@ class Database {
           hidden_notes: 'TEXT',
           preferred_language: "VARCHAR(10) DEFAULT 'en'",
           status: "VARCHAR(20) DEFAULT 'online'",
+          avatar_url: 'TEXT',
         };
 
         if (!allowedTables.includes(tableName)) {
@@ -906,6 +914,9 @@ class Database {
 
       // Add missing status column to users table
       await addColumnIfMissing('users', 'status', 'users');
+
+      // Add missing avatar_url column to users table
+      await addColumnIfMissing('users', 'avatar_url', 'users');
 
       logger.info('✅ MySQL schema migration completed');
     } catch (error) {

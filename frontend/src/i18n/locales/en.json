@@ -217,7 +217,12 @@
     "usernameRequired": "Username is required",
     "currentPasswordPlaceholder": "Enter current password...",
     "newPasswordPlaceholder": "Enter new password...",
-    "confirmNewPasswordPlaceholder": "Confirm new password..."
+    "confirmNewPasswordPlaceholder": "Confirm new password...",
+    "avatar": "Profile Avatar",
+    "avatarUrlPlaceholder": "https://example.com/avatar.jpg",
+    "avatarDescription": "Enter a URL to your avatar image or leave empty to use initials",
+    "status": "Status",
+    "statusDescription": "Set your availability status for chat"
   },
   "share": {
     "title": "Share Note",
@@ -395,6 +400,9 @@
     "deleteChatConfirm": "Delete Chat?",
     "deleteChatWarning": "This will permanently delete this chat and all its messages. This action cannot be undone.",
     "away": "Away",
-    "busy": "Busy"
+    "busy": "Busy",
+    "enableNotifications": "Enable notifications for new messages",
+    "notificationDescription": "Get notified when you receive new messages while away",
+    "enable": "Enable"
   }
 }

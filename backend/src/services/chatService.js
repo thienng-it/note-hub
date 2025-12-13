@@ -109,7 +109,7 @@ export async function getUserChatRooms(userId) {
                 {
                   model: User,
                   as: 'user',
-                  attributes: ['id', 'username'],
+                  attributes: ['id', 'username', 'avatar_url', 'status'],
                 },
               ],
             },
@@ -142,6 +142,8 @@ export async function getUserChatRooms(userId) {
           participants: p.room.participants.map((participant) => ({
             id: participant.user.id,
             username: participant.user.username,
+            avatar_url: participant.user.avatar_url,
+            status: participant.user.status,
           })),
           lastMessage: p.room.messages[0]
             ? {
@@ -190,7 +192,7 @@ export async function getRoomMessages(roomId, userId, limit = 50, offset = 0) {
         {
           model: User,
           as: 'sender',
-          attributes: ['id', 'username'],
+          attributes: ['id', 'username', 'avatar_url', 'status'],
         },
       ],
       order: [['created_at', 'DESC']],
@@ -239,7 +241,7 @@ export async function sendMessage(roomId, senderId, message) {
         {
           model: User,
           as: 'sender',
-          attributes: ['id', 'username'],
+          attributes: ['id', 'username', 'avatar_url', 'status'],
         },
       ],
     });
@@ -339,7 +341,7 @@ export async function getAvailableUsers(currentUserId) {
       where: {
         id: { [Op.ne]: currentUserId },
       },
-      attributes: ['id', 'username', 'status'],
+      attributes: ['id', 'username', 'status', 'avatar_url'],
       order: [['username', 'ASC']],
     });
 
