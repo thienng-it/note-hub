@@ -148,6 +148,10 @@ export function LiquidGlassNav() {
     navigate('/login');
   };
 
+  // Color constants for additional buttons
+  const THEME_TOGGLE_COLOR = '#ffcc00';
+  const LOGOUT_COLOR = '#ff453a';
+
   // Find the currently active item for minimized state
   const activeItem = filteredNavItems.find((item) => isActive(item)) || filteredNavItems[0];
 
@@ -242,8 +246,8 @@ export function LiquidGlassNav() {
             <div
               className="liquid-glass-nav-icon-wrapper"
               style={{
-                borderColor: '#ffcc0040',
-                boxShadow: '0 4px 16px #ffcc0020, inset 0 1px 0 rgba(255, 255, 255, 0.5)',
+                borderColor: `${THEME_TOGGLE_COLOR}40`,
+                boxShadow: `0 4px 16px ${THEME_TOGGLE_COLOR}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
               }}
             >
               <i
@@ -270,8 +274,8 @@ export function LiquidGlassNav() {
             <div
               className="liquid-glass-nav-icon-wrapper"
               style={{
-                borderColor: '#ff453a40',
-                boxShadow: '0 4px 16px #ff453a20, inset 0 1px 0 rgba(255, 255, 255, 0.5)',
+                borderColor: `${LOGOUT_COLOR}40`,
+                boxShadow: `0 4px 16px ${LOGOUT_COLOR}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
               }}
             >
               <i className="fas fa-sign-out-alt liquid-glass-nav-icon" aria-hidden="true"></i>
