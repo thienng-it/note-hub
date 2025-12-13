@@ -7,11 +7,11 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx --no jest --coverage",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules npx --no jest --watch",
+    "lint": "npx --no @biomejs/biome check .",
+    "lint:fix": "npx --no @biomejs/biome check --write .",
+    "format": "npx --no @biomejs/biome format --write .",
     "seed": "node scripts/seed_db.js"
   },
   "dependencies": {
