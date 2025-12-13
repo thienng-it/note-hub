@@ -73,7 +73,7 @@ export function ForgotPasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl">
+        <div className="glass-panel p-6 sm:p-8">
           {/* Error Alert */}
           {error && (
             <div

@@ -74,7 +74,7 @@ export function EditProfilePage() {
       </div>
 
       {/* Form */}
-      <div className="glass-card p-6 rounded-xl">
+      <div className="glass-panel p-4 sm:p-6">
         {error && (
           <div
             className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
@@ -100,7 +100,7 @@ export function EditProfilePage() {
               id="username"
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+              className="glass-input"
               placeholder={t('profile.usernamePlaceholder')}
               required
               minLength={3}
@@ -122,7 +122,7 @@ export function EditProfilePage() {
               id="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+              className="glass-input"
               placeholder={t('profile.emailPlaceholder')}
             />
             <p className="mt-2 text-sm text-[var(--text-muted)]">{t('profile.emailOptional')}</p>
@@ -141,7 +141,7 @@ export function EditProfilePage() {
               id="bio"
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)] resize-none"
+              className="glass-input resize-none"
               rows={4}
               placeholder={t('profile.bioPlaceholder')}
               maxLength={500}

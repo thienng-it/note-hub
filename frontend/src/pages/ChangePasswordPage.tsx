@@ -47,9 +47,9 @@ export function ChangePasswordPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="container-responsive py-4 sm:py-6">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <Link
           to="/profile"
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
@@ -58,14 +58,14 @@ export function ChangePasswordPage() {
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Profile
         </Link>
-        <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="glass-i fas fa-key mr-3 text-blue-600" aria-hidden="true"></i>
+        <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
+          <i className="glass-i fas fa-key mr-2 sm:mr-3 text-blue-600" aria-hidden="true"></i>
           Change Password
         </h1>
       </div>
 
       {/* Form */}
-      <div className="glass-card p-6 rounded-xl">
+      <div className="glass-panel p-4 sm:p-6 max-w-2xl mx-auto">
         {error && (
           <div
             className="mb-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 flex items-start"
@@ -92,7 +92,7 @@ export function ChangePasswordPage() {
                 id="currentPassword"
                 value={formData.currentPassword}
                 onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                className="glass-input pr-12"
                 placeholder={t('profile.currentPasswordPlaceholder')}
                 required
                 aria-required="true"
@@ -126,7 +126,7 @@ export function ChangePasswordPage() {
                 id="newPassword"
                 value={formData.newPassword}
                 onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                className="glass-input pr-12"
                 placeholder={t('profile.newPasswordPlaceholder')}
                 required
                 minLength={12}
@@ -165,7 +165,7 @@ export function ChangePasswordPage() {
                 id="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                className="glass-input pr-12"
                 placeholder={t('profile.confirmNewPasswordPlaceholder')}
                 required
                 aria-required="true"
@@ -205,17 +205,10 @@ export function ChangePasswordPage() {
 
           {/* Buttons */}
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[var(--border-color)]">
-            <Link
-              to="/profile"
-              className="px-6 py-2 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] rounded-lg hover:opacity-80 transition-colors"
-            >
+            <Link to="/profile" className="btn-secondary-glass">
               Cancel
             </Link>
-            <button
-              type="submit"
-              className="btn-primary px-6 py-2 rounded-lg font-medium"
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn-apple" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>

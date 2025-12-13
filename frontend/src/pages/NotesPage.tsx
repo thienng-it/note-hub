@@ -251,7 +251,7 @@ export function NotesPage() {
         </div>
 
         {/* Search Form */}
-        <div className="glass-card shadow-sm p-4 border bg-[var(--bg-secondary)] border-[var(--border-color)]">
+        <div className="glass-panel p-4">
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -292,45 +292,26 @@ export function NotesPage() {
       </div>
 
       {/* Quick Filter Tabs */}
-      <div className="glass-card flex space-x-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
-        <Link
-          to="/"
-          className={`flex-1 text-center py-2 px-4 rounded-md transition-all ${
-            view === 'all'
-              ? 'shadow-sm text-blue-600 dark:text-blue-400 bg-[var(--bg-secondary)]'
-              : 'text-[var(--text-secondary)]'
-          }`}
-        >
+      <div className="glass-segmented">
+        <Link to="/" className={`glass-segmented-item ${view === 'all' ? 'active' : ''}`}>
           <i className="glass-i fas fa-home mr-2"></i>All
         </Link>
         <Link
           to="/?view=favorites"
-          className={`flex-1 text-center py-2 px-4 rounded-md transition-all ${
-            view === 'favorites'
-              ? 'shadow-sm text-red-600 dark:text-red-400 bg-[var(--bg-secondary)]'
-              : 'text-[var(--text-secondary)]'
-          }`}
+          className={`glass-segmented-item ${view === 'favorites' ? 'active' : ''}`}
         >
           <i className="glass-i fas fa-heart mr-2"></i>Favorites
         </Link>
         <Link
           to="/?view=archived"
-          className={`flex-1 text-center py-2 px-4 rounded-md transition-all ${
-            view === 'archived'
-              ? 'shadow-sm bg-[var(--bg-secondary)] text-[var(--text-primary)]'
-              : 'text-[var(--text-secondary)]'
-          }`}
+          className={`glass-segmented-item ${view === 'archived' ? 'active' : ''}`}
         >
           <i className="glass-i fas fa-archive mr-2"></i>
           {t('notes.archived')}
         </Link>
         <Link
           to="/?view=shared"
-          className={`flex-1 text-center py-2 px-4 rounded-md transition-all ${
-            view === 'shared'
-              ? 'shadow-sm text-green-600 dark:text-green-400 bg-[var(--bg-secondary)]'
-              : 'text-[var(--text-secondary)]'
-          }`}
+          className={`glass-segmented-item ${view === 'shared' ? 'active' : ''}`}
         >
           <i className="glass-i fas fa-share-alt mr-2"></i>Shared
         </Link>

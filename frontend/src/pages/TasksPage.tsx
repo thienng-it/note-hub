@@ -199,14 +199,14 @@ export function TasksPage() {
   };
 
   return (
-    <div>
+    <div className="container-responsive py-4 sm:py-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="glass-i fas fa-tasks mr-3 text-blue-600"></i>
+      <div className="stack-mobile">
+        <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
+          <i className="glass-i fas fa-tasks mr-2 sm:mr-3 text-blue-600"></i>
           Tasks
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {tasks.length > 0 && (
             <div className="flex items-center gap-2">
               <button
@@ -215,7 +215,8 @@ export function TasksPage() {
                 className="btn-secondary-glass text-sm"
                 title="Hide all task contents"
               >
-                <i className="glass-i fas fa-eye-slash mr-2"></i>Hide All
+                <i className="glass-i fas fa-eye-slash mr-1 sm:mr-2"></i>
+                <span className="hide-mobile sm:inline">Hide All</span>
               </button>
               <button
                 type="button"
@@ -223,15 +224,12 @@ export function TasksPage() {
                 className="btn-secondary-glass text-sm"
                 title="Show all task contents"
               >
-                <i className="glass-i fas fa-eye mr-2"></i>Show All
+                <i className="glass-i fas fa-eye mr-1 sm:mr-2"></i>
+                <span className="hide-mobile sm:inline">Show All</span>
               </button>
             </div>
           )}
-          <button
-            type="button"
-            onClick={() => setShowForm(!showForm)}
-            className="btn-apple px-4 py-2 rounded-lg font-medium"
-          >
+          <button type="button" onClick={() => setShowForm(!showForm)} className="btn-apple">
             <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
             {showForm ? 'Cancel' : 'New Task'}
           </button>
@@ -239,7 +237,7 @@ export function TasksPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="responsive-grid">
         <div className="glass-card p-4 rounded-xl text-center">
           <div className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</div>
           <div className="text-sm text-[var(--text-muted)]">Total</div>

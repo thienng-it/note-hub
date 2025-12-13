@@ -152,7 +152,7 @@ export function AuditLogsPage() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="responsive-grid mb-6">
           <div className="glass-card p-4">
             <div className="text-sm text-[var(--text-secondary)]">Total Logs</div>
             <div className="text-2xl font-bold text-[var(--text-primary)] mt-1">
@@ -181,18 +181,22 @@ export function AuditLogsPage() {
       )}
 
       {/* Filters */}
-      <div className="glass-card p-6 mb-6">
+      <div className="glass-panel p-4 sm:p-6 mb-6">
         <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Filters</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="responsive-grid">
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label
+              htmlFor="filter-user-id"
+              className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
+            >
               User ID
             </label>
             <input
+              id="filter-user-id"
               type="text"
               value={filterUserId}
               onChange={(e) => setFilterUserId(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+              className="glass-input"
               placeholder="e.g., 42"
             />
           </div>
@@ -207,7 +211,7 @@ export function AuditLogsPage() {
               id="filter-entity-type"
               value={filterEntityType}
               onChange={(e) => setFilterEntityType(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+              className="glass-input"
             >
               <option value="">All</option>
               <option value="note">Note</option>
@@ -227,7 +231,7 @@ export function AuditLogsPage() {
               id="filter-action"
               value={filterAction}
               onChange={(e) => setFilterAction(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+              className="glass-input"
             >
               <option value="">All</option>
               <option value="view">View</option>
@@ -248,7 +252,7 @@ export function AuditLogsPage() {
               type="date"
               value={filterStartDate}
               onChange={(e) => setFilterStartDate(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+              className="glass-input"
             />
           </div>
           <div>
@@ -263,38 +267,45 @@ export function AuditLogsPage() {
               type="date"
               value={filterEndDate}
               onChange={(e) => setFilterEndDate(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded text-[var(--text-primary)]"
+              className="glass-input"
             />
           </div>
         </div>
-        <div className="mt-4 flex gap-2">
-          <button
-            onClick={handleFilterApply}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-          >
-            Apply Filters
-          </button>
-          <button
-            onClick={handleFilterClear}
-            className="px-4 py-2 bg-[var(--background-secondary)] text-[var(--text-primary)] rounded hover:bg-[var(--hover-bg)] transition-colors"
-          >
-            Clear Filters
-          </button>
-          <div className="flex-1"></div>
-          <button
-            onClick={() => handleExport('csv')}
-            disabled={isExporting}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50"
-          >
-            {isExporting ? 'Exporting...' : 'Export CSV'}
-          </button>
-          <button
-            onClick={() => handleExport('json')}
-            disabled={isExporting}
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors disabled:opacity-50"
-          >
-            {isExporting ? 'Exporting...' : 'Export JSON'}
-          </button>
+        <div className="mt-4 stack-mobile">
+          <div className="flex gap-2 flex-1">
+            <button
+              type="button"
+              onClick={handleFilterApply}
+              className="btn-apple flex-1 sm:flex-initial"
+            >
+              Apply Filters
+            </button>
+            <button
+              type="button"
+              onClick={handleFilterClear}
+              className="btn-secondary-glass flex-1 sm:flex-initial"
+            >
+              Clear Filters
+            </button>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => handleExport('csv')}
+              disabled={isExporting}
+              className="btn-apple flex-1 sm:flex-initial bg-green-600 hover:bg-green-700"
+            >
+              {isExporting ? 'Exporting...' : 'Export CSV'}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleExport('json')}
+              disabled={isExporting}
+              className="btn-apple flex-1 sm:flex-initial bg-indigo-600 hover:bg-indigo-700"
+            >
+              {isExporting ? 'Exporting...' : 'Export JSON'}
+            </button>
+          </div>
         </div>
       </div>
 

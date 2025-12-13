@@ -3,35 +3,46 @@
 exports[`AdminDashboardPage > matches snapshot 1`] = `
 <div>
   <div
-    class="p-4 sm:p-6 max-w-7xl mx-auto"
+    class="container-responsive py-4 sm:py-6"
   >
     <div
-      class="mb-8"
+      class="mb-6 sm:mb-8"
     >
       <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4"
+        class="stack-mobile mb-4"
       >
-        <div>
+        <div
+          class="flex-1"
+        >
           <h1
-            class="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] flex items-center gap-3"
+            class="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] flex items-center gap-2 sm:gap-3"
           >
             <i
               aria-hidden="true"
               class="glass-i fas fa-users-cog text-blue-600"
             />
-            Admin Dashboard
+            <span
+              class="hide-mobile"
+            >
+              Admin Dashboard
+            </span>
+            <span
+              class="show-mobile"
+            >
+              Admin
+            </span>
           </h1>
           <p
-            class="text-[var(--text-secondary)] mt-2"
+            class="text-sm sm:text-base text-[var(--text-secondary)] mt-2"
           >
             Manage users and view system statistics
           </p>
         </div>
         <div
-          class="flex gap-2"
+          class="flex gap-2 flex-wrap"
         >
           <a
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            class="btn-apple flex-1 sm:flex-initial"
             data-discover="true"
             href="/admin/audit-logs"
           >
@@ -39,12 +50,14 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
               aria-hidden="true"
               class="glass-i fas fa-clipboard-list"
             />
-            <span>
+            <span
+              class="hide-mobile sm:inline ml-2"
+            >
               Audit Logs
             </span>
           </a>
           <a
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors"
+            class="btn-secondary-glass flex-1 sm:flex-initial"
             data-discover="true"
             href="/"
           >
@@ -52,7 +65,9 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
               aria-hidden="true"
               class="glass-i fas fa-arrow-left"
             />
-            <span>
+            <span
+              class="hide-mobile sm:inline ml-2"
+            >
               Back to Notes
             </span>
           </a>
@@ -60,7 +75,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
+      class="responsive-grid mb-6 sm:mb-8"
     >
       <div
         class="glass-card p-6 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white"
@@ -200,10 +215,10 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="glass-card p-4 sm:p-6 rounded-xl mb-6"
+      class="glass-panel p-4 sm:p-6 mb-6"
     >
       <form
-        class="flex flex-col sm:flex-row gap-4"
+        class="stack-mobile"
       >
         <div
           class="flex-1 relative"
@@ -213,7 +228,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             class="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"
           />
           <input
-            class="glass-input w-full pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="glass-input glass-input-with-icon w-full"
             placeholder="Search by username or email..."
             type="text"
             value=""
@@ -223,14 +238,16 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
           class="flex gap-2"
         >
           <button
-            class="btn-apple"
+            class="btn-apple flex-1 sm:flex-initial"
             type="submit"
           >
             <i
               aria-hidden="true"
               class="glass-i fas fa-search"
             />
-            <span>
+            <span
+              class="ml-2"
+            >
               Search
             </span>
           </button>
