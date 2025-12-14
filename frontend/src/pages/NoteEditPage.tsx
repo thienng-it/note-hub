@@ -8,6 +8,7 @@ import { AIActions } from '../components/AIActions';
 import { ImageUpload } from '../components/ImageUpload';
 import { MarkdownToolbar } from '../components/MarkdownToolbar';
 import type { Folder, Note } from '../types';
+import { flattenFolders } from '../utils/folderUtils';
 import { type NoteTemplate, noteTemplates } from '../utils/templates';
 
 export function NoteEditPage() {
@@ -72,20 +73,6 @@ export function NoteEditPage() {
     };
     loadFolders();
   }, []);
-
-  // Flatten folders for select dropdown with hierarchy
-  const flattenFolders = (folders: Folder[], prefix = ''): Array<{ id: number; name: string }> => {
-    const result: Array<{ id: number; name: string }> = [];
-    for (const folder of folders) {
-      result.push({ id: folder.id, name: prefix + folder.name });
-      if (folder.children && folder.children.length > 0) {
-        result.push(...flattenFolders(folder.children, prefix + folder.name + ' / '));
-      }
-    }
-    return result;
-  };
-
-  const flatFolders = flattenFolders(folders);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -336,7 +323,7 @@ export function NoteEditPage() {
                 className="glass-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">No folder</option>
-                {flatFolders.map((folder) => (
+                {flattenFolders(folders).map((folder) => (
                   <option key={folder.id} value={folder.id}>
                     {folder.name}
                   </option>

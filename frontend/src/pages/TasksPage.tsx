@@ -7,6 +7,7 @@ import { FolderTree } from '../components/FolderTree';
 import { ImageUpload } from '../components/ImageUpload';
 import { ConfirmModal } from '../components/Modal';
 import type { Folder, Task, TaskFilterType } from '../types';
+import { flattenFolders } from '../utils/folderUtils';
 import { type TaskTemplate, taskTemplates } from '../utils/templates';
 
 export function TasksPage() {
@@ -229,20 +230,6 @@ export function TasksPage() {
       setError(err instanceof Error ? err.message : 'Failed to update task');
     }
   };
-
-  // Flatten folders for select dropdown with hierarchy
-  const flattenFolders = (folders: Folder[], prefix = ''): Array<{ id: number; name: string }> => {
-    const result: Array<{ id: number; name: string }> = [];
-    for (const folder of folders) {
-      result.push({ id: folder.id, name: prefix + folder.name });
-      if (folder.children && folder.children.length > 0) {
-        result.push(...flattenFolders(folder.children, prefix + folder.name + ' / '));
-      }
-    }
-    return result;
-  };
-
-  const flatFolders = flattenFolders(folders);
 
   const resetForm = () => {
     setShowForm(false);
@@ -517,7 +504,7 @@ export function TasksPage() {
                     className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">No folder</option>
-                    {flatFolders.map((folder) => (
+                    {flattenFolders(folders).map((folder) => (
                       <option key={folder.id} value={folder.id}>
                         {folder.name}
                       </option>

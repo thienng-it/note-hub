@@ -31,6 +31,7 @@ router.get('/', jwtRequired, async (req, res) => {
         due_date: task.due_date,
         folder_id: task.folder_id,
         created_at: task.created_at,
+        updated_at: task.updated_at,
         is_overdue: task.isOverdue,
       })),
       counts,
@@ -72,6 +73,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
         due_date: task.due_date,
         folder_id: task.folder_id,
         created_at: task.created_at,
+        updated_at: task.updated_at,
         is_overdue: TaskService.isOverdue(task),
       },
     });
@@ -128,6 +130,7 @@ router.post('/', jwtRequired, async (req, res) => {
         due_date: task.due_date,
         folder_id: task.folder_id,
         created_at: task.created_at,
+        updated_at: task.updated_at,
       },
     });
   } catch (error) {
@@ -193,6 +196,7 @@ async function updateTask(req, res) {
         priority: updatedTask.priority,
         due_date: updatedTask.due_date,
         folder_id: updatedTask.folder_id,
+        updated_at: updatedTask.updated_at,
         is_overdue: TaskService.isOverdue(updatedTask),
       },
     });
