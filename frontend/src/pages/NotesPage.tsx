@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { foldersApi, notesApi, profileApi } from '../api/client';
 import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
+import { FolderModal } from '../components/FolderModal';
 import { FolderTree } from '../components/FolderTree';
 import { useAuth } from '../context/AuthContext';
 import type { Folder, Note, NoteViewType, Tag } from '../types';
@@ -20,7 +21,7 @@ export function NotesPage() {
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
   const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
-  const [_showFolderModal, setShowFolderModal] = useState(false);
+  const [showFolderModal, setShowFolderModal] = useState(false);
   const [folderToEdit, setFolderToEdit] = useState<Folder | null>(null);
   const [folderParentId, setFolderParentId] = useState<number | null>(null);
   const [hiddenNotes, setHiddenNotes] = useState<Set<number>>(() => {
@@ -185,7 +186,7 @@ export function NotesPage() {
     }
   };
 
-  const _handleSaveFolder = async (name: string, icon: string, color: string) => {
+  const handleSaveFolder = async (name: string, icon: string, color: string) => {
     if (folderToEdit) {
       await foldersApi.update(folderToEdit.id, { name, icon, color });
     } else {
