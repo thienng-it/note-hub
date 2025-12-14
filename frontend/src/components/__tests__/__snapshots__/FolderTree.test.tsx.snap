@@ -1,0 +1,622 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FolderTree > matches snapshot - default state 1`] = `
+<div
+  class="folder-tree"
+>
+  <div
+    class="flex items-center justify-between mb-3"
+  >
+    <h3
+      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+    >
+      Folders
+    </h3>
+    <button
+      class="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+      title="New Folder"
+      type="button"
+    >
+      <svg
+        aria-label="Add folder"
+        class="w-4 h-4"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 4v16m8-8H4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
+  </div>
+  <div
+    class="space-y-1"
+  >
+    <button
+      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+      type="button"
+    >
+      <svg
+        aria-label="All Notes"
+        class="w-5 h-5"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+      <span
+        class="text-sm font-medium"
+      >
+        All Notes
+      </span>
+    </button>
+    <div
+      class="folder-item"
+    >
+      <div
+        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+        role="button"
+        style="padding-left: 0.75rem;"
+        tabindex="0"
+      >
+        <button
+          class="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+          type="button"
+        >
+          <svg
+            aria-label="Collapse"
+            class="w-4 h-4 transition-transform rotate-90"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M9 5l7 7-7 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+        <div
+          style="color: rgb(59, 130, 246);"
+        >
+          <svg
+            aria-label="Briefcase"
+            class="w-5 h-5"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div
+          class="flex-1 flex items-center justify-between min-w-0"
+        >
+          <span
+            class="text-sm font-medium truncate"
+          >
+            Work
+          </span>
+          <span
+            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+          >
+            8
+          </span>
+        </div>
+        <button
+          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          type="button"
+        >
+          <svg
+            aria-label="Menu"
+            class="w-4 h-4"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="folder-item"
+        >
+          <div
+            class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            role="button"
+            style="padding-left: 2.25rem;"
+            tabindex="0"
+          >
+            <div
+              class="w-5"
+            />
+            <div
+              style="color: rgb(16, 185, 129);"
+            >
+              <svg
+                aria-label="Folder"
+                class="w-5 h-5"
+                fill="none"
+                role="img"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <div
+              class="flex-1 flex items-center justify-between min-w-0"
+            >
+              <span
+                class="text-sm font-medium truncate"
+              >
+                Project A
+              </span>
+              <span
+                class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+              >
+                5
+              </span>
+            </div>
+            <button
+              class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+              type="button"
+            >
+              <svg
+                aria-label="Menu"
+                class="w-4 h-4"
+                fill="currentColor"
+                role="img"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="folder-item"
+    >
+      <div
+        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+        role="button"
+        style="padding-left: 0.75rem;"
+        tabindex="0"
+      >
+        <div
+          class="w-5"
+        />
+        <div
+          style="color: rgb(245, 158, 11);"
+        >
+          <svg
+            aria-label="Home"
+            class="w-5 h-5"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div
+          class="flex-1 flex items-center justify-between min-w-0"
+        >
+          <span
+            class="text-sm font-medium truncate"
+          >
+            Personal
+          </span>
+          <span
+            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+          >
+            2
+          </span>
+        </div>
+        <button
+          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          type="button"
+        >
+          <svg
+            aria-label="Menu"
+            class="w-4 h-4"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FolderTree > matches snapshot - empty folders 1`] = `
+<div
+  class="folder-tree"
+>
+  <div
+    class="flex items-center justify-between mb-3"
+  >
+    <h3
+      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+    >
+      Folders
+    </h3>
+    <button
+      class="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+      title="New Folder"
+      type="button"
+    >
+      <svg
+        aria-label="Add folder"
+        class="w-4 h-4"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 4v16m8-8H4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
+  </div>
+  <div
+    class="space-y-1"
+  >
+    <button
+      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+      type="button"
+    >
+      <svg
+        aria-label="All Notes"
+        class="w-5 h-5"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+      <span
+        class="text-sm font-medium"
+      >
+        All Notes
+      </span>
+    </button>
+    <div
+      class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
+    >
+      No folders yet. Create one to organize your notes!
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FolderTree > matches snapshot - with selected folder 1`] = `
+<div
+  class="folder-tree"
+>
+  <div
+    class="flex items-center justify-between mb-3"
+  >
+    <h3
+      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+    >
+      Folders
+    </h3>
+    <button
+      class="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+      title="New Folder"
+      type="button"
+    >
+      <svg
+        aria-label="Add folder"
+        class="w-4 h-4"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 4v16m8-8H4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
+  </div>
+  <div
+    class="space-y-1"
+  >
+    <button
+      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+      type="button"
+    >
+      <svg
+        aria-label="All Notes"
+        class="w-5 h-5"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+      <span
+        class="text-sm font-medium"
+      >
+        All Notes
+      </span>
+    </button>
+    <div
+      class="folder-item"
+    >
+      <div
+        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+        role="button"
+        style="padding-left: 0.75rem;"
+        tabindex="0"
+      >
+        <button
+          class="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+          type="button"
+        >
+          <svg
+            aria-label="Collapse"
+            class="w-4 h-4 transition-transform rotate-90"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M9 5l7 7-7 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+        <div
+          style="color: rgb(59, 130, 246);"
+        >
+          <svg
+            aria-label="Briefcase"
+            class="w-5 h-5"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div
+          class="flex-1 flex items-center justify-between min-w-0"
+        >
+          <span
+            class="text-sm font-medium truncate"
+          >
+            Work
+          </span>
+          <span
+            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+          >
+            8
+          </span>
+        </div>
+        <button
+          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          type="button"
+        >
+          <svg
+            aria-label="Menu"
+            class="w-4 h-4"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="folder-item"
+        >
+          <div
+            class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            role="button"
+            style="padding-left: 2.25rem;"
+            tabindex="0"
+          >
+            <div
+              class="w-5"
+            />
+            <div
+              style="color: rgb(16, 185, 129);"
+            >
+              <svg
+                aria-label="Folder"
+                class="w-5 h-5"
+                fill="none"
+                role="img"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <div
+              class="flex-1 flex items-center justify-between min-w-0"
+            >
+              <span
+                class="text-sm font-medium truncate"
+              >
+                Project A
+              </span>
+              <span
+                class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+              >
+                5
+              </span>
+            </div>
+            <button
+              class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+              type="button"
+            >
+              <svg
+                aria-label="Menu"
+                class="w-4 h-4"
+                fill="currentColor"
+                role="img"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="folder-item"
+    >
+      <div
+        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+        role="button"
+        style="padding-left: 0.75rem;"
+        tabindex="0"
+      >
+        <div
+          class="w-5"
+        />
+        <div
+          style="color: rgb(245, 158, 11);"
+        >
+          <svg
+            aria-label="Home"
+            class="w-5 h-5"
+            fill="none"
+            role="img"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div
+          class="flex-1 flex items-center justify-between min-w-0"
+        >
+          <span
+            class="text-sm font-medium truncate"
+          >
+            Personal
+          </span>
+          <span
+            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+          >
+            2
+          </span>
+        </div>
+        <button
+          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          type="button"
+        >
+          <svg
+            aria-label="Menu"
+            class="w-4 h-4"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

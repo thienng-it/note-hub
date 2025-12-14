@@ -93,12 +93,15 @@ describe('FolderBreadcrumb', () => {
       () => new Promise((resolve) => setTimeout(() => resolve({ path: mockPath }), 1000)),
     );
 
-    render(
+    const { container } = render(
       <TestWrapper>
         <FolderBreadcrumb folderId={2} onNavigate={mockOnNavigate} />
       </TestWrapper>,
     );
 
-    expect(screen.getByRole('img', { hidden: true })).toHaveClass('fa-spinner');
+    // Check for loading spinner
+    const spinner = container.querySelector('.fa-spinner');
+    expect(spinner).toBeTruthy();
+    expect(spinner).toHaveClass('fa-spin');
   });
 });
