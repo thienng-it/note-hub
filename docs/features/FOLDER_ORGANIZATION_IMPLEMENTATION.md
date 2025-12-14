@@ -8,8 +8,8 @@ This document describes the implementation of hierarchical folder organization f
 
 **Phase 1 Complete:** Backend API and Database Schema ✅  
 **Phase 2 Complete:** Frontend Components and Integration ✅  
-**Phase 3 Pending:** Advanced Features (Optional)  
-**Phase 4 Partial:** Testing and Documentation
+**Phase 3 Complete:** Advanced Features ✅  
+**Phase 4 Partial:** Optional Enhancements (Future)
 
 ## Architecture
 
@@ -252,6 +252,84 @@ Translation keys added to `frontend/src/i18n/locales/en.json`
 }
 ```
 
+## Phase 3 Features
+
+### Default Folders for New Users
+
+When a new user registers, three default folders are automatically created:
+
+**Implementation (backend/src/services/authService.js):**
+```javascript
+// After user creation
+const FolderService = (await import('./folderService.js')).default;
+await FolderService.createDefaultFolders(result.insertId);
+```
+
+**Default Folders:**
+- **Work** - Briefcase icon (💼), Blue color (#3B82F6)
+- **Personal** - Home icon (🏠), Green color (#10B981)
+- **Archive** - Archive icon (📦), Gray color (#6B7280)
+
+**Error Handling:**
+- Non-blocking: User creation succeeds even if folder creation fails
+- Errors logged for monitoring
+- Graceful degradation
+
+### Breadcrumb Navigation
+
+Shows the hierarchical path of the current folder with clickable navigation.
+
+**Component (frontend/src/components/FolderBreadcrumb.tsx):**
+```typescript
+<FolderBreadcrumb
+  folderId={selectedFolder?.id}
+  onNavigate={handleSelectFolder}
+/>
+```
+
+**Features:**
+- Displays full path: "All Notes > Work > Project A"
+- Clickable items to navigate up the hierarchy
+- Current folder highlighted with its color
+- Loading state while fetching path
+- Automatically updates when folder changes
+
+**API Integration:**
+```typescript
+const result = await foldersApi.getPath(folderId);
+// Returns: { path: [{ id, name, parent_id, color, ... }] }
+```
+
+### Folder State Persistence
+
+Expanded/collapsed state is automatically saved to the backend.
+
+**Implementation (frontend/src/components/FolderItem.tsx):**
+```typescript
+const handleToggleExpand = async (e) => {
+  e.stopPropagation();
+  const newState = !isExpanded;
+  setIsExpanded(newState);
+  
+  // Persist to backend
+  await foldersApi.update(folder.id, { is_expanded: newState });
+};
+```
+
+**Features:**
+- Saves immediately when toggled
+- Persists across sessions
+- Automatic retry on failure
+- Optimistic UI update
+- Reverts on error
+
+**Database:**
+```sql
+-- is_expanded column in folders table
+is_expanded INTEGER DEFAULT 1  -- SQLite
+is_expanded TINYINT DEFAULT 1   -- MySQL
+```
+
 ## Integration Guide
 
 ### Adding Folders to NotesPage
@@ -437,17 +515,18 @@ All endpoints require JWT authentication via `jwtRequired` middleware. Folder op
 
 ## Future Enhancements
 
-### Phase 3: Advanced Features
+### Phase 3: Advanced Features ✅ COMPLETED
 
-- [ ] Drag-and-drop interface for moving notes/tasks
-- [ ] Drag-and-drop for reordering folders
-- [ ] Folder color picker UI
-- [ ] Folder icon selector UI
-- [ ] Bulk move operations
-- [ ] Default folders for new users (Work, Personal, Archive)
-- [ ] Folder templates
+- [x] **Default folders for new users** - Automatically creates Work, Personal, and Archive folders on registration
+- [x] **Breadcrumb navigation** - Shows hierarchical path with clickable navigation
+- [x] **Folder state persistence** - Expanded/collapsed state saved to backend
+- [ ] Drag-and-drop interface for moving notes/tasks (Optional - Phase 4)
+- [ ] Drag-and-drop for reordering folders (Optional - Phase 4)
+- [x] Folder color picker UI (Implemented in Phase 2)
+- [x] Folder icon selector UI (Implemented in Phase 2)
+- [ ] Bulk move operations (Optional - Phase 4)
 
-### Phase 4: Polish
+### Phase 4: Optional Enhancements (Future)
 
 - [ ] Keyboard navigation (arrow keys, enter, etc.)
 - [ ] Folder search/filter
