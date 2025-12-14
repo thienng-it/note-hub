@@ -13,6 +13,25 @@ import { notificationService } from '../services/notificationService';
 import type { ChatUser } from '../types/chat';
 import { linkify } from '../utils/linkify';
 
+/**
+ * Custom hook to handle Escape key press for modals
+ * @param isOpen - Whether the modal is open
+ * @param onClose - Callback to close the modal
+ */
+function useEscapeKey(isOpen: boolean, onClose: () => void) {
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+}
+
 export function ChatPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -102,57 +121,11 @@ export function ChatPage() {
     }
   }, [currentRoom, scrollToBottom]);
 
-  // Handle Escape key for new chat modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showNewChatModal) {
-        setShowNewChatModal(false);
-      }
-    };
-    if (showNewChatModal) {
-      document.addEventListener('keydown', handleEscape);
-    }
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [showNewChatModal]);
-
-  // Handle Escape key for delete message modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && messageToDelete) {
-        setMessageToDelete(null);
-      }
-    };
-    if (messageToDelete) {
-      document.addEventListener('keydown', handleEscape);
-    }
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [messageToDelete]);
-
-  // Handle Escape key for delete room modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showDeleteRoomConfirm) {
-        setShowDeleteRoomConfirm(false);
-      }
-    };
-    if (showDeleteRoomConfirm) {
-      document.addEventListener('keydown', handleEscape);
-    }
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [showDeleteRoomConfirm]);
-
-  // Handle Escape key for photo viewer
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && viewingPhoto) {
-        setViewingPhoto(null);
-      }
-    };
-    if (viewingPhoto) {
-      document.addEventListener('keydown', handleEscape);
-    }
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [viewingPhoto]);
+  // Handle Escape key for modals
+  useEscapeKey(showNewChatModal, () => setShowNewChatModal(false));
+  useEscapeKey(!!messageToDelete, () => setMessageToDelete(null));
+  useEscapeKey(showDeleteRoomConfirm, () => setShowDeleteRoomConfirm(false));
+  useEscapeKey(!!viewingPhoto, () => setViewingPhoto(null));
 
   // Load available users when modal opens
   const handleOpenNewChat = async () => {
