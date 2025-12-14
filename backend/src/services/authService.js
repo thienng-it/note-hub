@@ -152,6 +152,16 @@ export default class AuthService {
       [result.insertId],
     );
 
+    // Create default folders for new user
+    try {
+      const FolderService = (await import('./folderService.js')).default;
+      await FolderService.createDefaultFolders(result.insertId);
+      logger.info(`Created default folders for user: ${result.insertId}`);
+    } catch (error) {
+      logger.warn('Failed to create default folders:', error);
+      // Non-fatal error - user creation succeeded
+    }
+
     return { success: true, user: newUser };
   }
 

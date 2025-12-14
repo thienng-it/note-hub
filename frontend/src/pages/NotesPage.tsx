@@ -2,6 +2,7 @@ import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { foldersApi, notesApi, profileApi } from '../api/client';
+import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
 import { FolderModal } from '../components/FolderModal';
 import { FolderTree } from '../components/FolderTree';
 import { useAuth } from '../context/AuthContext';
@@ -300,10 +301,21 @@ export function NotesPage() {
         {/* Header with Search */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-3xl font-bold flex items-center">
-            <i className={`fas ${getViewIcon()} mr-3`}></i>
-            <span className="text-[var(--text-primary)]">{getViewTitle()}</span>
-          </h1>
+          <div>
+            <h1 className="text-3xl font-bold flex items-center">
+              <i className={`fas ${getViewIcon()} mr-3`}></i>
+              <span className="text-[var(--text-primary)]">{getViewTitle()}</span>
+            </h1>
+            {/* Breadcrumb Navigation */}
+            {selectedFolder && (
+              <div className="mt-2">
+                <FolderBreadcrumb
+                  folderId={selectedFolder.id}
+                  onNavigate={handleSelectFolder}
+                />
+              </div>
+            )}
+          </div>
           <div className="flex items-center space-x-3">
             <span className="text-sm text-[var(--text-secondary)]">
               {notes.length} {t('common.notesCount')}

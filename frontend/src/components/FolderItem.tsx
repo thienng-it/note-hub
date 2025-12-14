@@ -135,9 +135,20 @@ export function FolderItem({
   const isSelected = selectedFolderId === folder.id;
   const icon = FOLDER_ICONS[folder.icon] || FOLDER_ICONS.folder;
 
-  const handleToggleExpand = (e: React.MouseEvent) => {
+  const handleToggleExpand = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsExpanded(!isExpanded);
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    
+    // Persist expanded state to backend
+    try {
+      const { foldersApi } = await import('../api/client');
+      await foldersApi.update(folder.id, { is_expanded: newExpandedState });
+    } catch (error) {
+      console.error('Failed to update folder expanded state:', error);
+      // Revert on error
+      setIsExpanded(!newExpandedState);
+    }
   };
 
   const handleSelect = () => {

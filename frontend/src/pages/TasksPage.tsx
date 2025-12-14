@@ -1,6 +1,7 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { foldersApi, tasksApi } from '../api/client';
+import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
 import { FolderModal } from '../components/FolderModal';
 import { FolderTree } from '../components/FolderTree';
 import { ImageUpload } from '../components/ImageUpload';
@@ -289,10 +290,21 @@ export function TasksPage() {
       <div className="flex-1 container-responsive py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Header */}
       <div className="stack-mobile">
-        <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
-          <i className="glass-i fas fa-tasks mr-2 sm:mr-3 text-blue-600"></i>
-          Tasks
-        </h1>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
+            <i className="glass-i fas fa-tasks mr-2 sm:mr-3 text-blue-600"></i>
+            Tasks
+          </h1>
+          {/* Breadcrumb Navigation */}
+          {selectedFolder && (
+            <div className="mt-2">
+              <FolderBreadcrumb
+                folderId={selectedFolder.id}
+                onNavigate={handleSelectFolder}
+              />
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-2 flex-wrap">
           {tasks.length > 0 && (
             <div className="flex items-center gap-2">
