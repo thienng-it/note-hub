@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FolderBreadcrumb > matches snapshot - with path 1`] = `
+<div
+  class="flex items-center gap-2 text-sm overflow-x-auto"
+>
+  <button
+    class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors whitespace-nowrap"
+    type="button"
+  >
+    All Notes
+  </button>
+  <div
+    class="flex items-center gap-2"
+  >
+    <i
+      class="fas fa-chevron-right text-[var(--text-muted)]"
+    />
+    <button
+      class="hover:text-[var(--text-primary)] transition-colors whitespace-nowrap text-[var(--text-secondary)]"
+      type="button"
+    >
+      Work
+    </button>
+  </div>
+  <div
+    class="flex items-center gap-2"
+  >
+    <i
+      class="fas fa-chevron-right text-[var(--text-muted)]"
+    />
+    <button
+      class="hover:text-[var(--text-primary)] transition-colors whitespace-nowrap text-[var(--text-primary)] font-medium"
+      style="color: rgb(16, 185, 129);"
+      type="button"
+    >
+      Project A
+    </button>
+  </div>
+</div>
+`;

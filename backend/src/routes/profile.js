@@ -182,7 +182,7 @@ router.put('/', jwtRequired, async (req, res) => {
         return res.status(400).json({ error: validation.error });
       }
       updates.push('avatar_url = ?');
-      params.push(avatar_url && avatar_url.trim() ? avatar_url.trim() : null);
+      params.push(avatar_url?.trim() ? avatar_url.trim() : null);
     }
     if (status !== undefined && ['online', 'offline', 'away', 'busy'].includes(status)) {
       updates.push('status = ?');
