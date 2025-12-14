@@ -40,6 +40,7 @@ export function FolderTree({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            role="img"
             aria-label="Add folder"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -49,8 +50,9 @@ export function FolderTree({
 
       <div className="space-y-1">
         {/* All Notes - special item */}
-        <div
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+        <button
+          type="button"
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left ${
             selectedFolderId === null
               ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
               : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -62,6 +64,7 @@ export function FolderTree({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            role="img"
             aria-label="All Notes"
           >
             <path
@@ -72,7 +75,7 @@ export function FolderTree({
             />
           </svg>
           <span className="text-sm font-medium">{t('folders.allNotes')}</span>
-        </div>
+        </button>
 
         {/* Folder tree */}
         {folders.length === 0 ? (

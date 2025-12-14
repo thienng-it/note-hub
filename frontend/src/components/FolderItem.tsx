@@ -21,6 +21,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Folder"
     >
       <path
@@ -37,6 +38,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Briefcase"
     >
       <path
@@ -53,6 +55,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Home"
     >
       <path
@@ -69,6 +72,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Archive"
     >
       <path
@@ -85,6 +89,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Book"
     >
       <path
@@ -101,6 +106,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Star"
     >
       <path
@@ -117,6 +123,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Heart"
     >
       <path
@@ -133,6 +140,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Code"
     >
       <path
@@ -144,7 +152,14 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   tag: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-label="Tag">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      role="img"
+      aria-label="Tag"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -159,6 +174,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
+      role="img"
       aria-label="Inbox"
     >
       <path
@@ -293,7 +309,13 @@ export function FolderItem({
           }}
           className="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-label="Menu">
+          <svg
+            className="w-4 h-4"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-label="Menu"
+          >
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
           </svg>
         </button>
