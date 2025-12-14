@@ -87,15 +87,16 @@ export default class TaskService {
     dueDate = null,
     priority = 'medium',
     images = [],
+    folderId = null,
   ) {
     const imagesJson = Array.isArray(images) ? JSON.stringify(images) : null;
 
     const result = await db.run(
       `
-      INSERT INTO tasks (title, description, images, due_date, priority, owner_id)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO tasks (title, description, images, due_date, priority, owner_id, folder_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `,
-      [title, description, imagesJson, dueDate, priority, userId],
+      [title, description, imagesJson, dueDate, priority, userId, folderId],
     );
 
     return TaskService.getTaskById(result.insertId);
@@ -104,7 +105,16 @@ export default class TaskService {
   /**
    * Update an existing task.
    */
-  static async updateTask(taskId, title, description, dueDate, priority, completed, images) {
+  static async updateTask(
+    taskId,
+    title,
+    description,
+    dueDate,
+    priority,
+    completed,
+    images,
+    folderId,
+  ) {
     const updates = [];
     const params = [];
 
@@ -131,6 +141,10 @@ export default class TaskService {
     if (completed !== undefined) {
       updates.push('completed = ?');
       params.push(completed ? 1 : 0);
+    }
+    if (folderId !== undefined) {
+      updates.push('folder_id = ?');
+      params.push(folderId);
     }
 
     if (updates.length > 0) {

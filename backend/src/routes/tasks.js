@@ -29,6 +29,7 @@ router.get('/', jwtRequired, async (req, res) => {
         completed: !!task.completed,
         priority: task.priority,
         due_date: task.due_date,
+        folder_id: task.folder_id,
         created_at: task.created_at,
         is_overdue: task.isOverdue,
       })),
@@ -69,6 +70,7 @@ router.get('/:id', jwtRequired, async (req, res) => {
         completed: !!task.completed,
         priority: task.priority,
         due_date: task.due_date,
+        folder_id: task.folder_id,
         created_at: task.created_at,
         is_overdue: TaskService.isOverdue(task),
       },
@@ -84,7 +86,14 @@ router.get('/:id', jwtRequired, async (req, res) => {
  */
 router.post('/', jwtRequired, async (req, res) => {
   try {
-    const { title, description, due_date, priority = 'medium', images = [] } = req.body;
+    const {
+      title,
+      description,
+      due_date,
+      priority = 'medium',
+      images = [],
+      folder_id = null,
+    } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: 'Title is required' });
@@ -97,6 +106,7 @@ router.post('/', jwtRequired, async (req, res) => {
       due_date,
       priority,
       images,
+      folder_id,
     );
 
     // Audit log: Task creation
@@ -116,6 +126,7 @@ router.post('/', jwtRequired, async (req, res) => {
         completed: !!task.completed,
         priority: task.priority,
         due_date: task.due_date,
+        folder_id: task.folder_id,
         created_at: task.created_at,
       },
     });
@@ -140,7 +151,7 @@ async function updateTask(req, res) {
       return res.status(404).json({ error: 'Task not found or access denied' });
     }
 
-    const { title, description, due_date, priority, completed, images } = req.body;
+    const { title, description, due_date, priority, completed, images, folder_id } = req.body;
 
     // Track what changed for audit log
     const changes = {};
@@ -150,6 +161,7 @@ async function updateTask(req, res) {
     if (priority !== undefined && priority !== task.priority) changes.priority = priority;
     if (completed !== undefined && completed !== !!task.completed) changes.completed = completed;
     if (images !== undefined) changes.images = true;
+    if (folder_id !== undefined && folder_id !== task.folder_id) changes.folder = true;
 
     const updatedTask = await TaskService.updateTask(
       taskId,
@@ -159,6 +171,7 @@ async function updateTask(req, res) {
       priority,
       completed,
       images,
+      folder_id,
     );
 
     // Audit log: Task modification
@@ -179,6 +192,7 @@ async function updateTask(req, res) {
         completed: !!updatedTask.completed,
         priority: updatedTask.priority,
         due_date: updatedTask.due_date,
+        folder_id: updatedTask.folder_id,
         is_overdue: TaskService.isOverdue(updatedTask),
       },
     });
