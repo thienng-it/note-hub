@@ -529,6 +529,11 @@ function defineModels() {
           key: 'id',
         },
       },
+      encryption_salt: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+        comment: 'Salt used for encrypting messages in this room',
+      },
     },
     {
       tableName: 'chat_rooms',
@@ -567,6 +572,22 @@ function defineModels() {
       message: {
         type: DataTypes.TEXT,
         allowNull: false,
+        comment: 'Encrypted message content',
+      },
+      photo_url: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        comment: 'URL or path to uploaded photo attachment',
+      },
+      is_encrypted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        comment: 'Flag indicating if message is encrypted',
+      },
+      encryption_salt: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+        comment: 'Salt used for message encryption (room-specific)',
       },
       is_read: {
         type: DataTypes.BOOLEAN,

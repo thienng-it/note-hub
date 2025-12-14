@@ -6,6 +6,11 @@
 import { Op } from 'sequelize';
 import logger from '../config/logger.js';
 import { ChatMessage, ChatParticipant, ChatRoom, User } from '../models/index.js';
+import { decryptMessage, encryptMessage, generateSalt } from '../utils/encryption.js';
+
+// Get encryption secret from environment or use default for development
+const ENCRYPTION_SECRET =
+  process.env.CHAT_ENCRYPTION_SECRET || 'notehub-chat-default-secret-change-in-production';
 
 /**
  * Check if room is a direct chat between two specific users
@@ -63,10 +68,12 @@ export async function getOrCreateDirectChat(userId1, userId2) {
       return existingRoom;
     }
 
-    // Create new direct chat room
+    // Create new direct chat room with encryption salt
+    const encryptionSalt = generateSalt();
     const newRoom = await ChatRoom.create({
       is_group: false,
       created_by_id: userId1,
+      encryption_salt: encryptionSalt,
     });
 
     // Add both users as participants
@@ -186,6 +193,12 @@ export async function getRoomMessages(roomId, userId, limit = 50, offset = 0) {
       throw new Error('User is not a participant in this chat room');
     }
 
+    // Get room to access encryption salt
+    const room = await ChatRoom.findByPk(roomId);
+    if (!room) {
+      throw new Error('Chat room not found');
+    }
+
     const messages = await ChatMessage.findAll({
       where: { room_id: roomId },
       include: [
@@ -200,7 +213,25 @@ export async function getRoomMessages(roomId, userId, limit = 50, offset = 0) {
       offset,
     });
 
-    return messages.reverse(); // Return in chronological order
+    // Decrypt messages before returning
+    const decryptedMessages = messages.map((msg) => {
+      const msgData = msg.toJSON();
+      if (msgData.is_encrypted && room.encryption_salt) {
+        try {
+          msgData.message = decryptMessage(
+            msgData.message,
+            ENCRYPTION_SECRET,
+            room.encryption_salt,
+          );
+        } catch (error) {
+          logger.error('Failed to decrypt message', { messageId: msg.id, error: error.message });
+          msgData.message = '[Encrypted message - decryption failed]';
+        }
+      }
+      return msgData;
+    });
+
+    return decryptedMessages.reverse(); // Return in chronological order
   } catch (error) {
     logger.error('Error getting room messages', {
       roomId,
@@ -216,9 +247,10 @@ export async function getRoomMessages(roomId, userId, limit = 50, offset = 0) {
  * @param {number} roomId - Chat room ID
  * @param {number} senderId - Sender user ID
  * @param {string} message - Message content
+ * @param {string} photoUrl - Optional photo URL/path
  * @returns {Promise<Object>} Created message
  */
-export async function sendMessage(roomId, senderId, message) {
+export async function sendMessage(roomId, senderId, message, photoUrl = null) {
   try {
     // Verify user is participant
     const isParticipant = await ChatParticipant.findOne({
@@ -229,10 +261,29 @@ export async function sendMessage(roomId, senderId, message) {
       throw new Error('User is not a participant in this chat room');
     }
 
+    // Get room to access encryption salt
+    const room = await ChatRoom.findByPk(roomId);
+    if (!room) {
+      throw new Error('Chat room not found');
+    }
+
+    // Ensure room has encryption salt
+    let encryptionSalt = room.encryption_salt;
+    if (!encryptionSalt) {
+      encryptionSalt = generateSalt();
+      await room.update({ encryption_salt: encryptionSalt });
+    }
+
+    // Encrypt message
+    const encryptedMessage = encryptMessage(message, ENCRYPTION_SECRET, encryptionSalt);
+
     const newMessage = await ChatMessage.create({
       room_id: roomId,
       sender_id: senderId,
-      message,
+      message: encryptedMessage,
+      photo_url: photoUrl,
+      is_encrypted: true,
+      encryption_salt: encryptionSalt,
     });
 
     // Load sender info
@@ -252,7 +303,11 @@ export async function sendMessage(roomId, senderId, message) {
       senderId,
     });
 
-    return messageWithSender;
+    // Decrypt message for return (so sender sees decrypted version)
+    const msgData = messageWithSender.toJSON();
+    msgData.message = message; // Return original unencrypted message
+
+    return msgData;
   } catch (error) {
     logger.error('Error sending message', {
       roomId,
@@ -349,6 +404,88 @@ export async function getAvailableUsers(currentUserId) {
   } catch (error) {
     logger.error('Error getting available users', {
       currentUserId,
+      error: error.message,
+    });
+    throw error;
+  }
+}
+
+/**
+ * Search messages in a chat room
+ * @param {number} roomId - Chat room ID
+ * @param {number} userId - User ID (to verify access)
+ * @param {string} query - Search query
+ * @param {number} limit - Max results to return
+ * @returns {Promise<Array>} Array of matching messages
+ */
+export async function searchRoomMessages(roomId, userId, query, limit = 50) {
+  try {
+    // Verify user is participant
+    const isParticipant = await ChatParticipant.findOne({
+      where: { room_id: roomId, user_id: userId },
+    });
+
+    if (!isParticipant) {
+      throw new Error('User is not a participant in this chat room');
+    }
+
+    // Get room to access encryption salt
+    const room = await ChatRoom.findByPk(roomId);
+    if (!room) {
+      throw new Error('Chat room not found');
+    }
+
+    // Get all messages (need to decrypt before searching)
+    const messages = await ChatMessage.findAll({
+      where: { room_id: roomId },
+      include: [
+        {
+          model: User,
+          as: 'sender',
+          attributes: ['id', 'username', 'avatar_url', 'status'],
+        },
+      ],
+      order: [['created_at', 'DESC']],
+      limit: 500, // Limit to recent messages for performance
+    });
+
+    // Decrypt and filter messages
+    const matchingMessages = [];
+    const lowerQuery = query.toLowerCase();
+
+    for (const msg of messages) {
+      const msgData = msg.toJSON();
+      if (msgData.is_encrypted && room.encryption_salt) {
+        try {
+          msgData.message = decryptMessage(
+            msgData.message,
+            ENCRYPTION_SECRET,
+            room.encryption_salt,
+          );
+        } catch (error) {
+          logger.error('Failed to decrypt message during search', {
+            messageId: msg.id,
+            error: error.message,
+          });
+          continue;
+        }
+      }
+
+      // Check if message matches query
+      if (msgData.message.toLowerCase().includes(lowerQuery)) {
+        matchingMessages.push(msgData);
+        if (matchingMessages.length >= limit) {
+          break;
+        }
+      }
+    }
+
+    return matchingMessages.reverse(); // Return in chronological order
+  } catch (error) {
+    logger.error('Error searching room messages', {
+      roomId,
+      userId,
+      query,
       error: error.message,
     });
     throw error;
@@ -479,4 +616,5 @@ export default {
   checkRoomAccess,
   deleteMessage,
   deleteRoom,
+  searchRoomMessages,
 };

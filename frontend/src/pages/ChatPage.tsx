@@ -39,6 +39,10 @@ export function ChatPage() {
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [availableUsers, setAvailableUsers] = useState<ChatUser[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [messageSearchQuery, setMessageSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<typeof messages>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
   const [showDeleteRoomConfirm, setShowDeleteRoomConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
@@ -46,7 +50,12 @@ export function ChatPage() {
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
     notificationService.getPermission(),
   );
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string>('');
+  const [viewingPhoto, setViewingPhoto] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load rooms on mount
   useEffect(() => {
@@ -105,13 +114,78 @@ export function ChatPage() {
   };
 
   // Handle message send
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageInput.trim()) return;
+    if (!messageInput.trim() && !selectedPhoto) return;
 
-    sendMessage(messageInput);
-    setMessageInput('');
-    setTyping(false);
+    try {
+      let photoUrl = '';
+      if (selectedPhoto) {
+        setUploadingPhoto(true);
+        const result = await chatApi.uploadPhoto(selectedPhoto);
+        photoUrl = result.photoUrl;
+        setUploadingPhoto(false);
+      }
+
+      sendMessage(messageInput || ' ', photoUrl);
+      setMessageInput('');
+      setSelectedPhoto(null);
+      setPhotoPreviewUrl('');
+      setTyping(false);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      setUploadingPhoto(false);
+    }
+  };
+
+  // Handle photo selection
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Clear selected photo
+  const handleClearPhoto = () => {
+    setSelectedPhoto(null);
+    setPhotoPreviewUrl('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Handle message search
+  const handleMessageSearch = async (query: string) => {
+    setMessageSearchQuery(query);
+    if (!query.trim() || !currentRoom) {
+      setShowSearchResults(false);
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const results = await chatApi.searchMessages(currentRoom.id, query);
+      setSearchResults(results);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Failed to search messages:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Clear search
+  const handleClearSearch = () => {
+    setMessageSearchQuery('');
+    setSearchResults([]);
+    setShowSearchResults(false);
   };
 
   // Handle typing indicator
@@ -340,7 +414,7 @@ export function ChatPage() {
             <>
               {/* Chat header */}
               <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-shrink-0">
-                <div className="flex items-center gap-2 md:gap-3">
+                <div className="flex items-center gap-2 md:gap-3 mb-2">
                   {/* Back button for mobile */}
                   <button
                     type="button"
@@ -373,11 +447,42 @@ export function ChatPage() {
                     <i className="fas fa-trash text-sm"></i>
                   </button>
                 </div>
+                {/* Search bar */}
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={messageSearchQuery}
+                      onChange={(e) => handleMessageSearch(e.target.value)}
+                      placeholder={t('chat.searchMessages')}
+                      className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
+                    {messageSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={handleClearSearch}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      >
+                        <i className="fas fa-times text-xs"></i>
+                      </button>
+                    )}
+                  </div>
+                  {isSearching && (
+                    <div className="flex items-center">
+                      <i className="fas fa-spinner fa-spin text-gray-500"></i>
+                    </div>
+                  )}
+                </div>
+                {showSearchResults && (
+                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                    {searchResults.length} {t('chat.resultsFound')}
+                  </div>
+                )}
               </div>
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 min-h-0">
-                {messages.map((message, index) => {
+                {(showSearchResults ? searchResults : messages).map((message, index) => {
                   const isSender = user && message.sender.id === user.id;
                   return (
                     <div
@@ -408,11 +513,26 @@ export function ChatPage() {
                                 : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
                             }`}
                           >
+                            {message.photo_url && (
+                              <div className="mb-2">
+                                <img
+                                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${message.photo_url}`}
+                                  alt="Chat attachment"
+                                  className="rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                                  onClick={() =>
+                                    setViewingPhoto(
+                                      `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${message.photo_url}`,
+                                    )
+                                  }
+                                  style={{ maxHeight: '300px' }}
+                                />
+                              </div>
+                            )}
                             <p className="break-words whitespace-pre-wrap text-sm md:text-base">
                               {linkify(message.message)}
                             </p>
                           </div>
-                          {isSender && message.id && (
+                          {isSender && message.id && !showSearchResults && (
                             <button
                               type="button"
                               onClick={() => setMessageToDelete(message.id)}
@@ -436,21 +556,61 @@ export function ChatPage() {
 
               {/* Message input */}
               <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-2 md:p-3 lg:p-4 flex-shrink-0">
+                {/* Photo preview */}
+                {photoPreviewUrl && (
+                  <div className="mb-2 relative inline-block">
+                    <img
+                      src={photoPreviewUrl}
+                      alt="Preview"
+                      className="rounded-lg max-h-32 border border-gray-300 dark:border-gray-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleClearPhoto}
+                      className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors"
+                    >
+                      <i className="fas fa-times text-xs"></i>
+                    </button>
+                  </div>
+                )}
                 <form onSubmit={handleSendMessage} className="flex gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoSelect}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingPhoto}
+                    className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
+                    title={t('chat.uploadPhoto')}
+                  >
+                    <i className="fas fa-image"></i>
+                  </button>
                   <input
                     type="text"
                     value={messageInput}
                     onChange={(e) => handleTyping(e.target.value)}
                     placeholder={t('chat.typeMessage')}
+                    disabled={uploadingPhoto}
                     className="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm md:text-base"
                   />
                   <button
                     type="submit"
-                    disabled={!messageInput.trim()}
+                    disabled={(!messageInput.trim() && !selectedPhoto) || uploadingPhoto}
                     className="px-3 py-2 md:px-4 lg:px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base flex-shrink-0"
                   >
-                    <i className="fas fa-paper-plane"></i>
-                    <span className="hidden md:inline md:ml-2">{t('chat.send')}</span>
+                    {uploadingPhoto ? (
+                      <i className="fas fa-spinner fa-spin"></i>
+                    ) : (
+                      <i className="fas fa-paper-plane"></i>
+                    )}
+                    <span className="hidden md:inline md:ml-2">
+                      {uploadingPhoto ? t('chat.uploading') : t('chat.send')}
+                    </span>
                   </button>
                 </form>
               </div>
@@ -461,8 +621,8 @@ export function ChatPage() {
 
       {/* New chat modal */}
       {showNewChatModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md max-h-[90vh] sm:max-h-[80vh] flex flex-col">
+        <div className="fixed inset-0 bg-gray-900/30 dark:bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md max-h-[90vh] sm:max-h-[80vh] flex flex-col shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                 {t('chat.newChat')}
@@ -537,8 +697,8 @@ export function ChatPage() {
 
       {/* Delete message confirmation */}
       {messageToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md">
+        <div className="fixed inset-0 bg-gray-900/30 dark:bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md shadow-xl">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
               {t('chat.deleteMessageConfirm')}
             </h3>
@@ -567,8 +727,8 @@ export function ChatPage() {
 
       {/* Delete room confirmation */}
       {showDeleteRoomConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md">
+        <div className="fixed inset-0 bg-gray-900/30 dark:bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md shadow-xl">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
               {t('chat.deleteChatConfirm')}
             </h3>
@@ -591,6 +751,30 @@ export function ChatPage() {
                 {t('common.delete')}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Photo viewer modal */}
+      {viewingPhoto && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setViewingPhoto(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]">
+            <button
+              type="button"
+              onClick={() => setViewingPhoto(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <i className="fas fa-times text-2xl"></i>
+            </button>
+            <img
+              src={viewingPhoto}
+              alt="Full size"
+              className="max-w-full max-h-[90vh] rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         </div>
       )}
