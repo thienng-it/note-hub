@@ -83,7 +83,7 @@ export function ChatPage() {
   // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [scrollToBottom]);
 
   // Scroll to bottom when room changes
   useEffect(() => {

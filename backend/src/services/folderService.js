@@ -5,8 +5,8 @@
 
 import { CACHE_TTL } from '../config/constants.js';
 import db from '../config/database.js';
-import cache from '../config/redis.js';
 import logger from '../config/logger.js';
+import cache from '../config/redis.js';
 
 export default class FolderService {
   /**
@@ -105,23 +105,33 @@ export default class FolderService {
    * Create a new folder.
    */
   static async createFolder(userId, folderData) {
-    const { name, parent_id = null, description = '', icon = 'folder', color = '#3B82F6', position = 0 } = folderData;
+    const {
+      name,
+      parent_id = null,
+      description = '',
+      icon = 'folder',
+      color = '#3B82F6',
+      position = 0,
+    } = folderData;
 
     // Validate: check for duplicate name at same level
     const duplicateCheckSql = parent_id
       ? 'SELECT id FROM folders WHERE user_id = ? AND name = ? AND parent_id = ?'
       : 'SELECT id FROM folders WHERE user_id = ? AND name = ? AND parent_id IS NULL';
-    
+
     const params = parent_id ? [userId, name, parent_id] : [userId, name];
     const duplicate = await db.queryOne(duplicateCheckSql, params);
-    
+
     if (duplicate) {
       throw new Error('A folder with this name already exists at this level');
     }
 
     // Validate parent exists if parent_id provided
     if (parent_id) {
-      const parent = await db.queryOne('SELECT id FROM folders WHERE id = ? AND user_id = ?', [parent_id, userId]);
+      const parent = await db.queryOne('SELECT id FROM folders WHERE id = ? AND user_id = ?', [
+        parent_id,
+        userId,
+      ]);
       if (!parent) {
         throw new Error('Parent folder not found');
       }
@@ -134,16 +144,32 @@ export default class FolderService {
          VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
     if (db.isSQLite) {
-      const folder = await db.queryOne(sql, [name, userId, parent_id, description, icon, color, position]);
-      await this.invalidateCache(userId);
+      const folder = await db.queryOne(sql, [
+        name,
+        userId,
+        parent_id,
+        description,
+        icon,
+        color,
+        position,
+      ]);
+      await FolderService.invalidateCache(userId);
       return folder;
     }
 
     // MySQL
-    const result = await db.query(sql, [name, userId, parent_id, description, icon, color, position]);
+    const result = await db.query(sql, [
+      name,
+      userId,
+      parent_id,
+      description,
+      icon,
+      color,
+      position,
+    ]);
     const insertId = result.insertId;
-    const newFolder = await this.getFolderById(insertId, userId);
-    await this.invalidateCache(userId);
+    const newFolder = await FolderService.getFolderById(insertId, userId);
+    await FolderService.invalidateCache(userId);
     return newFolder;
   }
 
@@ -151,12 +177,20 @@ export default class FolderService {
    * Update a folder.
    */
   static async updateFolder(folderId, userId, updates) {
-    const folder = await this.getFolderById(folderId, userId);
+    const folder = await FolderService.getFolderById(folderId, userId);
     if (!folder) {
       throw new Error('Folder not found');
     }
 
-    const allowedFields = ['name', 'parent_id', 'description', 'icon', 'color', 'position', 'is_expanded'];
+    const allowedFields = [
+      'name',
+      'parent_id',
+      'description',
+      'icon',
+      'color',
+      'position',
+      'is_expanded',
+    ];
     const updateFields = [];
     const values = [];
 
@@ -174,13 +208,17 @@ export default class FolderService {
 
     // Check for circular reference if parent_id is being updated
     if (updates.parent_id !== undefined && updates.parent_id !== null) {
-      const isCircular = await this.checkCircularReference(folderId, updates.parent_id, userId);
+      const isCircular = await FolderService.checkCircularReference(
+        folderId,
+        updates.parent_id,
+        userId,
+      );
       if (isCircular) {
         throw new Error('Cannot move folder: would create circular reference');
       }
 
       // Validate parent exists
-      const parent = await this.getFolderById(updates.parent_id, userId);
+      const parent = await FolderService.getFolderById(updates.parent_id, userId);
       if (!parent) {
         throw new Error('Parent folder not found');
       }
@@ -190,8 +228,8 @@ export default class FolderService {
     const sql = `UPDATE folders SET ${updateFields.join(', ')} WHERE id = ? AND user_id = ?`;
     await db.query(sql, values);
 
-    await this.invalidateCache(userId);
-    return await this.getFolderById(folderId, userId);
+    await FolderService.invalidateCache(userId);
+    return await FolderService.getFolderById(folderId, userId);
   }
 
   /**
@@ -199,7 +237,7 @@ export default class FolderService {
    * Notes and tasks in the folder will have their folder_id set to NULL.
    */
   static async deleteFolder(folderId, userId) {
-    const folder = await this.getFolderById(folderId, userId);
+    const folder = await FolderService.getFolderById(folderId, userId);
     if (!folder) {
       throw new Error('Folder not found');
     }
@@ -212,7 +250,7 @@ export default class FolderService {
 
     // Delete the folder (notes and tasks will have folder_id set to NULL due to ON DELETE SET NULL)
     await db.query('DELETE FROM folders WHERE id = ? AND user_id = ?', [folderId, userId]);
-    await this.invalidateCache(userId);
+    await FolderService.invalidateCache(userId);
 
     return { success: true };
   }
@@ -223,13 +261,13 @@ export default class FolderService {
   static async moveFolder(folderId, userId, newParentId) {
     // Check circular reference
     if (newParentId !== null) {
-      const isCircular = await this.checkCircularReference(folderId, newParentId, userId);
+      const isCircular = await FolderService.checkCircularReference(folderId, newParentId, userId);
       if (isCircular) {
         throw new Error('Cannot move folder: would create circular reference');
       }
     }
 
-    return await this.updateFolder(folderId, userId, { parent_id: newParentId });
+    return await FolderService.updateFolder(folderId, userId, { parent_id: newParentId });
   }
 
   /**
@@ -249,7 +287,10 @@ export default class FolderService {
       }
       visited.add(currentId);
 
-      const parent = await db.queryOne('SELECT parent_id FROM folders WHERE id = ? AND user_id = ?', [currentId, userId]);
+      const parent = await db.queryOne(
+        'SELECT parent_id FROM folders WHERE id = ? AND user_id = ?',
+        [currentId, userId],
+      );
       if (!parent) {
         break;
       }
@@ -267,7 +308,10 @@ export default class FolderService {
     let currentId = folderId;
 
     while (currentId !== null) {
-      const folder = await db.queryOne('SELECT id, name, parent_id FROM folders WHERE id = ? AND user_id = ?', [currentId, userId]);
+      const folder = await db.queryOne(
+        'SELECT id, name, parent_id FROM folders WHERE id = ? AND user_id = ?',
+        [currentId, userId],
+      );
       if (!folder) {
         break;
       }
@@ -298,7 +342,7 @@ export default class FolderService {
     }
 
     // Recursive: get all descendant folder IDs
-    const folderIds = await this.getAllDescendantFolderIds(folderId, userId);
+    const folderIds = await FolderService.getAllDescendantFolderIds(folderId, userId);
     folderIds.push(folderId);
 
     const placeholders = folderIds.map(() => '?').join(',');
@@ -313,7 +357,7 @@ export default class FolderService {
       GROUP BY n.id
       ORDER BY n.pinned DESC, n.updated_at DESC
     `;
-    
+
     return await db.query(sql, [...folderIds, userId]);
   }
 
@@ -322,11 +366,14 @@ export default class FolderService {
    */
   static async getAllDescendantFolderIds(folderId, userId) {
     const descendants = [];
-    const children = await db.query('SELECT id FROM folders WHERE parent_id = ? AND user_id = ?', [folderId, userId]);
+    const children = await db.query('SELECT id FROM folders WHERE parent_id = ? AND user_id = ?', [
+      folderId,
+      userId,
+    ]);
 
     for (const child of children) {
       descendants.push(child.id);
-      const childDescendants = await this.getAllDescendantFolderIds(child.id, userId);
+      const childDescendants = await FolderService.getAllDescendantFolderIds(child.id, userId);
       descendants.push(...childDescendants);
     }
 
@@ -339,20 +386,27 @@ export default class FolderService {
   static async moveNoteToFolder(noteId, userId, folderId) {
     // Validate folder exists if folderId is not null
     if (folderId !== null) {
-      const folder = await this.getFolderById(folderId, userId);
+      const folder = await FolderService.getFolderById(folderId, userId);
       if (!folder) {
         throw new Error('Folder not found');
       }
     }
 
     // Validate note belongs to user
-    const note = await db.queryOne('SELECT id FROM notes WHERE id = ? AND owner_id = ?', [noteId, userId]);
+    const note = await db.queryOne('SELECT id FROM notes WHERE id = ? AND owner_id = ?', [
+      noteId,
+      userId,
+    ]);
     if (!note) {
       throw new Error('Note not found');
     }
 
-    await db.query('UPDATE notes SET folder_id = ? WHERE id = ? AND owner_id = ?', [folderId, noteId, userId]);
-    await this.invalidateCache(userId);
+    await db.query('UPDATE notes SET folder_id = ? WHERE id = ? AND owner_id = ?', [
+      folderId,
+      noteId,
+      userId,
+    ]);
+    await FolderService.invalidateCache(userId);
 
     return { success: true };
   }
@@ -363,20 +417,27 @@ export default class FolderService {
   static async moveTaskToFolder(taskId, userId, folderId) {
     // Validate folder exists if folderId is not null
     if (folderId !== null) {
-      const folder = await this.getFolderById(folderId, userId);
+      const folder = await FolderService.getFolderById(folderId, userId);
       if (!folder) {
         throw new Error('Folder not found');
       }
     }
 
     // Validate task belongs to user
-    const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND owner_id = ?', [taskId, userId]);
+    const task = await db.queryOne('SELECT id FROM tasks WHERE id = ? AND owner_id = ?', [
+      taskId,
+      userId,
+    ]);
     if (!task) {
       throw new Error('Task not found');
     }
 
-    await db.query('UPDATE tasks SET folder_id = ? WHERE id = ? AND owner_id = ?', [folderId, taskId, userId]);
-    await this.invalidateCache(userId);
+    await db.query('UPDATE tasks SET folder_id = ? WHERE id = ? AND owner_id = ?', [
+      folderId,
+      taskId,
+      userId,
+    ]);
+    await FolderService.invalidateCache(userId);
 
     return { success: true };
   }
@@ -393,7 +454,7 @@ export default class FolderService {
 
     for (const folderData of defaultFolders) {
       try {
-        await this.createFolder(userId, folderData);
+        await FolderService.createFolder(userId, folderData);
       } catch (error) {
         logger.warn(`Failed to create default folder ${folderData.name}:`, error.message);
       }
@@ -406,16 +467,16 @@ export default class FolderService {
   static async invalidateCache(userId) {
     const cacheKey = `folders:user:${userId}`;
     await cache.del(cacheKey);
-    
+
     // Also invalidate notes cache as folder changes affect note queries
     // Note: This invalidates multiple keys by pattern matching
-    // If cache implementation doesn't support glob patterns, 
+    // If cache implementation doesn't support glob patterns,
     // we'll need to track and delete specific keys individually
     try {
       // Try pattern-based deletion (works with Redis KEYS/DEL)
       const notesPattern = `notes:user:${userId}:*`;
       await cache.del(notesPattern);
-    } catch (error) {
+    } catch (_error) {
       // If pattern deletion fails, fall back to known cache keys
       const viewTypes = ['all', 'favorites', 'archived'];
       for (const view of viewTypes) {

@@ -16,7 +16,13 @@ interface FolderItemProps {
 // Icon mapping for folder icons
 const FOLDER_ICONS: Record<string, JSX.Element> = {
   folder: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Folder"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -26,7 +32,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   briefcase: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Briefcase"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -36,7 +48,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   home: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Home"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -46,7 +64,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   archive: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Archive"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -56,7 +80,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   book: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Book"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -66,7 +96,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   star: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Star"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -76,7 +112,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   heart: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Heart"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -86,7 +128,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   code: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Code"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -96,7 +144,7 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   tag: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-label="Tag">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -106,7 +154,13 @@ const FOLDER_ICONS: Record<string, JSX.Element> = {
     </svg>
   ),
   inbox: (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-label="Inbox"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -139,7 +193,7 @@ export function FolderItem({
     e.stopPropagation();
     const newExpandedState = !isExpanded;
     setIsExpanded(newExpandedState);
-    
+
     // Persist expanded state to backend
     try {
       const { foldersApi } = await import('../api/client');
@@ -178,6 +232,8 @@ export function FolderItem({
   return (
     <div className="folder-item">
       <div
+        role="button"
+        tabIndex={0}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group ${
           isSelected
             ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
@@ -185,6 +241,12 @@ export function FolderItem({
         }`}
         style={{ paddingLeft: `${level * 1.5 + 0.75}rem` }}
         onClick={handleSelect}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleSelect();
+          }
+        }}
         onContextMenu={handleContextMenu}
       >
         {/* Expand/collapse arrow */}
@@ -199,6 +261,7 @@ export function FolderItem({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-label={isExpanded ? 'Collapse' : 'Expand'}
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -230,7 +293,7 @@ export function FolderItem({
           }}
           className="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-label="Menu">
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
           </svg>
         </button>
@@ -238,16 +301,15 @@ export function FolderItem({
         {/* Context menu */}
         {showMenu && (
           <>
-            <div
-              className="fixed inset-0 z-10"
+            <button
+              type="button"
+              className="fixed inset-0 z-10 bg-transparent border-0 cursor-default"
               onClick={() => setShowMenu(false)}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   setShowMenu(false);
                 }
               }}
-              role="button"
-              tabIndex={-1}
               aria-label="Close menu"
             />
             <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[150px]">

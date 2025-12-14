@@ -87,7 +87,7 @@ describe('FolderBreadcrumb', () => {
     expect(container.firstChild).toMatchSnapshot();
   });
 
-  it('shows loading state', () => {
+  it('shows loading state', async () => {
     const { foldersApi } = await import('../../api/client');
     vi.mocked(foldersApi.getPath).mockImplementation(
       () => new Promise((resolve) => setTimeout(() => resolve({ path: mockPath }), 1000)),

@@ -172,7 +172,7 @@ export function NotesPage() {
   };
 
   const handleDeleteFolder = async (folder: Folder) => {
-    if (!confirm(t('folders.deleteConfirm') + '\n\n' + t('folders.deleteWarning'))) {
+    if (!confirm(`${t('folders.deleteConfirm')}\n\n${t('folders.deleteWarning')}`)) {
       return;
     }
     try {
@@ -187,7 +187,6 @@ export function NotesPage() {
   };
 
   const handleSaveFolder = async (name: string, icon: string, color: string) => {
-    try {
       if (folderToEdit) {
         await foldersApi.update(folderToEdit.id, { name, icon, color });
       } else {
@@ -202,9 +201,6 @@ export function NotesPage() {
       setShowFolderModal(false);
       setFolderToEdit(null);
       setFolderParentId(null);
-    } catch (err) {
-      throw err;
-    }
   };
 
   const getViewIcon = () => {
@@ -595,47 +591,6 @@ export function NotesPage() {
     </div>
   );
 }
-
-{/* Empty State - original */
-false && (
-        /* Empty State */
-        <div className="glass-card glass-div-center">
-          <div className="max-w-md mx-auto">
-            {(() => {
-              const emptyState = getEmptyState();
-              return (
-                <>
-                  <i
-                    className={`fas ${emptyState.icon} text-6xl mb-4 text-[var(--text-muted)]`}
-                  ></i>
-                  <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">
-                    {emptyState.title}
-                  </h3>
-                  <p className="mb-6 text-[var(--text-secondary)]">{emptyState.description}</p>
-                  {emptyState.action.to ? (
-                    <Link
-                      to={emptyState.action.to}
-                      className="btn-apple inline-flex items-center px-6 py-3 rounded-lg"
-                    >
-                      <i className="glass-i fas fa-plus mr-2"></i>
-                      {emptyState.action.label}
-                    </Link>
-                  ) : emptyState.action.onClick ? (
-                    <button
-                      type="button"
-                      onClick={emptyState.action.onClick}
-                      className="btn-apple inline-flex items-center px-6 py-3 rounded-lg"
-                    >
-                      <i className="glass-i fas fa-times mr-2"></i>
-                      {emptyState.action.label}
-                    </button>
-                  ) : null}
-                </>
-              );
-            })()}
-          </div>
-        </div>
-      )}
 
         {/* Tags Sidebar */}
         {allTags.length > 0 && (

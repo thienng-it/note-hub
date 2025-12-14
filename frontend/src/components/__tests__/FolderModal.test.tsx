@@ -29,11 +29,7 @@ describe('FolderModal', () => {
   it('renders create modal correctly', async () => {
     render(
       <TestWrapper>
-        <FolderModal
-          folder={null}
-          onSave={mockOnSave}
-          onClose={mockOnClose}
-        />
+        <FolderModal folder={null} onSave={mockOnSave} onClose={mockOnClose} />
       </TestWrapper>,
     );
 
@@ -45,11 +41,7 @@ describe('FolderModal', () => {
   it('renders edit modal correctly', async () => {
     render(
       <TestWrapper>
-        <FolderModal
-          folder={mockFolder}
-          onSave={mockOnSave}
-          onClose={mockOnClose}
-        />
+        <FolderModal folder={mockFolder} onSave={mockOnSave} onClose={mockOnClose} />
       </TestWrapper>,
     );
 
@@ -61,11 +53,7 @@ describe('FolderModal', () => {
   it('matches snapshot - create mode', async () => {
     const { container } = render(
       <TestWrapper>
-        <FolderModal
-          folder={null}
-          onSave={mockOnSave}
-          onClose={mockOnClose}
-        />
+        <FolderModal folder={null} onSave={mockOnSave} onClose={mockOnClose} />
       </TestWrapper>,
     );
 
@@ -79,11 +67,7 @@ describe('FolderModal', () => {
   it('matches snapshot - edit mode', async () => {
     const { container } = render(
       <TestWrapper>
-        <FolderModal
-          folder={mockFolder}
-          onSave={mockOnSave}
-          onClose={mockOnClose}
-        />
+        <FolderModal folder={mockFolder} onSave={mockOnSave} onClose={mockOnClose} />
       </TestWrapper>,
     );
 
@@ -97,11 +81,7 @@ describe('FolderModal', () => {
   it('displays all icon options', async () => {
     render(
       <TestWrapper>
-        <FolderModal
-          folder={null}
-          onSave={mockOnSave}
-          onClose={mockOnClose}
-        />
+        <FolderModal folder={null} onSave={mockOnSave} onClose={mockOnClose} />
       </TestWrapper>,
     );
 
@@ -116,11 +96,7 @@ describe('FolderModal', () => {
   it('displays all color options', async () => {
     const { container } = render(
       <TestWrapper>
-        <FolderModal
-          folder={null}
-          onSave={mockOnSave}
-          onClose={mockOnClose}
-        />
+        <FolderModal folder={null} onSave={mockOnSave} onClose={mockOnClose} />
       </TestWrapper>,
     );
 

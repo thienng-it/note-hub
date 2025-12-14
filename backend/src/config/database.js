@@ -458,7 +458,9 @@ class Database {
       // Add indexes for folder_id if they don't exist
       try {
         this.db.exec('CREATE INDEX IF NOT EXISTS idx_notes_folder ON notes(folder_id)');
-        this.db.exec('CREATE INDEX IF NOT EXISTS idx_notes_user_folder ON notes(owner_id, folder_id)');
+        this.db.exec(
+          'CREATE INDEX IF NOT EXISTS idx_notes_user_folder ON notes(owner_id, folder_id)',
+        );
       } catch (indexError) {
         logger.warn('  ⚠️  Could not create notes folder indexes:', indexError.message);
       }
@@ -479,7 +481,9 @@ class Database {
       // Add indexes for folder_id if they don't exist
       try {
         this.db.exec('CREATE INDEX IF NOT EXISTS idx_tasks_folder ON tasks(folder_id)');
-        this.db.exec('CREATE INDEX IF NOT EXISTS idx_tasks_user_folder ON tasks(owner_id, folder_id)');
+        this.db.exec(
+          'CREATE INDEX IF NOT EXISTS idx_tasks_user_folder ON tasks(owner_id, folder_id)',
+        );
       } catch (indexError) {
         logger.warn('  ⚠️  Could not create tasks folder indexes:', indexError.message);
       }
@@ -777,7 +781,7 @@ class Database {
       try {
         await this.db.query('CREATE INDEX idx_notes_folder ON notes(folder_id)');
         await this.db.query('CREATE INDEX idx_notes_user_folder ON notes(owner_id, folder_id)');
-      } catch (indexError) {
+      } catch (_indexError) {
         // Index might already exist, ignore error
         logger.debug('Notes folder indexes already exist or could not be created');
       }
@@ -802,7 +806,7 @@ class Database {
       try {
         await this.db.query('CREATE INDEX idx_tasks_folder ON tasks(folder_id)');
         await this.db.query('CREATE INDEX idx_tasks_user_folder ON tasks(owner_id, folder_id)');
-      } catch (indexError) {
+      } catch (_indexError) {
         // Index might already exist, ignore error
         logger.debug('Tasks folder indexes already exist or could not be created');
       }

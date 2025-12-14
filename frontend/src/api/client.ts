@@ -412,7 +412,10 @@ export const foldersApi = {
     });
   },
 
-  async update(id: number, data: Partial<FolderFormData & { is_expanded?: boolean }>): Promise<Folder> {
+  async update(
+    id: number,
+    data: Partial<FolderFormData & { is_expanded?: boolean }>,
+  ): Promise<Folder> {
     return apiRequest<Folder>(`${API_VERSION}/folders/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

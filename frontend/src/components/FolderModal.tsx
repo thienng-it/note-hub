@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Folder } from '../types';
 
@@ -74,7 +74,10 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Input */}
           <div>
-            <label htmlFor="folderName" className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
+            <label
+              htmlFor="folderName"
+              className="block text-sm font-medium mb-2 text-[var(--text-primary)]"
+            >
               {t('folders.name')}
             </label>
             <input
@@ -84,15 +87,18 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
               onChange={(e) => setName(e.target.value)}
               placeholder={t('folders.namePlaceholder')}
               className="glass-input w-full px-4 py-2 rounded-lg"
-              autoFocus
             />
           </div>
 
           {/* Icon Selection */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
+            <div
+              className="block text-sm font-medium mb-2 text-[var(--text-primary)]"
+              role="heading"
+              aria-level={3}
+            >
               {t('folders.icon')}
-            </label>
+            </div>
             <div className="grid grid-cols-5 gap-2">
               {FOLDER_ICONS.map((iconOption) => (
                 <button
@@ -114,9 +120,13 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
 
           {/* Color Selection */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
+            <div
+              className="block text-sm font-medium mb-2 text-[var(--text-primary)]"
+              role="heading"
+              aria-level={3}
+            >
               {t('folders.color')}
-            </label>
+            </div>
             <div className="flex gap-2 flex-wrap">
               {FOLDER_COLORS.map((colorOption) => (
                 <button
@@ -152,11 +162,7 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
             >
               {t('common.cancel')}
             </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn-apple"
-            >
+            <button type="submit" disabled={isLoading} className="btn-apple">
               {isLoading ? t('common.processing') : t('common.save')}
             </button>
           </div>

@@ -29,11 +29,11 @@ router.get('/:id', jwtRequired, async (req, res) => {
   try {
     const folderId = parseInt(req.params.id, 10);
     const folder = await FolderService.getFolderById(folderId, req.userId);
-    
+
     if (!folder) {
       return responseHandler.notFound(res, 'Folder not found');
     }
-    
+
     return responseHandler.success(res, folder);
   } catch (error) {
     logger.error('Get folder error:', error);
@@ -62,11 +62,11 @@ router.get('/:id/notes', jwtRequired, async (req, res) => {
   try {
     const folderId = parseInt(req.params.id, 10);
     const recursive = req.query.recursive === 'true';
-    
+
     const notes = await FolderService.getNotesInFolder(folderId, req.userId, recursive);
-    
+
     // Parse tags
-    const parsedNotes = notes.map(note => ({
+    const parsedNotes = notes.map((note) => ({
       ...note,
       tags: note.tag_names
         ? note.tag_names.split(',').map((name, i) => ({
@@ -75,7 +75,7 @@ router.get('/:id/notes', jwtRequired, async (req, res) => {
           }))
         : [],
     }));
-    
+
     return responseHandler.success(res, { notes: parsedNotes });
   } catch (error) {
     logger.error('Get folder notes error:', error);
@@ -89,15 +89,15 @@ router.get('/:id/notes', jwtRequired, async (req, res) => {
 router.post('/', jwtRequired, async (req, res) => {
   try {
     const { name, parent_id, description, icon, color, position } = req.body;
-    
+
     if (!name || name.trim().length === 0) {
       return responseHandler.badRequest(res, 'Folder name is required');
     }
-    
+
     if (name.length > 100) {
       return responseHandler.badRequest(res, 'Folder name must be 100 characters or less');
     }
-    
+
     const folder = await FolderService.createFolder(req.userId, {
       name: name.trim(),
       parent_id: parent_id || null,
@@ -106,7 +106,7 @@ router.post('/', jwtRequired, async (req, res) => {
       color: color || '#3B82F6',
       position: position || 0,
     });
-    
+
     return responseHandler.success(res, folder, 'Folder created successfully', 201);
   } catch (error) {
     logger.error('Create folder error:', error);
@@ -121,7 +121,7 @@ router.put('/:id', jwtRequired, async (req, res) => {
   try {
     const folderId = parseInt(req.params.id, 10);
     const { name, parent_id, description, icon, color, position, is_expanded } = req.body;
-    
+
     const updates = {};
     if (name !== undefined) {
       if (name.trim().length === 0) {
@@ -138,7 +138,7 @@ router.put('/:id', jwtRequired, async (req, res) => {
     if (color !== undefined) updates.color = color;
     if (position !== undefined) updates.position = position;
     if (is_expanded !== undefined) updates.is_expanded = is_expanded ? 1 : 0;
-    
+
     const folder = await FolderService.updateFolder(folderId, req.userId, updates);
     return responseHandler.success(res, folder, 'Folder updated successfully');
   } catch (error) {
@@ -168,7 +168,7 @@ router.post('/:id/move', jwtRequired, async (req, res) => {
   try {
     const folderId = parseInt(req.params.id, 10);
     const { parent_id } = req.body;
-    
+
     const folder = await FolderService.moveFolder(folderId, req.userId, parent_id || null);
     return responseHandler.success(res, folder, 'Folder moved successfully');
   } catch (error) {
@@ -184,7 +184,7 @@ router.post('/notes/:noteId/move', jwtRequired, async (req, res) => {
   try {
     const noteId = parseInt(req.params.noteId, 10);
     const { folder_id } = req.body;
-    
+
     await FolderService.moveNoteToFolder(noteId, req.userId, folder_id || null);
     return responseHandler.success(res, null, 'Note moved successfully');
   } catch (error) {
@@ -200,7 +200,7 @@ router.post('/tasks/:taskId/move', jwtRequired, async (req, res) => {
   try {
     const taskId = parseInt(req.params.taskId, 10);
     const { folder_id } = req.body;
-    
+
     await FolderService.moveTaskToFolder(taskId, req.userId, folder_id || null);
     return responseHandler.success(res, null, 'Task moved successfully');
   } catch (error) {

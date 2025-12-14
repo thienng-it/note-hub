@@ -64,11 +64,7 @@ describe('FolderTree', () => {
   it('renders folder tree correctly', async () => {
     render(
       <TestWrapper>
-        <FolderTree
-          folders={mockFolders}
-          selectedFolderId={null}
-          {...mockHandlers}
-        />
+        <FolderTree folders={mockFolders} selectedFolderId={null} {...mockHandlers} />
       </TestWrapper>,
     );
 
@@ -82,11 +78,7 @@ describe('FolderTree', () => {
   it('renders all notes option', async () => {
     render(
       <TestWrapper>
-        <FolderTree
-          folders={mockFolders}
-          selectedFolderId={null}
-          {...mockHandlers}
-        />
+        <FolderTree folders={mockFolders} selectedFolderId={null} {...mockHandlers} />
       </TestWrapper>,
     );
 
@@ -98,11 +90,7 @@ describe('FolderTree', () => {
   it('matches snapshot - default state', async () => {
     const { container } = render(
       <TestWrapper>
-        <FolderTree
-          folders={mockFolders}
-          selectedFolderId={null}
-          {...mockHandlers}
-        />
+        <FolderTree folders={mockFolders} selectedFolderId={null} {...mockHandlers} />
       </TestWrapper>,
     );
 
@@ -116,11 +104,7 @@ describe('FolderTree', () => {
   it('matches snapshot - with selected folder', async () => {
     const { container } = render(
       <TestWrapper>
-        <FolderTree
-          folders={mockFolders}
-          selectedFolderId={1}
-          {...mockHandlers}
-        />
+        <FolderTree folders={mockFolders} selectedFolderId={1} {...mockHandlers} />
       </TestWrapper>,
     );
 
@@ -134,11 +118,7 @@ describe('FolderTree', () => {
   it('matches snapshot - empty folders', async () => {
     const { container } = render(
       <TestWrapper>
-        <FolderTree
-          folders={[]}
-          selectedFolderId={null}
-          {...mockHandlers}
-        />
+        <FolderTree folders={[]} selectedFolderId={null} {...mockHandlers} />
       </TestWrapper>,
     );
 
