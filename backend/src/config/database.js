@@ -371,7 +371,7 @@ class Database {
         encryption_salt TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (created_by_id) REFERENCES users(id)
+        FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
       );
       CREATE INDEX IF NOT EXISTS ix_chat_rooms_created_by ON chat_rooms(created_by_id);
 
@@ -778,7 +778,7 @@ class Database {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX ix_chat_rooms_created_by (created_by_id),
-        FOREIGN KEY (created_by_id) REFERENCES users(id)
+        FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
       );
 
       -- Chat messages table
