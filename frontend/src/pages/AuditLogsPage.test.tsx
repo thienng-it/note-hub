@@ -18,6 +18,12 @@ vi.mock('../context/AuthContext', async () => {
   };
 });
 
+// Mock Date.prototype.toLocaleString to return consistent output regardless of timezone
+const originalToLocaleString = Date.prototype.toLocaleString;
+Date.prototype.toLocaleString = function () {
+  return originalToLocaleString.call(this, 'en-US', { timeZone: 'UTC' });
+};
+
 // Mock fetch
 global.fetch = vi.fn();
 
