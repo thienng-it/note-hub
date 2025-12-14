@@ -9,7 +9,8 @@ import { ChatMessage, ChatParticipant, ChatRoom, User } from '../models/index.js
 import { decryptMessage, encryptMessage, generateSalt } from '../utils/encryption.js';
 
 // Get encryption secret from environment or use default for development
-const ENCRYPTION_SECRET = process.env.CHAT_ENCRYPTION_SECRET || 'notehub-chat-default-secret-change-in-production';
+const ENCRYPTION_SECRET =
+  process.env.CHAT_ENCRYPTION_SECRET || 'notehub-chat-default-secret-change-in-production';
 
 /**
  * Check if room is a direct chat between two specific users
@@ -217,7 +218,11 @@ export async function getRoomMessages(roomId, userId, limit = 50, offset = 0) {
       const msgData = msg.toJSON();
       if (msgData.is_encrypted && room.encryption_salt) {
         try {
-          msgData.message = decryptMessage(msgData.message, ENCRYPTION_SECRET, room.encryption_salt);
+          msgData.message = decryptMessage(
+            msgData.message,
+            ENCRYPTION_SECRET,
+            room.encryption_salt,
+          );
         } catch (error) {
           logger.error('Failed to decrypt message', { messageId: msg.id, error: error.message });
           msgData.message = '[Encrypted message - decryption failed]';
@@ -452,7 +457,11 @@ export async function searchRoomMessages(roomId, userId, query, limit = 50) {
       const msgData = msg.toJSON();
       if (msgData.is_encrypted && room.encryption_salt) {
         try {
-          msgData.message = decryptMessage(msgData.message, ENCRYPTION_SECRET, room.encryption_salt);
+          msgData.message = decryptMessage(
+            msgData.message,
+            ENCRYPTION_SECRET,
+            room.encryption_salt,
+          );
         } catch (error) {
           logger.error('Failed to decrypt message during search', {
             messageId: msg.id,

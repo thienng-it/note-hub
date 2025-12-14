@@ -111,13 +111,16 @@ export async function uploadPhoto(file: File): Promise<{ photoUrl: string }> {
   const formData = new FormData();
   formData.append('photo', file);
 
-  const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${API_VERSION}/chat/upload`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('notehub_access_token')}`,
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${API_VERSION}/chat/upload`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('notehub_access_token')}`,
+      },
+      body: formData,
     },
-    body: formData,
-  });
+  );
 
   if (!response.ok) {
     throw new Error('Failed to upload photo');

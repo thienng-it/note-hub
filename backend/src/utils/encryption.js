@@ -3,12 +3,12 @@
  * Uses AES-256-GCM for encryption with user-specific keys derived from app secret
  */
 
-const crypto = require('crypto');
+import crypto from 'node:crypto';
 
 // Encryption algorithm
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
-const AUTH_TAG_LENGTH = 16;
+const _AUTH_TAG_LENGTH = 16;
 const SALT_LENGTH = 32;
 
 /**
@@ -25,7 +25,7 @@ function deriveKey(baseSecret, salt) {
  * Generate a random salt for key derivation
  * @returns {string} - Salt as hex string
  */
-function generateSalt() {
+export function generateSalt() {
   return crypto.randomBytes(SALT_LENGTH).toString('hex');
 }
 
@@ -36,7 +36,7 @@ function generateSalt() {
  * @param {string} salt - User-specific salt (hex string)
  * @returns {string} - Encrypted message (iv:authTag:encryptedData in hex)
  */
-function encryptMessage(message, baseSecret, salt) {
+export function encryptMessage(message, baseSecret, salt) {
   if (!message || typeof message !== 'string') {
     throw new Error('Message must be a non-empty string');
   }
@@ -72,7 +72,7 @@ function encryptMessage(message, baseSecret, salt) {
  * @param {string} salt - User-specific salt (hex string)
  * @returns {string} - Decrypted plain text message
  */
-function decryptMessage(encryptedMessage, baseSecret, salt) {
+export function decryptMessage(encryptedMessage, baseSecret, salt) {
   if (!encryptedMessage || typeof encryptedMessage !== 'string') {
     throw new Error('Encrypted message must be a non-empty string');
   }
@@ -112,7 +112,7 @@ function decryptMessage(encryptedMessage, baseSecret, salt) {
  * @param {string} message - Message to check
  * @returns {boolean} - True if message appears to be encrypted
  */
-function isEncrypted(message) {
+export function isEncrypted(message) {
   if (!message || typeof message !== 'string') {
     return false;
   }
@@ -124,10 +124,3 @@ function isEncrypted(message) {
   // Verify each part is valid hex
   return parts.every((part) => /^[0-9a-fA-F]+$/.test(part));
 }
-
-module.exports = {
-  encryptMessage,
-  decryptMessage,
-  generateSalt,
-  isEncrypted,
-};
