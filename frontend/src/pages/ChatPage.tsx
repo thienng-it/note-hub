@@ -13,6 +13,25 @@ import { notificationService } from '../services/notificationService';
 import type { ChatUser } from '../types/chat';
 import { linkify } from '../utils/linkify';
 
+/**
+ * Custom hook to handle Escape key press for modals
+ * @param isOpen - Whether the modal is open
+ * @param onClose - Callback to close the modal
+ */
+function useEscapeKey(isOpen: boolean, onClose: () => void) {
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+}
+
 export function ChatPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -101,6 +120,12 @@ export function ChatPage() {
       setTimeout(scrollToBottom, 100);
     }
   }, [currentRoom, scrollToBottom]);
+
+  // Handle Escape key for modals
+  useEscapeKey(showNewChatModal, () => setShowNewChatModal(false));
+  useEscapeKey(!!messageToDelete, () => setMessageToDelete(null));
+  useEscapeKey(showDeleteRoomConfirm, () => setShowDeleteRoomConfirm(false));
+  useEscapeKey(!!viewingPhoto, () => setViewingPhoto(null));
 
   // Load available users when modal opens
   const handleOpenNewChat = async () => {
@@ -469,7 +494,9 @@ export function ChatPage() {
                     </h2>
                     {typingUsers.size > 0 && (
                       <p className="text-xs md:text-sm text-blue-600 dark:text-blue-400 truncate flex items-center gap-1">
-                        <span className="typing-indicator"></span>
+                        <span className="typing-indicator">
+                          <span></span>
+                        </span>
                         {Array.from(typingUsers.values())[0]} {t('chat.typing')}
                       </p>
                     )}
@@ -693,10 +720,10 @@ export function ChatPage() {
 
       {/* New chat modal */}
       {showNewChatModal && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
           className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
           onClick={(e) => e.target === e.currentTarget && setShowNewChatModal(false)}
-          onKeyDown={(e) => e.key === 'Escape' && setShowNewChatModal(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="new-chat-title"
@@ -803,10 +830,10 @@ export function ChatPage() {
 
       {/* Delete message confirmation */}
       {messageToDelete && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
           className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
           onClick={(e) => e.target === e.currentTarget && setMessageToDelete(null)}
-          onKeyDown={(e) => e.key === 'Escape' && setMessageToDelete(null)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-message-title"
@@ -846,10 +873,10 @@ export function ChatPage() {
 
       {/* Delete room confirmation */}
       {showDeleteRoomConfirm && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
           className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
           onClick={(e) => e.target === e.currentTarget && setShowDeleteRoomConfirm(false)}
-          onKeyDown={(e) => e.key === 'Escape' && setShowDeleteRoomConfirm(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-room-title"
@@ -889,10 +916,10 @@ export function ChatPage() {
 
       {/* Photo viewer modal */}
       {viewingPhoto && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
           className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 animate-fade-in"
           onClick={() => setViewingPhoto(null)}
-          onKeyDown={(e) => e.key === 'Escape' && setViewingPhoto(null)}
           role="dialog"
           aria-modal="true"
           aria-label="Photo viewer"
@@ -906,6 +933,7 @@ export function ChatPage() {
             <i className="fas fa-times text-xl"></i>
           </button>
           <div className="relative max-w-full max-h-full flex items-center justify-center">
+            {/* Prevent modal from closing when clicking the image itself */}
             <img
               src={viewingPhoto}
               alt="Full size view"
