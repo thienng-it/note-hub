@@ -740,9 +740,42 @@ if (isRedisEnabled) {
    - Error handling in try-catch blocks
    - Tests for new features
    - Documentation updates
-   - Biome linting before commit
+   - Biome linting before commit (MANDATORY)
 
 ## Development Workflow
+
+### ⚠️ MANDATORY: Code Quality Requirements
+
+**CRITICAL: These steps are NON-NEGOTIABLE and MUST be followed for EVERY code change:**
+
+1. **Linting is MANDATORY:**
+   - ✅ Run `npm run lint` in BOTH frontend/ and backend/ directories
+   - ✅ Run `npm run lint:fix` to auto-fix all fixable issues
+   - ✅ Manually fix ALL remaining linting errors
+   - ✅ Address critical accessibility warnings (a11y)
+   - ❌ NEVER commit code with linting errors
+   - ❌ NEVER skip linting checks
+
+2. **Testing is MANDATORY:**
+   - ✅ Run tests: `npm test` - ALL TESTS MUST BE GREEN ✅
+   - ✅ Fix ALL test failures before committing
+   - ✅ Update snapshot tests when UI changes: `npm test -- -u`
+   - ✅ Review snapshot diffs: `git diff src/**/__snapshots__/`
+   - ❌ NO red/failing tests allowed
+
+3. **Before ANY Commit:**
+   ```bash
+   # Frontend
+   cd frontend && npm run lint && npm test
+   
+   # Backend
+   cd backend && npm run lint && npm test
+   ```
+   - All commands MUST pass (exit code 0)
+   - All errors MUST be fixed
+   - All tests MUST be green
+
+### Standard Development Workflow
 
 1. **Before Starting:**
    - Review related documentation in `docs/`
@@ -751,31 +784,27 @@ if (isRedisEnabled) {
 
 2. **During Development:**
    - Make small, focused commits
-   - **ALWAYS run linter after ANY code changes: `npm run lint`**
-   - **Auto-fix linting issues immediately: `npm run lint:fix`**
+   - **Run linter after EVERY code change: `npm run lint`**
+   - **Auto-fix immediately: `npm run lint:fix`**
    - Test changes locally
    - Update types/interfaces as needed
-   - Update/add translation keys as we support i18n
-   - **Update snapshot tests when UI changes** - run `npm test -- -u` after intentional UI changes
+   - Update/add translation keys for i18n
+   - Update snapshot tests when UI changes
 
 3. **Before Committing:**
-   - **MANDATORY: Run full linting: `npm run lint`**
-   - **MANDATORY: Fix ALL linting errors before committing**
-   - **Run tests: `npm test` - ALL TESTS MUST BE GREEN ✅**
-   - **For UI changes: Review snapshot diffs** - `git diff src/**/__snapshots__/`
-   - **Update snapshots if changes are intentional** - `npm test -- -u`
-   - Fix any linting errors
-   - Fix any test failures
-   - **Verify all tests pass** - No red/failing tests allowed
+   - **MANDATORY: Run full linting in BOTH directories**
+   - **MANDATORY: Fix ALL linting errors (zero tolerance)**
+   - **MANDATORY: Run ALL tests - must be green**
+   - Review snapshot diffs if UI changed
    - Update documentation if needed
    - Commit snapshot files with component changes
 
-4. **Automated Code Quality Checks:**
-   - **Linting is MANDATORY for every code change**
-   - Run `npm run lint` in the appropriate directory (frontend/ or backend/)
-   - Use `npm run lint:fix` to automatically fix most issues
-   - Never commit code with linting errors
-   - Review and fix any remaining linting warnings
+4. **Code Quality Standards:**
+   - Zero linting errors allowed
+   - Zero test failures allowed
+   - All accessibility issues addressed
+   - All TypeScript types properly defined
+   - All imports organized (auto-fixed by Biome)
 
 5. **Commit Messages:**
    ```
