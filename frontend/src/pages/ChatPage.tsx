@@ -259,22 +259,24 @@ export function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden chat-page-container">
       {/* Header */}
-      <div className="glass-header p-3 md:p-4 flex-shrink-0">
-        <div className="stack-mobile">
-          <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)]">
-            <i className="fas fa-comments mr-2 text-blue-600"></i>
-            <span className="hide-mobile sm:inline">{t('chat.title')}</span>
-            <span className="show-mobile">Chat</span>
+      <div className="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0">
+            <i className="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"></i>
+            <span className="hidden sm:inline truncate">{t('chat.title')}</span>
+            <span className="sm:hidden">Chat</span>
           </h1>
           <button
             type="button"
             onClick={handleOpenNewChat}
-            className="btn-apple text-sm md:text-base"
+            className="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
+            aria-label={t('chat.newChat')}
           >
             <i className="fas fa-plus mr-1 md:mr-2"></i>
             <span className="hidden sm:inline">{t('chat.newChat')}</span>
+            <span className="sm:hidden">New</span>
           </button>
         </div>
         {!isConnected && (
@@ -284,31 +286,34 @@ export function ChatPage() {
           </div>
         )}
         {showNotificationBanner && (
-          <div className="mt-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2 md:p-3">
-            <div className="flex items-start justify-between gap-2 md:gap-3">
-              <div className="flex items-start gap-2 flex-1 min-w-0">
-                <i className="fas fa-bell text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></i>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs md:text-sm font-medium text-blue-900 dark:text-blue-100">
+          <div className="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2 md:gap-3 flex-1 min-w-0">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i className="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"></i>
+                </div>
+                <div className="flex-1 min-w-0 pt-1">
+                  <p className="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100">
                     {t('chat.enableNotifications')}
                   </p>
-                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5 md:mt-1 hidden sm:block">
+                  <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2">
                     {t('chat.notificationDescription')}
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   type="button"
                   onClick={handleRequestNotificationPermission}
-                  className="px-2 md:px-3 py-1 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
                 >
                   {t('chat.enable')}
                 </button>
                 <button
                   type="button"
                   onClick={handleDismissNotificationBanner}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 p-1"
+                  className="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
+                  aria-label="Dismiss"
                 >
                   <i className="fas fa-times"></i>
                 </button>
@@ -319,26 +324,34 @@ export function ChatPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Rooms list - Hidden on mobile when chat is selected */}
         <div
-          className={`w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 ${
-            currentRoom ? 'hidden md:block' : 'block'
+          className={`w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain ${
+            currentRoom ? 'hidden md:flex md:flex-col' : 'flex flex-col'
           }`}
         >
           {isLoading && rooms.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              <i className="fas fa-spinner fa-spin mr-2"></i>
-              {t('chat.loadingChats')}
+            <div className="flex-1 flex items-center justify-center p-4 text-center text-gray-500">
+              <div>
+                <i className="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500"></i>
+                <p className="text-sm md:text-base">{t('chat.loadingChats')}</p>
+              </div>
             </div>
           ) : rooms.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              <i className="fas fa-comments text-4xl mb-4 opacity-50"></i>
-              <p className="text-lg mb-2">{t('chat.noChats')}</p>
-              <p className="text-sm">{t('chat.startNewChat')}</p>
+            <div className="flex-1 flex items-center justify-center p-6 md:p-8 text-center">
+              <div className="max-w-xs">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="fas fa-comments text-2xl md:text-3xl text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <p className="text-base md:text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('chat.noChats')}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('chat.startNewChat')}</p>
+              </div>
             </div>
           ) : (
-            <div>
+            <div className="flex-1 divide-y divide-gray-200 dark:divide-gray-700">
               {rooms.map((room) => {
                 const otherUser = getOtherParticipant(room);
                 const displayName = room.is_group ? room.name : otherUser?.username || 'Unknown';
@@ -351,11 +364,13 @@ export function ChatPage() {
                     type="button"
                     key={room.id}
                     onClick={() => selectRoom(room.id)}
-                    className={`w-full p-4 text-left border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                      currentRoom?.id === room.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                    className={`w-full p-3 md:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation ${
+                      currentRoom?.id === room.id
+                        ? 'bg-blue-50 dark:bg-blue-900/30 border-l-3 border-l-blue-500'
+                        : 'border-l-3 border-l-transparent'
                     }`}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-center gap-3">
                       {!room.is_group && otherUser && (
                         <UserAvatar
                           username={otherUser.username}
@@ -365,29 +380,41 @@ export function ChatPage() {
                           showStatus={true}
                         />
                       )}
+                      {room.is_group && (
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                          <i className="fas fa-users text-white text-sm"></i>
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-900 dark:text-white truncate">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base">
                             {displayName}
                           </span>
+                          {room.lastMessage && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                              {formatTime(room.lastMessage.created_at)}
+                            </span>
+                          )}
                         </div>
-                        {room.lastMessage && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-1">
-                            {room.lastMessage.sender.username}: {room.lastMessage.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end gap-1 ml-2">
-                        {room.lastMessage && (
-                          <span className="text-xs text-gray-500">
-                            {formatTime(room.lastMessage.created_at)}
-                          </span>
-                        )}
-                        {room.unreadCount > 0 && (
-                          <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
-                            {room.unreadCount}
-                          </span>
-                        )}
+                        <div className="flex items-center justify-between gap-2 mt-0.5">
+                          {room.lastMessage ? (
+                            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">
+                              <span className="font-medium">
+                                {room.lastMessage.sender.username}:
+                              </span>{' '}
+                              {room.lastMessage.message}
+                            </p>
+                          ) : (
+                            <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 italic">
+                              No messages yet
+                            </p>
+                          )}
+                          {room.unreadCount > 0 && (
+                            <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full flex-shrink-0 min-w-[1.25rem] text-center">
+                              {room.unreadCount > 99 ? '99+' : room.unreadCount}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </button>
@@ -399,33 +426,41 @@ export function ChatPage() {
 
         {/* Chat area - Full width on mobile when chat is selected */}
         <div
-          className={`flex-1 flex flex-col bg-gray-100 dark:bg-gray-900 overflow-hidden ${
-            currentRoom ? 'block' : 'hidden md:flex'
+          className={`flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 ${
+            currentRoom ? 'flex' : 'hidden md:flex'
           }`}
         >
           {!currentRoom ? (
-            <div className="flex-1 flex items-center justify-center text-gray-500">
-              <div className="text-center px-4">
-                <i className="fas fa-comment-dots text-5xl md:text-6xl mb-4 opacity-30"></i>
-                <p className="text-base md:text-lg">{t('chat.noChatSelected')}</p>
+            <div className="flex-1 flex items-center justify-center p-6">
+              <div className="text-center max-w-sm">
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="fas fa-comment-dots text-3xl md:text-4xl text-gray-400 dark:text-gray-600"></i>
+                </div>
+                <p className="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  {t('chat.noChatSelected')}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-500">
+                  Select a conversation from the list or start a new chat
+                </p>
               </div>
             </div>
           ) : (
             <>
               {/* Chat header */}
-              <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-shrink-0">
-                <div className="flex items-center gap-2 md:gap-3 mb-2">
+              <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-shrink-0 safe-area-inset-top">
+                <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                   {/* Back button for mobile */}
                   <button
                     type="button"
                     onClick={() => clearRoom()}
-                    className="md:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                    className="md:hidden w-9 h-9 flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 transition-colors flex-shrink-0 touch-manipulation"
                     title={t('common.back')}
+                    aria-label="Back to chat list"
                   >
-                    <i className="fas fa-arrow-left"></i>
+                    <i className="fas fa-arrow-left text-lg"></i>
                   </button>
                   <div className="flex-1 min-w-0">
-                    <h2 className="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base">
+                    <h2 className="font-semibold text-gray-900 dark:text-white truncate text-base md:text-lg">
                       {currentRoom.is_group
                         ? currentRoom.name
                         : t('chat.chatWith', {
@@ -433,7 +468,8 @@ export function ChatPage() {
                           })}
                     </h2>
                     {typingUsers.size > 0 && (
-                      <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">
+                      <p className="text-xs md:text-sm text-blue-600 dark:text-blue-400 truncate flex items-center gap-1">
+                        <span className="typing-indicator"></span>
                         {Array.from(typingUsers.values())[0]} {t('chat.typing')}
                       </p>
                     )}
@@ -441,8 +477,9 @@ export function ChatPage() {
                   <button
                     type="button"
                     onClick={() => setShowDeleteRoomConfirm(true)}
-                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex-shrink-0"
+                    className="w-9 h-9 flex items-center justify-center text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 active:bg-red-100 dark:active:bg-red-900/50 rounded-full transition-colors flex-shrink-0 touch-manipulation"
                     title={t('chat.deleteChat')}
+                    aria-label="Delete chat"
                   >
                     <i className="fas fa-trash text-sm"></i>
                   </button>
@@ -450,85 +487,112 @@ export function ChatPage() {
                 {/* Search bar */}
                 <div className="flex gap-2">
                   <div className="flex-1 relative">
+                    <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
                     <input
                       type="text"
                       value={messageSearchQuery}
                       onChange={(e) => handleMessageSearch(e.target.value)}
                       placeholder={t('chat.searchMessages')}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full pl-9 pr-8 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all"
+                      aria-label="Search messages"
                     />
                     {messageSearchQuery && (
                       <button
                         type="button"
                         onClick={handleClearSearch}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors touch-manipulation"
+                        aria-label="Clear search"
                       >
                         <i className="fas fa-times text-xs"></i>
                       </button>
                     )}
                   </div>
                   {isSearching && (
-                    <div className="flex items-center">
-                      <i className="fas fa-spinner fa-spin text-gray-500"></i>
+                    <div className="flex items-center px-2">
+                      <i className="fas fa-spinner fa-spin text-blue-500"></i>
                     </div>
                   )}
                 </div>
                 {showSearchResults && (
-                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                    {searchResults.length} {t('chat.resultsFound')}
+                  <div className="mt-2 px-1 text-xs md:text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                    <span className="font-medium">{searchResults.length}</span>{' '}
+                    {t('chat.resultsFound')}
+                    <button
+                      type="button"
+                      onClick={handleClearSearch}
+                      className="ml-auto text-blue-600 dark:text-blue-400 hover:underline text-xs"
+                    >
+                      Clear
+                    </button>
                   </div>
                 )}
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 min-h-0">
+              <div className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-6 space-y-3 md:space-y-4 min-h-0 scroll-smooth overscroll-contain">
+                {(showSearchResults ? searchResults : messages).length === 0 &&
+                  !showSearchResults && (
+                    <div className="flex-1 flex items-center justify-center py-12">
+                      <div className="text-center text-gray-500 dark:text-gray-400">
+                        <i className="fas fa-comments text-3xl mb-3 opacity-50"></i>
+                        <p className="text-sm">No messages yet. Start the conversation!</p>
+                      </div>
+                    </div>
+                  )}
                 {(showSearchResults ? searchResults : messages).map((message, index) => {
                   const isSender = user && message.sender.id === user.id;
                   return (
                     <div
                       key={message.id || index}
-                      className={`flex ${isSender ? 'justify-end' : 'justify-start'} gap-2 group`}
+                      className={`flex ${isSender ? 'justify-end' : 'justify-start'} gap-2 group animate-fade-in-up`}
                     >
                       {!isSender && (
                         <UserAvatar
                           username={message.sender.username}
                           avatarUrl={message.sender.avatar_url}
                           size="sm"
-                          className="flex-shrink-0 hidden sm:block"
+                          className="flex-shrink-0 hidden sm:block self-end mb-5"
                         />
                       )}
                       <div
-                        className={`max-w-[85%] sm:max-w-xs lg:max-w-sm xl:max-w-md ${isSender ? 'order-2' : 'order-1'}`}
+                        className={`max-w-[85%] sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg ${isSender ? 'order-2' : 'order-1'}`}
                       >
                         {!isSender && (
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-1 truncate">
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-2 truncate font-medium">
                             {message.sender.username}
                           </p>
                         )}
                         <div className="relative">
                           <div
-                            className={`px-3 py-2 md:px-4 rounded-lg shadow-sm ${
+                            className={`px-3 py-2 md:px-4 md:py-2.5 shadow-sm ${
                               isSender
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
+                                ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl rounded-br-md'
+                                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-2xl rounded-bl-md'
                             }`}
                           >
                             {message.photo_url && (
                               <div className="mb-2">
-                                <img
-                                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${message.photo_url}`}
-                                  alt="Chat attachment"
-                                  className="rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                                <button
+                                  type="button"
+                                  className="block rounded-xl overflow-hidden hover:opacity-90 active:opacity-80 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   onClick={() =>
                                     setViewingPhoto(
                                       `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${message.photo_url}`,
                                     )
                                   }
-                                  style={{ maxHeight: '300px' }}
-                                />
+                                  aria-label="View full size image"
+                                >
+                                  <img
+                                    src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${message.photo_url}`}
+                                    alt="Chat attachment"
+                                    className="max-w-full h-auto"
+                                    style={{ maxHeight: '280px' }}
+                                    loading="lazy"
+                                  />
+                                </button>
                               </div>
                             )}
-                            <p className="break-words whitespace-pre-wrap text-sm md:text-base">
+                            <p className="break-words whitespace-pre-wrap text-sm md:text-base leading-relaxed">
                               {linkify(message.message)}
                             </p>
                           </div>
@@ -536,81 +600,89 @@ export function ChatPage() {
                             <button
                               type="button"
                               onClick={() => setMessageToDelete(message.id)}
-                              className="absolute -right-7 md:-right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-red-600 hover:text-red-700"
+                              className="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all w-7 h-7 flex items-center justify-center text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full touch-manipulation"
                               title={t('chat.deleteMessage')}
+                              aria-label="Delete message"
                             >
-                              <i className="fas fa-trash text-xs md:text-sm"></i>
+                              <i className="fas fa-trash text-xs"></i>
                             </button>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-1 ml-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-2 flex items-center gap-1">
                           {formatTime(message.created_at)}
+                          {isSender && (
+                            <i className="fas fa-check text-blue-400 text-[10px]" title="Sent"></i>
+                          )}
                         </p>
                       </div>
                     </div>
                   );
                 })}
                 {/* Scroll target */}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-1" />
               </div>
 
               {/* Message input */}
-              <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-2 md:p-3 lg:p-4 flex-shrink-0">
+              <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-2 md:p-3 lg:p-4 flex-shrink-0 safe-area-inset-bottom">
                 {/* Photo preview */}
                 {photoPreviewUrl && (
-                  <div className="mb-2 relative inline-block">
+                  <div className="mb-3 relative inline-block animate-scale-in">
                     <img
                       src={photoPreviewUrl}
                       alt="Preview"
-                      className="rounded-lg max-h-32 border border-gray-300 dark:border-gray-600"
+                      className="rounded-xl max-h-28 md:max-h-32 border-2 border-gray-200 dark:border-gray-600 shadow-sm"
                     />
                     <button
                       type="button"
                       onClick={handleClearPhoto}
-                      className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors"
+                      className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-red-700 active:bg-red-800 transition-colors shadow-md touch-manipulation"
+                      aria-label="Remove photo"
                     >
                       <i className="fas fa-times text-xs"></i>
                     </button>
                   </div>
                 )}
-                <form onSubmit={handleSendMessage} className="flex gap-2">
+                <form onSubmit={handleSendMessage} className="flex items-end gap-2">
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handlePhotoSelect}
                     className="hidden"
+                    tabIndex={-1}
                   />
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingPhoto}
-                    className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
+                    className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-full transition-colors flex-shrink-0 touch-manipulation"
                     title={t('chat.uploadPhoto')}
+                    aria-label="Upload photo"
                   >
-                    <i className="fas fa-image"></i>
+                    <i className="fas fa-image text-lg"></i>
                   </button>
-                  <input
-                    type="text"
-                    value={messageInput}
-                    onChange={(e) => handleTyping(e.target.value)}
-                    placeholder={t('chat.typeMessage')}
-                    disabled={uploadingPhoto}
-                    className="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm md:text-base"
-                  />
+                  <div className="flex-1 min-w-0 relative">
+                    <input
+                      type="text"
+                      value={messageInput}
+                      onChange={(e) => handleTyping(e.target.value)}
+                      placeholder={t('chat.typeMessage')}
+                      disabled={uploadingPhoto}
+                      className="w-full px-4 py-2.5 md:py-3 border border-gray-300 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm md:text-base transition-all"
+                      aria-label="Message input"
+                    />
+                  </div>
                   <button
                     type="submit"
                     disabled={(!messageInput.trim() && !selectedPhoto) || uploadingPhoto}
-                    className="px-3 py-2 md:px-4 lg:px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base flex-shrink-0"
+                    className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-sm hover:shadow-md touch-manipulation"
+                    aria-label={uploadingPhoto ? t('chat.uploading') : t('chat.send')}
                   >
                     {uploadingPhoto ? (
                       <i className="fas fa-spinner fa-spin"></i>
                     ) : (
                       <i className="fas fa-paper-plane"></i>
                     )}
-                    <span className="hidden md:inline md:ml-2">
-                      {uploadingPhoto ? t('chat.uploading') : t('chat.send')}
-                    </span>
                   </button>
                 </form>
               </div>
@@ -621,32 +693,52 @@ export function ChatPage() {
 
       {/* New chat modal */}
       {showNewChatModal && (
-        <div className="fixed inset-0 bg-gray-900/30 dark:bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md max-h-[90vh] sm:max-h-[80vh] flex flex-col shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+        <div
+          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
+          onClick={(e) => e.target === e.currentTarget && setShowNewChatModal(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setShowNewChatModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="new-chat-title"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:max-w-md max-h-[85vh] sm:max-h-[80vh] flex flex-col shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <h2
+                id="new-chat-title"
+                className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white"
+              >
                 {t('chat.newChat')}
               </h2>
               <button
                 type="button"
                 onClick={() => setShowNewChatModal(false)}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="w-9 h-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-manipulation"
+                aria-label="Close"
               >
-                <i className="fas fa-times"></i>
+                <i className="fas fa-times text-lg"></i>
               </button>
             </div>
 
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('chat.searchUsers')}
-              className="w-full px-3 py-2 sm:px-4 mb-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base"
-            />
+            <div className="relative mb-4">
+              <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('chat.searchUsers')}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base transition-all"
+                aria-label="Search users"
+              />
+            </div>
 
-            <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
+            <div className="flex-1 overflow-y-auto space-y-2 min-h-0 overscroll-contain">
               {filteredUsers.length === 0 ? (
-                <p className="text-center text-gray-500 py-4">{t('chat.selectUser')}</p>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i className="fas fa-users text-2xl text-gray-400 dark:text-gray-500"></i>
+                  </div>
+                  <p className="text-gray-500 dark:text-gray-400">{t('chat.selectUser')}</p>
+                </div>
               ) : (
                 filteredUsers.map((chatUser) => {
                   const userStatus = getUserStatus(chatUser.id, chatUser.status);
@@ -659,7 +751,7 @@ export function ChatPage() {
                         setShowNewChatModal(false);
                         setSearchQuery('');
                       }}
-                      className="w-full p-3 text-left border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="w-full p-3 md:p-4 text-left border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation"
                     >
                       <div className="flex items-center gap-3">
                         <UserAvatar
@@ -673,10 +765,22 @@ export function ChatPage() {
                           <div className="font-semibold text-gray-900 dark:text-white truncate">
                             {chatUser.username}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <span
+                              className={`w-2 h-2 rounded-full ${
+                                userStatus === 'online'
+                                  ? 'bg-green-500'
+                                  : userStatus === 'away'
+                                    ? 'bg-yellow-500'
+                                    : userStatus === 'busy'
+                                      ? 'bg-red-500'
+                                      : 'bg-gray-400'
+                              }`}
+                            ></span>
                             {t(`chat.${userStatus}`)}
                           </div>
                         </div>
+                        <i className="fas fa-chevron-right text-gray-400 text-sm"></i>
                       </div>
                     </button>
                   );
@@ -689,34 +793,49 @@ export function ChatPage() {
 
       {/* Error toast */}
       {error && (
-        <div className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg">
-          <i className="fas fa-exclamation-circle mr-2"></i>
-          {error}
+        <div className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-slide-up z-50">
+          <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <i className="fas fa-exclamation-circle"></i>
+          </div>
+          <p className="flex-1 text-sm">{error}</p>
         </div>
       )}
 
       {/* Delete message confirmation */}
       {messageToDelete && (
-        <div className="fixed inset-0 bg-gray-900/30 dark:bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md shadow-xl">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+        <div
+          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
+          onClick={(e) => e.target === e.currentTarget && setMessageToDelete(null)}
+          onKeyDown={(e) => e.key === 'Escape' && setMessageToDelete(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-message-title"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 w-full sm:max-w-sm shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
+            <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i className="fas fa-trash text-red-600 dark:text-red-400 text-xl"></i>
+            </div>
+            <h3
+              id="delete-message-title"
+              className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white text-center mb-2"
+            >
               {t('chat.deleteMessageConfirm')}
             </h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 text-center mb-6">
               {t('chat.deleteMessageWarning')}
             </p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => setMessageToDelete(null)}
-                className="flex-1 sm:flex-none px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm sm:text-base"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors text-sm sm:text-base font-medium touch-manipulation"
               >
                 {t('common.cancel')}
               </button>
               <button
                 type="button"
                 onClick={() => handleDeleteMessage(messageToDelete)}
-                className="flex-1 sm:flex-none px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-colors text-sm sm:text-base font-medium touch-manipulation"
               >
                 {t('common.delete')}
               </button>
@@ -727,26 +846,39 @@ export function ChatPage() {
 
       {/* Delete room confirmation */}
       {showDeleteRoomConfirm && (
-        <div className="fixed inset-0 bg-gray-900/30 dark:bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-lg p-4 sm:p-6 w-full sm:max-w-md shadow-xl">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+        <div
+          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
+          onClick={(e) => e.target === e.currentTarget && setShowDeleteRoomConfirm(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setShowDeleteRoomConfirm(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-room-title"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 w-full sm:max-w-sm shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
+            <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i className="fas fa-comments text-red-600 dark:text-red-400 text-xl"></i>
+            </div>
+            <h3
+              id="delete-room-title"
+              className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white text-center mb-2"
+            >
               {t('chat.deleteChatConfirm')}
             </h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 text-center mb-6">
               {t('chat.deleteChatWarning')}
             </p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => setShowDeleteRoomConfirm(false)}
-                className="flex-1 sm:flex-none px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm sm:text-base"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors text-sm sm:text-base font-medium touch-manipulation"
               >
                 {t('common.cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleDeleteRoom}
-                className="flex-1 sm:flex-none px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-colors text-sm sm:text-base font-medium touch-manipulation"
               >
                 {t('common.delete')}
               </button>
@@ -758,22 +890,29 @@ export function ChatPage() {
       {/* Photo viewer modal */}
       {viewingPhoto && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 animate-fade-in"
           onClick={() => setViewingPhoto(null)}
+          onKeyDown={(e) => e.key === 'Escape' && setViewingPhoto(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photo viewer"
         >
-          <div className="relative max-w-4xl max-h-[90vh]">
-            <button
-              type="button"
-              onClick={() => setViewingPhoto(null)}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
-            >
-              <i className="fas fa-times text-2xl"></i>
-            </button>
+          <button
+            type="button"
+            onClick={() => setViewingPhoto(null)}
+            className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white rounded-full flex items-center justify-center transition-colors z-10 touch-manipulation safe-area-inset-top"
+            aria-label="Close"
+          >
+            <i className="fas fa-times text-xl"></i>
+          </button>
+          <div className="relative max-w-full max-h-full flex items-center justify-center">
             <img
               src={viewingPhoto}
-              alt="Full size"
-              className="max-w-full max-h-[90vh] rounded-lg"
+              alt="Full size view"
+              className="max-w-full max-h-[85vh] object-contain rounded-lg sm:rounded-xl shadow-2xl animate-scale-in"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+              loading="lazy"
             />
           </div>
         </div>
