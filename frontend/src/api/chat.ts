@@ -42,9 +42,17 @@ export async function getRoomMessages(
  * Send a message to a chat room (REST fallback)
  * @param roomId - Chat room ID
  * @param message - Message content
+ * @param photoUrl - Optional photo URL
  */
-export async function sendMessage(roomId: number, message: string): Promise<ChatMessage> {
-  return apiClient.post<ChatMessage>(`${API_VERSION}/chat/rooms/${roomId}/messages`, { message });
+export async function sendMessage(
+  roomId: number,
+  message: string,
+  photoUrl?: string,
+): Promise<ChatMessage> {
+  return apiClient.post<ChatMessage>(`${API_VERSION}/chat/rooms/${roomId}/messages`, {
+    message,
+    photoUrl,
+  });
 }
 
 /**
@@ -79,6 +87,46 @@ export async function deleteRoom(roomId: number): Promise<void> {
   await apiClient.delete<void>(`${API_VERSION}/chat/rooms/${roomId}`);
 }
 
+/**
+ * Search messages in a chat room
+ * @param roomId - Chat room ID
+ * @param query - Search query
+ * @param limit - Max results to return
+ */
+export async function searchMessages(
+  roomId: number,
+  query: string,
+  limit = 50,
+): Promise<ChatMessage[]> {
+  return apiClient.get<ChatMessage[]>(
+    `${API_VERSION}/chat/rooms/${roomId}/search?q=${encodeURIComponent(query)}&limit=${limit}`,
+  );
+}
+
+/**
+ * Upload a photo for chat
+ * @param file - File to upload
+ */
+export async function uploadPhoto(file: File): Promise<{ photoUrl: string }> {
+  const formData = new FormData();
+  formData.append('photo', file);
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${API_VERSION}/chat/upload`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('notehub_access_token')}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to upload photo');
+  }
+
+  const data = await response.json();
+  return data.data;
+}
+
 export const chatApi = {
   getChatRooms,
   createDirectChat,
@@ -88,4 +136,6 @@ export const chatApi = {
   getAvailableUsers,
   deleteMessage,
   deleteRoom,
+  searchMessages,
+  uploadPhoto,
 };

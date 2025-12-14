@@ -5,6 +5,7 @@
 
 import express from 'express';
 import { jwtRequired } from '../middleware/auth.js';
+import { upload } from '../middleware/upload.js';
 import * as chatService from '../services/chatService.js';
 import * as responseHandler from '../utils/responseHandler.js';
 
@@ -74,18 +75,18 @@ router.get('/rooms/:roomId/messages', jwtRequired, async (req, res) => {
 /**
  * POST /api/v1/chat/rooms/:roomId/messages
  * Send a message to a chat room
- * Body: { message: string }
+ * Body: { message: string, photoUrl?: string }
  */
 router.post('/rooms/:roomId/messages', jwtRequired, async (req, res) => {
   try {
     const roomId = Number.parseInt(req.params.roomId, 10);
-    const { message } = req.body;
+    const { message, photoUrl } = req.body;
 
     if (!message || message.trim().length === 0) {
       return responseHandler.error(res, 'Message is required', { statusCode: 400 });
     }
 
-    const newMessage = await chatService.sendMessage(roomId, req.userId, message);
+    const newMessage = await chatService.sendMessage(roomId, req.userId, message, photoUrl);
     return responseHandler.success(res, newMessage, {
       message: 'Message sent successfully',
       statusCode: 201,
@@ -122,6 +123,31 @@ router.get('/users', jwtRequired, async (req, res) => {
     });
   } catch (error) {
     return responseHandler.error(res, error.message, { statusCode: 500 });
+  }
+});
+
+/**
+ * GET /api/v1/chat/rooms/:roomId/search
+ * Search messages in a chat room
+ * Query params: q (query string), limit (optional)
+ */
+router.get('/rooms/:roomId/search', jwtRequired, async (req, res) => {
+  try {
+    const roomId = Number.parseInt(req.params.roomId, 10);
+    const query = req.query.q;
+    const limit = Number.parseInt(req.query.limit, 10) || 50;
+
+    if (!query || query.trim().length === 0) {
+      return responseHandler.error(res, 'Search query is required', { statusCode: 400 });
+    }
+
+    const messages = await chatService.searchRoomMessages(roomId, req.userId, query, limit);
+    return responseHandler.success(res, messages, {
+      message: 'Search completed successfully',
+    });
+  } catch (error) {
+    const statusCode = error.message.includes('not a participant') ? 403 : 500;
+    return responseHandler.error(res, error.message, { statusCode });
   }
 });
 
@@ -168,6 +194,32 @@ router.delete('/rooms/:roomId', jwtRequired, async (req, res) => {
     return responseHandler.success(res, null, { message: 'Chat room deleted successfully' });
   } catch (error) {
     return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
+  }
+});
+
+/**
+ * POST /api/v1/chat/upload
+ * Upload a photo for chat
+ * Form data: photo (file)
+ */
+router.post('/upload', jwtRequired, upload.single('photo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return responseHandler.error(res, 'No file uploaded', { statusCode: 400 });
+    }
+
+    // Return the file path relative to uploads directory
+    const photoUrl = `/uploads/${req.file.filename}`;
+    return responseHandler.success(
+      res,
+      { photoUrl },
+      {
+        message: 'Photo uploaded successfully',
+        statusCode: 201,
+      },
+    );
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: 500 });
   }
 });
 

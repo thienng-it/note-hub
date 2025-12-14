@@ -13,6 +13,7 @@ export interface ChatUser {
 export interface ChatMessage {
   id: number;
   message: string;
+  photo_url?: string | null;
   sender: ChatUser;
   created_at: string;
   is_read?: boolean;

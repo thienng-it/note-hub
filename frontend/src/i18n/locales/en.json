@@ -403,7 +403,11 @@
     "busy": "Busy",
     "enableNotifications": "Enable notifications for new messages",
     "notificationDescription": "Get notified when you receive new messages while away",
-    "enable": "Enable"
+    "enable": "Enable",
+    "searchMessages": "Search messages...",
+    "resultsFound": "results found",
+    "uploadPhoto": "Upload photo",
+    "uploading": "Uploading..."
   },
   "folders": {
     "title": "Folders",

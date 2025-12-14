@@ -35,7 +35,7 @@ interface ChatContextType {
   selectRoom: (roomId: number) => void;
   clearRoom: () => void;
   startChat: (userId: number) => Promise<void>;
-  sendMessage: (message: string) => void;
+  sendMessage: (message: string, photoUrl?: string) => void;
   loadMoreMessages: () => Promise<void>;
   setTyping: (isTyping: boolean) => void;
   deleteMessage: (messageId: number) => Promise<void>;
@@ -274,11 +274,18 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   // Send message
   const sendMessage = useCallback(
-    (message: string) => {
-      if (!currentRoom || !message.trim()) return;
+    (message: string, photoUrl?: string) => {
+      if (!currentRoom || (!message.trim() && !photoUrl)) return;
 
-      // Send via WebSocket for real-time delivery
-      socketService.sendMessage(currentRoom.id, message.trim());
+      // For now, use REST API for messages with photos, WebSocket for text only
+      if (photoUrl) {
+        chatApi.sendMessage(currentRoom.id, message.trim() || ' ', photoUrl).catch((err) => {
+          setError(err instanceof Error ? err.message : 'Failed to send message');
+        });
+      } else {
+        // Send via WebSocket for real-time delivery
+        socketService.sendMessage(currentRoom.id, message.trim());
+      }
     },
     [currentRoom],
   );
