@@ -119,6 +119,18 @@ export function forbidden(res, message = 'Forbidden') {
 }
 
 /**
+ * Bad request error response
+ * @param {Object} res - Express response object
+ * @param {string} message - Optional custom message
+ */
+export function badRequest(res, message = 'Bad request') {
+  return error(res, message, {
+    statusCode: 400,
+    errorCode: 'BAD_REQUEST',
+  });
+}
+
+/**
  * Created response for POST endpoints
  * @param {Object} res - Express response object
  * @param {*} data - Created resource data
