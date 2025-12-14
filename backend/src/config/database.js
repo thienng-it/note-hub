@@ -361,6 +361,52 @@ class Database {
       CREATE INDEX IF NOT EXISTS ix_audit_logs_entity ON audit_logs(entity_type, entity_id);
       CREATE INDEX IF NOT EXISTS ix_audit_logs_created ON audit_logs(created_at);
       CREATE INDEX IF NOT EXISTS ix_audit_logs_action ON audit_logs(action);
+
+      -- Chat rooms table
+      CREATE TABLE IF NOT EXISTS chat_rooms (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        is_group INTEGER DEFAULT 0,
+        created_by_id INTEGER NOT NULL,
+        encryption_salt TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS ix_chat_rooms_created_by ON chat_rooms(created_by_id);
+
+      -- Chat messages table
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_id INTEGER NOT NULL,
+        sender_id INTEGER NOT NULL,
+        message TEXT NOT NULL,
+        photo_url TEXT,
+        is_encrypted INTEGER DEFAULT 0,
+        is_read INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (room_id) REFERENCES chat_rooms(id) ON DELETE CASCADE,
+        FOREIGN KEY (sender_id) REFERENCES users(id)
+      );
+      CREATE INDEX IF NOT EXISTS ix_chat_messages_room ON chat_messages(room_id);
+      CREATE INDEX IF NOT EXISTS ix_chat_messages_sender ON chat_messages(sender_id);
+
+      -- Chat participants table
+      CREATE TABLE IF NOT EXISTS chat_participants (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_read_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (room_id) REFERENCES chat_rooms(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        UNIQUE(room_id, user_id)
+      );
+      CREATE INDEX IF NOT EXISTS ix_chat_participants_room ON chat_participants(room_id);
+      CREATE INDEX IF NOT EXISTS ix_chat_participants_user ON chat_participants(user_id);
     `;
 
     // Execute each statement separately for SQLite
@@ -720,6 +766,52 @@ class Database {
         INDEX ix_audit_logs_created (created_at),
         INDEX ix_audit_logs_action (action),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+
+      -- Chat rooms table
+      CREATE TABLE IF NOT EXISTS chat_rooms (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(200),
+        is_group BOOLEAN DEFAULT FALSE,
+        created_by_id INT NOT NULL,
+        encryption_salt VARCHAR(64),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX ix_chat_rooms_created_by (created_by_id),
+        FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+
+      -- Chat messages table
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        room_id INT NOT NULL,
+        sender_id INT NOT NULL,
+        message TEXT NOT NULL,
+        photo_url TEXT,
+        is_encrypted BOOLEAN DEFAULT FALSE,
+        is_read BOOLEAN DEFAULT FALSE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX ix_chat_messages_room (room_id),
+        INDEX ix_chat_messages_sender (sender_id),
+        FOREIGN KEY (room_id) REFERENCES chat_rooms(id) ON DELETE CASCADE,
+        FOREIGN KEY (sender_id) REFERENCES users(id)
+      );
+
+      -- Chat participants table
+      CREATE TABLE IF NOT EXISTS chat_participants (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        room_id INT NOT NULL,
+        user_id INT NOT NULL,
+        joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_read_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX ix_chat_participants_room (room_id),
+        INDEX ix_chat_participants_user (user_id),
+        UNIQUE KEY unique_room_user (room_id, user_id),
+        FOREIGN KEY (room_id) REFERENCES chat_rooms(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id)
       );
     `;
 

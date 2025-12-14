@@ -107,7 +107,10 @@ router.post('/', jwtRequired, async (req, res) => {
       position: position || 0,
     });
 
-    return responseHandler.success(res, folder, 'Folder created successfully', 201);
+    return responseHandler.success(res, folder, {
+      message: 'Folder created successfully',
+      statusCode: 201,
+    });
   } catch (error) {
     logger.error('Create folder error:', error);
     return responseHandler.error(res, error.message);
@@ -140,7 +143,7 @@ router.put('/:id', jwtRequired, async (req, res) => {
     if (is_expanded !== undefined) updates.is_expanded = is_expanded ? 1 : 0;
 
     const folder = await FolderService.updateFolder(folderId, req.userId, updates);
-    return responseHandler.success(res, folder, 'Folder updated successfully');
+    return responseHandler.success(res, folder, { message: 'Folder updated successfully' });
   } catch (error) {
     logger.error('Update folder error:', error);
     return responseHandler.error(res, error.message);
@@ -154,7 +157,7 @@ router.delete('/:id', jwtRequired, async (req, res) => {
   try {
     const folderId = parseInt(req.params.id, 10);
     await FolderService.deleteFolder(folderId, req.userId);
-    return responseHandler.success(res, null, 'Folder deleted successfully');
+    return responseHandler.success(res, null, { message: 'Folder deleted successfully' });
   } catch (error) {
     logger.error('Delete folder error:', error);
     return responseHandler.error(res, error.message);
@@ -170,7 +173,7 @@ router.post('/:id/move', jwtRequired, async (req, res) => {
     const { parent_id } = req.body;
 
     const folder = await FolderService.moveFolder(folderId, req.userId, parent_id || null);
-    return responseHandler.success(res, folder, 'Folder moved successfully');
+    return responseHandler.success(res, folder, { message: 'Folder moved successfully' });
   } catch (error) {
     logger.error('Move folder error:', error);
     return responseHandler.error(res, error.message);
@@ -186,7 +189,7 @@ router.post('/notes/:noteId/move', jwtRequired, async (req, res) => {
     const { folder_id } = req.body;
 
     await FolderService.moveNoteToFolder(noteId, req.userId, folder_id || null);
-    return responseHandler.success(res, null, 'Note moved successfully');
+    return responseHandler.success(res, null, { message: 'Note moved successfully' });
   } catch (error) {
     logger.error('Move note to folder error:', error);
     return responseHandler.error(res, error.message);
@@ -202,7 +205,7 @@ router.post('/tasks/:taskId/move', jwtRequired, async (req, res) => {
     const { folder_id } = req.body;
 
     await FolderService.moveTaskToFolder(taskId, req.userId, folder_id || null);
-    return responseHandler.success(res, null, 'Task moved successfully');
+    return responseHandler.success(res, null, { message: 'Task moved successfully' });
   } catch (error) {
     logger.error('Move task to folder error:', error);
     return responseHandler.error(res, error.message);
