@@ -7,6 +7,7 @@ import { FolderTree } from '../components/FolderTree';
 import { ImageUpload } from '../components/ImageUpload';
 import { ConfirmModal } from '../components/Modal';
 import type { Folder, Task, TaskFilterType } from '../types';
+import { flattenFolders } from '../utils/folderUtils';
 import { type TaskTemplate, taskTemplates } from '../utils/templates';
 
 export function TasksPage() {
@@ -29,6 +30,7 @@ export function TasksPage() {
   const [newImages, setNewImages] = useState<string[]>([]);
   const [newDueDate, setNewDueDate] = useState('');
   const [newPriority, setNewPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [newFolderId, setNewFolderId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
   // Edit task
@@ -172,6 +174,7 @@ export function TasksPage() {
         images: newImages,
         due_date: newDueDate || undefined,
         priority: newPriority,
+        folder_id: newFolderId,
       });
       setTasks([task, ...tasks]);
       resetForm();
@@ -236,6 +239,7 @@ export function TasksPage() {
     setNewImages([]);
     setNewDueDate('');
     setNewPriority('medium');
+    setNewFolderId(null);
   };
 
   const applyTaskTemplate = (template: TaskTemplate) => {
@@ -481,6 +485,30 @@ export function TasksPage() {
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="taskFolder"
+                  className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+                >
+                  Folder (optional)
+                </label>
+                <div className="relative">
+                  <i className="glass-i fas fa-folder absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+                  <select
+                    id="taskFolder"
+                    value={newFolderId ?? ''}
+                    onChange={(e) => setNewFolderId(e.target.value ? Number(e.target.value) : null)}
+                    className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">No folder</option>
+                    {flattenFolders(folders).map((folder) => (
+                      <option key={folder.id} value={folder.id}>
+                        {folder.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

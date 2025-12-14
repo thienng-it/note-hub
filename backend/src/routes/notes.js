@@ -32,6 +32,7 @@ router.get('/', jwtRequired, async (req, res) => {
         pinned: !!note.pinned,
         favorite: !!note.favorite,
         archived: !!note.archived,
+        folder_id: note.folder_id,
         created_at: note.created_at,
         updated_at: note.updated_at,
         tags: note.tags,
@@ -103,6 +104,7 @@ router.post('/', jwtRequired, async (req, res) => {
       pinned = false,
       favorite = false,
       archived = false,
+      folder_id = null,
     } = req.body;
 
     if (!title) {
@@ -118,6 +120,7 @@ router.post('/', jwtRequired, async (req, res) => {
       favorite,
       archived,
       images,
+      folder_id,
     );
 
     // Audit log: Note creation
@@ -142,6 +145,7 @@ router.post('/', jwtRequired, async (req, res) => {
         pinned: !!note.pinned,
         favorite: !!note.favorite,
         archived: !!note.archived,
+        folder_id: note.folder_id,
         created_at: note.created_at,
         tags: note.tags,
       },
@@ -176,7 +180,7 @@ async function updateNote(req, res) {
       return res.status(403).json({ error: 'You do not have edit permissions for this note' });
     }
 
-    const { title, body, tags, images, pinned, favorite, archived } = req.body;
+    const { title, body, tags, images, pinned, favorite, archived, folder_id } = req.body;
 
     // Track what changed for audit log
     const changes = {};
@@ -187,6 +191,7 @@ async function updateNote(req, res) {
     if (archived !== undefined && archived !== !!note.archived) changes.archived = archived;
     if (tags !== undefined) changes.tags = true;
     if (images !== undefined) changes.images = true;
+    if (folder_id !== undefined && folder_id !== note.folder_id) changes.folder = true;
 
     const updatedNote = await NoteService.updateNote(
       noteId,
@@ -197,6 +202,7 @@ async function updateNote(req, res) {
       favorite,
       archived,
       images,
+      folder_id,
     );
 
     // Audit log: Note modification
@@ -224,6 +230,7 @@ async function updateNote(req, res) {
         pinned: !!updatedNote.pinned,
         favorite: !!updatedNote.favorite,
         archived: !!updatedNote.archived,
+        folder_id: updatedNote.folder_id,
         created_at: updatedNote.created_at,
         updated_at: updatedNote.updated_at,
         tags: updatedNote.tags,

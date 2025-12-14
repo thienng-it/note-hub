@@ -263,15 +263,25 @@ export default class NoteService {
     favorite = false,
     archived = false,
     images = [],
+    folderId = null,
   ) {
     const imagesJson = Array.isArray(images) ? JSON.stringify(images) : null;
 
     const result = await db.run(
       `
-      INSERT INTO notes (title, body, images, pinned, favorite, archived, owner_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO notes (title, body, images, pinned, favorite, archived, owner_id, folder_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `,
-      [title, body, imagesJson, pinned ? 1 : 0, favorite ? 1 : 0, archived ? 1 : 0, userId],
+      [
+        title,
+        body,
+        imagesJson,
+        pinned ? 1 : 0,
+        favorite ? 1 : 0,
+        archived ? 1 : 0,
+        userId,
+        folderId,
+      ],
     );
 
     const noteId = result.insertId;
@@ -303,7 +313,7 @@ export default class NoteService {
    * Update an existing note.
    * Invalidates cache and updates Elasticsearch index.
    */
-  static async updateNote(noteId, title, body, tags, pinned, favorite, archived, images) {
+  static async updateNote(noteId, title, body, tags, pinned, favorite, archived, images, folderId) {
     const updates = [];
     const params = [];
 
@@ -330,6 +340,10 @@ export default class NoteService {
     if (archived !== undefined) {
       updates.push('archived = ?');
       params.push(archived ? 1 : 0);
+    }
+    if (folderId !== undefined) {
+      updates.push('folder_id = ?');
+      params.push(folderId);
     }
 
     if (updates.length > 0) {

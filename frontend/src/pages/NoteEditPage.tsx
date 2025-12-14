@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
-import { notesApi } from '../api/client';
+import { foldersApi, notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import { ImageUpload } from '../components/ImageUpload';
 import { MarkdownToolbar } from '../components/MarkdownToolbar';
-import type { Note } from '../types';
+import type { Folder, Note } from '../types';
+import { flattenFolders } from '../utils/folderUtils';
 import { type NoteTemplate, noteTemplates } from '../utils/templates';
 
 export function NoteEditPage() {
@@ -24,6 +25,8 @@ export function NoteEditPage() {
   const [pinned, setPinned] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [archived, setArchived] = useState(false);
+  const [folderId, setFolderId] = useState<number | null>(null);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [isLoading, setIsLoading] = useState(!isNew);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
@@ -44,6 +47,7 @@ export function NoteEditPage() {
       setPinned(note.pinned);
       setFavorite(note.favorite);
       setArchived(note.archived);
+      setFolderId(note.folder_id ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load note');
     } finally {
@@ -57,6 +61,19 @@ export function NoteEditPage() {
     }
   }, [id, loadNote]);
 
+  // Load folders on mount
+  useEffect(() => {
+    const loadFolders = async () => {
+      try {
+        const { folders: fetchedFolders } = await foldersApi.list();
+        setFolders(fetchedFolders);
+      } catch (err) {
+        console.error('Failed to load folders:', err);
+      }
+    };
+    loadFolders();
+  }, []);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
@@ -68,7 +85,16 @@ export function NoteEditPage() {
     setError('');
 
     try {
-      const data = { title: title.trim(), body, tags, images, pinned, favorite, archived };
+      const data = {
+        title: title.trim(),
+        body,
+        tags,
+        images,
+        pinned,
+        favorite,
+        archived,
+        folder_id: folderId,
+      };
       let note: Note;
 
       if (isNew) {
@@ -277,6 +303,35 @@ export function NoteEditPage() {
             </div>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
               Separate multiple tags with commas
+            </p>
+          </div>
+
+          {/* Folder */}
+          <div>
+            <label
+              htmlFor="folder"
+              className="block text-sm font-medium text-[var(--text-primary)] mb-2"
+            >
+              Folder (optional)
+            </label>
+            <div className="relative">
+              <i className="glass-i fas fa-folder absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+              <select
+                id="folder"
+                value={folderId ?? ''}
+                onChange={(e) => setFolderId(e.target.value ? Number(e.target.value) : null)}
+                className="glass-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">No folder</option>
+                {flattenFolders(folders).map((folder) => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
+              Organize your note into a folder
             </p>
           </div>
 
