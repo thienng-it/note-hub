@@ -1,230 +1,32 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`LiquidGlassNav > matches snapshot - default state 1`] = `
+exports[`LiquidGlassNav > matches snapshot – expanded state 1`] = `
 <div
   class="liquid-glass-dock-backdrop"
 />
 `;
 
-exports[`LiquidGlassNav > matches snapshot - with all navigation items 1`] = `
+exports[`LiquidGlassNav > matches snapshot – minimized state 1`] = `
 <nav
   aria-label="Mac-style navigation dock"
-  class="liquid-glass-nav dock-expanded"
+  class="liquid-glass-nav dock-minimized"
 >
   <div
-    class="liquid-glass-nav-container"
+    class="liquid-glass-nav-minimized-container"
   >
-    <a
-      class="liquid-glass-nav-item active"
-      data-discover="true"
-      href="/"
-      style="transform: scale(1) translateY(0px);"
+    <button
+      aria-label="All Notes"
+      class="liquid-glass-nav-item active minimized"
+      type="button"
     >
       <div
         class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(0, 122, 255, 0.25);"
+        style="background: linear-gradient(135deg, rgba(0, 122, 255, 0.867), rgba(0, 122, 255, 0.733)); border-color: rgba(0, 122, 255, 0.5);"
       >
         <i
           class="fas fa-home liquid-glass-nav-icon"
         />
       </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        All Notes
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/?view=favorites"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(255, 45, 85, 0.25);"
-      >
-        <i
-          class="fas fa-heart liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Favorites
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/?view=archived"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(142, 142, 147, 0.25);"
-      >
-        <i
-          class="fas fa-archive liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Archived
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/?view=shared"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(88, 86, 214, 0.25);"
-      >
-        <i
-          class="fas fa-share-alt liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Shared With Me
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/tasks"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(52, 199, 89, 0.25);"
-      >
-        <i
-          class="fas fa-tasks liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Tasks
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/notes/new"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(255, 149, 0, 0.25);"
-      >
-        <i
-          class="fas fa-plus liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        New Note
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/chat"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(175, 82, 222, 0.25);"
-      >
-        <i
-          class="fas fa-comments liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Chat
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/admin"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(255, 59, 48, 0.25);"
-      >
-        <i
-          class="fas fa-users-cog liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Admin Dashboard
-      </span>
-    </a>
-    <a
-      class="liquid-glass-nav-item "
-      data-discover="true"
-      href="/profile"
-      style="transform: scale(1) translateY(0px);"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-        style="border-color: rgba(48, 176, 199, 0.25);"
-      >
-        <i
-          class="fas fa-user-circle liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Profile
-      </span>
-    </a>
-    <button
-      class="liquid-glass-nav-item"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-      >
-        <i
-          class="fas fa-moon liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Dark Mode
-      </span>
-    </button>
-    <button
-      class="liquid-glass-nav-item"
-    >
-      <div
-        class="liquid-glass-nav-icon-wrapper"
-      >
-        <i
-          class="fas fa-sign-out-alt liquid-glass-nav-icon"
-        />
-      </div>
-      <span
-        class="liquid-glass-nav-label"
-      >
-        Logout
-      </span>
     </button>
   </div>
 </nav>
