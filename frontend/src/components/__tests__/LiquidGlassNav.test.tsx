@@ -59,26 +59,26 @@ describe('LiquidGlassNav', () => {
       </TestWrapper>,
     );
 
-    // Hover over the nav to keep it expanded
-    const nav = container.querySelector('.liquid-glass-nav');
-    if (nav) {
-      fireEvent.mouseEnter(nav);
+    // Hover over the minimized button to expand the nav
+    const minimizedButton = container.querySelector('.liquid-glass-nav-item.minimized');
+    if (minimizedButton) {
+      fireEvent.pointerEnter(minimizedButton, { pointerType: 'mouse' });
     }
 
     // Check for main navigation items (now includes archived and shared)
-    expect(screen.getByLabelText(/all notes/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/favorites/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/archived/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/shared with me/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/tasks/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/new note/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/chat/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/admin/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/profile/i)).toBeInTheDocument();
+    expect(screen.getByText(/all notes/i)).toBeInTheDocument();
+    expect(screen.getByText(/favorites/i)).toBeInTheDocument();
+    expect(screen.getByText(/archived/i)).toBeInTheDocument();
+    expect(screen.getByText(/shared with me/i)).toBeInTheDocument();
+    expect(screen.getByText(/tasks/i)).toBeInTheDocument();
+    expect(screen.getByText(/new note/i)).toBeInTheDocument();
+    expect(screen.getByText(/chat/i)).toBeInTheDocument();
+    expect(screen.getByText(/admin/i)).toBeInTheDocument();
+    expect(screen.getByText(/profile/i)).toBeInTheDocument();
 
     // Check for theme toggle and logout buttons
-    expect(screen.getByLabelText(/switch to.*mode/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/sign out/i)).toBeInTheDocument();
+    expect(screen.getByText(/dark mode/i)).toBeInTheDocument();
+    expect(screen.getByText(/logout/i)).toBeInTheDocument();
   });
 
   it('matches snapshot - default state', () => {
@@ -88,10 +88,10 @@ describe('LiquidGlassNav', () => {
       </TestWrapper>,
     );
 
-    // Hover over the nav to keep it expanded for snapshot
-    const nav = container.querySelector('.liquid-glass-nav');
-    if (nav) {
-      fireEvent.mouseEnter(nav);
+    // Hover over the minimized button to expand the nav
+    const minimizedButton = container.querySelector('.liquid-glass-nav-item.minimized');
+    if (minimizedButton) {
+      fireEvent.pointerEnter(minimizedButton, { pointerType: 'mouse' });
     }
 
     expect(container.firstChild).toMatchSnapshot();
@@ -104,10 +104,10 @@ describe('LiquidGlassNav', () => {
       </TestWrapper>,
     );
 
-    // Hover over the nav to keep it expanded for snapshot
-    const nav = container.querySelector('.liquid-glass-nav');
-    if (nav) {
-      fireEvent.mouseEnter(nav);
+    // Hover over the minimized button to expand the nav
+    const minimizedButton = container.querySelector('.liquid-glass-nav-item.minimized');
+    if (minimizedButton) {
+      fireEvent.pointerEnter(minimizedButton, { pointerType: 'mouse' });
     }
 
     const navElement = container.querySelector('.liquid-glass-nav');
