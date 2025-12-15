@@ -1018,6 +1018,14 @@ class Database {
         this.db.exec(`ALTER TABLE chat_rooms ADD COLUMN encryption_salt TEXT`);
       }
 
+      // Add photo_url column to chat_messages table if missing
+      const chatMessagesColumns = this.db.prepare(`PRAGMA table_info(chat_messages)`).all();
+      const hasPhotoUrl = chatMessagesColumns.some((col) => col.name === 'photo_url');
+      if (!hasPhotoUrl) {
+        logger.info('🔄 Migrating chat_messages table: adding photo_url column');
+        this.db.exec(`ALTER TABLE chat_messages ADD COLUMN photo_url TEXT`);
+      }
+
       logger.info('✅ SQLite schema migration completed');
     } catch (error) {
       logger.error('⚠️ SQLite migration error (non-fatal):', error.message);
