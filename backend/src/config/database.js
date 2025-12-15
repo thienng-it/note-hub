@@ -1010,6 +1010,14 @@ class Database {
         this.db.exec(`ALTER TABLE users ADD COLUMN preferred_language TEXT DEFAULT 'en'`);
       }
 
+      // Add encryption_salt column to chat_rooms table if missing
+      const chatRoomsColumns = this.db.prepare(`PRAGMA table_info(chat_rooms)`).all();
+      const hasEncryptionSalt = chatRoomsColumns.some((col) => col.name === 'encryption_salt');
+      if (!hasEncryptionSalt) {
+        logger.info('🔄 Migrating chat_rooms table: adding encryption_salt column');
+        this.db.exec(`ALTER TABLE chat_rooms ADD COLUMN encryption_salt TEXT`);
+      }
+
       logger.info('✅ SQLite schema migration completed');
     } catch (error) {
       logger.error('⚠️ SQLite migration error (non-fatal):', error.message);
