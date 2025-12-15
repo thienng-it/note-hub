@@ -78,6 +78,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [MYSQL_MIGRATION_SUMMARY](guides/MYSQL_MIGRATION_SUMMARY.md) - MySQL migration summary
 - [DATABASE_REPLICATION](guides/DATABASE_REPLICATION.md) - Database replication guide
 - [DATABASE_REPLICATION_IMPLEMENTATION](guides/DATABASE_REPLICATION_IMPLEMENTATION.md) - Database replication implementation
+- **[DATABASE_MIGRATION_GUIDE](guides/DATABASE_MIGRATION_GUIDE.md)** ⭐ NEW - Centralized database migration system guide
 
 ### Features & Configuration
 - **[LIQUID_GLASS_NAVBAR](features/LIQUID_GLASS_NAVBAR.md)** ⭐ NEW - Mac-style liquid glass navigation with dock effect
