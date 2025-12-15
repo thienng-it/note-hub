@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import replication from './databaseReplication.js';
 import logger from './logger.js';
+import { runMigrations } from './migrations.js';
 
 // Import metrics recording function - use lazy loading to avoid circular dependency
 let recordDbQuery = null;
@@ -128,14 +129,21 @@ class Database {
 
   /**
    * Initialize database schema.
+   * Uses the new centralized migration system for automatic schema updates.
    */
   async initSchema() {
     if (this.isSQLite) {
       this.initSQLiteSchema();
-      return this.migrateSQLiteSchema();
+      // Legacy migration for backward compatibility
+      this.migrateSQLiteSchema();
+    } else {
+      this.initMySQLSchema();
+      // Legacy migration for backward compatibility
+      await this.migrateMySQLSchema();
     }
-    this.initMySQLSchema();
-    return this.migrateMySQLSchema();
+    
+    // Run new centralized migration system
+    await runMigrations(this.db, this.isSQLite);
   }
 
   /**
