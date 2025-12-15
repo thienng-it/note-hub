@@ -94,7 +94,7 @@ export function LiquidGlassNav() {
   const getIconScale = (index: number) => {
     if (hoveredIndex === null) return 1;
     const distance = Math.abs(index - hoveredIndex);
-    if (distance === 0) return 1.5; // Hovered icon
+    if (distance === 0) return 1.3; // Hovered icon
     if (distance === 1) return 1.25; // Adjacent icons
     if (distance === 2) return 1.1; // Second-level adjacent
     return 1; // Other icons
