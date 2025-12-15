@@ -2037,16 +2037,28 @@ body.dark {
     opacity 0.3s ease;
 }
 
-/* Dock expanded state - show all items */
+/* Dock expanded state - show all items centered at bottom */
 .liquid-glass-nav.dock-expanded {
   transform: translateY(0);
   opacity: 1;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  justify-content: center;
+  align-items: flex-end;
 }
 
-/* Dock minimized state - show only active item */
+/* Dock minimized state - show only active item on left side */
 .liquid-glass-nav.dock-minimized {
-  transform: translateY(0);
   opacity: 1;
+  bottom: auto;
+  top: 50%;
+  left: 1rem;
+  right: auto;
+  transform: translateY(-50%);
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
 }
 
 /* Navigation Container with Liquid Glass Effect - Expanded State */

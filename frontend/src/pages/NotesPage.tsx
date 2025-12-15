@@ -230,7 +230,7 @@ export function NotesPage() {
   };
 
   return (
-    <div className="flex gap-6 p-6">
+    <div className="flex gap-3 sm:gap-6 p-3 sm:p-6">
       {/* Folder Sidebar */}
       <div className="w-64 flex-shrink-0 hidden lg:block">
         <div className="glass-card p-4 rounded-xl sticky top-6">
@@ -252,10 +252,10 @@ export function NotesPage() {
       <div className="flex-1 space-y-6">
         {/* Header with Search */}
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col gap-4">
             <div>
-              <h1 className="text-3xl font-bold flex items-center">
-                <i className={`fas ${getViewIcon()} mr-3`}></i>
+              <h1 className="text-2xl sm:text-3xl font-bold flex items-center">
+                <i className={`fas ${getViewIcon()} mr-2 sm:mr-3 text-xl sm:text-2xl`}></i>
                 <span className="text-[var(--text-primary)]">{getViewTitle()}</span>
               </h1>
               {/* Breadcrumb Navigation */}
@@ -265,103 +265,119 @@ export function NotesPage() {
                 </div>
               )}
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <span className="text-sm text-[var(--text-secondary)]">
                 {notes.length} {t('common.notesCount')}
               </span>
-              {notes.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={hideAllNotes}
-                    className="btn-secondary-glass text-sm"
-                    title={t('notes.hideAllNotes')}
-                  >
-                    <i className="glass-i fas fa-eye-slash mr-2"></i>
-                    {t('common.hideAll')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={showAllNotes}
-                    className="btn-secondary-glass text-sm"
-                    title={t('notes.showAllNotes')}
-                  >
-                    <i className="glass-i fas fa-eye mr-2"></i>
-                    {t('common.showAll')}
-                  </button>
-                </div>
-              )}
-              <Link to="/notes/new" className="btn-apple">
-                <i className="glass-i fas fa-plus mr-2"></i>
-                {t('common.addNote')}
-              </Link>
+              <div className="flex flex-wrap items-center gap-2">
+                {notes.length > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={hideAllNotes}
+                      className="btn-secondary-glass text-sm"
+                      title={t('notes.hideAllNotes')}
+                    >
+                      <i className="glass-i fas fa-eye-slash mr-2"></i>
+                      <span className="hidden sm:inline">{t('common.hideAll')}</span>
+                      <span className="sm:hidden">Hide</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={showAllNotes}
+                      className="btn-secondary-glass text-sm"
+                      title={t('notes.showAllNotes')}
+                    >
+                      <i className="glass-i fas fa-eye mr-2"></i>
+                      <span className="hidden sm:inline">{t('common.showAll')}</span>
+                      <span className="sm:hidden">Show</span>
+                    </button>
+                  </>
+                )}
+                <Link to="/notes/new" className="btn-apple">
+                  <i className="glass-i fas fa-plus mr-2"></i>
+                  <span className="hidden sm:inline">{t('common.addNote')}</span>
+                  <span className="sm:hidden">New</span>
+                </Link>
+              </div>
             </div>
           </div>
 
           {/* Search Form */}
-          <div className="glass-panel p-4">
-            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={t('notes.searchPlaceholder')}
-                    className="glass-input glass-input-with-icon w-full pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <i className="glass-i fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+          <div className="glass-panel p-3 sm:p-4">
+            <form onSubmit={handleSearch} className="flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-1">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={t('notes.searchPlaceholder')}
+                      className="glass-input glass-input-with-icon w-full pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <i className="glass-i fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+                  </div>
+                </div>
+                <div className="w-full sm:w-48">
+                  <div className="relative">
+                    <i className="glass-i fas fa-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+                    <input
+                      type="text"
+                      value={tagFilter}
+                      onChange={(e) => setTagFilter(e.target.value)}
+                      placeholder={t('notes.filterByTag')}
+                      className="glass-input glass-input-with-icon w-full pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="sm:w-48">
-                <div className="relative">
-                  <i className="glass-i fas fa-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
-                  <input
-                    type="text"
-                    value={tagFilter}
-                    onChange={(e) => setTagFilter(e.target.value)}
-                    placeholder={t('notes.filterByTag')}
-                    className="glass-input glass-input-with-icon w-full pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              <button type="submit" className="btn-apple">
-                <i className="glass-i fas fa-search mr-2"></i>
-                <span>{t('common.search')}</span>
-              </button>
-              {(query || tagFilter) && (
-                <button type="button" onClick={clearSearch} className="btn-secondary-glass">
-                  <i className="glass-i fas fa-times mr-2"></i>
-                  <span>{t('common.clear')}</span>
+              <div className="flex gap-2">
+                <button type="submit" className="btn-apple flex-1 sm:flex-none">
+                  <i className="glass-i fas fa-search mr-2"></i>
+                  <span>{t('common.search')}</span>
                 </button>
-              )}
+                {(query || tagFilter) && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="btn-secondary-glass flex-1 sm:flex-none"
+                  >
+                    <i className="glass-i fas fa-times mr-2"></i>
+                    <span>{t('common.clear')}</span>
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </div>
 
         {/* Quick Filter Tabs */}
-        <div className="glass-segmented">
+        <div className="glass-segmented overflow-x-auto">
           <Link to="/" className={`glass-segmented-item ${view === 'all' ? 'active' : ''}`}>
-            <i className="glass-i fas fa-home mr-2"></i>All
+            <i className="glass-i fas fa-home mr-1 sm:mr-2"></i>
+            <span className="text-sm sm:text-base">All</span>
           </Link>
           <Link
             to="/?view=favorites"
             className={`glass-segmented-item ${view === 'favorites' ? 'active' : ''}`}
           >
-            <i className="glass-i fas fa-heart mr-2"></i>Favorites
+            <i className="glass-i fas fa-heart mr-1 sm:mr-2"></i>
+            <span className="text-sm sm:text-base">Favorites</span>
           </Link>
           <Link
             to="/?view=archived"
             className={`glass-segmented-item ${view === 'archived' ? 'active' : ''}`}
           >
-            <i className="glass-i fas fa-archive mr-2"></i>
-            {t('notes.archived')}
+            <i className="glass-i fas fa-archive mr-1 sm:mr-2"></i>
+            <span className="text-sm sm:text-base">{t('notes.archived')}</span>
           </Link>
           <Link
             to="/?view=shared"
             className={`glass-segmented-item ${view === 'shared' ? 'active' : ''}`}
           >
-            <i className="glass-i fas fa-share-alt mr-2"></i>Shared
+            <i className="glass-i fas fa-share-alt mr-1 sm:mr-2"></i>
+            <span className="text-sm sm:text-base">Shared</span>
           </Link>
         </div>
 
@@ -387,9 +403,9 @@ export function NotesPage() {
 
             return filteredNotes.length > 0 ? (
               /* Notes Grid */
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredNotes.map((note) => (
-                  <div key={note.id} className="glass-card p-4 rounded-xl relative group">
+                  <div key={note.id} className="glass-card p-3 sm:p-4 rounded-xl relative group">
                     {/* Pin and Favorite Icons */}
                     <div className="absolute top-3 right-3 flex space-x-2">
                       {note.pinned && (
