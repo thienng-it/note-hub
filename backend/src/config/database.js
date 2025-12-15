@@ -141,7 +141,7 @@ class Database {
       // Legacy migration for backward compatibility
       await this.migrateMySQLSchema();
     }
-    
+
     // Run new centralized migration system
     await runMigrations(this.db, this.isSQLite);
   }
