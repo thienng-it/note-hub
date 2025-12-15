@@ -16,55 +16,50 @@
 #   - Keeps BuildKit cache mounts (faster local builds)
 #   - Maintains all other optimizations
 #
+# Note: Due to Docker Compose merge behavior, we cannot simply override cache
+# directives. Instead, we define a complete build section without cache.
 # =============================================================================
+
+# Define a reusable build config without cache for backend
+x-backend-build-local: &backend-build-local
+  context: .
+  dockerfile: Dockerfile.backend.node
+
+# Define a reusable build config without cache for frontend
+x-frontend-build-local: &frontend-build-local
+  context: .
+  dockerfile: Dockerfile.frontend.traefik
+  args:
+    - VITE_API_URL=
+
+# Define a reusable build config without cache for frontend-prod
+x-frontend-prod-build-local: &frontend-prod-build-local
+  context: .
+  dockerfile: Dockerfile.frontend.traefik
+  args:
+    - VITE_API_URL=${VITE_API_URL:-}
 
 services:
   # Frontend - Remove registry cache
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend.traefik
-      args:
-        - VITE_API_URL=
-      # Remove cache_from/cache_to for local development
-      # BuildKit cache mounts in Dockerfile still work
+    build: *frontend-build-local
 
   # Backend - Remove registry cache
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend.node
-      # Remove cache_from/cache_to for local development
-      # BuildKit cache mounts in Dockerfile still work
+    build: *backend-build-local
 
   # Frontend Production - Remove registry cache
   frontend-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend.traefik
-      args:
-        - VITE_API_URL=${VITE_API_URL:-}
-      # Remove cache_from/cache_to for local development
+    build: *frontend-prod-build-local
 
   # Backend Production - Remove registry cache
   backend-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend.node
-      # Remove cache_from/cache_to for local development
+    build: *backend-build-local
 
   # Backend MySQL - Remove registry cache
   backend-mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend.node
-      # Remove cache_from/cache_to for local development
+    build: *backend-build-local
 
   # Frontend MySQL - Remove registry cache
   frontend-mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend.traefik
-      args:
-        - VITE_API_URL=
-      # Remove cache_from/cache_to for local development
+    build: *frontend-build-local
