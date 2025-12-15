@@ -243,8 +243,8 @@ docker compose -f docker-compose.dev.yml up -d
 # Seed the database with sample data
 docker compose -f docker-compose.dev.yml exec backend node scripts/seed_db.js
 
-# Access at http://localhost (redirects to https://localhost)
-# Note: Browser will show security warning for self-signed cert in dev
+# Access at http://localhost
+# Note: Uses HTTP for simple local development (no certificate warnings)
 ```
 
 **Alternative: Use standard docker-compose.yml**
@@ -270,7 +270,7 @@ docker compose --profile mysql up -d
 # Seed the MySQL database
 docker compose exec backend-mysql node scripts/seed_db.js
 
-# Access at http://localhost (redirects to https://localhost)
+# Access at http://localhost or https://localhost (production config uses HTTPS)
 ```
 
 #### Production Mode (Cloud Database)
