@@ -5,6 +5,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 ## 📖 Main Documentation
 
 - [README](README.md) - Complete project overview, features, installation, and quick start guide
+- **[DOCKER_COMPOSE_FIX_SUMMARY](DOCKER_COMPOSE_FIX_SUMMARY.md)** ⭐ NEW - Summary of Docker Compose local development fixes
 - [BACKEND_IMPROVEMENTS_SUMMARY](BACKEND_IMPROVEMENTS_SUMMARY.md) - Backend improvements and enhancements
 - [UI_IMPROVEMENTS_SUMMARY](UI_IMPROVEMENTS_SUMMARY.md) - UI/UX improvements and enhancements
 - [UI_HIDE_SHOW_FEATURE](UI_HIDE_SHOW_FEATURE.md) - Hide/Show feature implementation
@@ -41,6 +42,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ### Deployment & Infrastructure
 - [HETZNER_DEPLOYMENT](guides/HETZNER_DEPLOYMENT.md) - Hetzner deployment guide
+- **[DOCKER_COMPOSE_LOCAL_DEV](guides/DOCKER_COMPOSE_LOCAL_DEV.md)** ⭐ NEW - Complete Docker Compose local development guide with troubleshooting
 - [DUAL_DEPLOYMENT_EXAMPLE](guides/DUAL_DEPLOYMENT_EXAMPLE.md) - Dual deployment example
 - [PORT_ALLOCATION](guides/PORT_ALLOCATION.md) - Port allocation guide
 - [ENVIRONMENT_CONFIGURATION](guides/ENVIRONMENT_CONFIGURATION.md) - Environment configuration

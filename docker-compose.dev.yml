@@ -1,0 +1,206 @@
+# =============================================================================
+# Docker Compose for Local Development
+# =============================================================================
+#
+# Simplified configuration for local development without registry cache.
+# This is an alternative to using docker-compose.yml + docker-compose.local.yml
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml up -d
+#
+# IMPORTANT: Access at http://localhost (NOT https://)
+#   ✅ Correct:  http://localhost
+#   ❌ Wrong:    https://localhost
+#
+# Benefits:
+#   - No registry cache errors (403 Forbidden from ghcr.io)
+#   - BuildKit cache mounts still work (fast rebuilds)
+#   - HTTP only (no HTTPS/SSL certificates needed for localhost)
+#   - Simpler configuration for local development
+#   - No need to authenticate with GitHub Container Registry
+#
+# Troubleshooting: If you cannot access the frontend, see:
+#   docs/TROUBLESHOOTING_LOCALHOST.md
+#
+# =============================================================================
+
+services:
+  # ==========================================================================
+  # Traefik - Reverse Proxy (HTTP only for local development)
+  # ==========================================================================
+  # For localhost development, we use HTTP only (port 80) to avoid
+  # SSL certificate issues. Production uses docker-compose.yml with HTTPS.
+  traefik:
+    image: traefik:v3.2
+    container_name: notehub-traefik
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=notehub-network"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--ping=true"
+    ports:
+      - "80:80"
+    volumes:
+      # Docker socket for service discovery
+      # If getting "Error response from daemon:" errors, see:
+      # docs/TRAEFIK_DOCKER_SOCKET_ERROR.md
+      # 
+      # Common fixes:
+      # - Ensure user in docker group: sudo usermod -aG docker $USER
+      # - For SELinux systems, add :z label: /var/run/docker.sock:/var/run/docker.sock:z
+      # - For Podman: /run/podman/podman.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - notehub-network
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 64M
+
+  # ==========================================================================
+  # Backend - Node.js/Express API (Development - SQLite)
+  # ==========================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+      # No cache_from/cache_to for local development
+      # BuildKit cache mounts in Dockerfile still work for fast rebuilds
+    container_name: notehub-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Development mode (allows seeding)
+      - NODE_ENV=development
+
+      # JWT Configuration
+      - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
+      - PORT=5000
+
+      # Admin Credentials (REQUIRED: set in .env file)
+      - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+
+      # Database - SQLite (default for development)
+      - NOTES_DB_PATH=${NOTES_DB_PATH:-/app/data/notes.db}
+
+      # OAuth Configuration (Optional: for Google Single Sign-On)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
+    volumes:
+      - notehub-data:/app/data
+      - notehub-uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+
+      # API routing - proxy /api/* to backend
+      - "traefik.http.routers.backend-api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-api.entrypoints=web"
+      - "traefik.http.routers.backend-api.priority=10"
+
+      # Uploads routing - proxy /uploads/* to backend
+      - "traefik.http.routers.backend-uploads.rule=PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-uploads.entrypoints=web"
+      - "traefik.http.routers.backend-uploads.priority=10"
+
+      # Health check routing
+      - "traefik.http.routers.backend-health.rule=Path(`/health`)"
+      - "traefik.http.routers.backend-health.entrypoints=web"
+      - "traefik.http.routers.backend-health.priority=10"
+
+      # Socket.io routing - proxy /socket.io/* to backend
+      - "traefik.http.routers.backend-socketio.rule=PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.backend-socketio.entrypoints=web"
+      - "traefik.http.routers.backend-socketio.priority=10"
+
+      # Service configuration (shared by all routers)
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
+
+  # ==========================================================================
+  # Frontend - React SPA
+  # ==========================================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.traefik
+      args:
+        - VITE_API_URL=
+      # No cache_from/cache_to for local development
+      # BuildKit cache mounts in Dockerfile still work for fast rebuilds
+    container_name: notehub-frontend
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      backend:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
+    networks:
+      - notehub-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+
+      # Frontend routing - serve static files
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.routers.frontend.priority=1"
+
+      # Service configuration
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+networks:
+  notehub-network:
+    name: notehub-network
+    driver: bridge
+
+volumes:
+  notehub-data:
+    driver: local
+  notehub-uploads:
+    driver: local
