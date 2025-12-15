@@ -338,7 +338,11 @@ export function NotesPage() {
                   <span>{t('common.search')}</span>
                 </button>
                 {(query || tagFilter) && (
-                  <button type="button" onClick={clearSearch} className="btn-secondary-glass flex-1 sm:flex-none">
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="btn-secondary-glass flex-1 sm:flex-none"
+                  >
                     <i className="glass-i fas fa-times mr-2"></i>
                     <span>{t('common.clear')}</span>
                   </button>

@@ -2050,7 +2050,6 @@ body.dark {
 
 /* Dock minimized state - show only active item on left side */
 .liquid-glass-nav.dock-minimized {
-  transform: translateY(0);
   opacity: 1;
   bottom: auto;
   top: 50%;
