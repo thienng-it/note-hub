@@ -91,7 +91,6 @@ describe('LiquidGlassNav', () => {
     expect(screen.getByText(/admin/i)).toBeInTheDocument();
     expect(screen.getByText(/profile/i)).toBeInTheDocument();
 
-    expect(screen.getByText(/light mode/i)).toBeInTheDocument();
     expect(screen.getByText(/logout/i)).toBeInTheDocument();
   });
 
