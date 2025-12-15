@@ -7,10 +7,12 @@
 #
 # Usage:
 #   docker compose -f docker-compose.dev.yml up -d
+#   Access application at: http://localhost
 #
 # Benefits:
 #   - No registry cache errors (403 Forbidden from ghcr.io)
 #   - BuildKit cache mounts still work (fast rebuilds)
+#   - HTTP only (no HTTPS/SSL certificates needed for localhost)
 #   - Simpler configuration for local development
 #   - No need to authenticate with GitHub Container Registry
 #
@@ -18,8 +20,10 @@
 
 services:
   # ==========================================================================
-  # Traefik - Reverse Proxy with SSL/HTTPS
+  # Traefik - Reverse Proxy (HTTP only for local development)
   # ==========================================================================
+  # For localhost development, we use HTTP only (port 80) to avoid
+  # SSL certificate issues. Production uses docker-compose.yml with HTTPS.
   traefik:
     image: traefik:v3.2
     container_name: notehub-traefik
@@ -29,28 +33,14 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=notehub-network"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--ping=true"
-    environment:
-      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
-      - ./letsencrypt:/letsencrypt
     networks:
       - notehub-network
     healthcheck:
@@ -119,53 +109,25 @@ services:
       # Enable Traefik for this service
       - "traefik.enable=true"
 
-      # API routing - proxy /api/* to backend (HTTP)
-      - "traefik.http.routers.backend-api-http.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-api-http.entrypoints=web"
-      - "traefik.http.routers.backend-api-http.priority=10"
-
-      # API routing - proxy /api/* to backend (HTTPS)
+      # API routing - proxy /api/* to backend
       - "traefik.http.routers.backend-api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend-api.entrypoints=websecure"
+      - "traefik.http.routers.backend-api.entrypoints=web"
       - "traefik.http.routers.backend-api.priority=10"
-      - "traefik.http.routers.backend-api.tls=true"
-      - "traefik.http.routers.backend-api.tls.certresolver=letsencrypt"
 
-      # Uploads routing - proxy /uploads/* to backend (HTTP)
-      - "traefik.http.routers.backend-uploads-http.rule=PathPrefix(`/uploads`)"
-      - "traefik.http.routers.backend-uploads-http.entrypoints=web"
-      - "traefik.http.routers.backend-uploads-http.priority=10"
-
-      # Uploads routing - proxy /uploads/* to backend (HTTPS)
+      # Uploads routing - proxy /uploads/* to backend
       - "traefik.http.routers.backend-uploads.rule=PathPrefix(`/uploads`)"
-      - "traefik.http.routers.backend-uploads.entrypoints=websecure"
+      - "traefik.http.routers.backend-uploads.entrypoints=web"
       - "traefik.http.routers.backend-uploads.priority=10"
-      - "traefik.http.routers.backend-uploads.tls=true"
-      - "traefik.http.routers.backend-uploads.tls.certresolver=letsencrypt"
 
-      # Health check routing (HTTP)
-      - "traefik.http.routers.backend-health-http.rule=Path(`/health`)"
-      - "traefik.http.routers.backend-health-http.entrypoints=web"
-      - "traefik.http.routers.backend-health-http.priority=10"
-
-      # Health check routing (HTTPS)
+      # Health check routing
       - "traefik.http.routers.backend-health.rule=Path(`/health`)"
-      - "traefik.http.routers.backend-health.entrypoints=websecure"
+      - "traefik.http.routers.backend-health.entrypoints=web"
       - "traefik.http.routers.backend-health.priority=10"
-      - "traefik.http.routers.backend-health.tls=true"
-      - "traefik.http.routers.backend-health.tls.certresolver=letsencrypt"
 
-      # Socket.io routing - proxy /socket.io/* to backend (HTTP)
-      - "traefik.http.routers.backend-socketio-http.rule=PathPrefix(`/socket.io`)"
-      - "traefik.http.routers.backend-socketio-http.entrypoints=web"
-      - "traefik.http.routers.backend-socketio-http.priority=10"
-
-      # Socket.io routing - proxy /socket.io/* to backend (HTTPS with WebSocket support)
+      # Socket.io routing - proxy /socket.io/* to backend
       - "traefik.http.routers.backend-socketio.rule=PathPrefix(`/socket.io`)"
-      - "traefik.http.routers.backend-socketio.entrypoints=websecure"
+      - "traefik.http.routers.backend-socketio.entrypoints=web"
       - "traefik.http.routers.backend-socketio.priority=10"
-      - "traefik.http.routers.backend-socketio.tls=true"
-      - "traefik.http.routers.backend-socketio.tls.certresolver=letsencrypt"
 
       # Service configuration (shared by all routers)
       - "traefik.http.services.backend.loadbalancer.server.port=5000"
@@ -208,19 +170,10 @@ services:
       # Enable Traefik for this service
       - "traefik.enable=true"
 
-      # Frontend routing - serve static files (HTTP)
-      - "traefik.http.routers.frontend-http.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend-http.entrypoints=web"
-      - "traefik.http.routers.frontend-http.priority=1"
-      - "traefik.http.routers.frontend-http.middlewares=security-headers@file,compression@file"
-
-      # Frontend routing - serve static files (HTTPS)
+      # Frontend routing - serve static files
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.routers.frontend.priority=1"
-      - "traefik.http.routers.frontend.tls=true"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.frontend.middlewares=security-headers@file,compression@file"
 
       # Service configuration
       - "traefik.http.services.frontend.loadbalancer.server.port=80"

@@ -16,7 +16,7 @@ docker compose -f docker-compose.dev.yml up -d
 docker compose -f docker-compose.dev.yml exec backend node scripts/seed_db.js
 
 # 4. Open application
-open http://localhost  # or https://localhost
+open http://localhost
 ```
 
 ## 📁 Which Compose File to Use?
@@ -105,9 +105,9 @@ docker compose -f docker-compose.dev.yml up -d
 ### Port Already in Use
 
 ```bash
-# Change ports in docker-compose.dev.yml
-# Edit "80:80" to "8080:80"
-# Edit "443:443" to "8443:443"
+# Change port in docker-compose.dev.yml
+# Edit "80:80" to "8080:80" in the traefik ports section
+# Then access at http://localhost:8080
 ```
 
 ### Container Won't Start
@@ -134,11 +134,11 @@ After seeding:
 
 ## 🌐 Access URLs
 
-- **Frontend**: http://localhost (redirects to https://localhost)
+- **Frontend**: http://localhost
 - **Backend API**: http://localhost/api
 - **Health Check**: http://localhost/health
 
-**Note:** Browser will show security warning for self-signed cert in development. This is expected and safe for local development.
+**Note:** docker-compose.dev.yml uses HTTP only (no HTTPS) for simpler localhost development. Production uses HTTPS with automatic SSL certificates.
 
 ## 💡 Tips
 

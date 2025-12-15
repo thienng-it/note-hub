@@ -30,8 +30,7 @@ docker compose -f docker-compose.dev.yml up -d
 docker compose -f docker-compose.dev.yml exec backend node scripts/seed_db.js
 
 # 5. Access the application
-# Open http://localhost (redirects to https://localhost)
-# Note: Browser will show security warning for self-signed cert in dev
+# Open http://localhost
 ```
 
 ## Configuration Files Explained
@@ -60,6 +59,7 @@ Simplified development configuration with:
 - ✅ BuildKit cache mounts for fast local rebuilds
 - ✅ All essential services (traefik, backend, frontend)
 - ✅ Development mode (SQLite database)
+- ✅ HTTP only (no HTTPS/SSL certificates for localhost)
 - ✅ Clean, easy-to-understand structure
 
 **When to use:**
@@ -71,6 +71,7 @@ Simplified development configuration with:
 **Benefits:**
 - No authentication required
 - Faster startup (no cache fetch attempts)
+- HTTP only (no SSL certificate warnings)
 - Simpler configuration
 
 ### docker-compose.local.yml
