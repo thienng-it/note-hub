@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '../../context/AuthContext';
 import { ThemeProvider } from '../../context/ThemeContext';
 import { LiquidGlassNav } from '../LiquidGlassNav';
@@ -44,14 +44,26 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
 describe('LiquidGlassNav', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Use fake timers to control the auto-minimize behavior
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('renders navigation with all items for admin user', () => {
-    render(
+    const { container } = render(
       <TestWrapper>
         <LiquidGlassNav />
       </TestWrapper>,
     );
+
+    // Hover over the nav to keep it expanded
+    const nav = container.querySelector('.liquid-glass-nav');
+    if (nav) {
+      fireEvent.mouseEnter(nav);
+    }
 
     // Check for main navigation items (now includes archived and shared)
     expect(screen.getByLabelText(/all notes/i)).toBeInTheDocument();
@@ -76,6 +88,12 @@ describe('LiquidGlassNav', () => {
       </TestWrapper>,
     );
 
+    // Hover over the nav to keep it expanded for snapshot
+    const nav = container.querySelector('.liquid-glass-nav');
+    if (nav) {
+      fireEvent.mouseEnter(nav);
+    }
+
     expect(container.firstChild).toMatchSnapshot();
   });
 
@@ -85,6 +103,12 @@ describe('LiquidGlassNav', () => {
         <LiquidGlassNav />
       </TestWrapper>,
     );
+
+    // Hover over the nav to keep it expanded for snapshot
+    const nav = container.querySelector('.liquid-glass-nav');
+    if (nav) {
+      fireEvent.mouseEnter(nav);
+    }
 
     const navElement = container.querySelector('.liquid-glass-nav');
     expect(navElement).toMatchSnapshot();
