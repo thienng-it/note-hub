@@ -41,6 +41,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ### Deployment & Infrastructure
 - [HETZNER_DEPLOYMENT](guides/HETZNER_DEPLOYMENT.md) - Hetzner deployment guide
+- **[DOCKER_COMPOSE_LOCAL_DEV](guides/DOCKER_COMPOSE_LOCAL_DEV.md)** ⭐ NEW - Complete Docker Compose local development guide with troubleshooting
 - [DUAL_DEPLOYMENT_EXAMPLE](guides/DUAL_DEPLOYMENT_EXAMPLE.md) - Dual deployment example
 - [PORT_ALLOCATION](guides/PORT_ALLOCATION.md) - Port allocation guide
 - [ENVIRONMENT_CONFIGURATION](guides/ENVIRONMENT_CONFIGURATION.md) - Environment configuration

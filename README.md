@@ -230,19 +230,32 @@ NoteHub supports multiple deployment modes:
 
 #### Development Mode (SQLite, local testing)
 
+**Recommended: Use docker-compose.dev.yml** (no registry cache issues)
+
 ```bash
 # Copy and configure environment (REQUIRED)
 cp .env.example .env
 nano .env  # Set NOTES_ADMIN_PASSWORD and other values
 
-# Build and run (uses SQLite by default)
-docker compose up -d
+# Build and run with simplified development configuration
+docker compose -f docker-compose.dev.yml up -d
 
 # Seed the database with sample data
-docker compose exec backend node scripts/seed_db.js
+docker compose -f docker-compose.dev.yml exec backend node scripts/seed_db.js
 
 # Access at http://localhost (redirects to https://localhost)
 # Note: Browser will show security warning for self-signed cert in dev
+```
+
+**Alternative: Use standard docker-compose.yml**
+
+```bash
+# If docker-compose.dev.yml doesn't work, use standard compose file
+# Note: May show registry cache warnings (403 Forbidden from ghcr.io) - these can be ignored
+docker compose up -d
+
+# Seed the database
+docker compose exec backend node scripts/seed_db.js
 ```
 
 #### Development with MySQL
@@ -540,6 +553,85 @@ npm run build:docs
 ```
 
 This generates HTML files with consistent styling, syntax highlighting, and easy navigation between documents.
+
+## 🔧 Troubleshooting
+
+### Docker Compose Issues
+
+#### Cache Registry Errors (403 Forbidden from ghcr.io)
+
+If you see errors like `failed to authorize: failed to fetch anonymous token: 403 Forbidden` when building:
+
+```bash
+# Solution 1: Use docker-compose.dev.yml (recommended for local development)
+docker compose -f docker-compose.dev.yml up -d
+
+# Solution 2: Use docker-compose.local.yml override
+docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+
+# Solution 3: Ignore the warnings and let the build continue
+# The errors are warnings about cache, the build will still succeed
+docker compose up -d
+```
+
+**Why this happens:** The main `docker-compose.yml` includes `cache_from` directives that reference GitHub Container Registry (ghcr.io) for faster builds in CI/CD. These require authentication, but local development doesn't need them. The `docker-compose.dev.yml` file removes these directives.
+
+#### Network Timeout During Build
+
+If Alpine package manager (apk) fails with "Permission denied" or timeout errors:
+
+```bash
+# This is usually a temporary network issue. Try:
+# 1. Wait a few minutes and retry
+docker compose -f docker-compose.dev.yml up -d --build
+
+# 2. Use different DNS (if on Linux)
+echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+
+# 3. Check your internet connection and firewall settings
+```
+
+#### Container Won't Start - "NOTES_ADMIN_PASSWORD not set"
+
+```bash
+# Make sure you've copied and configured .env file
+cp .env.example .env
+nano .env  # Set NOTES_ADMIN_PASSWORD to a secure password
+
+# Then restart
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml up -d
+```
+
+### Local Development Setup
+
+For the best local development experience, we recommend running the backend and frontend directly with npm instead of Docker:
+
+```bash
+# Terminal 1: Backend
+cd backend
+npm install
+cp .env.example .env  # Configure your .env
+npm run dev
+
+# Terminal 2: Frontend
+cd frontend
+npm install
+cp .env.example .env  # Set VITE_API_URL=http://localhost:5000
+npm run dev
+```
+
+This provides:
+- ✅ Faster rebuilds (no Docker layer caching needed)
+- ✅ Hot module replacement for instant changes
+- ✅ Better debugging experience
+- ✅ Direct access to logs
+
+Docker Compose is recommended for:
+- Production-like testing
+- Testing Traefik routing
+- Testing with MySQL instead of SQLite
+- Multi-service integration testing
 
 ## 🤝 Contributing
 
