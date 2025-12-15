@@ -5,9 +5,12 @@ import { AuthProvider } from '../../context/AuthContext';
 import { ThemeProvider } from '../../context/ThemeContext';
 import { LiquidGlassNav } from '../LiquidGlassNav';
 
-// Mock useAuth
+// ─────────────────────────────
+// Mocks
+// ─────────────────────────────
 const mockUser = { id: 1, username: 'testuser', is_admin: true };
 const mockLogout = vi.fn();
+
 vi.mock('../../context/AuthContext', async () => {
   const actual = await vi.importActual('../../context/AuthContext');
   return {
@@ -20,8 +23,8 @@ vi.mock('../../context/AuthContext', async () => {
   };
 });
 
-// Mock useTheme
 const mockToggleTheme = vi.fn();
+
 vi.mock('../../context/ThemeContext', async () => {
   const actual = await vi.importActual('../../context/ThemeContext');
   return {
@@ -44,73 +47,90 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
 describe('LiquidGlassNav', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Use fake timers to control the auto-minimize behavior
-    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
-  it('renders navigation with all items for admin user', () => {
-    const { container } = render(
+  /**
+   * Helper: expand dock the correct way (new behavior)
+   */
+  const expandDock = () => {
+    const minimizedButton = screen.getByRole('button', { name: /all notes/i });
+    fireEvent.pointerEnter(minimizedButton, { pointerType: 'mouse' });
+  };
+
+  it('renders minimized dock by default', () => {
+    render(
       <TestWrapper>
         <LiquidGlassNav />
       </TestWrapper>,
     );
 
-    // Hover over the nav to keep it expanded
-    const nav = container.querySelector('.liquid-glass-nav');
-    if (nav) {
-      fireEvent.mouseEnter(nav);
-    }
-
-    // Check for main navigation items (now includes archived and shared)
-    expect(screen.getByLabelText(/all notes/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/favorites/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/archived/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/shared with me/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/tasks/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/new note/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/chat/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/admin/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/profile/i)).toBeInTheDocument();
-
-    // Check for theme toggle and logout buttons
-    expect(screen.getByLabelText(/switch to.*mode/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/sign out/i)).toBeInTheDocument();
+    // Only active item should be visible
+    expect(screen.getByRole('button', { name: /all notes/i })).toBeInTheDocument();
+    expect(screen.queryByText(/favorites/i)).not.toBeInTheDocument();
   });
 
-  it('matches snapshot - default state', () => {
-    const { container } = render(
+  it('expands and renders all navigation items for admin user', () => {
+    render(
       <TestWrapper>
         <LiquidGlassNav />
       </TestWrapper>,
     );
 
-    // Hover over the nav to keep it expanded for snapshot
-    const nav = container.querySelector('.liquid-glass-nav');
-    if (nav) {
-      fireEvent.mouseEnter(nav);
-    }
+    expandDock();
+
+    expect(screen.getByText(/favorites/i)).toBeInTheDocument();
+    expect(screen.getByText(/archived/i)).toBeInTheDocument();
+    expect(screen.getByText(/shared with me/i)).toBeInTheDocument();
+    expect(screen.getByText(/tasks/i)).toBeInTheDocument();
+    expect(screen.getByText(/new note/i)).toBeInTheDocument();
+    expect(screen.getByText(/chat/i)).toBeInTheDocument();
+    expect(screen.getByText(/admin/i)).toBeInTheDocument();
+    expect(screen.getByText(/profile/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/light mode/i)).toBeInTheDocument();
+    expect(screen.getByText(/logout/i)).toBeInTheDocument();
+  });
+
+  it('matches snapshot – minimized state', () => {
+    const { container } = render(
+      <TestWrapper>
+        <LiquidGlassNav />
+      </TestWrapper>,
+    );
 
     expect(container.firstChild).toMatchSnapshot();
   });
 
-  it('matches snapshot - with all navigation items', () => {
+  it('matches snapshot – expanded state', () => {
     const { container } = render(
       <TestWrapper>
         <LiquidGlassNav />
       </TestWrapper>,
     );
 
-    // Hover over the nav to keep it expanded for snapshot
-    const nav = container.querySelector('.liquid-glass-nav');
-    if (nav) {
-      fireEvent.mouseEnter(nav);
-    }
+    expandDock();
 
-    const navElement = container.querySelector('.liquid-glass-nav');
-    expect(navElement).toMatchSnapshot();
+    expect(container.firstChild).toMatchSnapshot();
+  });
+
+  it('collapses dock when clicking backdrop (touch behavior)', () => {
+    render(
+      <TestWrapper>
+        <LiquidGlassNav />
+      </TestWrapper>,
+    );
+
+    expandDock();
+
+    const backdrop = document.querySelector('.liquid-glass-dock-backdrop');
+    expect(backdrop).toBeInTheDocument();
+
+    fireEvent.click(backdrop!);
+
+    expect(screen.queryByText(/favorites/i)).not.toBeInTheDocument();
   });
 });
