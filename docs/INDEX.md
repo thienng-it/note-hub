@@ -5,6 +5,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 ## 📖 Main Documentation
 
 - [README](README.md) - Complete project overview, features, installation, and quick start guide
+- **[DOCKER_COMPOSE_FIX_SUMMARY](DOCKER_COMPOSE_FIX_SUMMARY.md)** ⭐ NEW - Summary of Docker Compose local development fixes
 - [BACKEND_IMPROVEMENTS_SUMMARY](BACKEND_IMPROVEMENTS_SUMMARY.md) - Backend improvements and enhancements
 - [UI_IMPROVEMENTS_SUMMARY](UI_IMPROVEMENTS_SUMMARY.md) - UI/UX improvements and enhancements
 - [UI_HIDE_SHOW_FEATURE](UI_HIDE_SHOW_FEATURE.md) - Hide/Show feature implementation
