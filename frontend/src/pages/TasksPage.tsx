@@ -269,9 +269,52 @@ export function TasksPage() {
     overdue: tasks.filter((t) => t.is_overdue && !t.completed).length,
   };
 
+  // Mobile folder drawer state
+  const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false);
+
   return (
-    <div className="flex gap-6 p-6">
-      {/* Folder Sidebar */}
+    <div className="flex gap-3 sm:gap-6 p-3 sm:p-6 page-padding">
+      {/* Mobile Folder Drawer Backdrop */}
+      <div
+        className={`mobile-drawer-backdrop lg:hidden ${isFolderDrawerOpen ? 'open' : ''}`}
+        onClick={() => setIsFolderDrawerOpen(false)}
+        onKeyDown={(e) => e.key === 'Escape' && setIsFolderDrawerOpen(false)}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close folder drawer"
+      />
+
+      {/* Mobile Folder Drawer */}
+      <div className={`mobile-drawer lg:hidden ${isFolderDrawerOpen ? 'open' : ''}`}>
+        <div className="flex items-center justify-between mb-4 pt-2">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
+            <i className="fas fa-folder mr-2 text-blue-600"></i>
+            {t('folders.title') || 'Folders'}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setIsFolderDrawerOpen(false)}
+            className="mobile-menu-btn !flex"
+            aria-label="Close folders"
+          >
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        <FolderTree
+          folders={folders}
+          selectedFolderId={selectedFolder?.id}
+          onSelectFolder={(folder) => {
+            handleSelectFolder(folder);
+            setIsFolderDrawerOpen(false);
+          }}
+          onCreateFolder={handleCreateFolder}
+          onEditFolder={handleEditFolder}
+          onDeleteFolder={handleDeleteFolder}
+          onMoveFolder={() => {}}
+        />
+      </div>
+
+      {/* Desktop Folder Sidebar */}
       <div className="w-64 flex-shrink-0 hidden lg:block">
         <div className="glass-card p-4 rounded-xl sticky top-6">
           <FolderTree
@@ -289,20 +332,31 @@ export function TasksPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 container-responsive py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <div className="flex-1 min-w-0 space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="stack-mobile">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
-              <i className="glass-i fas fa-tasks mr-2 sm:mr-3 text-blue-600"></i>
-              Tasks
-            </h1>
-            {/* Breadcrumb Navigation */}
-            {selectedFolder && (
-              <div className="mt-2">
-                <FolderBreadcrumb folderId={selectedFolder.id} onNavigate={handleSelectFolder} />
-              </div>
-            )}
+          <div className="flex items-center gap-3">
+            {/* Mobile Folder Button */}
+            <button
+              type="button"
+              onClick={() => setIsFolderDrawerOpen(true)}
+              className="mobile-menu-btn lg:hidden"
+              aria-label="Open folders"
+            >
+              <i className="fas fa-folder"></i>
+            </button>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl xs:text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)] truncate">
+                <i className="glass-i fas fa-tasks mr-2 sm:mr-3 text-blue-600"></i>
+                Tasks
+              </h1>
+              {/* Breadcrumb Navigation */}
+              {selectedFolder && (
+                <div className="mt-2">
+                  <FolderBreadcrumb folderId={selectedFolder.id} onNavigate={handleSelectFolder} />
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             {tasks.length > 0 && (
@@ -310,24 +364,30 @@ export function TasksPage() {
                 <button
                   type="button"
                   onClick={hideAllTasks}
-                  className="btn-secondary-glass text-sm"
+                  className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
                   title="Hide all task contents"
                 >
                   <i className="glass-i fas fa-eye-slash mr-1 sm:mr-2"></i>
-                  <span className="hide-mobile sm:inline">Hide All</span>
+                  <span className="hidden xs:inline sm:hidden">Hide</span>
+                  <span className="hidden sm:inline">Hide All</span>
                 </button>
                 <button
                   type="button"
                   onClick={showAllTasks}
-                  className="btn-secondary-glass text-sm"
+                  className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
                   title="Show all task contents"
                 >
                   <i className="glass-i fas fa-eye mr-1 sm:mr-2"></i>
-                  <span className="hide-mobile sm:inline">Show All</span>
+                  <span className="hidden xs:inline sm:hidden">Show</span>
+                  <span className="hidden sm:inline">Show All</span>
                 </button>
               </div>
             )}
-            <button type="button" onClick={() => setShowForm(!showForm)} className="btn-apple">
+            <button
+              type="button"
+              onClick={() => setShowForm(!showForm)}
+              className="btn-apple text-sm sm:text-base"
+            >
               <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
               {showForm ? 'Cancel' : 'New Task'}
             </button>

@@ -130,13 +130,13 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8 safe-area-inset-top safe-area-inset-bottom">
       <div className="w-full max-w-md">
         {/* Logo and Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-22 h-22 rounded-full mb-6 logo-gradient shadow-apple">
+        <div className="text-center mb-6 sm:mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-22 sm:h-22 rounded-full mb-4 sm:mb-6 logo-gradient shadow-apple">
             <svg
-              className="w-10 h-10 text-white"
+              className="w-8 h-8 sm:w-10 sm:h-10 text-white"
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -144,23 +144,25 @@ export function LoginPage() {
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z" />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold mb-2 text-gradient tracking-tight">{t('app.name')}</h1>
-          <p className="text-muted-glass text-lg">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-gradient tracking-tight">
+            {t('app.name')}
+          </h1>
+          <p className="text-muted-glass text-base sm:text-lg">
             {requires2FA ? t('auth.login.title2FA') : t('auth.login.title')}
           </p>
-          <div className="mt-4 flex justify-center">
+          <div className="mt-3 sm:mt-4 flex justify-center">
             <LanguageSelector />
           </div>
         </div>
 
         {/* Login Card */}
-        <div className="glass-panel">
+        <div className="glass-panel p-4 sm:p-6">
           <form onSubmit={handleSubmit} aria-label="Login form">
             {/* Error Alert */}
             {error && (
-              <div className="alert-glass mb-6" role="alert" aria-live="polite">
+              <div className="alert-glass mb-4 sm:mb-6 text-sm" role="alert" aria-live="polite">
                 <svg
-                  className="w-5 h-5 flex-shrink-0"
+                  className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   aria-hidden="true"
