@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -20,9 +20,9 @@ export function LiquidGlassNav() {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isDockExpanded, setIsDockExpanded] = useState(true);
-  const [isHoveringDock, setIsHoveringDock] = useState(false);
+  const [isDockExpanded, setIsDockExpanded] = useState(false);
 
   const view = new URLSearchParams(location.search).get('view');
 
@@ -78,10 +78,7 @@ export function LiquidGlassNav() {
     },
   ];
 
-  const filteredNavItems = navItems.filter((item) => {
-    if (item.adminOnly && !user?.is_admin) return false;
-    return true;
-  });
+  const filteredNavItems = navItems.filter((item) => !(item.adminOnly && !user?.is_admin));
 
   const isActive = (item: NavItem) => {
     if (item.view) {
@@ -90,200 +87,131 @@ export function LiquidGlassNav() {
     return location.pathname === item.path && !view;
   };
 
-  // Calculate icon scale based on distance from hovered icon
+  const activeItem = filteredNavItems.find(isActive) || filteredNavItems[0];
+
   const getIconScale = (index: number) => {
     if (hoveredIndex === null) return 1;
-    const distance = Math.abs(index - hoveredIndex);
-    if (distance === 0) return 1.3; // Hovered icon
-    if (distance === 1) return 1.25; // Adjacent icons
-    if (distance === 2) return 1.1; // Second-level adjacent
-    return 1; // Other icons
+    const d = Math.abs(index - hoveredIndex);
+    if (d === 0) return 1.3;
+    if (d === 1) return 1.2;
+    if (d === 2) return 1.1;
+    return 1;
   };
 
   const getIconTranslateY = (index: number) => {
     if (hoveredIndex === null) return 0;
-    const distance = Math.abs(index - hoveredIndex);
-    if (distance === 0) return -12; // Hovered icon lifts more
-    if (distance === 1) return -6; // Adjacent icons lift slightly
-    if (distance === 2) return -3; // Second-level adjacent lift barely
+    const d = Math.abs(index - hoveredIndex);
+    if (d === 0) return -12;
+    if (d === 1) return -6;
+    if (d === 2) return -3;
     return 0;
   };
-
-  // Auto-minimize functionality - minimize dock after inactivity, expand on hover
-  useEffect(() => {
-    let timeout: NodeJS.Timeout | null = null;
-
-    const handleMouseMove = () => {
-      if (!isHoveringDock) {
-        setIsDockExpanded(true);
-      }
-
-      // Clear existing timeout
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-
-      // Set new timeout to minimize dock after 3 seconds of inactivity
-      timeout = setTimeout(() => {
-        if (!isHoveringDock) {
-          setIsDockExpanded(false);
-        }
-      }, 3000);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchstart', handleMouseMove);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchstart', handleMouseMove);
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-    };
-  }, [isHoveringDock]);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  // Color constants for additional buttons
-  const THEME_TOGGLE_COLOR = '#ffcc00';
-  const LOGOUT_COLOR = '#ff453a';
-
-  // Find the currently active item for minimized state
-  const activeItem = filteredNavItems.find((item) => isActive(item)) || filteredNavItems[0];
-
   return (
-    <nav
-      className={`liquid-glass-nav ${isDockExpanded ? 'dock-expanded' : 'dock-minimized'}`}
-      aria-label="Mac-style navigation dock"
-      onMouseEnter={() => {
-        setIsHoveringDock(true);
-        setIsDockExpanded(true);
-      }}
-      onMouseLeave={() => {
-        setIsHoveringDock(false);
-        setHoveredIndex(null);
-      }}
-    >
-      {/* Minimized State - Show only active item */}
-      {!isDockExpanded && (
-        <div className="liquid-glass-nav-minimized-container">
-          <Link
-            to={activeItem.path}
-            className="liquid-glass-nav-item active minimized"
-            aria-current="page"
-            aria-label={activeItem.label}
-          >
-            <div
-              className="liquid-glass-nav-icon-wrapper"
-              style={
-                activeItem.color
-                  ? {
-                      background: `linear-gradient(135deg, ${activeItem.color}dd, ${activeItem.color}bb)`,
-                      borderColor: `${activeItem.color}80`,
-                    }
-                  : undefined
-              }
-            >
-              <i className={`fas ${activeItem.icon} liquid-glass-nav-icon`} aria-hidden="true"></i>
-            </div>
-          </Link>
-        </div>
+    <>
+      {/* ───────── Backdrop for touch ───────── */}
+      {isDockExpanded && (
+        <div
+          className="liquid-glass-dock-backdrop"
+          onClick={() => {
+            setIsDockExpanded(false);
+            setHoveredIndex(null);
+          }}
+        />
       )}
 
-      {/* Expanded State - Show all items */}
-      {isDockExpanded && (
-        <div className="liquid-glass-nav-container">
-          {filteredNavItems.map((item, index) => (
-            <Link
-              key={item.id}
-              to={item.path}
-              className={`liquid-glass-nav-item ${isActive(item) ? 'active' : ''}`}
-              onMouseEnter={() => setHoveredIndex(index)}
-              aria-current={isActive(item) ? 'page' : undefined}
-              aria-label={item.label}
-              style={{
-                transform: `scale(${getIconScale(index)}) translateY(${getIconTranslateY(index)}px)`,
-              }}
+      <nav
+        className={`liquid-glass-nav ${isDockExpanded ? 'dock-expanded' : 'dock-minimized'}`}
+        aria-label="Mac-style navigation dock"
+        onPointerLeave={(e) => {
+          if (e.pointerType === 'mouse') {
+            setIsDockExpanded(false);
+            setHoveredIndex(null);
+          }
+        }}
+      >
+        {/* ───────── Minimized ───────── */}
+        {!isDockExpanded && (
+          <div className="liquid-glass-nav-minimized-container">
+            <button
+              type="button"
+              className="liquid-glass-nav-item active minimized"
+              aria-label={activeItem.label}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && setIsDockExpanded(true)}
+              onClick={() => setIsDockExpanded(true)} // 📱 TAP SUPPORT
             >
               <div
                 className="liquid-glass-nav-icon-wrapper"
-                style={
-                  item.color && !isActive(item)
-                    ? {
-                        borderColor: `${item.color}40`,
-                        boxShadow: `0 4px 16px ${item.color}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
-                      }
-                    : item.color && isActive(item)
-                      ? {
-                          background: `linear-gradient(135deg, ${item.color}dd, ${item.color}bb)`,
-                          borderColor: `${item.color}80`,
-                          boxShadow: `0 8px 24px ${item.color}60, inset 0 1px 0 rgba(255, 255, 255, 0.3)`,
-                        }
-                      : undefined
-                }
+                style={{
+                  background: `linear-gradient(135deg, ${activeItem.color}dd, ${activeItem.color}bb)`,
+                  borderColor: `${activeItem.color}80`,
+                }}
               >
-                <i className={`fas ${item.icon} liquid-glass-nav-icon`} aria-hidden="true"></i>
+                <i className={`fas ${activeItem.icon} liquid-glass-nav-icon`} />
               </div>
-              <span className="liquid-glass-nav-label">{item.label}</span>
-            </Link>
-          ))}
+            </button>
+          </div>
+        )}
 
-          {/* Theme Toggle Button */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="liquid-glass-nav-item"
-            onMouseEnter={() => setHoveredIndex(filteredNavItems.length)}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            style={{
-              transform: `scale(${getIconScale(filteredNavItems.length)}) translateY(${getIconTranslateY(filteredNavItems.length)}px)`,
-            }}
-          >
-            <div
-              className="liquid-glass-nav-icon-wrapper"
-              style={{
-                borderColor: `${THEME_TOGGLE_COLOR}40`,
-                boxShadow: `0 4px 16px ${THEME_TOGGLE_COLOR}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
-              }}
-            >
-              <i
-                className={`fas fa-${theme === 'dark' ? 'sun' : 'moon'} liquid-glass-nav-icon`}
-                aria-hidden="true"
-              ></i>
-            </div>
-            <span className="liquid-glass-nav-label">
-              {theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}
-            </span>
-          </button>
+        {/* ───────── Expanded ───────── */}
+        {isDockExpanded && (
+          <div className="liquid-glass-nav-container">
+            {filteredNavItems.map((item, index) => (
+              <Link
+                key={item.id}
+                to={item.path}
+                className={`liquid-glass-nav-item ${isActive(item) ? 'active' : ''}`}
+                onPointerEnter={() => setHoveredIndex(index)}
+                onClick={() => setIsDockExpanded(false)} // 📱 collapse after tap
+                style={{
+                  transform: `scale(${getIconScale(index)}) translateY(${getIconTranslateY(index)}px)`,
+                }}
+              >
+                <div
+                  className="liquid-glass-nav-icon-wrapper"
+                  style={{
+                    borderColor: item.color ? `${item.color}40` : undefined,
+                  }}
+                >
+                  <i className={`fas ${item.icon} liquid-glass-nav-icon`} />
+                </div>
+                <span className="liquid-glass-nav-label">{item.label}</span>
+              </Link>
+            ))}
 
-          {/* Logout Button */}
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="liquid-glass-nav-item"
-            onMouseEnter={() => setHoveredIndex(filteredNavItems.length + 1)}
-            aria-label="Sign out"
-            style={{
-              transform: `scale(${getIconScale(filteredNavItems.length + 1)}) translateY(${getIconTranslateY(filteredNavItems.length + 1)}px)`,
-            }}
-          >
-            <div
-              className="liquid-glass-nav-icon-wrapper"
-              style={{
-                borderColor: `${LOGOUT_COLOR}40`,
-                boxShadow: `0 4px 16px ${LOGOUT_COLOR}20, inset 0 1px 0 rgba(255, 255, 255, 0.5)`,
-              }}
+            <button
+              className="liquid-glass-nav-item"
+              onClick={toggleTheme}
+              onPointerEnter={() => setHoveredIndex(filteredNavItems.length)}
             >
-              <i className="fas fa-sign-out-alt liquid-glass-nav-icon" aria-hidden="true"></i>
-            </div>
-            <span className="liquid-glass-nav-label">{t('auth.logout')}</span>
-          </button>
-        </div>
-      )}
-    </nav>
+              <div className="liquid-glass-nav-icon-wrapper">
+                <i
+                  className={`fas fa-${theme === 'dark' ? 'sun' : 'moon'} liquid-glass-nav-icon`}
+                />
+              </div>
+              <span className="liquid-glass-nav-label">
+                {theme === 'dark' ? t('profile.lightMode') : t('profile.darkMode')}
+              </span>
+            </button>
+
+            <button
+              className="liquid-glass-nav-item"
+              onClick={handleLogout}
+              onPointerEnter={() => setHoveredIndex(filteredNavItems.length + 1)}
+            >
+              <div className="liquid-glass-nav-icon-wrapper">
+                <i className="fas fa-sign-out-alt liquid-glass-nav-icon" />
+              </div>
+              <span className="liquid-glass-nav-label">{t('auth.logout')}</span>
+            </button>
+          </div>
+        )}
+      </nav>
+    </>
   );
 }
