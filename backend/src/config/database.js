@@ -1152,6 +1152,8 @@ class Database {
           'share_notes',
           'password_reset_tokens',
           'invitations',
+          'chat_rooms',
+          'chat_messages',
         ];
         const allowedColumns = {
           updated_at: 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
@@ -1160,6 +1162,8 @@ class Database {
           preferred_language: "VARCHAR(10) DEFAULT 'en'",
           status: "VARCHAR(20) DEFAULT 'online'",
           avatar_url: 'TEXT',
+          encryption_salt: 'VARCHAR(64)',
+          photo_url: 'TEXT',
         };
 
         if (!allowedTables.includes(tableName)) {
@@ -1207,6 +1211,9 @@ class Database {
 
       // Add missing encryption_salt column to room table
       await addColumnIfMissing('chat_rooms', 'encryption_salt', 'chat_rooms');
+
+      // Add missing photo_url column to chat_messages table
+      await addColumnIfMissing('chat_messages', 'photo_url', 'chat_messages');
 
       logger.info('✅ MySQL schema migration completed');
     } catch (error) {
