@@ -2055,7 +2055,7 @@ body.dark {
   top: 50%;
   left: 1rem;
   right: auto;
-  transform: translateY(-50%);
+  transform: translateY(350%);
   justify-content: flex-start;
   align-items: center;
   padding: 0;
@@ -2305,7 +2305,7 @@ body.dark {
     top: 50%;
     left: 1rem;
     right: auto;
-    transform: translateY(-50%);
+    transform: translateY(350%);
     justify-content: flex-start;
   }
 
@@ -2334,6 +2334,13 @@ body.dark {
   #main-content {
     padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
+
+  .liquid-glass-dock-backdrop {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: 998;
+  }
 }
 
 /* Tablet (768px - 1024px) - Centered dock when expanded, left side when minimized */
@@ -2352,7 +2359,7 @@ body.dark {
     top: 50%;
     left: 1rem;
     right: auto;
-    transform: translateY(-50%);
+    transform: translateY(350%);
     justify-content: flex-start;
   }
 
@@ -2402,7 +2409,7 @@ body.dark {
     top: 50%;
     left: 1rem;
     right: auto;
-    transform: translateY(-50%);
+    transform: translateY(350%);
     justify-content: flex-start;
   }
 
