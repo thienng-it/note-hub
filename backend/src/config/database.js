@@ -1026,6 +1026,13 @@ class Database {
         this.db.exec(`ALTER TABLE chat_messages ADD COLUMN photo_url TEXT`);
       }
 
+      // Add is_encrypted column to chat_messages table if missing
+      const hasIsEncrypted = chatMessagesColumns.some((col) => col.name === 'is_encrypted');
+      if (!hasIsEncrypted) {
+        logger.info('🔄 Migrating chat_messages table: adding is_encrypted column');
+        this.db.exec(`ALTER TABLE chat_messages ADD COLUMN is_encrypted INTEGER DEFAULT 1`);
+      }
+
       logger.info('✅ SQLite schema migration completed');
     } catch (error) {
       logger.error('⚠️ SQLite migration error (non-fatal):', error.message);
