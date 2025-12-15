@@ -439,7 +439,7 @@ class Database {
     for (const table of tablesToTrigger) {
       try {
         this.db.exec(`
-          CREATE TRIGGER IF NOT EXISTS update_${table}_timestamp 
+          CREATE TRIGGER IF NOT EXISTS update_${table}_timestamp
             AFTER UPDATE ON ${table}
             FOR EACH ROW
             WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
@@ -826,13 +826,13 @@ class Database {
     // Auto-migration: Add is_admin and is_locked columns if they don't exist
     try {
       const [adminColumn] = await this.db.query(
-        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_admin'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
       );
 
       const [lockedColumn] = await this.db.query(
-        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_locked'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
       );
@@ -858,7 +858,7 @@ class Database {
     // Auto-migration: Add folder_id columns to notes and tasks if they don't exist
     try {
       const [notesFolderColumn] = await this.db.query(
-        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'notes' AND COLUMN_NAME = 'folder_id'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
       );
@@ -883,7 +883,7 @@ class Database {
 
     try {
       const [tasksFolderColumn] = await this.db.query(
-        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'tasks' AND COLUMN_NAME = 'folder_id'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
       );
@@ -950,7 +950,7 @@ class Database {
 
           // Create INSERT trigger to set updated_at on new rows
           this.db.exec(`
-            CREATE TRIGGER IF NOT EXISTS insert_${tableName}_updated_at 
+            CREATE TRIGGER IF NOT EXISTS insert_${tableName}_updated_at
               AFTER INSERT ON ${tableName}
               FOR EACH ROW
               WHEN NEW.updated_at IS NULL
@@ -988,6 +988,8 @@ class Database {
       fixTimestampColumns('invitations', 'invitations');
       fixTimestampColumns('refresh_tokens', 'refresh_tokens');
       fixTimestampColumns('webauthn_credentials', 'webauthn_credentials');
+      fixTimestampColumns('folders', 'folders');
+      fixTimestampColumns('chat_rooms', 'chat_rooms');
 
       // Add images column to notes and tasks tables if missing
       addImagesColumn('notes', 'notes');
@@ -1093,7 +1095,7 @@ class Database {
 
     // Recreate INSERT triggers for both created_at and updated_at
     this.db.exec(`
-      CREATE TRIGGER IF NOT EXISTS insert_${tableName}_created_at 
+      CREATE TRIGGER IF NOT EXISTS insert_${tableName}_created_at
         AFTER INSERT ON ${tableName}
         FOR EACH ROW
         WHEN NEW.created_at IS NULL
@@ -1103,7 +1105,7 @@ class Database {
     `);
 
     this.db.exec(`
-      CREATE TRIGGER IF NOT EXISTS insert_${tableName}_updated_at 
+      CREATE TRIGGER IF NOT EXISTS insert_${tableName}_updated_at
         AFTER INSERT ON ${tableName}
         FOR EACH ROW
         WHEN NEW.updated_at IS NULL
@@ -1114,7 +1116,7 @@ class Database {
 
     // Recreate UPDATE trigger
     this.db.exec(`
-      CREATE TRIGGER IF NOT EXISTS update_${tableName}_timestamp 
+      CREATE TRIGGER IF NOT EXISTS update_${tableName}_timestamp
         AFTER UPDATE ON ${tableName}
         FOR EACH ROW
         WHEN NEW.updated_at = OLD.updated_at OR NEW.updated_at IS NULL
@@ -1194,6 +1196,9 @@ class Database {
 
       // Add missing avatar_url column to users table
       await addColumnIfMissing('users', 'avatar_url', 'users');
+
+      // Add missing encryption_salt column to room table
+      await addColumnIfMissing('chat_rooms', 'encryption_salt', 'chat_rooms');
 
       logger.info('✅ MySQL schema migration completed');
     } catch (error) {
