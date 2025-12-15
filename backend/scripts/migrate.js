@@ -36,6 +36,8 @@ import {
 
 const command = process.argv[2];
 const arg = process.argv[3];
+const tableNameArg = process.argv[4];
+const columnNameArg = process.argv[5];
 
 async function showStatus() {
   console.log('📊 Migration Status\n');
@@ -97,7 +99,7 @@ async function verifyDatabaseSchema() {
   }
 }
 
-function createMigrationTemplate(name) {
+function createMigrationTemplate(name, tableName = 'table_name', columnName = 'column_name') {
   if (!name) {
     console.error('❌ Error: Migration name is required');
     console.log('Usage: node migrate.js create <migration_name>');
@@ -111,7 +113,7 @@ function createMigrationTemplate(name) {
   const template = `/**
  * Migration: ${name}
  * Created: ${new Date().toISOString()}
- * 
+ *
  * Description:
  * Add your migration description here
  */
@@ -119,39 +121,39 @@ function createMigrationTemplate(name) {
 export const migration = {
   id: '${migrationId}',
   description: '${name}',
-  
+
   /**
    * Apply migration to SQLite database
    */
   async sqlite(db) {
     // Check if column/table exists
-    // const columns = db.prepare('PRAGMA table_info(table_name)').all();
-    // const hasColumn = columns.some((col) => col.name === 'column_name');
-    
-    // if (!hasColumn) {
-    //   logger.info('  🔄 Adding column_name to table_name...');
-    //   db.exec('ALTER TABLE table_name ADD COLUMN column_name TYPE DEFAULT value');
-    //   logger.info('  ✅ column_name added');
-    // }
+    const columns = db.prepare('PRAGMA table_info(${tableName})').all();
+    const hasColumn = columns.some((col) => col.name === '${columnName}');
+
+    if (!hasColumn) {
+     logger.info('  🔄 Adding column_name to ${tableName}...');
+     db.exec('ALTER TABLE ${tableName} ADD COLUMN ${columnName} TYPE DEFAULT value');
+     logger.info('  ✅ ${columnName} added');
+     }
   },
-  
+
   /**
    * Apply migration to MySQL database
    */
   async mysql(db) {
-    // const database = process.env.MYSQL_DATABASE || 'notehub';
-    
-    // const [column] = await db.query(
-    //   \`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
-    //    WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'table_name' AND COLUMN_NAME = 'column_name'\`,
-    //   [database],
-    // );
-    
-    // if (column.length === 0) {
-    //   logger.info('  🔄 Adding column_name to table_name...');
-    //   await db.query('ALTER TABLE table_name ADD COLUMN column_name TYPE DEFAULT value');
-    //   logger.info('  ✅ column_name added');
-    // }
+     const database = process.env.MYSQL_DATABASE || 'notehub';
+
+     const [column] = await db.query(
+       \`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '${tableName}' AND COLUMN_NAME = '${columnName}'\`,
+       [database],
+     );
+
+     if (column.length === 0) {
+       logger.info('  🔄 Adding ${columnName} to ${tableName}...');
+       await db.query('ALTER TABLE ${tableName} ADD COLUMN ${columnName} TYPE DEFAULT value');
+       logger.info('  ✅ ${columnName} added');
+     }
   },
 };
 `;
@@ -179,7 +181,7 @@ async function main() {
         break;
 
       case 'create':
-        createMigrationTemplate(arg);
+        createMigrationTemplate(arg, tableNameArg, columnNameArg);
         break;
 
       default:

@@ -396,6 +396,44 @@ const MIGRATIONS = [
       }
     },
   },
+  {
+    id: '20251215T155231_add_encryption_salt_column_to_chat_messages',
+    description: 'add encryption_salt column to chat_messages',
+
+    /**
+     * Apply migration to SQLite database
+     */
+    async sqlite(db) {
+      // Check if column/table exists
+      const columns = db.prepare('PRAGMA table_info(chat_messages)').all();
+      const hasColumn = columns.some((col) => col.name === 'encryption_salt');
+
+      if (!hasColumn) {
+        logger.info('  🔄 Adding encryption_salt to chat_messages...');
+        db.exec('ALTER TABLE chat_messages ADD COLUMN encryption_salt TEXT');
+        logger.info('  ✅ encryption_salt added');
+      }
+    },
+
+    /**
+     * Apply migration to MySQL database
+     */
+    async mysql(db) {
+      const database = process.env.MYSQL_DATABASE || 'notehub';
+
+      const [column] = await db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'chat_messages' AND COLUMN_NAME = 'encryption_salt'`,
+        [database],
+      );
+
+      if (column.length === 0) {
+        logger.info('  🔄 Adding encryption_salt to chat_messages...');
+        await db.query('ALTER TABLE chat_messages ADD COLUMN encryption_salt VARCHAR(64)');
+        logger.info('  ✅ encryption_salt added');
+      }
+    },
+  },
 ];
 
 /**
