@@ -7,7 +7,10 @@
 #
 # Usage:
 #   docker compose -f docker-compose.dev.yml up -d
-#   Access application at: http://localhost
+#
+# IMPORTANT: Access at http://localhost (NOT https://)
+#   ✅ Correct:  http://localhost
+#   ❌ Wrong:    https://localhost
 #
 # Benefits:
 #   - No registry cache errors (403 Forbidden from ghcr.io)
@@ -15,6 +18,9 @@
 #   - HTTP only (no HTTPS/SSL certificates needed for localhost)
 #   - Simpler configuration for local development
 #   - No need to authenticate with GitHub Container Registry
+#
+# Troubleshooting: If you cannot access the frontend, see:
+#   docs/TROUBLESHOOTING_LOCALHOST.md
 #
 # =============================================================================
 

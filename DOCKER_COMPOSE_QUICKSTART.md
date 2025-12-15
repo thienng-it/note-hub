@@ -12,12 +12,20 @@ nano .env  # Set NOTES_ADMIN_PASSWORD
 # 2. Start services
 docker compose -f docker-compose.dev.yml up -d
 
-# 3. Seed database
+# 3. Wait for services to be healthy (30-60 seconds)
+docker compose -f docker-compose.dev.yml ps
+
+# 4. Seed database
 docker compose -f docker-compose.dev.yml exec backend node scripts/seed_db.js
 
-# 4. Open application
+# 5. Open application
 open http://localhost
 ```
+
+**⚠️ IMPORTANT:** Use `http://localhost` (NOT `https://localhost`)
+
+After the HTTP-only fix, the application is accessible via HTTP only.
+If you cannot access the frontend, see [Troubleshooting Guide](docs/TROUBLESHOOTING_LOCALHOST.md).
 
 ## 📁 Which Compose File to Use?
 
