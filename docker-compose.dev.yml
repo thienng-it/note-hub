@@ -39,6 +39,8 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=notehub-network"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.watch=true"
       - "--entrypoints.web.address=:80"
       - "--log.level=INFO"
       - "--accesslog=true"
@@ -46,6 +48,14 @@ services:
     ports:
       - "80:80"
     volumes:
+      # Docker socket for service discovery
+      # If getting "Error response from daemon:" errors, see:
+      # docs/TRAEFIK_DOCKER_SOCKET_ERROR.md
+      # 
+      # Common fixes:
+      # - Ensure user in docker group: sudo usermod -aG docker $USER
+      # - For SELinux systems, add :z label: /var/run/docker.sock:/var/run/docker.sock:z
+      # - For Podman: /run/podman/podman.sock:/var/run/docker.sock:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - notehub-network
