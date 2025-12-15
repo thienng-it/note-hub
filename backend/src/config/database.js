@@ -1179,6 +1179,7 @@ class Database {
           avatar_url: 'TEXT',
           encryption_salt: 'VARCHAR(64)',
           photo_url: 'TEXT',
+          is_encrypted: 'BOOLEAN DEFAULT TRUE',
         };
 
         if (!allowedTables.includes(tableName)) {
@@ -1229,6 +1230,9 @@ class Database {
 
       // Add missing photo_url column to chat_messages table
       await addColumnIfMissing('chat_messages', 'photo_url', 'chat_messages');
+
+      // Add missing is_encrypted column to chat_messages table
+      await addColumnIfMissing('chat_messages', 'is_encrypted', 'chat_messages');
 
       logger.info('✅ MySQL schema migration completed');
     } catch (error) {
