@@ -2165,6 +2165,7 @@ body.dark {
     0 4px 16px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
 }
 
 /* Icon wrapper in minimized state */
@@ -2191,6 +2192,8 @@ body.dark {
 .liquid-glass-nav-icon {
   font-size: 1.125rem;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 100%;
+  max-height: 100%;
 }
 
 /* Active state */
@@ -2288,8 +2291,22 @@ body.dark {
 
 /* Mobile (< 768px) - Bottom dock with horizontal scroll */
 @media (max-width: 767px) {
-  .liquid-glass-nav {
+  .liquid-glass-nav.dock-expanded {
     bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    transform: translateY(0);
+    justify-content: center;
+  }
+
+  .liquid-glass-nav.dock-minimized {
+    bottom: auto;
+    top: 50%;
+    left: 1rem;
+    right: auto;
+    transform: translateY(-50%);
+    justify-content: flex-start;
   }
 
   .liquid-glass-nav-container {
@@ -2319,20 +2336,24 @@ body.dark {
   }
 }
 
-/* Tablet (768px - 1024px) - Centered dock */
+/* Tablet (768px - 1024px) - Centered dock when expanded, left side when minimized */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .liquid-glass-nav {
+  .liquid-glass-nav.dock-expanded {
     bottom: 1rem;
     left: 50%;
     right: auto;
-  }
-
-  .liquid-glass-nav.dock-expanded {
+    top: auto;
     transform: translateX(-50%);
+    justify-content: center;
   }
 
   .liquid-glass-nav.dock-minimized {
-    transform: translateX(-50%);
+    bottom: auto;
+    top: 50%;
+    left: 1rem;
+    right: auto;
+    transform: translateY(-50%);
+    justify-content: flex-start;
   }
 
   .liquid-glass-nav-container {
@@ -2365,20 +2386,24 @@ body.dark {
   }
 }
 
-/* Desktop (> 1024px) - Centered dock with larger icons */
+/* Desktop (> 1024px) - Centered dock when expanded, left side when minimized */
 @media (min-width: 1024px) {
-  .liquid-glass-nav {
+  .liquid-glass-nav.dock-expanded {
     bottom: 1.5rem;
     left: 50%;
     right: auto;
-  }
-
-  .liquid-glass-nav.dock-expanded {
+    top: auto;
     transform: translateX(-50%);
+    justify-content: center;
   }
 
   .liquid-glass-nav.dock-minimized {
-    transform: translateX(-50%);
+    bottom: auto;
+    top: 50%;
+    left: 1rem;
+    right: auto;
+    transform: translateY(-50%);
+    justify-content: flex-start;
   }
 
   .liquid-glass-nav-container {
