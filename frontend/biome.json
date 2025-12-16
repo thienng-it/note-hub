@@ -24,7 +24,8 @@
         "noArrayIndexKey": "warn"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn"
+        "useExhaustiveDependencies": "warn",
+        "noUnknownMediaFeatureName": "off"
       }
     }
   },
