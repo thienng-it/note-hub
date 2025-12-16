@@ -65,9 +65,8 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
     <div
       class="folder-item"
     >
-      <div
+      <button
         class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-        role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
       >
@@ -139,16 +138,15 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
             />
           </svg>
         </button>
-      </div>
+      </button>
       <div
         class="mt-1"
       >
         <div
           class="folder-item"
         >
-          <div
+          <button
             class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-            role="button"
             style="padding-left: 2.25rem;"
             tabindex="0"
           >
@@ -204,16 +202,15 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
                 />
               </svg>
             </button>
-          </div>
+          </button>
         </div>
       </div>
     </div>
     <div
       class="folder-item"
     >
-      <div
+      <button
         class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-        role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
       >
@@ -269,7 +266,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
             />
           </svg>
         </button>
-      </div>
+      </button>
     </div>
   </div>
 </div>
@@ -411,9 +408,8 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
     <div
       class="folder-item"
     >
-      <div
+      <button
         class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
-        role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
       >
@@ -485,16 +481,15 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
             />
           </svg>
         </button>
-      </div>
+      </button>
       <div
         class="mt-1"
       >
         <div
           class="folder-item"
         >
-          <div
+          <button
             class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-            role="button"
             style="padding-left: 2.25rem;"
             tabindex="0"
           >
@@ -550,16 +545,15 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
                 />
               </svg>
             </button>
-          </div>
+          </button>
         </div>
       </div>
     </div>
     <div
       class="folder-item"
     >
-      <div
+      <button
         class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-        role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
       >
@@ -615,7 +609,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
             />
           </svg>
         </button>
-      </div>
+      </button>
     </div>
   </div>
 </div>

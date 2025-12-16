@@ -273,7 +273,7 @@ export function TasksPage() {
   const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false);
 
   return (
-    <div className="flex gap-3 sm:gap-6 p-3 sm:p-6 page-padding">
+    <div className="flex gap-3 sm:gap-6 p-3 sm:p-6">
       {/* Folder Sidebar - Responsive */}
       <FolderSidebar
         folders={folders}

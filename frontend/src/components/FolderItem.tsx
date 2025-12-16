@@ -247,8 +247,7 @@ export function FolderItem({
 
   return (
     <div className="folder-item">
-      <div
-        role="button"
+      <button
         tabIndex={0}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group ${
           isSelected
@@ -359,7 +358,7 @@ export function FolderItem({
             </div>
           </>
         )}
-      </div>
+      </button>
 
       {/* Children folders */}
       {isExpanded && hasChildren && (

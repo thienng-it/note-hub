@@ -1159,6 +1159,7 @@ body.dark {
   border-bottom: 1px solid var(--glass-border);
   box-shadow: 0 4px 20px 0 var(--glass-shadow);
   padding: 1rem 1.5rem;
+  border-radius: var(--mobile-radius);
 }
 
 /* Glass Footer - for <footer> elements */
@@ -2103,6 +2104,17 @@ body.dark {
   overflow-y: visible;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+  flex-wrap: nowrap;
+}
+
+/* Hide scrollbar (Chrome / Safari) */
+.liquid-glass-nav-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* 🔑 Critical: prevent children from shrinking */
+.liquid-glass-nav-container > * {
+  flex-shrink: 0;
 }
 
 /* Navigation Container - Minimized State */
