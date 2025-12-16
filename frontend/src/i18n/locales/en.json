@@ -438,6 +438,10 @@
     "deleteWithChildrenWarning": "This folder contains subfolders. Delete all subfolders first.",
     "nameRequired": "Folder name is required",
     "nameTooLong": "Folder name must be 100 characters or less",
-    "duplicateName": "A folder with this name already exists at this level"
+    "duplicateName": "A folder with this name already exists at this level",
+    "navigation": "Folder navigation",
+    "closeDrawer": "Close folder drawer",
+    "open": "Open folders",
+    "close": "Close folders"
   }
 }
