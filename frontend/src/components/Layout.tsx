@@ -44,18 +44,23 @@ export function Layout() {
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header with Logo and Version - Always visible */}
-        <header className="glass-header safe-area-top flex-shrink-0">
+        <header className="glass-header safe-area-top notch-safe-top flex-shrink-0">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <i className="fas fa-feather-alt text-white text-sm" aria-hidden="true"></i>
+            <Link to="/" className="flex items-center gap-2 touch-no-select">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <i
+                  className="fas fa-feather-alt text-white text-xs sm:text-sm"
+                  aria-hidden="true"
+                ></i>
               </div>
-              <span className="text-lg font-bold text-[var(--text-primary)]">NoteHub</span>
+              <span className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
+                NoteHub
+              </span>
             </Link>
             {user && (
-              <div className="flex items-center gap-3 text-xs text-[var(--text-tertiary)]">
-                <span>v{__APP_VERSION__}</span>
-                {backendVersion && <span>BE v{backendVersion}</span>}
+              <div className="flex items-center gap-2 sm:gap-3 text-xs text-[var(--text-tertiary)]">
+                <span className="hidden xs:inline">v{__APP_VERSION__}</span>
+                {backendVersion && <span className="hidden sm:inline">BE v{backendVersion}</span>}
               </div>
             )}
           </div>
@@ -64,7 +69,7 @@ export function Layout() {
         {/* Page Content */}
         <div
           id="main-content"
-          className="flex-1 overflow-auto bg-[var(--bg-primary)]"
+          className="flex-1 overflow-auto bg-[var(--bg-primary)] ios-scroll overscroll-contain"
           onScroll={handleScroll}
           tabIndex={-1}
         >

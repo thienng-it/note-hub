@@ -229,9 +229,54 @@ export function NotesPage() {
     }
   };
 
+  // Mobile folder drawer state
+  const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false);
+
   return (
-    <div className="flex gap-3 sm:gap-6 p-3 sm:p-6">
-      {/* Folder Sidebar */}
+    <div className="flex gap-3 sm:gap-6 p-3 sm:p-6 page-padding">
+      {/* Mobile Folder Drawer Backdrop */}
+      <div
+        className={`mobile-drawer-backdrop lg:hidden ${isFolderDrawerOpen ? 'open' : ''}`}
+        onClick={() => setIsFolderDrawerOpen(false)}
+        onKeyDown={(e) => e.key === 'Escape' && setIsFolderDrawerOpen(false)}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close folder drawer"
+      />
+
+      {/* Mobile Folder Drawer */}
+      <div className={`mobile-drawer lg:hidden ${isFolderDrawerOpen ? 'open' : ''}`}>
+        <div className="flex items-center justify-between mb-4 pt-2">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
+            <i className="fas fa-folder mr-2 text-blue-600"></i>
+            {t('folders.title') || 'Folders'}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setIsFolderDrawerOpen(false)}
+            className="mobile-menu-btn !flex"
+            aria-label="Close folders"
+          >
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        <FolderTree
+          folders={folders}
+          selectedFolderId={selectedFolder?.id}
+          onSelectFolder={(folder) => {
+            handleSelectFolder(folder);
+            setIsFolderDrawerOpen(false);
+          }}
+          onCreateFolder={handleCreateFolder}
+          onEditFolder={handleEditFolder}
+          onDeleteFolder={handleDeleteFolder}
+          onMoveFolder={() => {
+            // TODO: Implement folder move functionality
+          }}
+        />
+      </div>
+
+      {/* Desktop Folder Sidebar */}
       <div className="w-64 flex-shrink-0 hidden lg:block">
         <div className="glass-card p-4 rounded-xl sticky top-6">
           <FolderTree
@@ -249,23 +294,37 @@ export function NotesPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 space-y-6">
+      <div className="flex-1 space-y-4 sm:space-y-6 min-w-0">
         {/* Header with Search */}
-        <div className="space-y-4">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold flex items-center">
-                <i className={`fas ${getViewIcon()} mr-2 sm:mr-3 text-xl sm:text-2xl`}></i>
-                <span className="text-[var(--text-primary)]">{getViewTitle()}</span>
-              </h1>
-              {/* Breadcrumb Navigation */}
-              {selectedFolder && (
-                <div className="mt-2">
-                  <FolderBreadcrumb folderId={selectedFolder.id} onNavigate={handleSelectFolder} />
-                </div>
-              )}
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <div className="flex items-center gap-3">
+              {/* Mobile Folder Button */}
+              <button
+                type="button"
+                onClick={() => setIsFolderDrawerOpen(true)}
+                className="mobile-menu-btn lg:hidden"
+                aria-label="Open folders"
+              >
+                <i className="fas fa-folder"></i>
+              </button>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl xs:text-2xl sm:text-3xl font-bold flex items-center truncate">
+                  <i className={`fas ${getViewIcon()} mr-2 sm:mr-3 text-lg sm:text-2xl`}></i>
+                  <span className="text-[var(--text-primary)] truncate">{getViewTitle()}</span>
+                </h1>
+                {/* Breadcrumb Navigation */}
+                {selectedFolder && (
+                  <div className="mt-2">
+                    <FolderBreadcrumb
+                      folderId={selectedFolder.id}
+                      onNavigate={handleSelectFolder}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <span className="text-sm text-[var(--text-secondary)]">
                 {notes.length} {t('common.notesCount')}
               </span>
@@ -275,29 +334,29 @@ export function NotesPage() {
                     <button
                       type="button"
                       onClick={hideAllNotes}
-                      className="btn-secondary-glass text-sm"
+                      className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
                       title={t('notes.hideAllNotes')}
                     >
-                      <i className="glass-i fas fa-eye-slash mr-2"></i>
+                      <i className="glass-i fas fa-eye-slash mr-1 sm:mr-2"></i>
+                      <span className="hidden xs:inline sm:hidden">Hide</span>
                       <span className="hidden sm:inline">{t('common.hideAll')}</span>
-                      <span className="sm:hidden">Hide</span>
                     </button>
                     <button
                       type="button"
                       onClick={showAllNotes}
-                      className="btn-secondary-glass text-sm"
+                      className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
                       title={t('notes.showAllNotes')}
                     >
-                      <i className="glass-i fas fa-eye mr-2"></i>
+                      <i className="glass-i fas fa-eye mr-1 sm:mr-2"></i>
+                      <span className="hidden xs:inline sm:hidden">Show</span>
                       <span className="hidden sm:inline">{t('common.showAll')}</span>
-                      <span className="sm:hidden">Show</span>
                     </button>
                   </>
                 )}
-                <Link to="/notes/new" className="btn-apple">
-                  <i className="glass-i fas fa-plus mr-2"></i>
-                  <span className="hidden sm:inline">{t('common.addNote')}</span>
-                  <span className="sm:hidden">New</span>
+                <Link to="/notes/new" className="btn-apple text-sm sm:text-base">
+                  <i className="glass-i fas fa-plus mr-1 sm:mr-2"></i>
+                  <span className="hidden xs:inline">{t('common.addNote')}</span>
+                  <span className="xs:hidden">+</span>
                 </Link>
               </div>
             </div>
@@ -352,38 +411,41 @@ export function NotesPage() {
           </div>
         </div>
 
-        {/* Quick Filter Tabs */}
-        <div className="glass-segmented overflow-x-auto">
-          <Link to="/" className={`glass-segmented-item ${view === 'all' ? 'active' : ''}`}>
+        {/* Quick Filter Tabs - Scrollable on mobile */}
+        <div className="glass-segmented scrollable-tabs">
+          <Link
+            to="/"
+            className={`glass-segmented-item whitespace-nowrap ${view === 'all' ? 'active' : ''}`}
+          >
             <i className="glass-i fas fa-home mr-1 sm:mr-2"></i>
-            <span className="text-sm sm:text-base">All</span>
+            <span className="text-xs sm:text-sm">All</span>
           </Link>
           <Link
             to="/?view=favorites"
-            className={`glass-segmented-item ${view === 'favorites' ? 'active' : ''}`}
+            className={`glass-segmented-item whitespace-nowrap ${view === 'favorites' ? 'active' : ''}`}
           >
             <i className="glass-i fas fa-heart mr-1 sm:mr-2"></i>
-            <span className="text-sm sm:text-base">Favorites</span>
+            <span className="text-xs sm:text-sm">Favorites</span>
           </Link>
           <Link
             to="/?view=archived"
-            className={`glass-segmented-item ${view === 'archived' ? 'active' : ''}`}
+            className={`glass-segmented-item whitespace-nowrap ${view === 'archived' ? 'active' : ''}`}
           >
             <i className="glass-i fas fa-archive mr-1 sm:mr-2"></i>
-            <span className="text-sm sm:text-base">{t('notes.archived')}</span>
+            <span className="text-xs sm:text-sm">{t('notes.archived')}</span>
           </Link>
           <Link
             to="/?view=shared"
-            className={`glass-segmented-item ${view === 'shared' ? 'active' : ''}`}
+            className={`glass-segmented-item whitespace-nowrap ${view === 'shared' ? 'active' : ''}`}
           >
             <i className="glass-i fas fa-share-alt mr-1 sm:mr-2"></i>
-            <span className="text-sm sm:text-base">Shared</span>
+            <span className="text-xs sm:text-sm">Shared</span>
           </Link>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
+          <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
             <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
             {error}
           </div>
@@ -391,7 +453,7 @@ export function NotesPage() {
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-8 sm:py-12">
             <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
           </div>
         ) : (

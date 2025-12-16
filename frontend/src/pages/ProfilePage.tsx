@@ -84,22 +84,24 @@ export function ProfilePage() {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
-        <i className="glass-i fas fa-user-circle mr-3 text-blue-600"></i>
+    <div className="page-padding space-y-4 sm:space-y-6">
+      <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
+        <i className="glass-i fas fa-user-circle mr-2 sm:mr-3 text-blue-600"></i>
         Profile
       </h1>
 
       {/* User Info Card */}
-      <div className="glass-panel-elevated p-6">
-        <div className="flex items-center gap-6 mb-6">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+      <div className="glass-panel-elevated p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-4 sm:mb-6">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold flex-shrink-0">
             {user.username.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <h2 className="text-2xl font-bold text-[var(--text-primary)]">{user.username}</h2>
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
+              {user.username}
+            </h2>
             {user.email && (
-              <p className="text-[var(--text-secondary)]">
+              <p className="text-sm sm:text-base text-[var(--text-secondary)] break-all">
                 <i className="glass-i fas fa-envelope mr-2"></i>
                 {user.email}
               </p>
@@ -107,26 +109,32 @@ export function ProfilePage() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-1 sm:gap-4">
             <div>
-              <span className="font-medium text-[var(--text-primary)]">{t('profile.userId')}</span>
-              <p className="text-sm text-[var(--text-muted)]">{t('profile.userIdDescription')}</p>
+              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
+                {t('profile.userId')}
+              </span>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+                {t('profile.userIdDescription')}
+              </p>
             </div>
-            <span className="text-[var(--text-secondary)] font-mono">{user.id}</span>
+            <span className="text-[var(--text-secondary)] font-mono text-sm sm:text-base">
+              {user.id}
+            </span>
           </div>
 
           {user.created_at && (
-            <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-1 sm:gap-4">
               <div>
-                <span className="font-medium text-[var(--text-primary)]">
+                <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
                   {t('profile.memberSince')}
                 </span>
-                <p className="text-sm text-[var(--text-muted)]">
+                <p className="text-xs sm:text-sm text-[var(--text-muted)]">
                   {t('profile.memberSinceDescription')}
                 </p>
               </div>
-              <span className="text-[var(--text-secondary)]">
+              <span className="text-[var(--text-secondary)] text-sm sm:text-base">
                 {new Date(user.created_at).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -139,62 +147,74 @@ export function ProfilePage() {
       </div>
 
       {/* Settings Card */}
-      <div className="glass-panel p-6">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+      <div className="glass-panel p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] mb-3 sm:mb-4">
           <i className="glass-i fas fa-cog mr-2"></i>
           {t('profile.settings')}
         </h3>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Theme Toggle */}
-          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
-            <div>
-              <span className="font-medium text-[var(--text-primary)]">{t('profile.theme')}</span>
-              <p className="text-sm text-[var(--text-muted)]">{t('profile.themeDescription')}</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
+            <div className="flex-1">
+              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
+                {t('profile.theme')}
+              </span>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+                {t('profile.themeDescription')}
+              </p>
             </div>
             <button
               type="button"
               onClick={toggleTheme}
-              className="glass-card flex items-center gap-2 px-4 py-2 hover:scale-105 transition-all"
+              className="glass-card flex items-center gap-2 px-3 sm:px-4 py-2 hover:scale-105 transition-all touch-no-select self-start sm:self-center"
             >
               <i
                 className={`fas fa-${theme === 'dark' ? 'sun text-yellow-500' : 'moon text-blue-500'}`}
               ></i>
-              <span className="text-[var(--text-primary)] capitalize">{theme}</span>
+              <span className="text-[var(--text-primary)] capitalize text-sm sm:text-base">
+                {theme}
+              </span>
             </button>
           </div>
 
           {/* Edit Profile Link */}
-          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
-            <div>
-              <span className="font-medium text-[var(--text-primary)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
+            <div className="flex-1">
+              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
                 {t('profile.editProfile')}
               </span>
-              <p className="text-sm text-[var(--text-muted)]">{t('profile.languageDescription')}</p>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+                {t('profile.languageDescription')}
+              </p>
             </div>
             <Link
               to="/profile/edit"
-              className="btn-apple px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center"
+              className="btn-apple px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center text-sm sm:text-base self-start sm:self-center"
             >
-              <i className="glass-i fas fa-edit mr-2"></i>
-              {t('profile.editProfile')}
+              <i className="glass-i fas fa-edit mr-1 sm:mr-2"></i>
+              <span className="hidden xs:inline">{t('profile.editProfile')}</span>
+              <span className="xs:hidden">Edit</span>
             </Link>
           </div>
 
           {/* Change Password Link */}
-          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
-            <div>
-              <span className="font-medium text-[var(--text-primary)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
+            <div className="flex-1">
+              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
                 {t('auth.login.password')}
               </span>
-              <p className="text-sm text-[var(--text-muted)]">{t('profile.passwordDescription')}</p>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+                {t('profile.passwordDescription')}
+              </p>
             </div>
             <Link
               to="/profile/change-password"
-              className="btn-apple px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center"
+              className="btn-apple px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center text-sm sm:text-base self-start sm:self-center"
             >
-              <i className="glass-i fas fa-key mr-2"></i>
-              {t('profile.changePassword')}
+              <i className="glass-i fas fa-key mr-1 sm:mr-2"></i>
+              <span className="hidden xs:inline">{t('profile.changePassword')}</span>
+              <span className="xs:hidden">Change</span>
             </Link>
           </div>
 

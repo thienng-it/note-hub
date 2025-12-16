@@ -147,37 +147,41 @@ export function NoteEditPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+      <div className="flex items-center justify-center py-8 sm:py-12">
+        <i className="glass-i fas fa-spinner fa-spin text-3xl sm:text-4xl text-blue-600"></i>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="page-padding">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <Link
           to={id ? `/notes/${id}` : '/'}
-          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors inline-flex items-center text-sm sm:text-base touch-no-select"
         >
           <i className="glass-i fas fa-arrow-left mr-2"></i>
-          {id ? 'Back to Note' : 'Back to Notes'}
+          <span className="hidden xs:inline">{id ? 'Back to Note' : 'Back to Notes'}</span>
+          <span className="xs:hidden">Back</span>
         </Link>
       </div>
 
       <div className="glass-panel overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-[var(--border-color)]">
-          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
+        <div className="p-3 sm:p-4 md:p-6 border-b border-[var(--border-color)]">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-[var(--text-primary)]">
             <i className={`fas ${isNew ? 'fa-plus' : 'fa-edit'} mr-2 text-blue-600`}></i>
-            <span className="hide-mobile sm:inline">{isNew ? 'Create New Note' : 'Edit Note'}</span>
-            <span className="show-mobile">{isNew ? 'New' : 'Edit'}</span>
+            <span className="hidden sm:inline">{isNew ? 'Create New Note' : 'Edit Note'}</span>
+            <span className="sm:hidden">{isNew ? 'New Note' : 'Edit'}</span>
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6"
+        >
           {error && (
-            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
+            <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
               <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
               {error}
             </div>
@@ -187,16 +191,17 @@ export function NoteEditPage() {
           {isNew && (
             <>
               {showTemplates ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+                    <h2 className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
                       <i className="glass-i fas fa-magic mr-2 text-purple-600"></i>
-                      Choose a Template
+                      <span className="hidden xs:inline">Choose a Template</span>
+                      <span className="xs:hidden">Templates</span>
                     </h2>
                     <button
                       type="button"
                       onClick={() => setShowTemplates(false)}
-                      className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                      className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors touch-no-select"
                     >
                       <i className="glass-i fas fa-times mr-1"></i>
                       Skip templates
