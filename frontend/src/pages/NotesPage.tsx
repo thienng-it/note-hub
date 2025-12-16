@@ -247,170 +247,173 @@ export function NotesPage() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 space-y-4 sm:space-y-6 min-w-0">
-        {/* Header with Search */}
-        <div className="space-y-3 sm:space-y-4">
-          <div className="flex flex-col gap-3 sm:gap-4">
-            <div className="flex items-center gap-3">
-              {/* Mobile Folder Button */}
-              <button
-                type="button"
-                onClick={() => setIsFolderDrawerOpen(true)}
-                className="mobile-menu-btn lg:hidden"
-                aria-label="Open folders"
-              >
-                <i className="fas fa-folder"></i>
-              </button>
-              <div className="flex-1 min-w-0">
-                <h1 className="text-xl xs:text-2xl sm:text-3xl font-bold flex items-center truncate">
-                  <i className={`fas ${getViewIcon()} mr-2 sm:mr-3 text-lg sm:text-2xl`}></i>
-                  <span className="text-[var(--text-primary)] truncate">{getViewTitle()}</span>
+      <div className="flex-1 space-y-6 min-w-0">
+        {/* Modern Header Section */}
+        <div className="modern-page-header">
+          <div className="flex items-center gap-4 mb-2">
+            {/* Mobile Folder Button */}
+            <button
+              type="button"
+              onClick={() => setIsFolderDrawerOpen(true)}
+              className="modern-icon-btn lg:hidden"
+              aria-label="Open folders"
+            >
+              <i className="fas fa-folder"></i>
+            </button>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 mb-1">
+                <div
+                  className={`modern-icon-badge ${view === 'favorites' ? 'bg-gradient-to-br from-red-500 to-pink-500' : view === 'archived' ? 'bg-gradient-to-br from-gray-500 to-gray-600' : view === 'shared' ? 'bg-gradient-to-br from-green-500 to-emerald-500' : 'bg-gradient-to-br from-blue-500 to-indigo-600'}`}
+                >
+                  <i
+                    className={`fas ${getViewIcon().replace('text-red-500', '').replace('text-[var(--text-secondary)]', '').replace('text-green-600', '').replace('text-blue-600', '').trim()} text-white`}
+                  ></i>
+                </div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
+                  {getViewTitle()}
                 </h1>
-                {/* Breadcrumb Navigation */}
-                {selectedFolder && (
-                  <div className="mt-2">
-                    <FolderBreadcrumb
-                      folderId={selectedFolder.id}
-                      onNavigate={handleSelectFolder}
-                    />
-                  </div>
-                )}
               </div>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-              <span className="text-sm text-[var(--text-secondary)]">
-                {notes.length} {t('common.notesCount')}
-              </span>
-              <div className="flex flex-wrap items-center gap-2">
-                {notes.length > 0 && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={hideAllNotes}
-                      className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
-                      title={t('notes.hideAllNotes')}
-                    >
-                      <i className="glass-i fas fa-eye-slash mr-1 sm:mr-2"></i>
-                      <span className="hidden xs:inline sm:hidden">Hide</span>
-                      <span className="hidden sm:inline">{t('common.hideAll')}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={showAllNotes}
-                      className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
-                      title={t('notes.showAllNotes')}
-                    >
-                      <i className="glass-i fas fa-eye mr-1 sm:mr-2"></i>
-                      <span className="hidden xs:inline sm:hidden">Show</span>
-                      <span className="hidden sm:inline">{t('common.showAll')}</span>
-                    </button>
-                  </>
-                )}
-                <Link to="/notes/new" className="btn-apple text-sm sm:text-base">
-                  <i className="glass-i fas fa-plus mr-1 sm:mr-2"></i>
-                  <span className="hidden xs:inline">{t('common.addNote')}</span>
-                  <span className="xs:hidden">+</span>
-                </Link>
-              </div>
+              {/* Breadcrumb Navigation */}
+              {selectedFolder && (
+                <div className="ml-1">
+                  <FolderBreadcrumb folderId={selectedFolder.id} onNavigate={handleSelectFolder} />
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Search Form */}
-          <div className="glass-panel p-4 sm:p-5 rounded-2xl shadow-lg border border-[var(--border-color)]">
-            <form onSubmit={handleSearch} className="flex flex-col gap-3">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1">
-                  <div className="relative group">
-                    <input
-                      type="text"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder={t('notes.searchPlaceholder')}
-                      className="glass-input glass-input-with-icon w-full pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 border border-[var(--border-color)] focus:border-blue-400"
-                    />
-                    <i className="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 text-sm"></i>
-                  </div>
-                </div>
-                <div className="w-full sm:w-48">
-                  <div className="relative group">
-                    <i className="glass-i fas fa-tag absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500 text-sm"></i>
-                    <input
-                      type="text"
-                      value={tagFilter}
-                      onChange={(e) => setTagFilter(e.target.value)}
-                      placeholder={t('notes.filterByTag')}
-                      className="glass-input glass-input-with-icon w-full pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200 border border-[var(--border-color)] focus:border-purple-400"
-                    />
-                  </div>
-                </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="modern-stat-badge">
+                <i className="fas fa-file-alt text-blue-500 mr-2"></i>
+                <span className="font-semibold">{notes.length}</span>
+                <span className="hidden sm:inline ml-1">{t('common.notesCount')}</span>
               </div>
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  className="btn-apple flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200"
-                >
-                  <i className="glass-i fas fa-search mr-2"></i>
-                  <span>{t('common.search')}</span>
-                </button>
-                {(query || tagFilter) && (
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {notes.length > 0 && (
+                <>
                   <button
                     type="button"
-                    onClick={clearSearch}
-                    className="btn-secondary-glass flex-1 sm:flex-none shadow-sm hover:shadow-md transition-all duration-200"
+                    onClick={hideAllNotes}
+                    className="modern-btn-secondary"
+                    title={t('notes.hideAllNotes')}
                   >
-                    <i className="glass-i fas fa-times mr-2"></i>
-                    <span>{t('common.clear')}</span>
+                    <i className="fas fa-eye-slash mr-2"></i>
+                    <span className="hidden sm:inline">{t('common.hideAll')}</span>
+                    <span className="sm:hidden">Hide</span>
                   </button>
-                )}
-              </div>
-            </form>
+                  <button
+                    type="button"
+                    onClick={showAllNotes}
+                    className="modern-btn-secondary"
+                    title={t('notes.showAllNotes')}
+                  >
+                    <i className="fas fa-eye mr-2"></i>
+                    <span className="hidden sm:inline">{t('common.showAll')}</span>
+                    <span className="sm:hidden">Show</span>
+                  </button>
+                </>
+              )}
+              <Link to="/notes/new" className="modern-btn-primary">
+                <i className="fas fa-plus mr-2"></i>
+                <span>{t('common.addNote')}</span>
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Quick Filter Tabs - Scrollable on mobile */}
-        <div className="glass-segmented scrollable-tabs">
-          <Link
-            to="/"
-            className={`glass-segmented-item whitespace-nowrap ${view === 'all' ? 'active' : ''}`}
-          >
-            <i className="glass-i fas fa-home mr-1 sm:mr-2"></i>
-            <span className="text-xs sm:text-sm">All</span>
+        {/* Modern Search Section */}
+        <div className="modern-search-card">
+          <form onSubmit={handleSearch} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="lg:col-span-2">
+                <div className="modern-input-group">
+                  <i className="fas fa-search modern-input-icon text-blue-500"></i>
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={t('notes.searchPlaceholder')}
+                    className="modern-input"
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="modern-input-group">
+                  <i className="fas fa-tag modern-input-icon text-purple-500"></i>
+                  <input
+                    type="text"
+                    value={tagFilter}
+                    onChange={(e) => setTagFilter(e.target.value)}
+                    placeholder={t('notes.filterByTag')}
+                    className="modern-input"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button type="submit" className="modern-btn-primary flex-1 sm:flex-none">
+                <i className="fas fa-search mr-2"></i>
+                <span>{t('common.search')}</span>
+              </button>
+              {(query || tagFilter) && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="modern-btn-secondary flex-1 sm:flex-none"
+                >
+                  <i className="fas fa-times mr-2"></i>
+                  <span>{t('common.clear')}</span>
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Modern Filter Tabs */}
+        <div className="modern-filter-tabs">
+          <Link to="/" className={`modern-filter-tab ${view === 'all' ? 'active' : ''}`}>
+            <i className="fas fa-home mr-2"></i>
+            <span>All</span>
           </Link>
           <Link
             to="/?view=favorites"
-            className={`glass-segmented-item whitespace-nowrap ${view === 'favorites' ? 'active' : ''}`}
+            className={`modern-filter-tab ${view === 'favorites' ? 'active' : ''}`}
           >
-            <i className="glass-i fas fa-heart mr-1 sm:mr-2"></i>
-            <span className="text-xs sm:text-sm">Favorites</span>
+            <i className="fas fa-heart mr-2"></i>
+            <span>Favorites</span>
           </Link>
           <Link
             to="/?view=archived"
-            className={`glass-segmented-item whitespace-nowrap ${view === 'archived' ? 'active' : ''}`}
+            className={`modern-filter-tab ${view === 'archived' ? 'active' : ''}`}
           >
-            <i className="glass-i fas fa-archive mr-1 sm:mr-2"></i>
-            <span className="text-xs sm:text-sm">{t('notes.archived')}</span>
+            <i className="fas fa-archive mr-2"></i>
+            <span>{t('notes.archived')}</span>
           </Link>
           <Link
             to="/?view=shared"
-            className={`glass-segmented-item whitespace-nowrap ${view === 'shared' ? 'active' : ''}`}
+            className={`modern-filter-tab ${view === 'shared' ? 'active' : ''}`}
           >
-            <i className="glass-i fas fa-share-alt mr-1 sm:mr-2"></i>
-            <span className="text-xs sm:text-sm">Shared</span>
+            <i className="fas fa-share-alt mr-2"></i>
+            <span>Shared</span>
           </Link>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="p-3 sm:p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
-            <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
-            {error}
+          <div className="modern-error-alert">
+            <i className="fas fa-exclamation-triangle mr-3"></i>
+            <span>{error}</span>
           </div>
         )}
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-8 sm:py-12">
-            <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+          <div className="flex items-center justify-center py-16">
+            <div className="modern-spinner">
+              <i className="fas fa-circle-notch fa-spin text-5xl text-blue-500"></i>
+            </div>
           </div>
         ) : (
           (() => {
@@ -420,100 +423,73 @@ export function NotesPage() {
               : notes;
 
             return filteredNotes.length > 0 ? (
-              /* Notes Grid */
-              <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              /* Modern Notes Grid */
+              <div className="modern-notes-grid">
                 {filteredNotes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="glass-card p-4 sm:p-5 rounded-2xl relative group hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 ease-out border border-[var(--border-color)] hover:border-blue-400"
-                  >
-                    {/* Pin and Favorite Icons */}
-                    <div className="absolute top-4 right-4 flex space-x-2 z-10">
+                  <div key={note.id} className="modern-note-card group">
+                    {/* Status Badges */}
+                    <div className="modern-note-badges">
                       {note.pinned && (
-                        <span
-                          className="text-yellow-500 drop-shadow-lg text-lg"
-                          title={t('notes.pinned')}
-                        >
-                          <i className="glass-i fas fa-thumbtack"></i>
-                        </span>
+                        <div className="modern-badge badge-pinned" title={t('notes.pinned')}>
+                          <i className="fas fa-thumbtack"></i>
+                        </div>
                       )}
                       {note.favorite && (
-                        <span
-                          className="text-red-500 drop-shadow-lg text-lg"
-                          title={t('notes.favorite')}
-                        >
-                          <i className="glass-i fas fa-heart"></i>
-                        </span>
+                        <div className="modern-badge badge-favorite" title={t('notes.favorite')}>
+                          <i className="fas fa-heart"></i>
+                        </div>
                       )}
                       {note.archived && (
-                        <span
-                          className="text-gray-500 drop-shadow-lg text-lg"
-                          title={t('notes.archived')}
-                        >
-                          <i className="glass-i fas fa-archive"></i>
-                        </span>
+                        <div className="modern-badge badge-archived" title={t('notes.archived')}>
+                          <i className="fas fa-archive"></i>
+                        </div>
                       )}
                     </div>
 
                     {/* Note Content */}
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-3 pr-12">
-                        <h3 className="font-bold text-xl line-clamp-2">
-                          <Link
-                            to={`/notes/${note.id}`}
-                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 text-[var(--text-primary)] hover:underline decoration-2 underline-offset-4"
-                          >
-                            {note.title}
-                          </Link>
-                        </h3>
-                      </div>
+                    <div className="modern-note-content">
+                      <h3 className="modern-note-title">
+                        <Link to={`/notes/${note.id}`} className="modern-note-link">
+                          {note.title}
+                        </Link>
+                      </h3>
 
                       {hiddenNotes.has(note.id) ? (
-                        <div className="relative overflow-hidden rounded-xl mb-3 backdrop-blur-xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-300/30 shadow-inner">
-                          <div className="flex flex-col items-center justify-center py-6 px-4">
-                            <div className="mb-3 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center backdrop-blur-sm border border-purple-400/30">
-                              <i className="fas fa-eye-slash text-purple-600 dark:text-purple-400 text-xl"></i>
-                            </div>
-                            <span className="text-sm font-medium text-[var(--text-secondary)] mb-3 text-center">
-                              Content hidden for privacy
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                toggleHideNote(note.id);
-                              }}
-                              className="btn-apple text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                            >
-                              <i className="fas fa-eye mr-2"></i>
-                              Show Content
-                            </button>
+                        <div className="modern-hidden-content">
+                          <div className="modern-hidden-icon">
+                            <i className="fas fa-eye-slash text-2xl"></i>
                           </div>
+                          <span className="modern-hidden-text">Content hidden for privacy</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleHideNote(note.id);
+                            }}
+                            className="modern-btn-primary modern-btn-sm"
+                          >
+                            <i className="fas fa-eye mr-2"></i>
+                            Show Content
+                          </button>
                         </div>
                       ) : (
                         <>
-                          {note.excerpt && (
-                            <p className="text-sm line-clamp-3 mb-4 text-[var(--text-secondary)] leading-relaxed">
-                              {note.excerpt}
-                            </p>
-                          )}
+                          {note.excerpt && <p className="modern-note-excerpt">{note.excerpt}</p>}
 
                           {/* Tags */}
                           {note.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-3">
+                            <div className="modern-note-tags">
                               {note.tags.slice(0, 3).map((tag) => (
                                 <span
                                   key={tag.id}
-                                  className={`px-3 py-1.5 text-xs font-semibold rounded-full border shadow-sm hover:shadow-md transition-shadow ${getTagColor(tag.name)}`}
+                                  className={`modern-tag ${getTagColor(tag.name)}`}
                                 >
-                                  <i className="fas fa-tag mr-1 text-[0.65rem]"></i>
+                                  <i className="fas fa-tag mr-1"></i>
                                   {tag.name}
                                 </span>
                               ))}
                               {note.tags.length > 3 && (
-                                <span className="text-xs text-[var(--text-muted)] font-medium px-2 py-1.5">
-                                  +{note.tags.length - 3} more
-                                </span>
+                                <span className="modern-tag-more">+{note.tags.length - 3}</span>
                               )}
                             </div>
                           )}
@@ -522,20 +498,14 @@ export function NotesPage() {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between text-xs text-[var(--text-muted)] pt-3 border-t border-[var(--border-color)]">
-                      <div className="flex items-center space-x-4">
-                        <span
-                          title={t('notes.readingTime')}
-                          className="flex items-center font-medium"
-                        >
-                          <i className="glass-i fas fa-clock mr-1.5 text-blue-500"></i>
-                          {note.reading_time || Math.ceil((note.body?.length || 0) / 1000)}m read
+                    <div className="modern-note-footer">
+                      <div className="modern-note-meta">
+                        <span className="modern-meta-item">
+                          <i className="fas fa-clock mr-1.5 text-blue-500"></i>
+                          {note.reading_time || Math.ceil((note.body?.length || 0) / 1000)}m
                         </span>
-                        <span
-                          title={t('notes.lastUpdated')}
-                          className="flex items-center font-medium"
-                        >
-                          <i className="glass-i fas fa-calendar-alt mr-1.5 text-purple-500"></i>
+                        <span className="modern-meta-item">
+                          <i className="fas fa-calendar-alt mr-1.5 text-purple-500"></i>
                           {note.updated_at
                             ? new Date(note.updated_at).toLocaleDateString('en-US', {
                                 month: 'short',
@@ -546,38 +516,38 @@ export function NotesPage() {
                       </div>
 
                       {/* Quick Actions */}
-                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex space-x-1.5">
+                      <div className="modern-note-actions">
                         <button
                           type="button"
                           onClick={() => toggleHideNote(note.id)}
-                          className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${hiddenNotes.has(note.id) ? 'text-purple-600 hover:text-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/30' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/30'}`}
+                          className={`modern-action-btn ${hiddenNotes.has(note.id) ? 'action-active action-purple' : 'action-default'}`}
                           title={hiddenNotes.has(note.id) ? 'Show content' : 'Hide content'}
                         >
                           <i
-                            className={`glass-i fas ${hiddenNotes.has(note.id) ? 'fa-eye' : 'fa-eye-slash'} text-sm`}
+                            className={`fas ${hiddenNotes.has(note.id) ? 'fa-eye' : 'fa-eye-slash'}`}
                           ></i>
                         </button>
                         <Link
                           to={`/notes/${note.id}/edit`}
-                          className="p-2 rounded-lg text-blue-600 hover:text-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 hover:scale-110"
+                          className="modern-action-btn action-default hover:action-blue"
                           title={t('notes.editTooltip')}
                         >
-                          <i className="glass-i fas fa-edit text-sm"></i>
+                          <i className="fas fa-edit"></i>
                         </Link>
                         <Link
                           to={`/notes/${note.id}/share`}
-                          className="p-2 rounded-lg text-green-600 hover:text-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all duration-200 hover:scale-110"
+                          className="modern-action-btn action-default hover:action-green"
                           title={t('notes.shareTooltip')}
                         >
-                          <i className="glass-i fas fa-share-alt text-sm"></i>
+                          <i className="fas fa-share-alt"></i>
                         </Link>
                         <button
                           type="button"
                           onClick={() => handleToggleFavorite(note)}
-                          className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${note.favorite ? 'text-red-600 hover:text-red-800 hover:bg-red-100 dark:hover:bg-red-900/30' : 'text-gray-400 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30'}`}
+                          className={`modern-action-btn ${note.favorite ? 'action-active action-red' : 'action-default'}`}
                           title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
                         >
-                          <i className="glass-i fas fa-heart text-sm"></i>
+                          <i className="fas fa-heart"></i>
                         </button>
                       </div>
                     </div>
@@ -585,19 +555,21 @@ export function NotesPage() {
                 ))}
               </div>
             ) : (
-              /* Empty State when filtered by folder */
-              <div className="glass-card p-12 rounded-2xl text-center">
-                <i className="glass-i fas fa-folder-open text-6xl mb-4 text-[var(--text-muted)]"></i>
-                <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">
+              /* Modern Empty State */
+              <div className="modern-empty-state">
+                <div className="modern-empty-icon">
+                  <i className="fas fa-folder-open"></i>
+                </div>
+                <h3 className="modern-empty-title">
                   {selectedFolder ? `No notes in "${selectedFolder.name}"` : t('notes.noNotes')}
                 </h3>
-                <p className="text-[var(--text-secondary)] mb-6">
+                <p className="modern-empty-text">
                   {selectedFolder
                     ? 'Create a note or move existing notes to this folder'
                     : 'Start creating notes to organize them'}
                 </p>
-                <Link to="/notes/new" className="btn-apple inline-flex items-center">
-                  <i className="glass-i fas fa-plus mr-2"></i>
+                <Link to="/notes/new" className="modern-btn-primary mt-4">
+                  <i className="fas fa-plus mr-2"></i>
                   {t('common.addNote')}
                 </Link>
               </div>
