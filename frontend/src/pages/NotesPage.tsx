@@ -4,7 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { foldersApi, notesApi, profileApi } from '../api/client';
 import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
 import { FolderModal } from '../components/FolderModal';
-import { FolderTree } from '../components/FolderTree';
+import { FolderSidebar } from '../components/FolderSidebar';
 import { useAuth } from '../context/AuthContext';
 import type { Folder, Note, NoteViewType, Tag } from '../types';
 import { getTagColor } from '../utils/tagColors';
@@ -234,64 +234,17 @@ export function NotesPage() {
 
   return (
     <div className="flex gap-3 sm:gap-6 p-3 sm:p-6 page-padding">
-      {/* Mobile Folder Drawer Backdrop */}
-      <div
-        className={`mobile-drawer-backdrop lg:hidden ${isFolderDrawerOpen ? 'open' : ''}`}
-        onClick={() => setIsFolderDrawerOpen(false)}
-        onKeyDown={(e) => e.key === 'Escape' && setIsFolderDrawerOpen(false)}
-        role="button"
-        tabIndex={-1}
-        aria-label="Close folder drawer"
+      {/* Folder Sidebar - Responsive */}
+      <FolderSidebar
+        folders={folders}
+        selectedFolder={selectedFolder}
+        onSelectFolder={handleSelectFolder}
+        onCreateFolder={handleCreateFolder}
+        onEditFolder={handleEditFolder}
+        onDeleteFolder={handleDeleteFolder}
+        isOpen={isFolderDrawerOpen}
+        onToggle={() => setIsFolderDrawerOpen(!isFolderDrawerOpen)}
       />
-
-      {/* Mobile Folder Drawer */}
-      <div className={`mobile-drawer lg:hidden ${isFolderDrawerOpen ? 'open' : ''}`}>
-        <div className="flex items-center justify-between mb-4 pt-2">
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">
-            <i className="fas fa-folder mr-2 text-blue-600"></i>
-            {t('folders.title') || 'Folders'}
-          </h2>
-          <button
-            type="button"
-            onClick={() => setIsFolderDrawerOpen(false)}
-            className="mobile-menu-btn !flex"
-            aria-label="Close folders"
-          >
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
-        <FolderTree
-          folders={folders}
-          selectedFolderId={selectedFolder?.id}
-          onSelectFolder={(folder) => {
-            handleSelectFolder(folder);
-            setIsFolderDrawerOpen(false);
-          }}
-          onCreateFolder={handleCreateFolder}
-          onEditFolder={handleEditFolder}
-          onDeleteFolder={handleDeleteFolder}
-          onMoveFolder={() => {
-            // TODO: Implement folder move functionality
-          }}
-        />
-      </div>
-
-      {/* Desktop Folder Sidebar */}
-      <div className="w-64 flex-shrink-0 hidden lg:block">
-        <div className="glass-card p-4 rounded-xl sticky top-6">
-          <FolderTree
-            folders={folders}
-            selectedFolderId={selectedFolder?.id}
-            onSelectFolder={handleSelectFolder}
-            onCreateFolder={handleCreateFolder}
-            onEditFolder={handleEditFolder}
-            onDeleteFolder={handleDeleteFolder}
-            onMoveFolder={() => {
-              // TODO: Implement folder move functionality in Phase 4
-            }}
-          />
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="flex-1 space-y-4 sm:space-y-6 min-w-0">
