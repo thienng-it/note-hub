@@ -2535,6 +2535,168 @@ body.dark {
   }
 }
 
+/* ============================================================
+   FOLDER SIDEBAR - Responsive Component
+   ============================================================ */
+
+/* Mobile/Tablet Sidebar (Drawer) */
+.folder-sidebar-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  width: 85%;
+  max-width: 320px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border-right: 1px solid var(--glass-border);
+  box-shadow: var(--glass-depth-3);
+  z-index: 150;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: calc(env(safe-area-inset-top) + 1rem) 1rem 1rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.folder-sidebar-mobile.open {
+  transform: translateX(0);
+}
+
+/* Header in mobile drawer */
+.folder-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.folder-sidebar-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.folder-sidebar-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.folder-sidebar-close-btn:hover {
+  background: var(--glass-bg-hover);
+}
+
+.folder-sidebar-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Desktop Sidebar */
+.folder-sidebar-desktop {
+  display: none;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.folder-sidebar-content {
+  position: sticky;
+  top: 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow:
+    var(--glass-depth-1),
+    inset 0 1px 0 0 var(--glass-highlight);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile Toggle Button - Only visible on mobile/tablet */
+.folder-sidebar-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.folder-sidebar-toggle-btn:hover {
+  background: var(--glass-bg-hover);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.folder-sidebar-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Tablet (768px - 1023px) - Show sidebar inline, not drawer */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .folder-sidebar-mobile {
+    max-width: 280px;
+  }
+
+  .folder-sidebar-header {
+    padding-bottom: 0.875rem;
+  }
+
+  .folder-sidebar-title {
+    font-size: 1rem;
+  }
+}
+
+/* Desktop (> 1024px) - Show sidebar, hide drawer and toggle button */
+@media (min-width: 1024px) {
+  .folder-sidebar-mobile {
+    display: none;
+  }
+
+  .folder-sidebar-toggle-btn {
+    display: none;
+  }
+
+  .folder-sidebar-desktop {
+    display: block;
+  }
+}
+
+/* Improve folder tree spacing in sidebar */
+.folder-sidebar-mobile .folder-tree,
+.folder-sidebar-content .folder-tree {
+  margin-top: 0;
+}
+
 /* Horizontal Scrollable Tabs for Mobile */
 .scrollable-tabs {
   display: flex;
