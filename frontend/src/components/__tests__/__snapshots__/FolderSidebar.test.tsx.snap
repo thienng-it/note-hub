@@ -1,0 +1,33 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FolderSidebar > Snapshots > matches snapshot - closed state 1`] = `
+<button
+  aria-label="folders.closeDrawer"
+  class="mobile-drawer-backdrop lg:hidden "
+  type="button"
+/>
+`;
+
+exports[`FolderSidebar > Snapshots > matches snapshot - empty folders 1`] = `
+<button
+  aria-label="folders.closeDrawer"
+  class="mobile-drawer-backdrop lg:hidden open"
+  type="button"
+/>
+`;
+
+exports[`FolderSidebar > Snapshots > matches snapshot - open state 1`] = `
+<button
+  aria-label="folders.closeDrawer"
+  class="mobile-drawer-backdrop lg:hidden open"
+  type="button"
+/>
+`;
+
+exports[`FolderSidebar > Snapshots > matches snapshot - with selected folder 1`] = `
+<button
+  aria-label="folders.closeDrawer"
+  class="mobile-drawer-backdrop lg:hidden open"
+  type="button"
+/>
+`;
