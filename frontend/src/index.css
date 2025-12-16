@@ -261,21 +261,22 @@ body.dark {
   color: white;
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.75rem;
-  padding: 0.875rem 1.5rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
-    0 4px 14px rgba(0, 122, 255, 0.4),
-    0 8px 24px rgba(0, 122, 255, 0.2),
+    0 2px 8px rgba(0, 122, 255, 0.3),
+    0 4px 16px rgba(0, 122, 255, 0.15),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
-  font-size: 1rem;
+  font-size: 0.875rem;
   /* Better touch target */
-  min-height: 44px;
+  min-height: 38px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   position: relative;
   overflow: hidden;
+  line-height: 1.2;
 }
 
 .btn-apple::before {
@@ -290,10 +291,10 @@ body.dark {
 }
 
 .btn-apple:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow:
-    0 6px 20px rgba(0, 122, 255, 0.5),
-    0 12px 32px rgba(0, 122, 255, 0.3),
+    0 4px 12px rgba(0, 122, 255, 0.4),
+    0 8px 20px rgba(0, 122, 255, 0.2),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
 }
 
@@ -311,8 +312,17 @@ body.dark {
 /* Mobile button adjustments */
 @media (max-width: 640px) {
   .btn-apple {
-    padding: 0.875rem 1.25rem;
-    font-size: 0.9375rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    min-height: 36px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .btn-apple {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
   }
 }
 
