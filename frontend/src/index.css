@@ -2064,7 +2064,7 @@ body.dark {
   opacity: 1;
   bottom: auto;
   top: 50%;
-  left: 1rem;
+  left: 1.25rem;
   right: auto;
   transform: translateY(350%);
   justify-content: flex-start;
@@ -2095,33 +2095,113 @@ body.dark {
   -ms-overflow-style: none; /* IE/Edge */
 }
 
-/* Navigation Container - Minimized State */
+/* Navigation Container - Minimized State - Modern Floating Button */
 .liquid-glass-nav-minimized-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border: 1px solid var(--glass-border);
-  border-radius: 50%;
+  padding: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.95) 0%,
+    rgba(99, 102, 241, 0.95) 50%,
+    rgba(139, 92, 246, 0.95) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1.25rem;
   box-shadow:
-    0 8px 32px 0 rgba(0, 0, 0, 0.15),
-    0 20px 60px 0 rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 4rem;
-  height: 4rem;
+    0 8px 32px rgba(59, 130, 246, 0.4),
+    0 4px 16px rgba(99, 102, 241, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 3.5rem;
+  height: 3.5rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer effect on minimized container */
+.liquid-glass-nav-minimized-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.liquid-glass-nav-minimized-container:hover::before {
+  left: 100%;
+}
+
+.liquid-glass-nav-minimized-container:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 12px 40px rgba(59, 130, 246, 0.5),
+    0 6px 20px rgba(99, 102, 241, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.liquid-glass-nav-minimized-container:active {
+  transform: scale(0.95);
+}
+
+/* Subtle breathing glow animation */
+@keyframes dock-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 32px rgba(59, 130, 246, 0.4),
+      0 4px 16px rgba(99, 102, 241, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 10px 40px rgba(59, 130, 246, 0.5),
+      0 6px 24px rgba(99, 102, 241, 0.4),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+.liquid-glass-nav-minimized-container {
+  animation: dock-glow 3s ease-in-out infinite;
+}
+
+.liquid-glass-nav-minimized-container:hover {
+  animation: none;
 }
 
 .dark .liquid-glass-nav-minimized-container {
-  background: rgba(30, 41, 59, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.9) 0%,
+    rgba(99, 102, 241, 0.9) 50%,
+    rgba(139, 92, 246, 0.9) 100%
+  );
+  border: 2px solid rgba(255, 255, 255, 0.2);
   box-shadow:
-    0 8px 32px 0 rgba(0, 0, 0, 0.4),
-    0 20px 60px 0 rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    0 8px 32px rgba(59, 130, 246, 0.35),
+    0 4px 16px rgba(99, 102, 241, 0.25),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.2);
+}
+
+.dark .liquid-glass-nav-minimized-container:hover {
+  box-shadow:
+    0 12px 40px rgba(59, 130, 246, 0.45),
+    0 6px 20px rgba(99, 102, 241, 0.35),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.2);
 }
 
 /* Hide scrollbar for Chrome, Safari, Opera */
@@ -2181,14 +2261,23 @@ body.dark {
 
 /* Icon wrapper in minimized state */
 .liquid-glass-nav-item.minimized .liquid-glass-nav-icon-wrapper {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .liquid-glass-nav-item.minimized .liquid-glass-nav-icon {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   color: white;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.liquid-glass-nav-item.minimized:hover .liquid-glass-nav-icon {
+  transform: scale(1.1);
 }
 
 .dark .liquid-glass-nav-icon-wrapper {
