@@ -363,36 +363,39 @@ export function NotesPage() {
           </div>
 
           {/* Search Form */}
-          <div className="glass-panel p-3 sm:p-4">
+          <div className="glass-panel p-4 sm:p-5 rounded-2xl shadow-lg border border-[var(--border-color)]">
             <form onSubmit={handleSearch} className="flex flex-col gap-3">
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="flex-1">
-                  <div className="relative">
+                  <div className="relative group">
                     <input
                       type="text"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder={t('notes.searchPlaceholder')}
-                      className="glass-input glass-input-with-icon w-full pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="glass-input glass-input-with-icon w-full pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 border border-[var(--border-color)] focus:border-blue-400"
                     />
-                    <i className="glass-i fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+                    <i className="glass-i fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 text-sm"></i>
                   </div>
                 </div>
                 <div className="w-full sm:w-48">
-                  <div className="relative">
-                    <i className="glass-i fas fa-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
+                  <div className="relative group">
+                    <i className="glass-i fas fa-tag absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500 text-sm"></i>
                     <input
                       type="text"
                       value={tagFilter}
                       onChange={(e) => setTagFilter(e.target.value)}
                       placeholder={t('notes.filterByTag')}
-                      className="glass-input glass-input-with-icon w-full pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="glass-input glass-input-with-icon w-full pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200 border border-[var(--border-color)] focus:border-purple-400"
                     />
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button type="submit" className="btn-apple flex-1 sm:flex-none">
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="btn-apple flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200"
+                >
                   <i className="glass-i fas fa-search mr-2"></i>
                   <span>{t('common.search')}</span>
                 </button>
@@ -400,7 +403,7 @@ export function NotesPage() {
                   <button
                     type="button"
                     onClick={clearSearch}
-                    className="btn-secondary-glass flex-1 sm:flex-none"
+                    className="btn-secondary-glass flex-1 sm:flex-none shadow-sm hover:shadow-md transition-all duration-200"
                   >
                     <i className="glass-i fas fa-times mr-2"></i>
                     <span>{t('common.clear')}</span>
@@ -465,23 +468,35 @@ export function NotesPage() {
 
             return filteredNotes.length > 0 ? (
               /* Notes Grid */
-              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredNotes.map((note) => (
-                  <div key={note.id} className="glass-card p-3 sm:p-4 rounded-xl relative group">
+                  <div
+                    key={note.id}
+                    className="glass-card p-4 sm:p-5 rounded-2xl relative group hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 ease-out border border-[var(--border-color)] hover:border-blue-400"
+                  >
                     {/* Pin and Favorite Icons */}
-                    <div className="absolute top-3 right-3 flex space-x-2">
+                    <div className="absolute top-4 right-4 flex space-x-2 z-10">
                       {note.pinned && (
-                        <span className="text-yellow-500" title={t('notes.pinned')}>
+                        <span
+                          className="text-yellow-500 drop-shadow-lg text-lg"
+                          title={t('notes.pinned')}
+                        >
                           <i className="glass-i fas fa-thumbtack"></i>
                         </span>
                       )}
                       {note.favorite && (
-                        <span className="text-red-500" title={t('notes.favorite')}>
+                        <span
+                          className="text-red-500 drop-shadow-lg text-lg"
+                          title={t('notes.favorite')}
+                        >
                           <i className="glass-i fas fa-heart"></i>
                         </span>
                       )}
                       {note.archived && (
-                        <span className="text-gray-500" title={t('notes.archived')}>
+                        <span
+                          className="text-gray-500 drop-shadow-lg text-lg"
+                          title={t('notes.archived')}
+                        >
                           <i className="glass-i fas fa-archive"></i>
                         </span>
                       )}
@@ -489,11 +504,11 @@ export function NotesPage() {
 
                     {/* Note Content */}
                     <div className="mb-4">
-                      <div className="flex items-center justify-between mb-2 pr-12">
-                        <h3 className="font-semibold text-lg line-clamp-1">
+                      <div className="flex items-center justify-between mb-3 pr-12">
+                        <h3 className="font-bold text-xl line-clamp-2">
                           <Link
                             to={`/notes/${note.id}`}
-                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[var(--text-primary)]"
+                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 text-[var(--text-primary)] hover:underline decoration-2 underline-offset-4"
                           >
                             {note.title}
                           </Link>
@@ -501,41 +516,49 @@ export function NotesPage() {
                       </div>
 
                       {hiddenNotes.has(note.id) ? (
-                        <div className="flex items-center justify-center py-4 bg-[var(--bg-tertiary)] rounded-lg mb-3">
-                          <i className="fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
-                          <span className="text-sm text-[var(--text-muted)]">Content hidden</span>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              toggleHideNote(note.id);
-                            }}
-                            className="ml-3 text-xs px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                          >
-                            Show
-                          </button>
+                        <div className="relative overflow-hidden rounded-xl mb-3 backdrop-blur-xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-300/30 shadow-inner">
+                          <div className="flex flex-col items-center justify-center py-6 px-4">
+                            <div className="mb-3 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center backdrop-blur-sm border border-purple-400/30">
+                              <i className="fas fa-eye-slash text-purple-600 dark:text-purple-400 text-xl"></i>
+                            </div>
+                            <span className="text-sm font-medium text-[var(--text-secondary)] mb-3 text-center">
+                              Content hidden for privacy
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                toggleHideNote(note.id);
+                              }}
+                              className="btn-apple text-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                            >
+                              <i className="fas fa-eye mr-2"></i>
+                              Show Content
+                            </button>
+                          </div>
                         </div>
                       ) : (
                         <>
                           {note.excerpt && (
-                            <p className="text-sm line-clamp-3 mb-3 text-[var(--text-secondary)]">
+                            <p className="text-sm line-clamp-3 mb-4 text-[var(--text-secondary)] leading-relaxed">
                               {note.excerpt}
                             </p>
                           )}
 
                           {/* Tags */}
                           {note.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mb-3">
+                            <div className="flex flex-wrap gap-2 mb-3">
                               {note.tags.slice(0, 3).map((tag) => (
                                 <span
                                   key={tag.id}
-                                  className={`px-2 py-1 text-xs font-medium rounded-full border ${getTagColor(tag.name)}`}
+                                  className={`px-3 py-1.5 text-xs font-semibold rounded-full border shadow-sm hover:shadow-md transition-shadow ${getTagColor(tag.name)}`}
                                 >
+                                  <i className="fas fa-tag mr-1 text-[0.65rem]"></i>
                                   {tag.name}
                                 </span>
                               ))}
                               {note.tags.length > 3 && (
-                                <span className="text-xs text-[var(--text-muted)]">
+                                <span className="text-xs text-[var(--text-muted)] font-medium px-2 py-1.5">
                                   +{note.tags.length - 3} more
                                 </span>
                               )}
@@ -546,13 +569,20 @@ export function NotesPage() {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                      <div className="flex items-center space-x-3">
-                        <span title={t('notes.readingTime')}>
-                          <i className="glass-i fas fa-clock mr-1"></i>
-                          {note.reading_time || Math.ceil((note.body?.length || 0) / 1000)}m
+                    <div className="flex items-center justify-between text-xs text-[var(--text-muted)] pt-3 border-t border-[var(--border-color)]">
+                      <div className="flex items-center space-x-4">
+                        <span
+                          title={t('notes.readingTime')}
+                          className="flex items-center font-medium"
+                        >
+                          <i className="glass-i fas fa-clock mr-1.5 text-blue-500"></i>
+                          {note.reading_time || Math.ceil((note.body?.length || 0) / 1000)}m read
                         </span>
-                        <span title={t('notes.lastUpdated')}>
+                        <span
+                          title={t('notes.lastUpdated')}
+                          className="flex items-center font-medium"
+                        >
+                          <i className="glass-i fas fa-calendar-alt mr-1.5 text-purple-500"></i>
                           {note.updated_at
                             ? new Date(note.updated_at).toLocaleDateString('en-US', {
                                 month: 'short',
@@ -563,38 +593,38 @@ export function NotesPage() {
                       </div>
 
                       {/* Quick Actions */}
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex space-x-1.5">
                         <button
                           type="button"
                           onClick={() => toggleHideNote(note.id)}
-                          className={`${hiddenNotes.has(note.id) ? 'text-purple-600 hover:text-purple-800' : 'text-gray-400 hover:text-purple-600'} transition-colors`}
+                          className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${hiddenNotes.has(note.id) ? 'text-purple-600 hover:text-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/30' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/30'}`}
                           title={hiddenNotes.has(note.id) ? 'Show content' : 'Hide content'}
                         >
                           <i
-                            className={`glass-i fas ${hiddenNotes.has(note.id) ? 'fa-eye' : 'fa-eye-slash'}`}
+                            className={`glass-i fas ${hiddenNotes.has(note.id) ? 'fa-eye' : 'fa-eye-slash'} text-sm`}
                           ></i>
                         </button>
                         <Link
                           to={`/notes/${note.id}/edit`}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          className="p-2 rounded-lg text-blue-600 hover:text-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 hover:scale-110"
                           title={t('notes.editTooltip')}
                         >
-                          <i className="glass-i fas fa-edit"></i>
+                          <i className="glass-i fas fa-edit text-sm"></i>
                         </Link>
                         <Link
                           to={`/notes/${note.id}/share`}
-                          className="text-green-600 hover:text-green-800 transition-colors"
+                          className="p-2 rounded-lg text-green-600 hover:text-green-800 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all duration-200 hover:scale-110"
                           title={t('notes.shareTooltip')}
                         >
-                          <i className="glass-i fas fa-share-alt"></i>
+                          <i className="glass-i fas fa-share-alt text-sm"></i>
                         </Link>
                         <button
                           type="button"
                           onClick={() => handleToggleFavorite(note)}
-                          className={`${note.favorite ? 'text-red-600 hover:text-red-800' : 'text-gray-400 hover:text-red-600'} transition-colors`}
+                          className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${note.favorite ? 'text-red-600 hover:text-red-800 hover:bg-red-100 dark:hover:bg-red-900/30' : 'text-gray-400 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30'}`}
                           title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
                         >
-                          <i className="glass-i fas fa-heart"></i>
+                          <i className="glass-i fas fa-heart text-sm"></i>
                         </button>
                       </div>
                     </div>
