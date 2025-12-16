@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { FolderSidebar } from '../FolderSidebar';
 import type { Folder } from '../../types';
+import { FolderSidebar } from '../FolderSidebar';
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
