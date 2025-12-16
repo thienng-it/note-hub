@@ -310,7 +310,9 @@ export function TasksPage() {
           onCreateFolder={handleCreateFolder}
           onEditFolder={handleEditFolder}
           onDeleteFolder={handleDeleteFolder}
-          onMoveFolder={() => {}}
+          onMoveFolder={() => {
+            // TODO: Implement folder move functionality in Phase 4
+          }}
         />
       </div>
 
