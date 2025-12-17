@@ -168,13 +168,14 @@ export function LiquidGlassNav() {
                 className={`liquid-glass-nav-item ${isActive(item) ? 'active' : ''}`}
                 onPointerEnter={(e) => e.pointerType === 'mouse' && setHoveredIndex(index)}
                 onPointerDown={() => setHoveredIndex(null)} // Clear hover on touch
-                onClick={(e) => {
+                onClick={() => {
                   // Ensure navigation works on both desktop and mobile
                   setIsDockExpanded(false);
                   setHoveredIndex(null);
                 }}
                 style={{
                   transform: `scale(${getIconScale(index)}) translateY(${getIconTranslateY(index)}px)`,
+                  transition: 'transform 0.2s cubic-bezier(0.32, 0.72, 0, 1)',
                 }}
               >
                 <div

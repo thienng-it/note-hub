@@ -284,14 +284,14 @@ export function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden chat-page-container">
+    <div className="h-full flex flex-col overflow-hidden chat-page-container chat-container">
       {/* Modern Header */}
       <div className="modern-page-header flex-shrink-0">
         <div className="flex items-center gap-4 mb-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-1">
               <div className="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600">
-                <i className="fas fa-comments text-white"></i>
+                <i className="fas fa-comments text-white" />
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
                 {t('chat.title')}
@@ -310,7 +310,7 @@ export function ChatPage() {
                   borderColor: 'rgba(239, 68, 68, 0.2)',
                 }}
               >
-                <i className="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                <i className="fas fa-exclamation-triangle text-red-500 mr-2" />
                 <span className="hidden sm:inline">{t('chat.disconnected')}</span>
                 <span className="sm:hidden">Offline</span>
               </div>
@@ -323,44 +323,36 @@ export function ChatPage() {
               className="modern-btn-primary"
               aria-label={t('chat.newChat')}
             >
-              <i className="fas fa-plus mr-2"></i>
+              <i className="fas fa-plus mr-2" />
               <span>{t('chat.newChat')}</span>
             </button>
           </div>
         </div>
         {showNotificationBanner && (
-          <div className="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in">
-            <div className="flex items-start justify-between gap-3" style={{ margin: '1rem' }}>
-              <div className="flex items-start gap-2 md:gap-3 flex-1 min-w-0">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0">
-                  <i className="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"></i>
-                </div>
-                <div className="flex-1 min-w-0 pt-1">
-                  <p className="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100">
-                    {t('chat.enableNotifications')}
-                  </p>
-                  <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2">
-                    {t('chat.notificationDescription')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={handleRequestNotificationPermission}
-                  className="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-                >
-                  {t('chat.enable')}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDismissNotificationBanner}
-                  className="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
-                  aria-label="Dismiss"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              </div>
+          <div className="chat-notification-banner">
+            <div className="chat-notification-icon">
+              <i className="fas fa-bell" />
+            </div>
+            <div className="chat-notification-content">
+              <p className="chat-notification-title">{t('chat.enableNotifications')}</p>
+              <p className="chat-notification-desc">{t('chat.notificationDescription')}</p>
+            </div>
+            <div className="chat-notification-actions">
+              <button
+                type="button"
+                onClick={handleRequestNotificationPermission}
+                className="chat-notification-btn enable"
+              >
+                {t('chat.enable')}
+              </button>
+              <button
+                type="button"
+                onClick={handleDismissNotificationBanner}
+                className="chat-notification-btn dismiss"
+                aria-label="Dismiss"
+              >
+                <i className="fas fa-times" />
+              </button>
             </div>
           </div>
         )}
@@ -370,31 +362,29 @@ export function ChatPage() {
       <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Rooms list - Hidden on mobile when chat is selected */}
         <div
-          className={`w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain ${
+          className={`w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain ${
             currentRoom ? 'hidden md:flex md:flex-col' : 'flex flex-col'
           }`}
         >
           {isLoading && rooms.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center p-4 text-center text-gray-500">
+            <div className="flex-1 flex items-center justify-center p-4 text-center">
               <div>
-                <i className="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500"></i>
-                <p className="text-sm md:text-base">{t('chat.loadingChats')}</p>
+                <i className="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500" />
+                <p className="text-sm md:text-base text-[var(--text-secondary)]">
+                  {t('chat.loadingChats')}
+                </p>
               </div>
             </div>
           ) : rooms.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center p-6 md:p-8 text-center">
-              <div className="max-w-xs">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-comments text-2xl md:text-3xl text-gray-400 dark:text-gray-500"></i>
-                </div>
-                <p className="text-base md:text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('chat.noChats')}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('chat.startNewChat')}</p>
+            <div className="chat-empty-state">
+              <div className="chat-empty-icon">
+                <i className="fas fa-comments" />
               </div>
+              <p className="chat-empty-title">{t('chat.noChats')}</p>
+              <p className="chat-empty-subtitle">{t('chat.startNewChat')}</p>
             </div>
           ) : (
-            <div className="flex-1 divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="flex-1">
               {rooms.map((room) => {
                 const otherUser = getOtherParticipant(room);
                 const displayName = room.is_group ? room.name : otherUser?.username || 'Unknown';
@@ -407,10 +397,8 @@ export function ChatPage() {
                     type="button"
                     key={room.id}
                     onClick={() => selectRoom(room.id)}
-                    className={`w-full p-3 md:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation ${
-                      currentRoom?.id === room.id
-                        ? 'bg-blue-50 dark:bg-blue-900/30 border-l-3 border-l-blue-500'
-                        : 'border-l-3 border-l-transparent'
+                    className={`chat-room-item w-full text-left ${
+                      currentRoom?.id === room.id ? 'active' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -424,36 +412,30 @@ export function ChatPage() {
                         />
                       )}
                       {room.is_group && (
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-users text-white text-sm"></i>
+                        <div className="chat-room-avatar group">
+                          <i className="fas fa-users text-white text-sm" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base">
-                            {displayName}
-                          </span>
+                          <span className="chat-room-name truncate">{displayName}</span>
                           {room.lastMessage && (
-                            <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                            <span className="chat-room-time">
                               {formatTime(room.lastMessage.created_at)}
                             </span>
                           )}
                         </div>
                         <div className="flex items-center justify-between gap-2 mt-0.5">
                           {room.lastMessage ? (
-                            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">
-                              <span className="font-medium">
-                                {room.lastMessage.sender.username}:
-                              </span>{' '}
+                            <p className="chat-room-preview truncate">
+                              <span className="sender">{room.lastMessage.sender.username}:</span>{' '}
                               {room.lastMessage.message}
                             </p>
                           ) : (
-                            <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 italic">
-                              No messages yet
-                            </p>
+                            <p className="chat-room-preview italic">No messages yet</p>
                           )}
                           {room.unreadCount > 0 && (
-                            <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full flex-shrink-0 min-w-[1.25rem] text-center">
+                            <span className="chat-unread-badge">
                               {room.unreadCount > 99 ? '99+' : room.unreadCount}
                             </span>
                           )}
@@ -469,41 +451,37 @@ export function ChatPage() {
 
         {/* Chat area - Full width on mobile when chat is selected */}
         <div
-          className={`flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 ${
+          className={`flex-1 flex flex-col chat-main overflow-hidden min-h-0 ${
             currentRoom ? 'flex' : 'hidden md:flex'
           }`}
         >
           {!currentRoom ? (
-            <div className="flex-1 flex items-center justify-center p-6">
-              <div className="text-center max-w-sm">
-                <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-comment-dots text-3xl md:text-4xl text-gray-400 dark:text-gray-600"></i>
-                </div>
-                <p className="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  {t('chat.noChatSelected')}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">
-                  Select a conversation from the list or start a new chat
-                </p>
+            <div className="chat-empty-state">
+              <div className="chat-empty-icon">
+                <i className="fas fa-comment-dots" />
               </div>
+              <p className="chat-empty-title">{t('chat.noChatSelected')}</p>
+              <p className="chat-empty-subtitle">
+                Select a conversation from the list or start a new chat
+              </p>
             </div>
           ) : (
             <>
               {/* Chat header */}
-              <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-shrink-0 safe-area-inset-top">
-                <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+              <div className="chat-header flex-shrink-0 safe-area-inset-top">
+                <div className="flex items-center gap-2 md:gap-3 mb-3">
                   {/* Back button for mobile */}
                   <button
                     type="button"
                     onClick={() => clearRoom()}
-                    className="md:hidden w-9 h-9 flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 transition-colors flex-shrink-0 touch-manipulation"
+                    className="md:hidden chat-input-btn"
                     title={t('common.back')}
                     aria-label="Back to chat list"
                   >
-                    <i className="fas fa-arrow-left text-lg"></i>
+                    <i className="fas fa-arrow-left text-lg" />
                   </button>
                   <div className="flex-1 min-w-0">
-                    <h2 className="font-semibold text-gray-900 dark:text-white truncate text-base md:text-lg">
+                    <h2 className="chat-header-title truncate">
                       {currentRoom.is_group
                         ? currentRoom.name
                         : t('chat.chatWith', {
@@ -511,9 +489,11 @@ export function ChatPage() {
                           })}
                     </h2>
                     {typingUsers.size > 0 && (
-                      <p className="text-xs md:text-sm text-blue-600 dark:text-blue-400 truncate flex items-center gap-1">
-                        <span className="typing-indicator">
-                          <span></span>
+                      <p className="chat-header-subtitle">
+                        <span className="chat-typing-indicator">
+                          <span className="chat-typing-dot" />
+                          <span className="chat-typing-dot" />
+                          <span className="chat-typing-dot" />
                         </span>
                         {Array.from(typingUsers.values())[0]} {t('chat.typing')}
                       </p>
@@ -522,44 +502,42 @@ export function ChatPage() {
                   <button
                     type="button"
                     onClick={() => setShowDeleteRoomConfirm(true)}
-                    className="w-9 h-9 flex items-center justify-center text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 active:bg-red-100 dark:active:bg-red-900/50 rounded-full transition-colors flex-shrink-0 touch-manipulation"
+                    className="chat-input-btn text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
                     title={t('chat.deleteChat')}
                     aria-label="Delete chat"
                   >
-                    <i className="fas fa-trash text-sm"></i>
+                    <i className="fas fa-trash text-sm" />
                   </button>
                 </div>
                 {/* Search bar */}
-                <div className="flex gap-2">
-                  <div className="flex-1 relative">
-                    <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-                    <input
-                      type="text"
-                      value={messageSearchQuery}
-                      onChange={(e) => handleMessageSearch(e.target.value)}
-                      placeholder={t('chat.searchMessages')}
-                      className="w-full pl-9 pr-8 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-                      aria-label="Search messages"
-                    />
-                    {messageSearchQuery && (
-                      <button
-                        type="button"
-                        onClick={handleClearSearch}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors touch-manipulation"
-                        aria-label="Clear search"
-                      >
-                        <i className="fas fa-times text-xs"></i>
-                      </button>
-                    )}
-                  </div>
+                <div className="chat-search-container">
+                  <i className="fas fa-search chat-search-icon" />
+                  <input
+                    type="text"
+                    value={messageSearchQuery}
+                    onChange={(e) => handleMessageSearch(e.target.value)}
+                    placeholder={t('chat.searchMessages')}
+                    className="chat-search-input"
+                    aria-label="Search messages"
+                  />
+                  {messageSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={handleClearSearch}
+                      className="chat-search-clear"
+                      aria-label="Clear search"
+                    >
+                      <i className="fas fa-times text-xs" />
+                    </button>
+                  )}
                   {isSearching && (
-                    <div className="flex items-center px-2">
-                      <i className="fas fa-spinner fa-spin text-blue-500"></i>
+                    <div className="absolute right-10 top-1/2 -translate-y-1/2">
+                      <i className="fas fa-spinner fa-spin text-blue-500" />
                     </div>
                   )}
                 </div>
                 {showSearchResults && (
-                  <div className="mt-2 px-1 text-xs md:text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <div className="mt-2 text-sm text-[var(--text-secondary)] flex items-center gap-2">
                     <span className="font-medium">{searchResults.length}</span>{' '}
                     {t('chat.resultsFound')}
                     <button
@@ -574,12 +552,12 @@ export function ChatPage() {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-6 space-y-3 md:space-y-4 min-h-0 scroll-smooth overscroll-contain">
+              <div className="chat-messages flex-1 min-h-0 overscroll-contain">
                 {(showSearchResults ? searchResults : messages).length === 0 &&
                   !showSearchResults && (
                     <div className="flex-1 flex items-center justify-center py-12">
-                      <div className="text-center text-gray-500 dark:text-gray-400">
-                        <i className="fas fa-comments text-3xl mb-3 opacity-50"></i>
+                      <div className="text-center text-[var(--text-tertiary)]">
+                        <i className="fas fa-comments text-3xl mb-3 opacity-50" />
                         <p className="text-sm">No messages yet. Start the conversation!</p>
                       </div>
                     </div>
@@ -589,7 +567,7 @@ export function ChatPage() {
                   return (
                     <div
                       key={message.id || index}
-                      className={`flex ${isSender ? 'justify-end' : 'justify-start'} gap-2 group animate-fade-in-up`}
+                      className={`chat-message group ${isSender ? 'outgoing' : ''}`}
                     >
                       {!isSender && (
                         <UserAvatar
@@ -599,24 +577,14 @@ export function ChatPage() {
                           className="flex-shrink-0 hidden sm:block self-end mb-5"
                         />
                       )}
-                      <div
-                        className={`max-w-[85%] sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg ${isSender ? 'order-2' : 'order-1'}`}
-                      >
+                      <div className="chat-message-content">
                         {!isSender && (
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-2 truncate font-medium">
-                            {message.sender.username}
-                          </p>
+                          <p className="chat-message-sender">{message.sender.username}</p>
                         )}
                         <div className="relative">
-                          <div
-                            className={`px-3 py-2 md:px-4 md:py-2.5 shadow-sm ${
-                              isSender
-                                ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl rounded-br-md'
-                                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-2xl rounded-bl-md'
-                            }`}
-                          >
+                          <div className={`chat-bubble ${isSender ? 'outgoing' : 'incoming'}`}>
                             {message.photo_url && (
-                              <div className="mb-2">
+                              <div className="chat-bubble-photo">
                                 <button
                                   type="button"
                                   className="block rounded-xl overflow-hidden hover:opacity-90 active:opacity-80 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -637,26 +605,24 @@ export function ChatPage() {
                                 </button>
                               </div>
                             )}
-                            <p className="break-words whitespace-pre-wrap text-sm md:text-base leading-relaxed">
-                              {linkify(message.message)}
-                            </p>
+                            <p className="chat-bubble-text">{linkify(message.message)}</p>
                           </div>
                           {isSender && message.id && !showSearchResults && (
                             <button
                               type="button"
                               onClick={() => setMessageToDelete(message.id)}
-                              className="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all w-7 h-7 flex items-center justify-center text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full touch-manipulation"
+                              className="chat-message-delete"
                               title={t('chat.deleteMessage')}
                               aria-label="Delete message"
                             >
-                              <i className="fas fa-trash text-xs"></i>
+                              <i className="fas fa-trash text-xs" />
                             </button>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-2 flex items-center gap-1">
+                        <p className="chat-message-time">
                           {formatTime(message.created_at)}
                           {isSender && (
-                            <i className="fas fa-check text-blue-400 text-[10px]" title="Sent"></i>
+                            <i className="chat-message-status fas fa-check" title="Sent" />
                           )}
                         </p>
                       </div>
@@ -668,26 +634,22 @@ export function ChatPage() {
               </div>
 
               {/* Message input */}
-              <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-2 md:p-3 lg:p-4 flex-shrink-0 safe-area-inset-bottom">
+              <div className="chat-input-container flex-shrink-0 safe-area-inset-bottom">
                 {/* Photo preview */}
                 {photoPreviewUrl && (
-                  <div className="mb-3 relative inline-block animate-scale-in">
-                    <img
-                      src={photoPreviewUrl}
-                      alt="Preview"
-                      className="rounded-xl max-h-28 md:max-h-32 border-2 border-gray-200 dark:border-gray-600 shadow-sm"
-                    />
+                  <div className="chat-photo-preview">
+                    <img src={photoPreviewUrl} alt="Preview" />
                     <button
                       type="button"
                       onClick={handleClearPhoto}
-                      className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-red-700 active:bg-red-800 transition-colors shadow-md touch-manipulation"
+                      className="chat-photo-preview-remove"
                       aria-label="Remove photo"
                     >
-                      <i className="fas fa-times text-xs"></i>
+                      <i className="fas fa-times text-xs" />
                     </button>
                   </div>
                 )}
-                <form onSubmit={handleSendMessage} className="flex items-end gap-2">
+                <form onSubmit={handleSendMessage} className="chat-input-wrapper">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -700,33 +662,31 @@ export function ChatPage() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingPhoto}
-                    className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-full transition-colors flex-shrink-0 touch-manipulation"
+                    className="chat-input-btn"
                     title={t('chat.uploadPhoto')}
                     aria-label="Upload photo"
                   >
-                    <i className="fas fa-image text-lg"></i>
+                    <i className="fas fa-image text-lg" />
                   </button>
-                  <div className="flex-1 min-w-0 relative">
-                    <input
-                      type="text"
-                      value={messageInput}
-                      onChange={(e) => handleTyping(e.target.value)}
-                      placeholder={t('chat.typeMessage')}
-                      disabled={uploadingPhoto}
-                      className="w-full px-4 py-2.5 md:py-3 border border-gray-300 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm md:text-base transition-all"
-                      aria-label="Message input"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={messageInput}
+                    onChange={(e) => handleTyping(e.target.value)}
+                    placeholder={t('chat.typeMessage')}
+                    disabled={uploadingPhoto}
+                    className="chat-text-input"
+                    aria-label="Message input"
+                  />
                   <button
                     type="submit"
                     disabled={(!messageInput.trim() && !selectedPhoto) || uploadingPhoto}
-                    className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-sm hover:shadow-md touch-manipulation"
+                    className="chat-input-btn send"
                     aria-label={uploadingPhoto ? t('chat.uploading') : t('chat.send')}
                   >
                     {uploadingPhoto ? (
-                      <i className="fas fa-spinner fa-spin"></i>
+                      <i className="fas fa-spinner fa-spin" />
                     ) : (
-                      <i className="fas fa-paper-plane"></i>
+                      <i className="fas fa-paper-plane" />
                     )}
                   </button>
                 </form>
@@ -740,65 +700,64 @@ export function ChatPage() {
       {showNewChatModal && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
-          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-center sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
+          className="chat-modal-overlay"
           onClick={(e) => e.target === e.currentTarget && setShowNewChatModal(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="new-chat-title"
         >
-          <div className="glass-card bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:max-w-md max-h-[85vh] sm:max-h-[80vh] flex flex-col shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              <h2
-                id="new-chat-title"
-                className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white"
-              >
+          <div className="chat-modal">
+            <div className="chat-modal-header">
+              <h2 id="new-chat-title" className="chat-modal-title">
                 {t('chat.newChat')}
               </h2>
               <button
                 type="button"
                 onClick={() => setShowNewChatModal(false)}
-                className="w-9 h-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors touch-manipulation"
+                className="chat-modal-close"
                 aria-label="Close"
               >
-                <i className="fas fa-times text-lg"></i>
+                <i className="fas fa-times text-lg" />
               </button>
             </div>
 
-            <div className="relative mb-4">
-              <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('chat.searchUsers')}
-                className="glass-input w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base transition-all"
-                aria-label="Search users"
-              />
+            <div className="chat-modal-search">
+              <div className="chat-search-container">
+                <i className="fas fa-search chat-search-icon" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('chat.searchUsers')}
+                  className="chat-search-input"
+                  aria-label="Search users"
+                />
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-2 min-h-0 overscroll-contain">
+            <div className="chat-modal-body">
               {filteredUsers.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i className="fas fa-users text-2xl text-gray-400 dark:text-gray-500"></i>
+                <div className="chat-empty-state" style={{ padding: '2rem 0' }}>
+                  <div className="chat-empty-icon" style={{ width: '4rem', height: '4rem' }}>
+                    <i className="fas fa-users" style={{ fontSize: '1.5rem' }} />
                   </div>
-                  <p className="text-gray-500 dark:text-gray-400">{t('chat.selectUser')}</p>
+                  <p className="chat-empty-subtitle">{t('chat.selectUser')}</p>
                 </div>
               ) : (
-                filteredUsers.map((chatUser) => {
-                  const userStatus = getUserStatus(chatUser.id, chatUser.status);
-                  return (
-                    <button
-                      type="button"
-                      key={chatUser.id}
-                      onClick={() => {
-                        startChat(chatUser.id);
-                        setShowNewChatModal(false);
-                        setSearchQuery('');
-                      }}
-                      className="glass-list-item w-full p-3 md:p-4 text-left border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation"
-                    >
-                      <div className="flex items-center gap-3">
+                <div className="space-y-2">
+                  {filteredUsers.map((chatUser) => {
+                    const userStatus = getUserStatus(chatUser.id, chatUser.status);
+                    return (
+                      <button
+                        type="button"
+                        key={chatUser.id}
+                        onClick={() => {
+                          startChat(chatUser.id);
+                          setShowNewChatModal(false);
+                          setSearchQuery('');
+                        }}
+                        className="chat-user-item"
+                      >
                         <UserAvatar
                           username={chatUser.username}
                           avatarUrl={chatUser.avatar_url}
@@ -806,30 +765,18 @@ export function ChatPage() {
                           status={userStatus as 'online' | 'offline' | 'away' | 'busy'}
                           showStatus={true}
                         />
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-gray-900 dark:text-white truncate">
-                            {chatUser.username}
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                            <span
-                              className={`w-2 h-2 rounded-full ${
-                                userStatus === 'online'
-                                  ? 'bg-green-500'
-                                  : userStatus === 'away'
-                                    ? 'bg-yellow-500'
-                                    : userStatus === 'busy'
-                                      ? 'bg-red-500'
-                                      : 'bg-gray-400'
-                              }`}
-                            ></span>
+                        <div className="chat-user-info">
+                          <div className="chat-user-name">{chatUser.username}</div>
+                          <div className="chat-user-status">
+                            <span className={`chat-user-status-dot ${userStatus}`} />
                             {t(`chat.${userStatus}`)}
                           </div>
                         </div>
-                        <i className="fas fa-chevron-right text-gray-400 text-sm"></i>
-                      </div>
-                    </button>
-                  );
-                })
+                        <i className="chat-user-arrow fas fa-chevron-right" />
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
@@ -840,7 +787,7 @@ export function ChatPage() {
       {error && (
         <div className="btn-danger-glass fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-slide-up z-50">
           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-            <i className="fas fa-exclamation-circle"></i>
+            <i className="fas fa-exclamation-circle" />
           </div>
           <p className="flex-1 text-sm">{error}</p>
         </div>
@@ -850,37 +797,32 @@ export function ChatPage() {
       {messageToDelete && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
-          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
+          className="chat-modal-overlay"
           onClick={(e) => e.target === e.currentTarget && setMessageToDelete(null)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-message-title"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 w-full sm:max-w-sm shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
-            <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="fas fa-trash text-red-600 dark:text-red-400 text-xl"></i>
+          <div className="chat-confirm-modal">
+            <div className="chat-confirm-icon">
+              <i className="fas fa-trash" />
             </div>
-            <h3
-              id="delete-message-title"
-              className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white text-center mb-2"
-            >
+            <h3 id="delete-message-title" className="chat-confirm-title">
               {t('chat.deleteMessageConfirm')}
             </h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 text-center mb-6">
-              {t('chat.deleteMessageWarning')}
-            </p>
-            <div className="flex gap-3">
+            <p className="chat-confirm-message">{t('chat.deleteMessageWarning')}</p>
+            <div className="chat-confirm-actions">
               <button
                 type="button"
                 onClick={() => setMessageToDelete(null)}
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors text-sm sm:text-base font-medium touch-manipulation"
+                className="chat-confirm-btn cancel"
               >
                 {t('common.cancel')}
               </button>
               <button
                 type="button"
                 onClick={() => handleDeleteMessage(messageToDelete)}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-colors text-sm sm:text-base font-medium touch-manipulation"
+                className="chat-confirm-btn delete"
               >
                 {t('common.delete')}
               </button>
@@ -893,38 +835,29 @@ export function ChatPage() {
       {showDeleteRoomConfirm && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
-          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
+          className="chat-modal-overlay"
           onClick={(e) => e.target === e.currentTarget && setShowDeleteRoomConfirm(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-room-title"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 w-full sm:max-w-sm shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
-            <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="fas fa-comments text-red-600 dark:text-red-400 text-xl"></i>
+          <div className="chat-confirm-modal">
+            <div className="chat-confirm-icon">
+              <i className="fas fa-comments" />
             </div>
-            <h3
-              id="delete-room-title"
-              className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white text-center mb-2"
-            >
+            <h3 id="delete-room-title" className="chat-confirm-title">
               {t('chat.deleteChatConfirm')}
             </h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 text-center mb-6">
-              {t('chat.deleteChatWarning')}
-            </p>
-            <div className="flex gap-3">
+            <p className="chat-confirm-message">{t('chat.deleteChatWarning')}</p>
+            <div className="chat-confirm-actions">
               <button
                 type="button"
                 onClick={() => setShowDeleteRoomConfirm(false)}
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 transition-colors text-sm sm:text-base font-medium touch-manipulation"
+                className="chat-confirm-btn cancel"
               >
                 {t('common.cancel')}
               </button>
-              <button
-                type="button"
-                onClick={handleDeleteRoom}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-colors text-sm sm:text-base font-medium touch-manipulation"
-              >
+              <button type="button" onClick={handleDeleteRoom} className="chat-confirm-btn delete">
                 {t('common.delete')}
               </button>
             </div>
@@ -936,7 +869,7 @@ export function ChatPage() {
       {viewingPhoto && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 animate-fade-in"
+          className="chat-photo-viewer"
           onClick={() => setViewingPhoto(null)}
           role="dialog"
           aria-modal="true"
@@ -945,17 +878,16 @@ export function ChatPage() {
           <button
             type="button"
             onClick={() => setViewingPhoto(null)}
-            className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white rounded-full flex items-center justify-center transition-colors z-10 touch-manipulation safe-area-inset-top"
+            className="chat-photo-viewer-close safe-area-inset-top"
             aria-label="Close"
           >
-            <i className="fas fa-times text-xl"></i>
+            <i className="fas fa-times" />
           </button>
           <div className="relative max-w-full max-h-full flex items-center justify-center">
             {/* Prevent modal from closing when clicking the image itself */}
             <img
               src={viewingPhoto}
               alt="Full size view"
-              className="max-w-full max-h-[85vh] object-contain rounded-lg sm:rounded-xl shadow-2xl animate-scale-in"
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => e.stopPropagation()}
               loading="lazy"

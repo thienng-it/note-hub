@@ -3,7 +3,7 @@
 exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
   >
     <div
       class="modern-page-header flex-shrink-0"
@@ -56,56 +56,47 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
         </div>
       </div>
       <div
-        class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
+        class="chat-notification-banner"
       >
         <div
-          class="flex items-start justify-between gap-3"
-          style="margin: 1rem;"
+          class="chat-notification-icon"
         >
-          <div
-            class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
+          <i
+            class="fas fa-bell"
+          />
+        </div>
+        <div
+          class="chat-notification-content"
+        >
+          <p
+            class="chat-notification-title"
           >
-            <div
-              class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0"
-            >
-              <i
-                class="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"
-              />
-            </div>
-            <div
-              class="flex-1 min-w-0 pt-1"
-            >
-              <p
-                class="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100"
-              >
-                Enable notifications for new messages
-              </p>
-              <p
-                class="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2"
-              >
-                Get notified when you receive new messages while away
-              </p>
-            </div>
-          </div>
-          <div
-            class="flex items-center gap-2 flex-shrink-0"
+            Enable notifications for new messages
+          </p>
+          <p
+            class="chat-notification-desc"
           >
-            <button
-              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-              type="button"
-            >
-              Enable
-            </button>
-            <button
-              aria-label="Dismiss"
-              class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
-              type="button"
-            >
-              <i
-                class="fas fa-times"
-              />
-            </button>
-          </div>
+            Get notified when you receive new messages while away
+          </p>
+        </div>
+        <div
+          class="chat-notification-actions"
+        >
+          <button
+            class="chat-notification-btn enable"
+            type="button"
+          >
+            Enable
+          </button>
+          <button
+            aria-label="Dismiss"
+            class="chat-notification-btn dismiss"
+            type="button"
+          >
+            <i
+              class="fas fa-times"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -113,13 +104,13 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
       >
         <div
-          class="flex-1 divide-y divide-gray-200 dark:divide-gray-700"
+          class="flex-1"
         >
           <button
-            class="w-full p-3 md:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation border-l-3 border-l-transparent"
+            class="chat-room-item w-full text-left "
             type="button"
           >
             <div
@@ -145,12 +136,12 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
                   class="flex items-center justify-between gap-2"
                 >
                   <span
-                    class="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base"
+                    class="chat-room-name truncate"
                   >
                     otheruser
                   </span>
                   <span
-                    class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0"
+                    class="chat-room-time"
                   >
                     1/15/2024
                   </span>
@@ -159,10 +150,10 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
                   class="flex items-center justify-between gap-2 mt-0.5"
                 >
                   <p
-                    class="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate"
+                    class="chat-room-preview truncate"
                   >
                     <span
-                      class="font-medium"
+                      class="sender"
                     >
                       otheruser
                       :
@@ -171,7 +162,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
                     Hello there!
                   </p>
                   <span
-                    class="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full flex-shrink-0 min-w-[1.25rem] text-center"
+                    class="chat-unread-badge"
                   >
                     2
                   </span>
@@ -182,32 +173,28 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
         </div>
       </div>
       <div
-        class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 hidden md:flex"
+        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 hidden md:flex"
       >
         <div
-          class="flex-1 flex items-center justify-center p-6"
+          class="chat-empty-state"
         >
           <div
-            class="text-center max-w-sm"
+            class="chat-empty-icon"
           >
-            <div
-              class="w-20 h-20 md:w-24 md:h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i
-                class="fas fa-comment-dots text-3xl md:text-4xl text-gray-400 dark:text-gray-600"
-              />
-            </div>
-            <p
-              class="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 mb-2"
-            >
-              Select a chat to start messaging
-            </p>
-            <p
-              class="text-sm text-gray-500 dark:text-gray-500"
-            >
-              Select a conversation from the list or start a new chat
-            </p>
+            <i
+              class="fas fa-comment-dots"
+            />
           </div>
+          <p
+            class="chat-empty-title"
+          >
+            Select a chat to start messaging
+          </p>
+          <p
+            class="chat-empty-subtitle"
+          >
+            Select a conversation from the list or start a new chat
+          </p>
         </div>
       </div>
     </div>
@@ -218,7 +205,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
 exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
   >
     <div
       class="modern-page-header flex-shrink-0"
@@ -290,56 +277,47 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
         </div>
       </div>
       <div
-        class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
+        class="chat-notification-banner"
       >
         <div
-          class="flex items-start justify-between gap-3"
-          style="margin: 1rem;"
+          class="chat-notification-icon"
         >
-          <div
-            class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
+          <i
+            class="fas fa-bell"
+          />
+        </div>
+        <div
+          class="chat-notification-content"
+        >
+          <p
+            class="chat-notification-title"
           >
-            <div
-              class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0"
-            >
-              <i
-                class="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"
-              />
-            </div>
-            <div
-              class="flex-1 min-w-0 pt-1"
-            >
-              <p
-                class="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100"
-              >
-                Enable notifications for new messages
-              </p>
-              <p
-                class="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2"
-              >
-                Get notified when you receive new messages while away
-              </p>
-            </div>
-          </div>
-          <div
-            class="flex items-center gap-2 flex-shrink-0"
+            Enable notifications for new messages
+          </p>
+          <p
+            class="chat-notification-desc"
           >
-            <button
-              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-              type="button"
-            >
-              Enable
-            </button>
-            <button
-              aria-label="Dismiss"
-              class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
-              type="button"
-            >
-              <i
-                class="fas fa-times"
-              />
-            </button>
-          </div>
+            Get notified when you receive new messages while away
+          </p>
+        </div>
+        <div
+          class="chat-notification-actions"
+        >
+          <button
+            class="chat-notification-btn enable"
+            type="button"
+          >
+            Enable
+          </button>
+          <button
+            aria-label="Dismiss"
+            class="chat-notification-btn dismiss"
+            type="button"
+          >
+            <i
+              class="fas fa-times"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -347,13 +325,13 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
       >
         <div
-          class="flex-1 divide-y divide-gray-200 dark:divide-gray-700"
+          class="flex-1"
         >
           <button
-            class="w-full p-3 md:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation border-l-3 border-l-transparent"
+            class="chat-room-item w-full text-left "
             type="button"
           >
             <div
@@ -379,12 +357,12 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
                   class="flex items-center justify-between gap-2"
                 >
                   <span
-                    class="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base"
+                    class="chat-room-name truncate"
                   >
                     otheruser
                   </span>
                   <span
-                    class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0"
+                    class="chat-room-time"
                   >
                     1/15/2024
                   </span>
@@ -393,10 +371,10 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
                   class="flex items-center justify-between gap-2 mt-0.5"
                 >
                   <p
-                    class="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate"
+                    class="chat-room-preview truncate"
                   >
                     <span
-                      class="font-medium"
+                      class="sender"
                     >
                       otheruser
                       :
@@ -405,7 +383,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
                     Hello there!
                   </p>
                   <span
-                    class="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full flex-shrink-0 min-w-[1.25rem] text-center"
+                    class="chat-unread-badge"
                   >
                     2
                   </span>
@@ -416,32 +394,28 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
         </div>
       </div>
       <div
-        class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 hidden md:flex"
+        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 hidden md:flex"
       >
         <div
-          class="flex-1 flex items-center justify-center p-6"
+          class="chat-empty-state"
         >
           <div
-            class="text-center max-w-sm"
+            class="chat-empty-icon"
           >
-            <div
-              class="w-20 h-20 md:w-24 md:h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i
-                class="fas fa-comment-dots text-3xl md:text-4xl text-gray-400 dark:text-gray-600"
-              />
-            </div>
-            <p
-              class="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 mb-2"
-            >
-              Select a chat to start messaging
-            </p>
-            <p
-              class="text-sm text-gray-500 dark:text-gray-500"
-            >
-              Select a conversation from the list or start a new chat
-            </p>
+            <i
+              class="fas fa-comment-dots"
+            />
           </div>
+          <p
+            class="chat-empty-title"
+          >
+            Select a chat to start messaging
+          </p>
+          <p
+            class="chat-empty-subtitle"
+          >
+            Select a conversation from the list or start a new chat
+          </p>
         </div>
       </div>
     </div>
@@ -452,7 +426,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
   >
     <div
       class="modern-page-header flex-shrink-0"
@@ -505,56 +479,47 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
         </div>
       </div>
       <div
-        class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
+        class="chat-notification-banner"
       >
         <div
-          class="flex items-start justify-between gap-3"
-          style="margin: 1rem;"
+          class="chat-notification-icon"
         >
-          <div
-            class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
+          <i
+            class="fas fa-bell"
+          />
+        </div>
+        <div
+          class="chat-notification-content"
+        >
+          <p
+            class="chat-notification-title"
           >
-            <div
-              class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0"
-            >
-              <i
-                class="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"
-              />
-            </div>
-            <div
-              class="flex-1 min-w-0 pt-1"
-            >
-              <p
-                class="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100"
-              >
-                Enable notifications for new messages
-              </p>
-              <p
-                class="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2"
-              >
-                Get notified when you receive new messages while away
-              </p>
-            </div>
-          </div>
-          <div
-            class="flex items-center gap-2 flex-shrink-0"
+            Enable notifications for new messages
+          </p>
+          <p
+            class="chat-notification-desc"
           >
-            <button
-              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-              type="button"
-            >
-              Enable
-            </button>
-            <button
-              aria-label="Dismiss"
-              class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
-              type="button"
-            >
-              <i
-                class="fas fa-times"
-              />
-            </button>
-          </div>
+            Get notified when you receive new messages while away
+          </p>
+        </div>
+        <div
+          class="chat-notification-actions"
+        >
+          <button
+            class="chat-notification-btn enable"
+            type="button"
+          >
+            Enable
+          </button>
+          <button
+            aria-label="Dismiss"
+            class="chat-notification-btn dismiss"
+            type="button"
+          >
+            <i
+              class="fas fa-times"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -562,61 +527,53 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
       >
         <div
-          class="flex-1 flex items-center justify-center p-6 md:p-8 text-center"
+          class="chat-empty-state"
         >
           <div
-            class="max-w-xs"
+            class="chat-empty-icon"
           >
-            <div
-              class="w-16 h-16 md:w-20 md:h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i
-                class="fas fa-comments text-2xl md:text-3xl text-gray-400 dark:text-gray-500"
-              />
-            </div>
-            <p
-              class="text-base md:text-lg font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              No chats yet
-            </p>
-            <p
-              class="text-sm text-gray-500 dark:text-gray-400"
-            >
-              Start a new chat to begin
-            </p>
+            <i
+              class="fas fa-comments"
+            />
           </div>
+          <p
+            class="chat-empty-title"
+          >
+            No chats yet
+          </p>
+          <p
+            class="chat-empty-subtitle"
+          >
+            Start a new chat to begin
+          </p>
         </div>
       </div>
       <div
-        class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 hidden md:flex"
+        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 hidden md:flex"
       >
         <div
-          class="flex-1 flex items-center justify-center p-6"
+          class="chat-empty-state"
         >
           <div
-            class="text-center max-w-sm"
+            class="chat-empty-icon"
           >
-            <div
-              class="w-20 h-20 md:w-24 md:h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i
-                class="fas fa-comment-dots text-3xl md:text-4xl text-gray-400 dark:text-gray-600"
-              />
-            </div>
-            <p
-              class="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 mb-2"
-            >
-              Select a chat to start messaging
-            </p>
-            <p
-              class="text-sm text-gray-500 dark:text-gray-500"
-            >
-              Select a conversation from the list or start a new chat
-            </p>
+            <i
+              class="fas fa-comment-dots"
+            />
           </div>
+          <p
+            class="chat-empty-title"
+          >
+            Select a chat to start messaging
+          </p>
+          <p
+            class="chat-empty-subtitle"
+          >
+            Select a conversation from the list or start a new chat
+          </p>
         </div>
       </div>
     </div>
@@ -627,7 +584,7 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
 exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
   >
     <div
       class="modern-page-header flex-shrink-0"
@@ -680,56 +637,47 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
         </div>
       </div>
       <div
-        class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
+        class="chat-notification-banner"
       >
         <div
-          class="flex items-start justify-between gap-3"
-          style="margin: 1rem;"
+          class="chat-notification-icon"
         >
-          <div
-            class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
+          <i
+            class="fas fa-bell"
+          />
+        </div>
+        <div
+          class="chat-notification-content"
+        >
+          <p
+            class="chat-notification-title"
           >
-            <div
-              class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0"
-            >
-              <i
-                class="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"
-              />
-            </div>
-            <div
-              class="flex-1 min-w-0 pt-1"
-            >
-              <p
-                class="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100"
-              >
-                Enable notifications for new messages
-              </p>
-              <p
-                class="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2"
-              >
-                Get notified when you receive new messages while away
-              </p>
-            </div>
-          </div>
-          <div
-            class="flex items-center gap-2 flex-shrink-0"
+            Enable notifications for new messages
+          </p>
+          <p
+            class="chat-notification-desc"
           >
-            <button
-              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-              type="button"
-            >
-              Enable
-            </button>
-            <button
-              aria-label="Dismiss"
-              class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
-              type="button"
-            >
-              <i
-                class="fas fa-times"
-              />
-            </button>
-          </div>
+            Get notified when you receive new messages while away
+          </p>
+        </div>
+        <div
+          class="chat-notification-actions"
+        >
+          <button
+            class="chat-notification-btn enable"
+            type="button"
+          >
+            Enable
+          </button>
+          <button
+            aria-label="Dismiss"
+            class="chat-notification-btn dismiss"
+            type="button"
+          >
+            <i
+              class="fas fa-times"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -737,17 +685,17 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
       >
         <div
-          class="flex-1 flex items-center justify-center p-4 text-center text-gray-500"
+          class="flex-1 flex items-center justify-center p-4 text-center"
         >
           <div>
             <i
               class="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500"
             />
             <p
-              class="text-sm md:text-base"
+              class="text-sm md:text-base text-[var(--text-secondary)]"
             >
               Loading chats...
             </p>
@@ -755,32 +703,28 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
         </div>
       </div>
       <div
-        class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 hidden md:flex"
+        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 hidden md:flex"
       >
         <div
-          class="flex-1 flex items-center justify-center p-6"
+          class="chat-empty-state"
         >
           <div
-            class="text-center max-w-sm"
+            class="chat-empty-icon"
           >
-            <div
-              class="w-20 h-20 md:w-24 md:h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i
-                class="fas fa-comment-dots text-3xl md:text-4xl text-gray-400 dark:text-gray-600"
-              />
-            </div>
-            <p
-              class="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 mb-2"
-            >
-              Select a chat to start messaging
-            </p>
-            <p
-              class="text-sm text-gray-500 dark:text-gray-500"
-            >
-              Select a conversation from the list or start a new chat
-            </p>
+            <i
+              class="fas fa-comment-dots"
+            />
           </div>
+          <p
+            class="chat-empty-title"
+          >
+            Select a chat to start messaging
+          </p>
+          <p
+            class="chat-empty-subtitle"
+          >
+            Select a conversation from the list or start a new chat
+          </p>
         </div>
       </div>
     </div>
@@ -791,7 +735,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
   >
     <div
       class="modern-page-header flex-shrink-0"
@@ -844,56 +788,47 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
         </div>
       </div>
       <div
-        class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
+        class="chat-notification-banner"
       >
         <div
-          class="flex items-start justify-between gap-3"
-          style="margin: 1rem;"
+          class="chat-notification-icon"
         >
-          <div
-            class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
+          <i
+            class="fas fa-bell"
+          />
+        </div>
+        <div
+          class="chat-notification-content"
+        >
+          <p
+            class="chat-notification-title"
           >
-            <div
-              class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0"
-            >
-              <i
-                class="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"
-              />
-            </div>
-            <div
-              class="flex-1 min-w-0 pt-1"
-            >
-              <p
-                class="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100"
-              >
-                Enable notifications for new messages
-              </p>
-              <p
-                class="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2"
-              >
-                Get notified when you receive new messages while away
-              </p>
-            </div>
-          </div>
-          <div
-            class="flex items-center gap-2 flex-shrink-0"
+            Enable notifications for new messages
+          </p>
+          <p
+            class="chat-notification-desc"
           >
-            <button
-              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-              type="button"
-            >
-              Enable
-            </button>
-            <button
-              aria-label="Dismiss"
-              class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
-              type="button"
-            >
-              <i
-                class="fas fa-times"
-              />
-            </button>
-          </div>
+            Get notified when you receive new messages while away
+          </p>
+        </div>
+        <div
+          class="chat-notification-actions"
+        >
+          <button
+            class="chat-notification-btn enable"
+            type="button"
+          >
+            Enable
+          </button>
+          <button
+            aria-label="Dismiss"
+            class="chat-notification-btn dismiss"
+            type="button"
+          >
+            <i
+              class="fas fa-times"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -901,13 +836,13 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain hidden md:flex md:flex-col"
+        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain hidden md:flex md:flex-col"
       >
         <div
-          class="flex-1 divide-y divide-gray-200 dark:divide-gray-700"
+          class="flex-1"
         >
           <button
-            class="w-full p-3 md:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation bg-blue-50 dark:bg-blue-900/30 border-l-3 border-l-blue-500"
+            class="chat-room-item w-full text-left active"
             type="button"
           >
             <div
@@ -933,12 +868,12 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                   class="flex items-center justify-between gap-2"
                 >
                   <span
-                    class="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base"
+                    class="chat-room-name truncate"
                   >
                     otheruser
                   </span>
                   <span
-                    class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0"
+                    class="chat-room-time"
                   >
                     1/15/2024
                   </span>
@@ -947,10 +882,10 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                   class="flex items-center justify-between gap-2 mt-0.5"
                 >
                   <p
-                    class="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate"
+                    class="chat-room-preview truncate"
                   >
                     <span
-                      class="font-medium"
+                      class="sender"
                     >
                       otheruser
                       :
@@ -959,7 +894,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                     Hello there!
                   </p>
                   <span
-                    class="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full flex-shrink-0 min-w-[1.25rem] text-center"
+                    class="chat-unread-badge"
                   >
                     2
                   </span>
@@ -970,17 +905,17 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
         </div>
       </div>
       <div
-        class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 flex"
+        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 flex"
       >
         <div
-          class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-shrink-0 safe-area-inset-top"
+          class="chat-header flex-shrink-0 safe-area-inset-top"
         >
           <div
-            class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3"
+            class="flex items-center gap-2 md:gap-3 mb-3"
           >
             <button
               aria-label="Back to chat list"
-              class="md:hidden w-9 h-9 flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 transition-colors flex-shrink-0 touch-manipulation"
+              class="md:hidden chat-input-btn"
               title="Back"
               type="button"
             >
@@ -992,14 +927,14 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
               class="flex-1 min-w-0"
             >
               <h2
-                class="font-semibold text-gray-900 dark:text-white truncate text-base md:text-lg"
+                class="chat-header-title truncate"
               >
                 Chat with otheruser
               </h2>
             </div>
             <button
               aria-label="Delete chat"
-              class="w-9 h-9 flex items-center justify-center text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 active:bg-red-100 dark:active:bg-red-900/50 rounded-full transition-colors flex-shrink-0 touch-manipulation"
+              class="chat-input-btn text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
               title="Delete chat"
               type="button"
             >
@@ -1009,29 +944,25 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
             </button>
           </div>
           <div
-            class="flex gap-2"
+            class="chat-search-container"
           >
-            <div
-              class="flex-1 relative"
-            >
-              <i
-                class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"
-              />
-              <input
-                aria-label="Search messages"
-                class="w-full pl-9 pr-8 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-                placeholder="Search messages..."
-                type="text"
-                value=""
-              />
-            </div>
+            <i
+              class="fas fa-search chat-search-icon"
+            />
+            <input
+              aria-label="Search messages"
+              class="chat-search-input"
+              placeholder="Search messages..."
+              type="text"
+              value=""
+            />
           </div>
         </div>
         <div
-          class="flex-1 overflow-y-auto p-3 md:p-4 lg:p-6 space-y-3 md:space-y-4 min-h-0 scroll-smooth overscroll-contain"
+          class="chat-messages flex-1 min-h-0 overscroll-contain"
         >
           <div
-            class="flex justify-start gap-2 group animate-fade-in-up"
+            class="chat-message group "
           >
             <div
               class="relative flex-shrink-0 hidden sm:block self-end mb-5"
@@ -1043,10 +974,10 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
               </div>
             </div>
             <div
-              class="max-w-[85%] sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg order-1"
+              class="chat-message-content"
             >
               <p
-                class="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-2 truncate font-medium"
+                class="chat-message-sender"
               >
                 otheruser
               </p>
@@ -1054,43 +985,43 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                 class="relative"
               >
                 <div
-                  class="px-3 py-2 md:px-4 md:py-2.5 shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-2xl rounded-bl-md"
+                  class="chat-bubble incoming"
                 >
                   <p
-                    class="break-words whitespace-pre-wrap text-sm md:text-base leading-relaxed"
+                    class="chat-bubble-text"
                   >
                     Hello!
                   </p>
                 </div>
               </div>
               <p
-                class="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-2 flex items-center gap-1"
+                class="chat-message-time"
               >
                 1/15/2024
               </p>
             </div>
           </div>
           <div
-            class="flex justify-end gap-2 group animate-fade-in-up"
+            class="chat-message group outgoing"
           >
             <div
-              class="max-w-[85%] sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg order-2"
+              class="chat-message-content"
             >
               <div
                 class="relative"
               >
                 <div
-                  class="px-3 py-2 md:px-4 md:py-2.5 shadow-sm bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl rounded-br-md"
+                  class="chat-bubble outgoing"
                 >
                   <p
-                    class="break-words whitespace-pre-wrap text-sm md:text-base leading-relaxed"
+                    class="chat-bubble-text"
                   >
                     Hi there!
                   </p>
                 </div>
                 <button
                   aria-label="Delete message"
-                  class="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all w-7 h-7 flex items-center justify-center text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full touch-manipulation"
+                  class="chat-message-delete"
                   title="Delete message"
                   type="button"
                 >
@@ -1100,11 +1031,11 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                 </button>
               </div>
               <p
-                class="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-2 flex items-center gap-1"
+                class="chat-message-time"
               >
                 1/15/2024
                 <i
-                  class="fas fa-check text-blue-400 text-[10px]"
+                  class="chat-message-status fas fa-check"
                   title="Sent"
                 />
               </p>
@@ -1115,10 +1046,10 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
           />
         </div>
         <div
-          class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-2 md:p-3 lg:p-4 flex-shrink-0 safe-area-inset-bottom"
+          class="chat-input-container flex-shrink-0 safe-area-inset-bottom"
         >
           <form
-            class="flex items-end gap-2"
+            class="chat-input-wrapper"
           >
             <input
               accept="image/*"
@@ -1128,7 +1059,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
             />
             <button
               aria-label="Upload photo"
-              class="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-full transition-colors flex-shrink-0 touch-manipulation"
+              class="chat-input-btn"
               title="Upload photo"
               type="button"
             >
@@ -1136,20 +1067,16 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                 class="fas fa-image text-lg"
               />
             </button>
-            <div
-              class="flex-1 min-w-0 relative"
-            >
-              <input
-                aria-label="Message input"
-                class="w-full px-4 py-2.5 md:py-3 border border-gray-300 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm md:text-base transition-all"
-                placeholder="Type a message..."
-                type="text"
-                value=""
-              />
-            </div>
+            <input
+              aria-label="Message input"
+              class="chat-text-input"
+              placeholder="Type a message..."
+              type="text"
+              value=""
+            />
             <button
               aria-label="Send"
-              class="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-sm hover:shadow-md touch-manipulation"
+              class="chat-input-btn send"
               disabled=""
               type="submit"
             >
@@ -1168,7 +1095,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
   >
     <div
       class="modern-page-header flex-shrink-0"
@@ -1240,56 +1167,47 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
         </div>
       </div>
       <div
-        class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
+        class="chat-notification-banner"
       >
         <div
-          class="flex items-start justify-between gap-3"
-          style="margin: 1rem;"
+          class="chat-notification-icon"
         >
-          <div
-            class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
+          <i
+            class="fas fa-bell"
+          />
+        </div>
+        <div
+          class="chat-notification-content"
+        >
+          <p
+            class="chat-notification-title"
           >
-            <div
-              class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0"
-            >
-              <i
-                class="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"
-              />
-            </div>
-            <div
-              class="flex-1 min-w-0 pt-1"
-            >
-              <p
-                class="text-sm md:text-base font-medium text-blue-900 dark:text-blue-100"
-              >
-                Enable notifications for new messages
-              </p>
-              <p
-                class="text-xs md:text-sm text-blue-700 dark:text-blue-300 mt-1 line-clamp-2"
-              >
-                Get notified when you receive new messages while away
-              </p>
-            </div>
-          </div>
-          <div
-            class="flex items-center gap-2 flex-shrink-0"
+            Enable notifications for new messages
+          </p>
+          <p
+            class="chat-notification-desc"
           >
-            <button
-              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
-              type="button"
-            >
-              Enable
-            </button>
-            <button
-              aria-label="Dismiss"
-              class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-full transition-colors touch-manipulation"
-              type="button"
-            >
-              <i
-                class="fas fa-times"
-              />
-            </button>
-          </div>
+            Get notified when you receive new messages while away
+          </p>
+        </div>
+        <div
+          class="chat-notification-actions"
+        >
+          <button
+            class="chat-notification-btn enable"
+            type="button"
+          >
+            Enable
+          </button>
+          <button
+            aria-label="Dismiss"
+            class="chat-notification-btn dismiss"
+            type="button"
+          >
+            <i
+              class="fas fa-times"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -1297,13 +1215,13 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
       >
         <div
-          class="flex-1 divide-y divide-gray-200 dark:divide-gray-700"
+          class="flex-1"
         >
           <button
-            class="w-full p-3 md:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation border-l-3 border-l-transparent"
+            class="chat-room-item w-full text-left "
             type="button"
           >
             <div
@@ -1329,12 +1247,12 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
                   class="flex items-center justify-between gap-2"
                 >
                   <span
-                    class="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base"
+                    class="chat-room-name truncate"
                   >
                     otheruser
                   </span>
                   <span
-                    class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0"
+                    class="chat-room-time"
                   >
                     1/15/2024
                   </span>
@@ -1343,10 +1261,10 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
                   class="flex items-center justify-between gap-2 mt-0.5"
                 >
                   <p
-                    class="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate"
+                    class="chat-room-preview truncate"
                   >
                     <span
-                      class="font-medium"
+                      class="sender"
                     >
                       otheruser
                       :
@@ -1355,7 +1273,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
                     Hello there!
                   </p>
                   <span
-                    class="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full flex-shrink-0 min-w-[1.25rem] text-center"
+                    class="chat-unread-badge"
                   >
                     2
                   </span>
@@ -1366,32 +1284,28 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
         </div>
       </div>
       <div
-        class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden min-h-0 hidden md:flex"
+        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 hidden md:flex"
       >
         <div
-          class="flex-1 flex items-center justify-center p-6"
+          class="chat-empty-state"
         >
           <div
-            class="text-center max-w-sm"
+            class="chat-empty-icon"
           >
-            <div
-              class="w-20 h-20 md:w-24 md:h-24 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i
-                class="fas fa-comment-dots text-3xl md:text-4xl text-gray-400 dark:text-gray-600"
-              />
-            </div>
-            <p
-              class="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 mb-2"
-            >
-              Select a chat to start messaging
-            </p>
-            <p
-              class="text-sm text-gray-500 dark:text-gray-500"
-            >
-              Select a conversation from the list or start a new chat
-            </p>
+            <i
+              class="fas fa-comment-dots"
+            />
           </div>
+          <p
+            class="chat-empty-title"
+          >
+            Select a chat to start messaging
+          </p>
+          <p
+            class="chat-empty-subtitle"
+          >
+            Select a conversation from the list or start a new chat
+          </p>
         </div>
       </div>
     </div>
