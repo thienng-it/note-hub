@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Folder } from '../types';
+import { ConfirmModal } from './Modal';
 
 interface FolderItemProps {
   folder: Folder;
@@ -200,6 +201,8 @@ export function FolderItem({
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(folder.is_expanded);
   const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const hasChildren = folder.children && folder.children.length > 0;
   const isSelected = selectedFolderId === folder.id;
@@ -242,20 +245,36 @@ export function FolderItem({
 
   const handleDelete = () => {
     setShowMenu(false);
-    onDelete(folder);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      await onDelete(folder);
+      setShowDeleteConfirm(false);
+    } catch (error) {
+      console.error('Failed to delete folder:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
-    <div className="folder-item">
+    <div className="folder-item" style={{ marginBottom: '0.5rem' }}>
       <div
         role="button"
         tabIndex={0}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group ${
+        className={`flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group ${
           isSelected
-            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
-            : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+            ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-700 dark:text-blue-400 shadow-sm border border-blue-200/50 dark:border-blue-700/50'
+            : 'hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm'
         }`}
-        style={{ paddingLeft: `${level * 1.5 + 0.75}rem` }}
+        style={{
+          paddingLeft: `${level * 1.5 + 0.75}rem`,
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
         onClick={handleSelect}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -300,14 +319,17 @@ export function FolderItem({
           )}
         </div>
 
-        {/* Context menu button */}
+        {/* Context menu button - Always visible on mobile, hover on desktop */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setShowMenu(!showMenu);
           }}
-          className="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          className="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
+          style={{
+            opacity: showMenu ? 1 : undefined,
+          }}
         >
           <svg
             className="w-4 h-4"
@@ -320,7 +342,7 @@ export function FolderItem({
           </svg>
         </button>
 
-        {/* Context menu */}
+        {/* Context menu - Improved positioning and glassmorphism */}
         {showMenu && (
           <>
             <button
@@ -334,26 +356,40 @@ export function FolderItem({
               }}
               aria-label="Close menu"
             />
-            <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[150px]">
+            <div
+              className="absolute right-0 top-full mt-2 z-20 rounded-xl shadow-2xl border py-2 min-w-[180px] overflow-hidden"
+              style={{
+                background: 'var(--glass-bg)',
+                backdropFilter: 'blur(20px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                borderColor: 'var(--glass-border)',
+                boxShadow:
+                  '0 20px 60px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              }}
+            >
               <button
                 type="button"
                 onClick={handleCreateSubfolder}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors flex items-center gap-2"
               >
+                <i className="fas fa-folder-plus text-blue-600 dark:text-blue-400 w-4"></i>
                 {t('folders.createSubfolder')}
               </button>
               <button
                 type="button"
                 onClick={handleEdit}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors flex items-center gap-2"
               >
+                <i className="fas fa-edit text-gray-600 dark:text-gray-400 w-4"></i>
                 {t('folders.edit')}
               </button>
+              <div className="my-1 border-t border-gray-200/50 dark:border-gray-700/50"></div>
               <button
                 type="button"
                 onClick={handleDelete}
-                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
               >
+                <i className="fas fa-trash w-4"></i>
                 {t('folders.delete')}
               </button>
             </div>
@@ -379,6 +415,23 @@ export function FolderItem({
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        title={t('folders.deleteConfirm')}
+        message={t('folders.deleteWarning')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        variant="danger"
+        isLoading={isDeleting}
+      >
+        <div className="text-center text-sm text-[var(--text-primary)] font-semibold">
+          "{folder.name}"
+        </div>
+      </ConfirmModal>
     </div>
   );
 }

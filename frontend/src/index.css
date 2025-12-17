@@ -2467,14 +2467,22 @@ body.dark {
     top: auto;
     transform: translateY(0);
     justify-content: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .liquid-glass-nav.dock-expanded::-webkit-scrollbar {
+    display: none;
   }
 
   .liquid-glass-nav.dock-minimized {
-    bottom: auto;
-    top: 50%;
+    bottom: 1rem;
+    top: auto;
     left: 1rem;
     right: auto;
-    transform: translateY(350%);
+    transform: none;
     justify-content: flex-start;
   }
 
@@ -2524,11 +2532,11 @@ body.dark {
   }
 
   .liquid-glass-nav.dock-minimized {
-    bottom: auto;
-    top: 50%;
+    bottom: 1rem;
+    top: auto;
     left: 1rem;
     right: auto;
-    transform: translateY(350%);
+    transform: none;
     justify-content: flex-start;
   }
 
@@ -2574,11 +2582,11 @@ body.dark {
   }
 
   .liquid-glass-nav.dock-minimized {
-    bottom: auto;
-    top: 50%;
+    bottom: 1.5rem;
+    top: auto;
     left: 1rem;
     right: auto;
-    transform: translateY(350%);
+    transform: none;
     justify-content: flex-start;
   }
 

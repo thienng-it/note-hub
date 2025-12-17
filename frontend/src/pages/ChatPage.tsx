@@ -285,31 +285,49 @@ export function ChatPage() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden chat-page-container">
-      {/* Header */}
-      <div className="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0">
-        <div className="flex items-center justify-between gap-2">
-          <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0">
-            <i className="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"></i>
-            <span className="hidden sm:inline truncate">{t('chat.title')}</span>
-            <span className="sm:hidden">Chat</span>
-          </h1>
-          <button
-            type="button"
-            onClick={handleOpenNewChat}
-            className="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
-            aria-label={t('chat.newChat')}
-          >
-            <i className="fas fa-plus mr-1 md:mr-2"></i>
-            <span className="hidden sm:inline">{t('chat.newChat')}</span>
-            <span className="sm:hidden">New</span>
-          </button>
-        </div>
-        {!isConnected && (
-          <div className="mt-2 text-sm text-yellow-600 dark:text-yellow-400">
-            <i className="fas fa-exclamation-triangle mr-1"></i>
-            {t('chat.disconnected')} - {t('chat.reconnecting')}
+      {/* Modern Header */}
+      <div className="modern-page-header flex-shrink-0">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600">
+                <i className="fas fa-comments text-white"></i>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
+                {t('chat.title')}
+              </h1>
+            </div>
           </div>
-        )}
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            {!isConnected && (
+              <div
+                className="modern-stat-badge"
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  borderColor: 'rgba(239, 68, 68, 0.2)',
+                }}
+              >
+                <i className="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                <span className="hidden sm:inline">{t('chat.disconnected')}</span>
+                <span className="sm:hidden">Offline</span>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleOpenNewChat}
+              className="modern-btn-primary"
+              aria-label={t('chat.newChat')}
+            >
+              <i className="fas fa-plus mr-2"></i>
+              <span>{t('chat.newChat')}</span>
+            </button>
+          </div>
+        </div>
         {showNotificationBanner && (
           <div className="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in">
             <div className="flex items-start justify-between gap-3">

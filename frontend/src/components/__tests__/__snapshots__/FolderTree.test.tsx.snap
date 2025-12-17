@@ -64,9 +64,10 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
     </button>
     <div
       class="folder-item"
+      style="margin-bottom: 0.5rem;"
     >
       <div
-        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+        class="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
         role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
@@ -124,7 +125,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
           </span>
         </div>
         <button
-          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg
@@ -145,9 +146,10 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
       >
         <div
           class="folder-item"
+          style="margin-bottom: 0.5rem;"
         >
           <div
-            class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            class="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
             role="button"
             style="padding-left: 2.25rem;"
             tabindex="0"
@@ -189,7 +191,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
               </span>
             </div>
             <button
-              class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+              class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
               type="button"
             >
               <svg
@@ -210,9 +212,10 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
     </div>
     <div
       class="folder-item"
+      style="margin-bottom: 0.5rem;"
     >
       <div
-        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+        class="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
         role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
@@ -254,7 +257,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
           </span>
         </div>
         <button
-          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg
@@ -410,9 +413,10 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
     </button>
     <div
       class="folder-item"
+      style="margin-bottom: 0.5rem;"
     >
       <div
-        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+        class="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-700 dark:text-blue-400 shadow-sm border border-blue-200/50 dark:border-blue-700/50"
         role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
@@ -470,7 +474,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
           </span>
         </div>
         <button
-          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg
@@ -491,9 +495,10 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
       >
         <div
           class="folder-item"
+          style="margin-bottom: 0.5rem;"
         >
           <div
-            class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            class="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
             role="button"
             style="padding-left: 2.25rem;"
             tabindex="0"
@@ -535,7 +540,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
               </span>
             </div>
             <button
-              class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+              class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
               type="button"
             >
               <svg
@@ -556,9 +561,10 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
     </div>
     <div
       class="folder-item"
+      style="margin-bottom: 0.5rem;"
     >
       <div
-        class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors relative group hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+        class="flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
         role="button"
         style="padding-left: 0.75rem;"
         tabindex="0"
@@ -600,7 +606,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
           </span>
         </div>
         <button
-          class="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-opacity"
+          class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg

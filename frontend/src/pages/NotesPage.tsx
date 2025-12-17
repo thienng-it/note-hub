@@ -315,10 +315,6 @@ export function NotesPage() {
                   </button>
                 </>
               )}
-              <Link to="/notes/new" className="modern-btn-primary">
-                <i className="fas fa-plus mr-2"></i>
-                <span>{t('common.addNote')}</span>
-              </Link>
             </div>
           </div>
         </div>

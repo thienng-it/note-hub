@@ -213,27 +213,55 @@ export function AdminDashboardPage() {
 
   return (
     <div className="container-responsive py-4 sm:py-6">
-      {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <div className="stack-mobile mb-4">
-          <div className="flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] flex items-center gap-2 sm:gap-3">
-              <i className="glass-i fas fa-users-cog text-blue-600" aria-hidden="true"></i>
-              <span className="hide-mobile">Admin Dashboard</span>
-              <span className="show-mobile">Admin</span>
-            </h1>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-2">
+      {/* Modern Header Section */}
+      <div className="modern-page-header mb-6">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="modern-icon-badge bg-gradient-to-br from-red-500 to-pink-600">
+                <i className="fas fa-users-cog text-white"></i>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
+                Admin Dashboard
+              </h1>
+            </div>
+            <p className="text-sm sm:text-base text-[var(--text-secondary)] ml-1">
               Manage users and view system statistics
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            <Link to="/admin/audit-logs" className="btn-apple flex-1 sm:flex-initial">
-              <i className="glass-i fas fa-clipboard-list" aria-hidden="true"></i>
-              <span className="hide-mobile sm:inline ml-2">Audit Logs</span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="modern-stat-badge">
+              <i className="fas fa-users text-blue-500 mr-2"></i>
+              <span className="font-semibold">{stats.total_users}</span>
+              <span className="hidden sm:inline ml-1">Total Users</span>
+            </div>
+            {stats.locked_users > 0 && (
+              <div
+                className="modern-stat-badge"
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  borderColor: 'rgba(239, 68, 68, 0.2)',
+                }}
+              >
+                <i className="fas fa-lock text-red-500 mr-2"></i>
+                <span className="font-semibold">{stats.locked_users}</span>
+                <span className="hidden sm:inline ml-1">Locked</span>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link to="/admin/audit-logs" className="modern-btn-secondary">
+              <i className="fas fa-clipboard-list mr-2"></i>
+              <span className="hidden sm:inline">Audit Logs</span>
+              <span className="sm:hidden">Logs</span>
             </Link>
-            <Link to="/" className="btn-secondary-glass flex-1 sm:flex-initial">
-              <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
-              <span className="hide-mobile sm:inline ml-2">{t('admin.backToNotes')}</span>
+            <Link to="/" className="modern-btn-secondary">
+              <i className="fas fa-arrow-left mr-2"></i>
+              <span className="hidden sm:inline">{t('admin.backToNotes')}</span>
+              <span className="sm:hidden">Back</span>
             </Link>
           </div>
         </div>

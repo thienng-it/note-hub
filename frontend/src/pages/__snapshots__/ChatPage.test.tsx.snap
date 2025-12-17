@@ -6,47 +6,54 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
     class="h-full flex flex-col overflow-hidden chat-page-container"
   >
     <div
-      class="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0"
+      class="modern-page-header flex-shrink-0"
     >
       <div
-        class="flex items-center justify-between gap-2"
+        class="flex items-center gap-4 mb-2"
       >
-        <h1
-          class="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0"
+        <div
+          class="flex-1 min-w-0"
         >
-          <i
-            class="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"
-          />
-          <span
-            class="hidden sm:inline truncate"
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            Chat
-          </span>
-        </h1>
-        <button
-          aria-label="New Chat"
-          class="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
-          type="button"
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
+            >
+              <i
+                class="fas fa-comments text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
+            >
+              Chat
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+      >
+        <div
+          class="flex items-center gap-3"
+        />
+        <div
+          class="flex flex-wrap items-center gap-2"
         >
-          <i
-            class="fas fa-plus mr-1 md:mr-2"
-          />
-          <span
-            class="hidden sm:inline"
+          <button
+            aria-label="New Chat"
+            class="modern-btn-primary"
+            type="button"
           >
-            New Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            New
-          </span>
-        </button>
+            <i
+              class="fas fa-plus mr-2"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
+        </div>
       </div>
       <div
         class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
@@ -213,57 +220,73 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
     class="h-full flex flex-col overflow-hidden chat-page-container"
   >
     <div
-      class="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0"
+      class="modern-page-header flex-shrink-0"
     >
       <div
-        class="flex items-center justify-between gap-2"
+        class="flex items-center gap-4 mb-2"
       >
-        <h1
-          class="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0"
+        <div
+          class="flex-1 min-w-0"
         >
-          <i
-            class="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"
-          />
-          <span
-            class="hidden sm:inline truncate"
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            Chat
-          </span>
-        </h1>
-        <button
-          aria-label="New Chat"
-          class="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
-          type="button"
-        >
-          <i
-            class="fas fa-plus mr-1 md:mr-2"
-          />
-          <span
-            class="hidden sm:inline"
-          >
-            New Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            New
-          </span>
-        </button>
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
+            >
+              <i
+                class="fas fa-comments text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
+            >
+              Chat
+            </h1>
+          </div>
+        </div>
       </div>
       <div
-        class="mt-2 text-sm text-yellow-600 dark:text-yellow-400"
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
       >
-        <i
-          class="fas fa-exclamation-triangle mr-1"
-        />
-        Disconnected
-         - 
-        Reconnecting...
+        <div
+          class="flex items-center gap-3"
+        >
+          <div
+            class="modern-stat-badge"
+            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);"
+          >
+            <i
+              class="fas fa-exclamation-triangle text-red-500 mr-2"
+            />
+            <span
+              class="hidden sm:inline"
+            >
+              Disconnected
+            </span>
+            <span
+              class="sm:hidden"
+            >
+              Offline
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex flex-wrap items-center gap-2"
+        >
+          <button
+            aria-label="New Chat"
+            class="modern-btn-primary"
+            type="button"
+          >
+            <i
+              class="fas fa-plus mr-2"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
+        </div>
       </div>
       <div
         class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
@@ -430,47 +453,54 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
     class="h-full flex flex-col overflow-hidden chat-page-container"
   >
     <div
-      class="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0"
+      class="modern-page-header flex-shrink-0"
     >
       <div
-        class="flex items-center justify-between gap-2"
+        class="flex items-center gap-4 mb-2"
       >
-        <h1
-          class="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0"
+        <div
+          class="flex-1 min-w-0"
         >
-          <i
-            class="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"
-          />
-          <span
-            class="hidden sm:inline truncate"
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            Chat
-          </span>
-        </h1>
-        <button
-          aria-label="New Chat"
-          class="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
-          type="button"
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
+            >
+              <i
+                class="fas fa-comments text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
+            >
+              Chat
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+      >
+        <div
+          class="flex items-center gap-3"
+        />
+        <div
+          class="flex flex-wrap items-center gap-2"
         >
-          <i
-            class="fas fa-plus mr-1 md:mr-2"
-          />
-          <span
-            class="hidden sm:inline"
+          <button
+            aria-label="New Chat"
+            class="modern-btn-primary"
+            type="button"
           >
-            New Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            New
-          </span>
-        </button>
+            <i
+              class="fas fa-plus mr-2"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
+        </div>
       </div>
       <div
         class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
@@ -597,47 +627,54 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
     class="h-full flex flex-col overflow-hidden chat-page-container"
   >
     <div
-      class="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0"
+      class="modern-page-header flex-shrink-0"
     >
       <div
-        class="flex items-center justify-between gap-2"
+        class="flex items-center gap-4 mb-2"
       >
-        <h1
-          class="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0"
+        <div
+          class="flex-1 min-w-0"
         >
-          <i
-            class="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"
-          />
-          <span
-            class="hidden sm:inline truncate"
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            Chat
-          </span>
-        </h1>
-        <button
-          aria-label="New Chat"
-          class="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
-          type="button"
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
+            >
+              <i
+                class="fas fa-comments text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
+            >
+              Chat
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+      >
+        <div
+          class="flex items-center gap-3"
+        />
+        <div
+          class="flex flex-wrap items-center gap-2"
         >
-          <i
-            class="fas fa-plus mr-1 md:mr-2"
-          />
-          <span
-            class="hidden sm:inline"
+          <button
+            aria-label="New Chat"
+            class="modern-btn-primary"
+            type="button"
           >
-            New Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            New
-          </span>
-        </button>
+            <i
+              class="fas fa-plus mr-2"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
+        </div>
       </div>
       <div
         class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
@@ -753,47 +790,54 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
     class="h-full flex flex-col overflow-hidden chat-page-container"
   >
     <div
-      class="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0"
+      class="modern-page-header flex-shrink-0"
     >
       <div
-        class="flex items-center justify-between gap-2"
+        class="flex items-center gap-4 mb-2"
       >
-        <h1
-          class="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0"
+        <div
+          class="flex-1 min-w-0"
         >
-          <i
-            class="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"
-          />
-          <span
-            class="hidden sm:inline truncate"
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            Chat
-          </span>
-        </h1>
-        <button
-          aria-label="New Chat"
-          class="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
-          type="button"
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
+            >
+              <i
+                class="fas fa-comments text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
+            >
+              Chat
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+      >
+        <div
+          class="flex items-center gap-3"
+        />
+        <div
+          class="flex flex-wrap items-center gap-2"
         >
-          <i
-            class="fas fa-plus mr-1 md:mr-2"
-          />
-          <span
-            class="hidden sm:inline"
+          <button
+            aria-label="New Chat"
+            class="modern-btn-primary"
+            type="button"
           >
-            New Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            New
-          </span>
-        </button>
+            <i
+              class="fas fa-plus mr-2"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
+        </div>
       </div>
       <div
         class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
@@ -1122,57 +1166,73 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
     class="h-full flex flex-col overflow-hidden chat-page-container"
   >
     <div
-      class="glass-header p-3 md:p-4 lg:p-5 flex-shrink-0"
+      class="modern-page-header flex-shrink-0"
     >
       <div
-        class="flex items-center justify-between gap-2"
+        class="flex items-center gap-4 mb-2"
       >
-        <h1
-          class="text-lg md:text-xl lg:text-2xl font-bold text-[var(--text-primary)] flex items-center min-w-0"
+        <div
+          class="flex-1 min-w-0"
         >
-          <i
-            class="fas fa-comments mr-2 md:mr-3 text-blue-600 flex-shrink-0"
-          />
-          <span
-            class="hidden sm:inline truncate"
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            Chat
-          </span>
-        </h1>
-        <button
-          aria-label="New Chat"
-          class="btn-apple text-sm md:text-base flex-shrink-0 touch-manipulation"
-          type="button"
-        >
-          <i
-            class="fas fa-plus mr-1 md:mr-2"
-          />
-          <span
-            class="hidden sm:inline"
-          >
-            New Chat
-          </span>
-          <span
-            class="sm:hidden"
-          >
-            New
-          </span>
-        </button>
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
+            >
+              <i
+                class="fas fa-comments text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
+            >
+              Chat
+            </h1>
+          </div>
+        </div>
       </div>
       <div
-        class="mt-2 text-sm text-yellow-600 dark:text-yellow-400"
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
       >
-        <i
-          class="fas fa-exclamation-triangle mr-1"
-        />
-        Disconnected
-         - 
-        Reconnecting...
+        <div
+          class="flex items-center gap-3"
+        >
+          <div
+            class="modern-stat-badge"
+            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);"
+          >
+            <i
+              class="fas fa-exclamation-triangle text-red-500 mr-2"
+            />
+            <span
+              class="hidden sm:inline"
+            >
+              Disconnected
+            </span>
+            <span
+              class="sm:hidden"
+            >
+              Offline
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex flex-wrap items-center gap-2"
+        >
+          <button
+            aria-label="New Chat"
+            class="modern-btn-primary"
+            type="button"
+          >
+            <i
+              class="fas fa-plus mr-2"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
+        </div>
       </div>
       <div
         class="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in"
