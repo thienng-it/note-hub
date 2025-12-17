@@ -249,7 +249,7 @@ export function NotesPage() {
       {/* Main Content */}
       <div className="flex-1 space-y-6 min-w-0">
         {/* Modern Header Section */}
-        <div className="modern-page-header">
+        <div className="modern-search-card">
           <div className="flex items-center gap-4 mb-2">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-1">
@@ -277,7 +277,7 @@ export function NotesPage() {
             <div className="flex items-center gap-3">
               <div className="modern-stat-badge">
                 <i className="glass-i fas fa-file-alt text-blue-500 mr-2"></i>
-                <span className="font-semibold">{notes.length}</span>
+                <span className="font-semibold">{notes.length}&nbsp;</span>
                 <span className="hidden sm:inline ml-1">{t('common.notesCount')}</span>
               </div>
             </div>
@@ -290,7 +290,9 @@ export function NotesPage() {
                     className="modern-btn-secondary"
                     title={t(hiddenNotes.size === 0 ? 'notes.hideAllNotes' : 'notes.showAllNotes')}
                   >
-                    <i className={`fas ${hiddenNotes.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                    <i
+                      className={`glass-i fas ${hiddenNotes.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
+                    ></i>
                     <span className="hidden sm:inline">
                       {t(hiddenNotes.size === 0 ? 'common.hideAll' : 'common.showAll')}
                     </span>
@@ -307,7 +309,6 @@ export function NotesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <div className="lg:col-span-2">
                 <div className="modern-input-group">
-                  <i className="glass-i fas fa-search modern-input-icon text-blue-500"></i>
                   <input
                     type="text"
                     value={query}
@@ -319,7 +320,6 @@ export function NotesPage() {
               </div>
               <div>
                 <div className="modern-input-group">
-                  <i className="glass-i fas fa-tag modern-input-icon text-purple-500"></i>
                   <input
                     type="text"
                     value={tagFilter}
@@ -440,7 +440,7 @@ export function NotesPage() {
                               e.preventDefault();
                               toggleHideNote(note.id);
                             }}
-                            className="modern-btn-primary modern-btn-sm"
+                            className="btn-apple"
                           >
                             <i className="glass-i fas fa-eye mr-2"></i>
                             Show Content
@@ -542,7 +542,7 @@ export function NotesPage() {
                     ? 'Create a note or move existing notes to this folder'
                     : 'Start creating notes to organize them'}
                 </p>
-                <Link to="/notes/new" className="modern-btn-primary mt-4">
+                <Link to="/notes/new" className="btn-apple mt-4">
                   <i className="glass-i fas fa-plus mr-2"></i>
                   {t('common.addNote')}
                 </Link>

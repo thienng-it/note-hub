@@ -85,7 +85,7 @@ export function MarkdownToolbar({ onInsert, disabled = false }: MarkdownToolbarP
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 p-2 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-color)] mb-2">
+    <div className="glass-card-item flex flex-wrap gap-1 p-2 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-color)] mb-2">
       {tools.map((tool, index) => (
         <button
           key={index}
@@ -95,7 +95,7 @@ export function MarkdownToolbar({ onInsert, disabled = false }: MarkdownToolbarP
           className="p-2 rounded hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title={`${tool.title}${tool.shortcut ? ` (${tool.shortcut})` : ''}`}
         >
-          <i className={`fas ${tool.icon} text-sm`}></i>
+          <i className={`glass-i fas ${tool.icon} text-sm`}></i>
         </button>
       ))}
 

@@ -97,7 +97,7 @@
   "notes": {
     "title": "Ghi chú",
     "newNote": "Ghi chú mới",
-    "searchPlaceholder": "Tìm kiếm ghi chú...",
+    "searchPlaceholder": "\uD83D\uDD0D Tìm kiếm ghi chú...",
     "noNotes": "Chưa có ghi chú nào",
     "createFirstNote": "Tạo ghi chú đầu tiên của bạn",
     "noteTitle": "Tiêu đề ghi chú",
@@ -129,7 +129,7 @@
     "shareNote": "Share Note",
     "lastUpdated": "Last updated",
     "readingTime": "Reading time",
-    "filterByTag": "Filter by tag...",
+    "filterByTag": "\uD83C\uDFF7 Filter by tag...",
     "hideAllNotes": "Hide all note contents",
     "showAllNotes": "Show all note contents",
     "editTooltip": "Edit",
@@ -142,7 +142,7 @@
   "tasks": {
     "title": "Nhiệm vụ",
     "newTask": "Nhiệm vụ mới",
-    "searchPlaceholder": "Tìm kiếm nhiệm vụ...",
+    "searchPlaceholder": "\uD83D\uDD0D Tìm kiếm nhiệm vụ...",
     "noTasks": "Chưa có nhiệm vụ nào",
     "createFirstTask": "Tạo nhiệm vụ đầu tiên của bạn",
     "taskTitle": "Tiêu đề nhiệm vụ",
@@ -259,7 +259,7 @@
     "grantAdminMessage": "Bạn có chắc chắn muốn cấp quyền quản trị viên cho \"{{username}}\" không?",
     "revokeAdminTitle": "Thu hồi quyền quản trị viên",
     "revokeAdminMessage": "Bạn có chắc chắn muốn thu hồi quyền quản trị viên của \"{{username}}\" không?",
-    "searchPlaceholder": "Search by username or email...",
+    "searchPlaceholder": "\uD83D\uDD0D Search by username or email...",
     "backToNotes": "Back to Notes"
   },
   "errors": {

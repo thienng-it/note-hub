@@ -97,7 +97,7 @@
   "notes": {
     "title": "Notas",
     "newNote": "Nueva nota",
-    "searchPlaceholder": "Buscar notas...",
+    "searchPlaceholder": "\uD83D\uDD0D Buscar notas...",
     "noNotes": "Aún no hay notas",
     "createFirstNote": "Cree su primera nota",
     "noteTitle": "Título de la nota",
@@ -129,7 +129,7 @@
     "shareNote": "Share Note",
     "lastUpdated": "Last updated",
     "readingTime": "Reading time",
-    "filterByTag": "Filter by tag...",
+    "filterByTag": "\uD83C\uDFF7 Filter by tag...",
     "hideAllNotes": "Hide all note contents",
     "showAllNotes": "Show all note contents",
     "editTooltip": "Edit",
@@ -142,7 +142,7 @@
   "tasks": {
     "title": "Tareas",
     "newTask": "Nueva tarea",
-    "searchPlaceholder": "Buscar tareas...",
+    "searchPlaceholder": "\uD83D\uDD0D Buscar tareas...",
     "noTasks": "Aún no hay tareas",
     "createFirstTask": "Cree su primera tarea",
     "taskTitle": "Título de la tarea",
@@ -259,7 +259,7 @@
     "grantAdminMessage": "¿Está seguro de que desea otorgar privilegios de administrador a \"{{username}}\"?",
     "revokeAdminTitle": "Revocar privilegios de administrador",
     "revokeAdminMessage": "¿Está seguro de que desea revocar los privilegios de administrador de \"{{username}}\"?",
-    "searchPlaceholder": "Search by username or email...",
+    "searchPlaceholder": "\uD83D\uDD0D Search by username or email...",
     "backToNotes": "Back to Notes"
   },
   "errors": {

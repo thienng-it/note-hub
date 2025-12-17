@@ -52,6 +52,7 @@ export function FolderTree({
         {/* All Notes - special item */}
         <button
           type="button"
+          style={{ marginBottom: '1rem' }}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left ${
             selectedFolderId === null
               ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'

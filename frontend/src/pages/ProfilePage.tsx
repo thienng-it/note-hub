@@ -86,7 +86,7 @@ export function ProfilePage() {
   return (
     <div className="page-padding space-y-6">
       {/* Modern Header Section */}
-      <div className="modern-page-header">
+      <div className="modern-search-card">
         <div className="flex items-center gap-4 mb-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-1">
@@ -141,9 +141,6 @@ export function ProfilePage() {
               <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
                 {t('profile.userId')}
               </span>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                {t('profile.userIdDescription')}
-              </p>
             </div>
             <span className="text-[var(--text-secondary)] font-mono text-sm sm:text-base">
               {user.id}
@@ -156,9 +153,6 @@ export function ProfilePage() {
                 <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
                   {t('profile.memberSince')}
                 </span>
-                <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                  {t('profile.memberSinceDescription')}
-                </p>
               </div>
               <span className="text-[var(--text-secondary)] text-sm sm:text-base">
                 {new Date(user.created_at).toLocaleDateString('en-US', {
@@ -193,7 +187,7 @@ export function ProfilePage() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="glass-card flex items-center gap-2 px-3 sm:px-4 py-2 hover:scale-105 transition-all touch-no-select self-start sm:self-center"
+              className="btn-secondary-glass flex items-center gap-2 px-3 sm:px-4 py-2 hover:scale-105 transition-all touch-no-select self-start sm:self-center"
             >
               <i
                 className={`fas fa-${theme === 'dark' ? 'sun text-yellow-500' : 'moon text-blue-500'}`}
@@ -214,7 +208,7 @@ export function ProfilePage() {
                 {t('profile.languageDescription')}
               </p>
             </div>
-            <Link to="/profile/edit" className="modern-btn-primary modern-btn-sm">
+            <Link to="/profile/edit" className="btn-apple">
               <i className="fas fa-edit mr-2"></i>
               <span className="hidden xs:inline">{t('profile.editProfile')}</span>
               <span className="xs:hidden">Edit</span>
@@ -231,7 +225,7 @@ export function ProfilePage() {
                 {t('profile.passwordDescription')}
               </p>
             </div>
-            <Link to="/profile/change-password" className="modern-btn-primary modern-btn-sm">
+            <Link to="/profile/change-password" className="btn-apple">
               <i className="fas fa-key mr-2"></i>
               <span className="hidden xs:inline">{t('profile.changePassword')}</span>
               <span className="xs:hidden">Change</span>
@@ -251,7 +245,7 @@ export function ProfilePage() {
             {user.has_2fa ? (
               <Link
                 to="/profile/2fa/disable"
-                className="modern-btn-sm"
+                className="btn-apple"
                 style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
               >
                 <i className="fas fa-shield-alt mr-2"></i>
@@ -260,7 +254,7 @@ export function ProfilePage() {
             ) : (
               <Link
                 to="/profile/2fa/setup"
-                className="modern-btn-sm"
+                className="btn-apple"
                 style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
               >
                 <i className="fas fa-shield-alt mr-2"></i>
@@ -296,7 +290,7 @@ export function ProfilePage() {
               type="button"
               onClick={handleExport}
               disabled={isExporting}
-              className="modern-btn-primary modern-btn-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isExporting ? (
                 <>
@@ -325,7 +319,7 @@ export function ProfilePage() {
                 type="button"
                 onClick={handleImportClick}
                 disabled={isImporting}
-                className="modern-btn-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
               >
                 {isImporting ? (

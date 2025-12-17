@@ -339,7 +339,7 @@ export function NoteViewPage() {
           /* Hidden Content Placeholder */
           <div className="p-12 flex flex-col items-center justify-center text-center">
             <div className="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
-              <i className="fas fa-eye-slash text-3xl text-purple-500"></i>
+              <i className="glass-i fas fa-eye-slash text-3xl text-purple-500"></i>
             </div>
             <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
               Content Hidden
@@ -352,7 +352,7 @@ export function NoteViewPage() {
               onClick={toggleHideContent}
               className="px-6 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors"
             >
-              <i className="fas fa-eye mr-2"></i>
+              <i className="glass-i fas fa-eye mr-2"></i>
               Show Content
             </button>
           </div>

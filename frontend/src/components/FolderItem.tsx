@@ -357,7 +357,7 @@ export function FolderItem({
               aria-label="Close menu"
             />
             <div
-              className="absolute right-0 top-full mt-2 z-20 rounded-xl shadow-2xl border py-2 min-w-[180px] overflow-hidden"
+              className="absolute right-0 bottom-full mt-2 z-20 rounded-xl shadow-2xl border py-2 min-w-[180px] overflow-hidden"
               style={{
                 background: 'var(--glass-bg)',
                 backdropFilter: 'blur(20px) saturate(180%)',

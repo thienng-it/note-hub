@@ -289,7 +289,7 @@ export function TasksPage() {
       {/* Main Content */}
       <div className="flex-1 min-w-0 space-y-6">
         {/* Modern Header Section */}
-        <div className="modern-page-header">
+        <div className="modern-search-card">
           <div className="flex items-center gap-4 mb-2">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-1">
@@ -346,32 +346,21 @@ export function TasksPage() {
                 <>
                   <button
                     type="button"
-                    onClick={hideAllTasks}
-                    className="modern-btn-secondary"
+                    onClick={hiddenTasks.size === 0 ? hideAllTasks : showAllTasks}
+                    className="btn-secondary-glass"
                     title="Hide all task contents"
                   >
-                    <i className="glass-i fas fa-eye-slash mr-2"></i>
-                    <span className="hidden sm:inline">{t('common.hideAll')}</span>
-                    <span className="sm:hidden">Hide</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={showAllTasks}
-                    className="modern-btn-secondary"
-                    title="Show all task contents"
-                  >
-                    <i className="glass-i fas fa-eye mr-2"></i>
-                    <span className="hidden sm:inline">{t('common.showAll')}</span>
-                    <span className="sm:hidden">Show</span>
+                    <i
+                      className={`glass-i fas ${hiddenTasks.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
+                    ></i>
+                    <span className="hidden sm:inline">
+                      {t(hiddenTasks.size === 0 ? 'common.hideAll' : 'common.showAll')}
+                    </span>
                   </button>
                 </>
               )}
-              <button
-                type="button"
-                onClick={() => setShowForm(!showForm)}
-                className="modern-btn-primary"
-              >
-                <i className={`fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
+              <button type="button" onClick={() => setShowForm(!showForm)} className="btn-apple">
+                <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
                 <span>{showForm ? 'Cancel' : 'New Task'}</span>
               </button>
             </div>
@@ -618,7 +607,7 @@ export function TasksPage() {
                 {filteredTasks.map((task) => (
                   <div
                     key={task.id}
-                    className={`card p-4 rounded-xl transition-all ${
+                    className={`modern-note-card p-4 rounded-xl transition-all ${
                       task.completed ? 'opacity-60' : ''
                     } ${task.is_overdue && !task.completed ? 'border-l-4 border-l-red-500' : ''}`}
                   >
@@ -707,7 +696,7 @@ export function TasksPage() {
                               {task.title}
                             </h3>
                             <span
-                              className={`px-2 py-0.5 text-xs rounded-full border ${getPriorityColor(task.priority)}`}
+                              className={`modern-tag px-2 py-0.5 text-xs rounded-full border ${getPriorityColor(task.priority)}`}
                             >
                               {task.priority}
                             </span>

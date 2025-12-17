@@ -171,7 +171,7 @@ export function ResetPasswordPage() {
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     <i
-                      className={`fas fa-eye${showPassword ? '-slash' : ''}`}
+                      className={`glass-i fas fa-eye${showPassword ? '-slash' : ''}`}
                       aria-hidden="true"
                     ></i>
                   </button>
@@ -211,7 +211,7 @@ export function ResetPasswordPage() {
                     aria-label={showPasswordConfirm ? 'Hide password' : 'Show password'}
                   >
                     <i
-                      className={`fas fa-eye${showPasswordConfirm ? '-slash' : ''}`}
+                      className={`glass-i fas fa-eye${showPasswordConfirm ? '-slash' : ''}`}
                       aria-hidden="true"
                     ></i>
                   </button>

@@ -97,7 +97,7 @@
   "notes": {
     "title": "Notizen",
     "newNote": "Neue Notiz",
-    "searchPlaceholder": "Notizen durchsuchen...",
+    "searchPlaceholder": "\uD83D\uDD0D Notizen durchsuchen...",
     "noNotes": "Noch keine Notizen",
     "createFirstNote": "Erstellen Sie Ihre erste Notiz",
     "noteTitle": "Notiz-Titel",
@@ -129,7 +129,7 @@
     "shareNote": "Share Note",
     "lastUpdated": "Last updated",
     "readingTime": "Reading time",
-    "filterByTag": "Filter by tag...",
+    "filterByTag": "\uD83C\uDFF7 Filter by tag...",
     "hideAllNotes": "Hide all note contents",
     "showAllNotes": "Show all note contents",
     "editTooltip": "Edit",
@@ -142,7 +142,7 @@
   "tasks": {
     "title": "Aufgaben",
     "newTask": "Neue Aufgabe",
-    "searchPlaceholder": "Aufgaben durchsuchen...",
+    "searchPlaceholder": "\uD83D\uDD0D Aufgaben durchsuchen...",
     "noTasks": "Noch keine Aufgaben",
     "createFirstTask": "Erstellen Sie Ihre erste Aufgabe",
     "taskTitle": "Aufgaben-Titel",
@@ -259,7 +259,7 @@
     "grantAdminMessage": "Möchten Sie wirklich \"{{username}}\" Admin-Rechte erteilen?",
     "revokeAdminTitle": "Admin-Rechte entziehen",
     "revokeAdminMessage": "Möchten Sie wirklich die Admin-Rechte von \"{{username}}\" entziehen?",
-    "searchPlaceholder": "Search by username or email...",
+    "searchPlaceholder": "\uD83D\uDD0D Search by username or email...",
     "backToNotes": "Back to Notes"
   },
   "errors": {
