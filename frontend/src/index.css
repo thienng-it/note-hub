@@ -265,6 +265,8 @@ body.dark {
   box-shadow:
     0 2px 8px 0 rgba(0, 0, 0, 0.06),
     inset 0 1px 0 0 var(--glass-highlight);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Dark mode input */

@@ -98,7 +98,12 @@ const apiLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: { error: 'Too many requests, please try again later' },
   // Skip rate limiting for Socket.IO connections
-  skip: (req) => req.path.startsWith('/socket.io'),
+  skip: (req) => {
+    // Skip for localhost
+    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+    // Also skip Socket.IO
+    return isLocalhost || req.path.startsWith('/socket.io');
+  },
 });
 app.use('/api/', apiLimiter);
 
