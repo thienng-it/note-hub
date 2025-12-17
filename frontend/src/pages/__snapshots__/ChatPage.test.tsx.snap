@@ -104,56 +104,95 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
       >
         <div
-          class="flex-1"
+          class="chat-sidebar-header"
         >
-          <button
-            class="chat-room-item w-full text-left "
-            type="button"
+          <div
+            class="flex items-center justify-between mb-3"
           >
-            <div
-              class="flex items-center gap-3"
+            <h2
+              class="chat-sidebar-title"
+            >
+              <i
+                class="fas fa-inbox mr-2 text-purple-500"
+              />
+              chat.conversations
+            </h2>
+            <span
+              class="chat-sidebar-count"
+            >
+              1
+            </span>
+          </div>
+          <div
+            class="chat-sidebar-search"
+          >
+            <i
+              class="fas fa-search chat-sidebar-search-icon"
+            />
+            <input
+              aria-label="Search conversations"
+              class="chat-sidebar-search-input"
+              placeholder="chat.searchConversations"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="chat-sidebar-rooms"
+        >
+          <div
+            class="chat-room-list"
+          >
+            <button
+              class="chat-room-card "
+              type="button"
             >
               <div
-                class="relative "
+                class="chat-room-card-avatar"
               >
                 <div
-                  class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  class="relative "
                 >
-                  O
+                  <div
+                    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  >
+                    O
+                  </div>
+                  <span
+                    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
+                    title="online"
+                  />
                 </div>
-                <span
-                  class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
-                  title="online"
-                />
               </div>
               <div
-                class="flex-1 min-w-0"
+                class="chat-room-card-content"
               >
                 <div
-                  class="flex items-center justify-between gap-2"
+                  class="chat-room-card-header"
                 >
                   <span
-                    class="chat-room-name truncate"
+                    class="chat-room-card-name"
                   >
                     otheruser
                   </span>
                   <span
-                    class="chat-room-time"
+                    class="chat-room-card-time"
                   >
                     1/15/2024
                   </span>
                 </div>
                 <div
-                  class="flex items-center justify-between gap-2 mt-0.5"
+                  class="chat-room-card-body"
                 >
                   <p
-                    class="chat-room-preview truncate"
+                    class="chat-room-card-preview"
                   >
                     <span
-                      class="sender"
+                      class="chat-room-card-sender"
                     >
                       otheruser
                       :
@@ -162,14 +201,14 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
                     Hello there!
                   </p>
                   <span
-                    class="chat-unread-badge"
+                    class="chat-room-card-badge"
                   >
                     2
                   </span>
                 </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
       <div
@@ -325,56 +364,95 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
       >
         <div
-          class="flex-1"
+          class="chat-sidebar-header"
         >
-          <button
-            class="chat-room-item w-full text-left "
-            type="button"
+          <div
+            class="flex items-center justify-between mb-3"
           >
-            <div
-              class="flex items-center gap-3"
+            <h2
+              class="chat-sidebar-title"
+            >
+              <i
+                class="fas fa-inbox mr-2 text-purple-500"
+              />
+              chat.conversations
+            </h2>
+            <span
+              class="chat-sidebar-count"
+            >
+              1
+            </span>
+          </div>
+          <div
+            class="chat-sidebar-search"
+          >
+            <i
+              class="fas fa-search chat-sidebar-search-icon"
+            />
+            <input
+              aria-label="Search conversations"
+              class="chat-sidebar-search-input"
+              placeholder="chat.searchConversations"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="chat-sidebar-rooms"
+        >
+          <div
+            class="chat-room-list"
+          >
+            <button
+              class="chat-room-card "
+              type="button"
             >
               <div
-                class="relative "
+                class="chat-room-card-avatar"
               >
                 <div
-                  class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  class="relative "
                 >
-                  O
+                  <div
+                    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  >
+                    O
+                  </div>
+                  <span
+                    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
+                    title="online"
+                  />
                 </div>
-                <span
-                  class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
-                  title="online"
-                />
               </div>
               <div
-                class="flex-1 min-w-0"
+                class="chat-room-card-content"
               >
                 <div
-                  class="flex items-center justify-between gap-2"
+                  class="chat-room-card-header"
                 >
                   <span
-                    class="chat-room-name truncate"
+                    class="chat-room-card-name"
                   >
                     otheruser
                   </span>
                   <span
-                    class="chat-room-time"
+                    class="chat-room-card-time"
                   >
                     1/15/2024
                   </span>
                 </div>
                 <div
-                  class="flex items-center justify-between gap-2 mt-0.5"
+                  class="chat-room-card-body"
                 >
                   <p
-                    class="chat-room-preview truncate"
+                    class="chat-room-card-preview"
                   >
                     <span
-                      class="sender"
+                      class="chat-room-card-sender"
                     >
                       otheruser
                       :
@@ -383,14 +461,14 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
                     Hello there!
                   </p>
                   <span
-                    class="chat-unread-badge"
+                    class="chat-room-card-badge"
                   >
                     2
                   </span>
                 </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
       <div
@@ -527,28 +605,76 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
       >
         <div
-          class="chat-empty-state"
+          class="chat-sidebar-header"
         >
           <div
-            class="chat-empty-icon"
+            class="flex items-center justify-between mb-3"
+          >
+            <h2
+              class="chat-sidebar-title"
+            >
+              <i
+                class="fas fa-inbox mr-2 text-purple-500"
+              />
+              chat.conversations
+            </h2>
+            <span
+              class="chat-sidebar-count"
+            >
+              0
+            </span>
+          </div>
+          <div
+            class="chat-sidebar-search"
           >
             <i
-              class="fas fa-comments"
+              class="fas fa-search chat-sidebar-search-icon"
+            />
+            <input
+              aria-label="Search conversations"
+              class="chat-sidebar-search-input"
+              placeholder="chat.searchConversations"
+              type="text"
+              value=""
             />
           </div>
-          <p
-            class="chat-empty-title"
+        </div>
+        <div
+          class="chat-sidebar-rooms"
+        >
+          <div
+            class="chat-sidebar-empty"
           >
-            No chats yet
-          </p>
-          <p
-            class="chat-empty-subtitle"
-          >
-            Start a new chat to begin
-          </p>
+            <div
+              class="chat-sidebar-empty-icon"
+            >
+              <i
+                class="fas fa-comments"
+              />
+            </div>
+            <p
+              class="chat-sidebar-empty-title"
+            >
+              No chats yet
+            </p>
+            <p
+              class="chat-sidebar-empty-subtitle"
+            >
+              Start a new chat to begin
+            </p>
+            <button
+              class="chat-sidebar-empty-btn"
+              type="button"
+            >
+              <i
+                class="fas fa-plus mr-2"
+              />
+              New Chat
+            </button>
+          </div>
         </div>
       </div>
       <div
@@ -685,18 +811,57 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
       >
         <div
-          class="flex-1 flex items-center justify-center p-4 text-center"
+          class="chat-sidebar-header"
         >
-          <div>
-            <i
-              class="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500"
-            />
-            <p
-              class="text-sm md:text-base text-[var(--text-secondary)]"
+          <div
+            class="flex items-center justify-between mb-3"
+          >
+            <h2
+              class="chat-sidebar-title"
             >
+              <i
+                class="fas fa-inbox mr-2 text-purple-500"
+              />
+              chat.conversations
+            </h2>
+            <span
+              class="chat-sidebar-count"
+            >
+              0
+            </span>
+          </div>
+          <div
+            class="chat-sidebar-search"
+          >
+            <i
+              class="fas fa-search chat-sidebar-search-icon"
+            />
+            <input
+              aria-label="Search conversations"
+              class="chat-sidebar-search-input"
+              placeholder="chat.searchConversations"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="chat-sidebar-rooms"
+        >
+          <div
+            class="chat-sidebar-loading"
+          >
+            <div
+              class="chat-sidebar-loading-spinner"
+            >
+              <i
+                class="fas fa-circle-notch fa-spin"
+              />
+            </div>
+            <p>
               Loading chats...
             </p>
           </div>
@@ -836,56 +1001,95 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain hidden md:flex md:flex-col"
+        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 hidden md:flex md:flex-col"
       >
         <div
-          class="flex-1"
+          class="chat-sidebar-header"
         >
-          <button
-            class="chat-room-item w-full text-left active"
-            type="button"
+          <div
+            class="flex items-center justify-between mb-3"
           >
-            <div
-              class="flex items-center gap-3"
+            <h2
+              class="chat-sidebar-title"
+            >
+              <i
+                class="fas fa-inbox mr-2 text-purple-500"
+              />
+              chat.conversations
+            </h2>
+            <span
+              class="chat-sidebar-count"
+            >
+              1
+            </span>
+          </div>
+          <div
+            class="chat-sidebar-search"
+          >
+            <i
+              class="fas fa-search chat-sidebar-search-icon"
+            />
+            <input
+              aria-label="Search conversations"
+              class="chat-sidebar-search-input"
+              placeholder="chat.searchConversations"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="chat-sidebar-rooms"
+        >
+          <div
+            class="chat-room-list"
+          >
+            <button
+              class="chat-room-card active"
+              type="button"
             >
               <div
-                class="relative "
+                class="chat-room-card-avatar"
               >
                 <div
-                  class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  class="relative "
                 >
-                  O
+                  <div
+                    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  >
+                    O
+                  </div>
+                  <span
+                    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
+                    title="online"
+                  />
                 </div>
-                <span
-                  class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
-                  title="online"
-                />
               </div>
               <div
-                class="flex-1 min-w-0"
+                class="chat-room-card-content"
               >
                 <div
-                  class="flex items-center justify-between gap-2"
+                  class="chat-room-card-header"
                 >
                   <span
-                    class="chat-room-name truncate"
+                    class="chat-room-card-name"
                   >
                     otheruser
                   </span>
                   <span
-                    class="chat-room-time"
+                    class="chat-room-card-time"
                   >
                     1/15/2024
                   </span>
                 </div>
                 <div
-                  class="flex items-center justify-between gap-2 mt-0.5"
+                  class="chat-room-card-body"
                 >
                   <p
-                    class="chat-room-preview truncate"
+                    class="chat-room-card-preview"
                   >
                     <span
-                      class="sender"
+                      class="chat-room-card-sender"
                     >
                       otheruser
                       :
@@ -894,14 +1098,14 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                     Hello there!
                   </p>
                   <span
-                    class="chat-unread-badge"
+                    class="chat-room-card-badge"
                   >
                     2
                   </span>
                 </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
       <div
@@ -1215,56 +1419,95 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
       class="flex-1 flex overflow-hidden min-h-0"
     >
       <div
-        class="w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain flex flex-col"
+        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
       >
         <div
-          class="flex-1"
+          class="chat-sidebar-header"
         >
-          <button
-            class="chat-room-item w-full text-left "
-            type="button"
+          <div
+            class="flex items-center justify-between mb-3"
           >
-            <div
-              class="flex items-center gap-3"
+            <h2
+              class="chat-sidebar-title"
+            >
+              <i
+                class="fas fa-inbox mr-2 text-purple-500"
+              />
+              chat.conversations
+            </h2>
+            <span
+              class="chat-sidebar-count"
+            >
+              1
+            </span>
+          </div>
+          <div
+            class="chat-sidebar-search"
+          >
+            <i
+              class="fas fa-search chat-sidebar-search-icon"
+            />
+            <input
+              aria-label="Search conversations"
+              class="chat-sidebar-search-input"
+              placeholder="chat.searchConversations"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="chat-sidebar-rooms"
+        >
+          <div
+            class="chat-room-list"
+          >
+            <button
+              class="chat-room-card "
+              type="button"
             >
               <div
-                class="relative "
+                class="chat-room-card-avatar"
               >
                 <div
-                  class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  class="relative "
                 >
-                  O
+                  <div
+                    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  >
+                    O
+                  </div>
+                  <span
+                    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
+                    title="online"
+                  />
                 </div>
-                <span
-                  class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
-                  title="online"
-                />
               </div>
               <div
-                class="flex-1 min-w-0"
+                class="chat-room-card-content"
               >
                 <div
-                  class="flex items-center justify-between gap-2"
+                  class="chat-room-card-header"
                 >
                   <span
-                    class="chat-room-name truncate"
+                    class="chat-room-card-name"
                   >
                     otheruser
                   </span>
                   <span
-                    class="chat-room-time"
+                    class="chat-room-card-time"
                   >
                     1/15/2024
                   </span>
                 </div>
                 <div
-                  class="flex items-center justify-between gap-2 mt-0.5"
+                  class="chat-room-card-body"
                 >
                   <p
-                    class="chat-room-preview truncate"
+                    class="chat-room-card-preview"
                   >
                     <span
-                      class="sender"
+                      class="chat-room-card-sender"
                     >
                       otheruser
                       :
@@ -1273,14 +1516,14 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
                     Hello there!
                   </p>
                   <span
-                    class="chat-unread-badge"
+                    class="chat-room-card-badge"
                   >
                     2
                   </span>
                 </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
       <div
