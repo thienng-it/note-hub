@@ -97,7 +97,7 @@
   "notes": {
     "title": "Notes",
     "newNote": "New Note",
-    "searchPlaceholder": "Search notes...",
+    "searchPlaceholder": "\uD83D\uDD0D Search notes...",
     "noNotes": "No notes yet",
     "createFirstNote": "Create your first note",
     "noteTitle": "Note Title",
@@ -129,7 +129,7 @@
     "archivedNotes": "Archived Notes",
     "sharedWithMe": "Shared With Me",
     "archivedDescription": "Archived notes will appear here",
-    "filterByTag": "Filter by tag...",
+    "filterByTag": "\uD83C\uDFF7 Filter by tag...",
     "hideAllNotes": "Hide all note contents",
     "showAllNotes": "Show all note contents",
     "editTooltip": "Edit",
@@ -142,7 +142,7 @@
   "tasks": {
     "title": "Tasks",
     "newTask": "New Task",
-    "searchPlaceholder": "Search tasks...",
+    "searchPlaceholder": "\uD83D\uDD0D Search tasks...",
     "noTasks": "No tasks yet",
     "createFirstTask": "Create your first task",
     "taskTitle": "Task Title",
@@ -264,7 +264,7 @@
     "grantAdminMessage": "Are you sure you want to grant admin privileges to \"{{username}}\"?",
     "revokeAdminTitle": "Revoke Admin Privileges",
     "revokeAdminMessage": "Are you sure you want to revoke admin privileges from \"{{username}}\"?",
-    "searchPlaceholder": "Search by username or email...",
+    "searchPlaceholder": "\uD83D\uDD0D Search by username or email...",
     "backToNotes": "Back to Notes"
   },
   "errors": {

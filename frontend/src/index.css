@@ -216,6 +216,22 @@ body.dark {
   overflow: hidden;
 }
 
+.glass-card-item {
+  height: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-depth-1),
+    inset 0 1px 0 0 var(--glass-highlight);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1.5rem;
+  padding: 0.5rem;
+  margin-top: var(--section-spacing);
+  margin-bottom: var(--section-spacing);
+}
+
 .card::before,
 .glass-card::before {
   content: "";
@@ -296,6 +312,8 @@ body.dark {
     0 2px 8px 0 rgba(0, 0, 0, 0.06),
     inset 0 1px 0 0 var(--glass-highlight);
   height: 200px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Dark mode textarea */
@@ -438,7 +456,7 @@ body.dark {
   font-size: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0.75rem;
-  padding: 1rem 1.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
@@ -1367,6 +1385,7 @@ body.dark {
   border-radius: 0.25rem;
   padding: 0.25rem;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .glass-i:hover {
@@ -1463,6 +1482,7 @@ body.dark {
 
 .glass-list-item:hover {
   background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
 }
 
 /* Glass Table */
@@ -2206,7 +2226,7 @@ body.dark {
 
 /* Dock expanded state - show all items centered at bottom */
 .liquid-glass-nav.dock-expanded {
-  transform: translateY(0);
+  transform: translateY(-350%);
   opacity: 1;
   bottom: 0;
   left: 0;
@@ -3524,12 +3544,12 @@ body.dark {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 1.75rem;
-  padding: 0.75rem;
+  padding: 1rem;
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.06),
     0 2px 8px rgba(0, 0, 0, 0.03),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  margin-bottom: 1.5rem;
+  margin: 0.5rem;
 }
 
 .dark .modern-page-header {
@@ -3616,6 +3636,8 @@ body.dark {
   font-weight: 600;
   backdrop-filter: blur(10px);
   transition: all 0.2s ease;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .modern-stat-badge:hover {
@@ -3710,11 +3732,13 @@ body.dark {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 1.5rem;
-  padding: 1rem;
+  padding: 0.5rem;
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.06),
     0 2px 8px rgba(0, 0, 0, 0.03),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .dark .modern-search-card {
@@ -3906,6 +3930,7 @@ body.dark {
     0 4px 12px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   border-color: rgba(59, 130, 246, 0.3);
+  cursor: pointer;
 }
 
 .modern-note-card:hover::before {

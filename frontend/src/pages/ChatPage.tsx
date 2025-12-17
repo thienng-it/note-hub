@@ -330,7 +330,7 @@ export function ChatPage() {
         </div>
         {showNotificationBanner && (
           <div className="mt-2 md:mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4 animate-fade-in">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3" style={{ margin: '1rem' }}>
               <div className="flex items-start gap-2 md:gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-800/50 rounded-full flex items-center justify-center flex-shrink-0">
                   <i className="fas fa-bell text-blue-600 dark:text-blue-400 text-sm md:text-base"></i>
@@ -348,7 +348,7 @@ export function ChatPage() {
                 <button
                   type="button"
                   onClick={handleRequestNotificationPermission}
-                  className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+                  className="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
                 >
                   {t('chat.enable')}
                 </button>
@@ -740,13 +740,13 @@ export function ChatPage() {
       {showNewChatModal && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
         <div
-          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
+          className="fixed inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm flex items-center sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in"
           onClick={(e) => e.target === e.currentTarget && setShowNewChatModal(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="new-chat-title"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:max-w-md max-h-[85vh] sm:max-h-[80vh] flex flex-col shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
+          <div className="glass-card bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:max-w-md max-h-[85vh] sm:max-h-[80vh] flex flex-col shadow-2xl animate-slide-up sm:animate-scale-in safe-area-inset-bottom">
             <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
               <h2
                 id="new-chat-title"
@@ -771,7 +771,7 @@ export function ChatPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('chat.searchUsers')}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base transition-all"
+                className="glass-input w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base transition-all"
                 aria-label="Search users"
               />
             </div>
@@ -796,7 +796,7 @@ export function ChatPage() {
                         setShowNewChatModal(false);
                         setSearchQuery('');
                       }}
-                      className="w-full p-3 md:p-4 text-left border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation"
+                      className="glass-list-item w-full p-3 md:p-4 text-left border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors touch-manipulation"
                     >
                       <div className="flex items-center gap-3">
                         <UserAvatar
@@ -838,7 +838,7 @@ export function ChatPage() {
 
       {/* Error toast */}
       {error && (
-        <div className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-slide-up z-50">
+        <div className="btn-danger-glass fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-slide-up z-50">
           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
             <i className="fas fa-exclamation-circle"></i>
           </div>

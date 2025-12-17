@@ -60,6 +60,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
       >
         <div
           class="flex items-start justify-between gap-3"
+          style="margin: 1rem;"
         >
           <div
             class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
@@ -90,7 +91,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
             class="flex items-center gap-2 flex-shrink-0"
           >
             <button
-              class="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
               type="button"
             >
               Enable
@@ -293,6 +294,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
       >
         <div
           class="flex items-start justify-between gap-3"
+          style="margin: 1rem;"
         >
           <div
             class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
@@ -323,7 +325,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
             class="flex items-center gap-2 flex-shrink-0"
           >
             <button
-              class="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
               type="button"
             >
               Enable
@@ -507,6 +509,7 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
       >
         <div
           class="flex items-start justify-between gap-3"
+          style="margin: 1rem;"
         >
           <div
             class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
@@ -537,7 +540,7 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
             class="flex items-center gap-2 flex-shrink-0"
           >
             <button
-              class="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
               type="button"
             >
               Enable
@@ -681,6 +684,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
       >
         <div
           class="flex items-start justify-between gap-3"
+          style="margin: 1rem;"
         >
           <div
             class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
@@ -711,7 +715,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
             class="flex items-center gap-2 flex-shrink-0"
           >
             <button
-              class="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
               type="button"
             >
               Enable
@@ -844,6 +848,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
       >
         <div
           class="flex items-start justify-between gap-3"
+          style="margin: 1rem;"
         >
           <div
             class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
@@ -874,7 +879,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
             class="flex items-center gap-2 flex-shrink-0"
           >
             <button
-              class="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
               type="button"
             >
               Enable
@@ -1239,6 +1244,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
       >
         <div
           class="flex items-start justify-between gap-3"
+          style="margin: 1rem;"
         >
           <div
             class="flex items-start gap-2 md:gap-3 flex-1 min-w-0"
@@ -1269,7 +1275,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
             class="flex items-center gap-2 flex-shrink-0"
           >
             <button
-              class="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
+              class="btn-apple px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation"
               type="button"
             >
               Enable
@@ -1390,7 +1396,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
       </div>
     </div>
     <div
-      class="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-slide-up z-50"
+      class="btn-danger-glass fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-slide-up z-50"
     >
       <div
         class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0"

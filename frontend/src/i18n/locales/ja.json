@@ -97,7 +97,7 @@
   "notes": {
     "title": "メモ",
     "newNote": "新規メモ",
-    "searchPlaceholder": "メモを検索...",
+    "searchPlaceholder": "\uD83D\uDD0D メモを検索...",
     "noNotes": "まだメモがありません",
     "createFirstNote": "最初のメモを作成",
     "noteTitle": "メモのタイトル",
@@ -129,7 +129,7 @@
     "shareNote": "Share Note",
     "lastUpdated": "Last updated",
     "readingTime": "Reading time",
-    "filterByTag": "Filter by tag...",
+    "filterByTag": "\uD83C\uDFF7 Filter by tag...",
     "hideAllNotes": "Hide all note contents",
     "showAllNotes": "Show all note contents",
     "editTooltip": "Edit",
@@ -142,7 +142,7 @@
   "tasks": {
     "title": "タスク",
     "newTask": "新規タスク",
-    "searchPlaceholder": "タスクを検索...",
+    "searchPlaceholder": "\uD83D\uDD0D タスクを検索...",
     "noTasks": "まだタスクがありません",
     "createFirstTask": "最初のタスクを作成",
     "taskTitle": "タスクのタイトル",
@@ -259,7 +259,7 @@
     "grantAdminMessage": "\"{{username}}\"に管理者権限を付与してもよろしいですか？",
     "revokeAdminTitle": "管理者権限を取り消し",
     "revokeAdminMessage": "\"{{username}}\"の管理者権限を取り消してもよろしいですか？",
-    "searchPlaceholder": "Search by username or email...",
+    "searchPlaceholder": "\uD83D\uDD0D Search by username or email...",
     "backToNotes": "Back to Notes"
   },
   "errors": {

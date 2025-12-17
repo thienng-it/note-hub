@@ -99,16 +99,16 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
             >
               {t('folders.icon')}
             </div>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 gap-1">
               {FOLDER_ICONS.map((iconOption) => (
                 <button
                   key={iconOption.value}
                   type="button"
                   onClick={() => setIcon(iconOption.value)}
-                  className={`p-3 rounded-lg text-2xl transition-all ${
+                  className={`p-1 rounded-lg text-lg transition-all ${
                     icon === iconOption.value
-                      ? 'bg-blue-500/20 border-2 border-blue-500'
-                      : 'glass-card hover:bg-blue-500/10 border-2 border-transparent'
+                      ? 'bg-blue-500/20 border-1 border-blue-500'
+                      : 'glass-card-item hover:bg-blue-500/10 border-2 border-transparent'
                   }`}
                   title={iconOption.label}
                 >
@@ -127,7 +127,10 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
             >
               {t('folders.color')}
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div
+              className="flex gap-1 flex-row"
+              style={{ marginBottom: '0.5rem', marginTop: '0.5rem' }}
+            >
               {FOLDER_COLORS.map((colorOption) => (
                 <button
                   key={colorOption.value}

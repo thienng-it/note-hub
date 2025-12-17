@@ -260,7 +260,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
           />
           <input
             class="glass-input glass-input-with-icon w-full"
-            placeholder="Search by username or email..."
+            placeholder="🔍 Search by username or email..."
             type="text"
             value=""
           />
