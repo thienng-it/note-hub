@@ -11,7 +11,7 @@ class EmailService {
   constructor() {
     this.isConfigured = false;
     this.mailjetClient = null;
-    this.senderEmail = process.env.MAILJET_SENDER_EMAIL || 'noreply@notehub.local';
+    this.senderEmail = process.env.MAILJET_SENDER_EMAIL || 'noreply@example.com';
     this.senderName = process.env.MAILJET_SENDER_NAME || 'NoteHub';
 
     // Initialize Mailjet if API keys are provided

@@ -57,9 +57,7 @@ describe('EmailService', () => {
       expect(mockLogger.info).toHaveBeenCalledWith(
         expect.stringContaining('Mailjet not configured'),
       );
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('To: user@example.com'),
-      );
+      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('To: user@example.com'));
     });
 
     it('should include reset token in email content', async () => {
@@ -116,9 +114,7 @@ describe('EmailService', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('To: test@example.com'),
-      );
+      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('To: test@example.com'));
       expect(mockLogger.info).toHaveBeenCalledWith(
         expect.stringContaining('Subject: Test Subject'),
       );

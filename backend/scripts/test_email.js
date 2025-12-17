@@ -2,7 +2,7 @@
 /**
  * Manual test script for email service.
  * Tests email sending in development mode (without Mailjet configured).
- * 
+ *
  * Usage:
  *   node backend/scripts/test_email.js
  */
