@@ -287,91 +287,109 @@ export function TasksPage() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 min-w-0 space-y-4 sm:space-y-6">
-        {/* Header */}
-        <div className="stack-mobile">
-          <div className="flex items-center gap-3">
+      <div className="flex-1 min-w-0 space-y-6">
+        {/* Modern Header Section */}
+        <div className="modern-page-header">
+          <div className="flex items-center gap-4 mb-2">
             {/* Mobile Folder Button */}
             <button
               type="button"
               onClick={() => setIsFolderDrawerOpen(true)}
-              className="mobile-menu-btn lg:hidden"
+              className="modern-icon-btn lg:hidden"
               aria-label="Open folders"
             >
               <i className="fas fa-folder"></i>
             </button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl xs:text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)] truncate">
-                <i className="glass-i fas fa-tasks mr-2 sm:mr-3 text-blue-600"></i>
-                Tasks
-              </h1>
+              <div className="flex items-center gap-3 mb-1">
+                <div className="modern-icon-badge bg-gradient-to-br from-green-500 to-emerald-600">
+                  <i className="fas fa-tasks text-white"></i>
+                </div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
+                  Tasks
+                </h1>
+              </div>
               {/* Breadcrumb Navigation */}
               {selectedFolder && (
-                <div className="mt-2">
+                <div className="ml-1">
                   <FolderBreadcrumb folderId={selectedFolder.id} onNavigate={handleSelectFolder} />
                 </div>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {tasks.length > 0 && (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={hideAllTasks}
-                  className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
-                  title="Hide all task contents"
-                >
-                  <i className="glass-i fas fa-eye-slash mr-1 sm:mr-2"></i>
-                  <span className="hidden xs:inline sm:hidden">Hide</span>
-                  <span className="hidden sm:inline">Hide All</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={showAllTasks}
-                  className="btn-secondary-glass text-xs sm:text-sm touch-no-select"
-                  title="Show all task contents"
-                >
-                  <i className="glass-i fas fa-eye mr-1 sm:mr-2"></i>
-                  <span className="hidden xs:inline sm:hidden">Show</span>
-                  <span className="hidden sm:inline">Show All</span>
-                </button>
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => setShowForm(!showForm)}
-              className="btn-apple text-sm sm:text-base"
-            >
-              <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
-              {showForm ? 'Cancel' : 'New Task'}
-            </button>
-          </div>
-        </div>
 
-        {/* Stats */}
-        <div className="responsive-grid">
-          <div className="glass-card p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</div>
-            <div className="text-sm text-[var(--text-muted)]">Total</div>
-          </div>
-          <div className="glass-card p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
-            <div className="text-sm text-[var(--text-muted)]">Active</div>
-          </div>
-          <div className="glass-card p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-            <div className="text-sm text-[var(--text-muted)]">Completed</div>
-          </div>
-          <div className="glass-card p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
-            <div className="text-sm text-[var(--text-muted)]">Overdue</div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="modern-stat-badge">
+                <i className="fas fa-tasks text-blue-500 mr-2"></i>
+                <span className="font-semibold">{stats.total}</span>
+                <span className="hidden sm:inline ml-1">Total</span>
+              </div>
+              <div
+                className="modern-stat-badge"
+                style={{
+                  background: 'rgba(52, 199, 89, 0.1)',
+                  borderColor: 'rgba(52, 199, 89, 0.2)',
+                }}
+              >
+                <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                <span className="font-semibold">{stats.completed}</span>
+                <span className="hidden sm:inline ml-1">Done</span>
+              </div>
+              {stats.overdue > 0 && (
+                <div
+                  className="modern-stat-badge"
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    borderColor: 'rgba(239, 68, 68, 0.2)',
+                  }}
+                >
+                  <i className="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                  <span className="font-semibold">{stats.overdue}</span>
+                  <span className="hidden sm:inline ml-1">Overdue</span>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {tasks.length > 0 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={hideAllTasks}
+                    className="modern-btn-secondary"
+                    title="Hide all task contents"
+                  >
+                    <i className="fas fa-eye-slash mr-2"></i>
+                    <span className="hidden sm:inline">{t('common.hideAll')}</span>
+                    <span className="sm:hidden">Hide</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={showAllTasks}
+                    className="modern-btn-secondary"
+                    title="Show all task contents"
+                  >
+                    <i className="fas fa-eye mr-2"></i>
+                    <span className="hidden sm:inline">{t('common.showAll')}</span>
+                    <span className="sm:hidden">Show</span>
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowForm(!showForm)}
+                className="modern-btn-primary"
+              >
+                <i className={`fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
+                <span>{showForm ? 'Cancel' : 'New Task'}</span>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* New Task Form */}
         {showForm && (
-          <div className="glass-card p-6 rounded-xl">
+          <div className="modern-search-card">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-[var(--text-primary)]">
                 <i className="glass-i fas fa-plus-circle mr-2 text-blue-600"></i>
@@ -555,20 +573,19 @@ export function TasksPage() {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="glass-card flex space-x-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
+        {/* Modern Filter Tabs */}
+        <div className="modern-filter-tabs">
           {(['all', 'active', 'completed', 'overdue'] as TaskFilterType[]).map((f) => (
             <button
               type="button"
               key={f}
               onClick={() => setFilter(f)}
-              className={`flex-1 text-center py-2 px-4 rounded-md transition-all capitalize ${
-                filter === f
-                  ? 'shadow-sm bg-[var(--bg-secondary)] text-blue-600 dark:text-blue-400'
-                  : 'text-[var(--text-secondary)]'
-              }`}
+              className={`modern-filter-tab ${filter === f ? 'active' : ''}`}
             >
-              {f}
+              <i
+                className={`fas ${f === 'all' ? 'fa-list' : f === 'active' ? 'fa-clock' : f === 'completed' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2`}
+              ></i>
+              <span className="capitalize">{f}</span>
             </button>
           ))}
         </div>

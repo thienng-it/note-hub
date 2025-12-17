@@ -166,8 +166,13 @@ export function LiquidGlassNav() {
                 key={item.id}
                 to={item.path}
                 className={`liquid-glass-nav-item ${isActive(item) ? 'active' : ''}`}
-                onPointerEnter={() => setHoveredIndex(index)}
-                onClick={() => setIsDockExpanded(false)} // 📱 collapse after tap
+                onPointerEnter={(e) => e.pointerType === 'mouse' && setHoveredIndex(index)}
+                onPointerDown={() => setHoveredIndex(null)} // Clear hover on touch
+                onClick={(e) => {
+                  // Ensure navigation works on both desktop and mobile
+                  setIsDockExpanded(false);
+                  setHoveredIndex(null);
+                }}
                 style={{
                   transform: `scale(${getIconScale(index)}) translateY(${getIconTranslateY(index)}px)`,
                 }}
@@ -185,9 +190,16 @@ export function LiquidGlassNav() {
             ))}
 
             <button
+              type="button"
               className="liquid-glass-nav-item"
-              onClick={toggleTheme}
-              onPointerEnter={() => setHoveredIndex(filteredNavItems.length)}
+              onClick={() => {
+                toggleTheme();
+                setIsDockExpanded(false);
+              }}
+              onPointerEnter={(e) =>
+                e.pointerType === 'mouse' && setHoveredIndex(filteredNavItems.length)
+              }
+              onPointerDown={() => setHoveredIndex(null)}
             >
               <div className="liquid-glass-nav-icon-wrapper">
                 <i
@@ -200,9 +212,16 @@ export function LiquidGlassNav() {
             </button>
 
             <button
+              type="button"
               className="liquid-glass-nav-item"
-              onClick={handleLogout}
-              onPointerEnter={() => setHoveredIndex(filteredNavItems.length + 1)}
+              onClick={() => {
+                handleLogout();
+                setIsDockExpanded(false);
+              }}
+              onPointerEnter={(e) =>
+                e.pointerType === 'mouse' && setHoveredIndex(filteredNavItems.length + 1)
+              }
+              onPointerDown={() => setHoveredIndex(null)}
             >
               <div className="liquid-glass-nav-icon-wrapper">
                 <i className="fas fa-sign-out-alt liquid-glass-nav-icon" />
