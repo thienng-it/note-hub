@@ -6,69 +6,100 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
     class="container-responsive py-4 sm:py-6"
   >
     <div
-      class="mb-6 sm:mb-8"
+      class="modern-page-header mb-6"
     >
       <div
-        class="stack-mobile mb-4"
+        class="flex items-center gap-4 mb-2"
       >
         <div
-          class="flex-1"
+          class="flex-1 min-w-0"
         >
-          <h1
-            class="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] flex items-center gap-2 sm:gap-3"
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            <i
-              aria-hidden="true"
-              class="glass-i fas fa-users-cog text-blue-600"
-            />
-            <span
-              class="hide-mobile"
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-red-500 to-pink-600"
+            >
+              <i
+                class="fas fa-users-cog text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
             >
               Admin Dashboard
-            </span>
-            <span
-              class="show-mobile"
-            >
-              Admin
-            </span>
-          </h1>
+            </h1>
+          </div>
           <p
-            class="text-sm sm:text-base text-[var(--text-secondary)] mt-2"
+            class="text-sm sm:text-base text-[var(--text-secondary)] ml-1"
           >
             Manage users and view system statistics
           </p>
         </div>
+      </div>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+      >
         <div
-          class="flex gap-2 flex-wrap"
+          class="flex items-center gap-3 flex-wrap"
+        >
+          <div
+            class="modern-stat-badge"
+          >
+            <i
+              class="fas fa-users text-blue-500 mr-2"
+            />
+            <span
+              class="font-semibold"
+            >
+              2
+            </span>
+            <span
+              class="hidden sm:inline ml-1"
+            >
+              Total Users
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex flex-wrap items-center gap-2"
         >
           <a
-            class="btn-apple flex-1 sm:flex-initial"
+            class="modern-btn-secondary"
             data-discover="true"
             href="/admin/audit-logs"
           >
             <i
-              aria-hidden="true"
-              class="glass-i fas fa-clipboard-list"
+              class="fas fa-clipboard-list mr-2"
             />
             <span
-              class="hide-mobile sm:inline ml-2"
+              class="hidden sm:inline"
             >
               Audit Logs
             </span>
+            <span
+              class="sm:hidden"
+            >
+              Logs
+            </span>
           </a>
           <a
-            class="btn-secondary-glass flex-1 sm:flex-initial"
+            class="modern-btn-secondary"
             data-discover="true"
             href="/"
           >
             <i
-              aria-hidden="true"
-              class="glass-i fas fa-arrow-left"
+              class="fas fa-arrow-left mr-2"
             />
             <span
-              class="hide-mobile sm:inline ml-2"
+              class="hidden sm:inline"
             >
               Back to Notes
+            </span>
+            <span
+              class="sm:hidden"
+            >
+              Back
             </span>
           </a>
         </div>

@@ -84,14 +84,40 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="page-padding space-y-4 sm:space-y-6">
-      <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
-        <i className="glass-i fas fa-user-circle mr-2 sm:mr-3 text-blue-600"></i>
-        Profile
-      </h1>
+    <div className="page-padding space-y-6">
+      {/* Modern Header Section */}
+      <div className="modern-page-header">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="modern-icon-badge bg-gradient-to-br from-cyan-500 to-blue-600">
+                <i className="fas fa-user-circle text-white"></i>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
+                Profile
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {user.has_2fa && (
+            <div
+              className="modern-stat-badge"
+              style={{
+                background: 'rgba(52, 199, 89, 0.1)',
+                borderColor: 'rgba(52, 199, 89, 0.2)',
+              }}
+            >
+              <i className="fas fa-shield-alt text-green-500 mr-2"></i>
+              <span className="font-semibold">2FA Enabled</span>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* User Info Card */}
-      <div className="glass-panel-elevated p-4 sm:p-6">
+      <div className="modern-search-card">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-4 sm:mb-6">
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold flex-shrink-0">
             {user.username.charAt(0).toUpperCase()}
@@ -147,7 +173,7 @@ export function ProfilePage() {
       </div>
 
       {/* Settings Card */}
-      <div className="glass-panel p-4 sm:p-6">
+      <div className="modern-search-card">
         <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] mb-3 sm:mb-4">
           <i className="glass-i fas fa-cog mr-2"></i>
           {t('profile.settings')}
@@ -188,11 +214,8 @@ export function ProfilePage() {
                 {t('profile.languageDescription')}
               </p>
             </div>
-            <Link
-              to="/profile/edit"
-              className="btn-apple px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center text-sm sm:text-base self-start sm:self-center"
-            >
-              <i className="glass-i fas fa-edit mr-1 sm:mr-2"></i>
+            <Link to="/profile/edit" className="modern-btn-primary modern-btn-sm">
+              <i className="fas fa-edit mr-2"></i>
               <span className="hidden xs:inline">{t('profile.editProfile')}</span>
               <span className="xs:hidden">Edit</span>
             </Link>
@@ -208,11 +231,8 @@ export function ProfilePage() {
                 {t('profile.passwordDescription')}
               </p>
             </div>
-            <Link
-              to="/profile/change-password"
-              className="btn-apple px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center text-sm sm:text-base self-start sm:self-center"
-            >
-              <i className="glass-i fas fa-key mr-1 sm:mr-2"></i>
+            <Link to="/profile/change-password" className="modern-btn-primary modern-btn-sm">
+              <i className="fas fa-key mr-2"></i>
               <span className="hidden xs:inline">{t('profile.changePassword')}</span>
               <span className="xs:hidden">Change</span>
             </Link>
@@ -231,17 +251,19 @@ export function ProfilePage() {
             {user.has_2fa ? (
               <Link
                 to="/profile/2fa/disable"
-                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors inline-flex items-center"
+                className="modern-btn-sm"
+                style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
               >
-                <i className="glass-i fas fa-shield-alt mr-2"></i>
+                <i className="fas fa-shield-alt mr-2"></i>
                 {t('profile.disable2FA')}
               </Link>
             ) : (
               <Link
                 to="/profile/2fa/setup"
-                className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center"
+                className="modern-btn-sm"
+                style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
               >
-                <i className="glass-i fas fa-shield-alt mr-2"></i>
+                <i className="fas fa-shield-alt mr-2"></i>
                 {t('profile.setup2FA')}
               </Link>
             )}
@@ -255,7 +277,7 @@ export function ProfilePage() {
       </div>
 
       {/* Export/Import Data Card */}
-      <div className="glass-card p-6 rounded-xl">
+      <div className="modern-search-card">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="glass-i fas fa-file-export mr-2 text-purple-600"></i>
           Data Management
@@ -274,7 +296,7 @@ export function ProfilePage() {
               type="button"
               onClick={handleExport}
               disabled={isExporting}
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="modern-btn-primary modern-btn-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isExporting ? (
                 <>
@@ -303,7 +325,8 @@ export function ProfilePage() {
                 type="button"
                 onClick={handleImportClick}
                 disabled={isImporting}
-                className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                className="modern-btn-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
               >
                 {isImporting ? (
                   <>
@@ -342,7 +365,7 @@ export function ProfilePage() {
       </div>
 
       {/* Security Info */}
-      <div className="glass-card p-6 rounded-xl">
+      <div className="modern-search-card">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="glass-i fas fa-shield-alt mr-2 text-green-600"></i>
           {t('profile.securityTips')}
