@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteHub Password Reset Email - Preview</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f3f4f6;
+      padding: 40px 20px;
+      margin: 0;
+    }
+    .preview-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .preview-header {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 2px solid #667eea;
+      margin-bottom: 30px;
+    }
+    .preview-header h1 {
+      color: #667eea;
+      margin: 0;
+      font-size: 24px;
+    }
+    .preview-note {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .email-container {
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <div class="preview-header">
+      <h1>📧 NoteHub Password Reset Email Template</h1>
+      <p style="color: #666; margin-top: 10px;">This is a preview of the email sent to users requesting a password reset</p>
+    </div>
+
+    <div class="preview-note">
+      <strong>⚠️ Preview Note:</strong> This is a static preview of the email template. In production, the token, username, and reset URL will be dynamically generated for each request.
+    </div>
+
+    <!-- Email Template Start -->
+    <div class="email-container">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 0;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="margin: 0; font-size: 28px;">Password Reset Request</h1>
+          </div>
+          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px;">
+            <p style="margin-top: 0;">Hello <strong>john_doe</strong>,</p>
+            <p>You recently requested to reset your password for your NoteHub account.</p>
+            
+            <p><strong>Your Reset Token:</strong></p>
+            <div style="background: white; padding: 15px; border-radius: 6px; border: 2px dashed #667eea; margin: 20px 0; font-family: monospace; font-size: 16px; text-align: center;">
+              a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+            </div>
+            
+            <p>You can also click the button below to reset your password:</p>
+            <p style="text-align: center;">
+              <a href="#" style="display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: bold;">Reset Password</a>
+            </p>
+            
+            <p style="color: #d97706; margin-top: 20px; background: #fef3c7; padding: 15px; border-radius: 6px;">
+              ⚠️ This token will expire in <strong>1 hour</strong> for security reasons.
+            </p>
+            
+            <p style="margin-top: 30px;">If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
+            
+            <div style="text-align: center; margin-top: 40px; color: #666; font-size: 14px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+              <p style="margin: 5px 0;">Best regards,<br><strong>The NoteHub Team</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Email Template End -->
+
+    <div style="margin-top: 30px; padding: 20px; background: #f9fafb; border-radius: 8px;">
+      <h3 style="margin-top: 0; color: #667eea;">Template Features:</h3>
+      <ul style="line-height: 1.8;">
+        <li>✅ <strong>Responsive Design:</strong> Works on desktop, tablet, and mobile</li>
+        <li>✅ <strong>Clear Branding:</strong> NoteHub gradient header</li>
+        <li>✅ <strong>Prominent Token:</strong> Easy to copy token in dashed box</li>
+        <li>✅ <strong>Call-to-Action:</strong> Large, clickable "Reset Password" button</li>
+        <li>✅ <strong>Security Notice:</strong> Highlighted expiration warning</li>
+        <li>✅ <strong>User-Friendly:</strong> Simple, professional design</li>
+        <li>✅ <strong>Plain Text Fallback:</strong> Full content available in text format</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: 20px; padding: 20px; background: #eff6ff; border-radius: 8px; border: 1px solid #3b82f6;">
+      <h3 style="margin-top: 0; color: #3b82f6;">📝 Implementation Details:</h3>
+      <p><strong>Service:</strong> Mailjet API v3.1</p>
+      <p><strong>File:</strong> <code>backend/src/services/emailService.js</code></p>
+      <p><strong>Method:</strong> <code>sendPasswordResetEmail()</code></p>
+      <p><strong>Setup Guide:</strong> <a href="MAILJET_SETUP.md" style="color: #3b82f6;">docs/guides/MAILJET_SETUP.md</a></p>
+    </div>
+  </div>
+</body>
+</html>
