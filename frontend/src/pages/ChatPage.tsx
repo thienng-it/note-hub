@@ -73,7 +73,9 @@ export function ChatPage() {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string>('');
   const [viewingPhoto, setViewingPhoto] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load rooms on mount
@@ -105,13 +107,16 @@ export function ChatPage() {
 
   // Auto-scroll to latest message
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, []);
 
   // Scroll to bottom when messages change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: messages is intentionally included to trigger scroll on new messages
   useEffect(() => {
     scrollToBottom();
-  }, [scrollToBottom]);
+  }, [messages, scrollToBottom]);
 
   // Scroll to bottom when room changes
   useEffect(() => {
@@ -284,96 +289,82 @@ export function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden chat-page-container chat-container">
-      {/* Modern Header */}
-      <div className="modern-page-header flex-shrink-0">
-        <div className="flex items-center gap-4 mb-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-1">
-              <div className="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600">
-                <i className="fas fa-comments text-white" />
+    <div className="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding">
+      {/* Compact Header - Only show notification banner and connection status */}
+      {(showNotificationBanner || !isConnected) && (
+        <div className="chat-compact-header flex-shrink-0">
+          {!isConnected && (
+            <div className="chat-connection-status disconnected">
+              <i className="fas fa-wifi-slash mr-2" />
+              <span>{t('chat.disconnected')}</span>
+            </div>
+          )}
+          {showNotificationBanner && (
+            <div className="chat-notification-banner">
+              <div className="chat-notification-icon">
+                <i className="fas fa-bell" />
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
-                {t('chat.title')}
-              </h1>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {!isConnected && (
-              <div
-                className="modern-stat-badge"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  borderColor: 'rgba(239, 68, 68, 0.2)',
-                }}
-              >
-                <i className="fas fa-exclamation-triangle text-red-500 mr-2" />
-                <span className="hidden sm:inline">{t('chat.disconnected')}</span>
-                <span className="sm:hidden">Offline</span>
+              <div className="chat-notification-content">
+                <p className="chat-notification-title">{t('chat.enableNotifications')}</p>
+                <p className="chat-notification-desc">{t('chat.notificationDescription')}</p>
               </div>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={handleOpenNewChat}
-              className="modern-btn-primary"
-              aria-label={t('chat.newChat')}
-            >
-              <i className="fas fa-plus mr-2" />
-              <span>{t('chat.newChat')}</span>
-            </button>
-          </div>
+              <div className="chat-notification-actions">
+                <button
+                  type="button"
+                  onClick={handleRequestNotificationPermission}
+                  className="chat-notification-btn enable"
+                >
+                  {t('chat.enable')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDismissNotificationBanner}
+                  className="chat-notification-btn dismiss"
+                  aria-label="Dismiss"
+                >
+                  <i className="fas fa-times" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-        {showNotificationBanner && (
-          <div className="chat-notification-banner">
-            <div className="chat-notification-icon">
-              <i className="fas fa-bell" />
-            </div>
-            <div className="chat-notification-content">
-              <p className="chat-notification-title">{t('chat.enableNotifications')}</p>
-              <p className="chat-notification-desc">{t('chat.notificationDescription')}</p>
-            </div>
-            <div className="chat-notification-actions">
-              <button
-                type="button"
-                onClick={handleRequestNotificationPermission}
-                className="chat-notification-btn enable"
-              >
-                {t('chat.enable')}
-              </button>
-              <button
-                type="button"
-                onClick={handleDismissNotificationBanner}
-                className="chat-notification-btn dismiss"
-                aria-label="Dismiss"
-              >
-                <i className="fas fa-times" />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      <div className="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper">
+        {/* Sidebar Collapse Toggle (visible when collapsed) */}
+        {isSidebarCollapsed && (
+          <button
+            type="button"
+            onClick={() => setIsSidebarCollapsed(false)}
+            className="chat-sidebar-expand-btn"
+            aria-label="Expand sidebar"
+          >
+            <i className="fas fa-comments" />
+          </button>
+        )}
+
         {/* Rooms list - Hidden on mobile when chat is selected */}
         <div
-          className={`w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 ${
-            currentRoom ? 'hidden md:flex md:flex-col' : 'flex flex-col'
-          }`}
+          className={`chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 ${
+            isSidebarCollapsed ? 'chat-sidebar-collapsed' : 'w-full md:w-80 lg:w-88'
+          } ${currentRoom ? 'hidden md:flex md:flex-col' : 'flex flex-col'}`}
         >
           {/* Sidebar Header */}
           <div className="chat-sidebar-header">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="chat-sidebar-title">
-                <i className="fas fa-inbox mr-2 text-purple-500" />
-                {t('chat.conversations') || 'Conversations'}
-              </h2>
-              <span className="chat-sidebar-count">{rooms.length}</span>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="chat-sidebar-title">{t('chat.conversations')}</h2>
+              <div className="flex items-center gap-1">
+                {rooms.length > 0 && <span className="chat-sidebar-count">{rooms.length}</span>}
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarCollapsed(true)}
+                  className="chat-sidebar-collapse-btn"
+                  aria-label="Collapse sidebar"
+                >
+                  <i className="fas fa-chevron-left" />
+                </button>
+              </div>
             </div>
             {/* Sidebar Search */}
             <div className="chat-sidebar-search">
@@ -382,7 +373,7 @@ export function ChatPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('chat.searchConversations') || 'Search conversations...'}
+                placeholder={t('chat.searchConversations')}
                 className="chat-sidebar-search-input"
                 aria-label="Search conversations"
               />
@@ -397,6 +388,16 @@ export function ChatPage() {
                 </button>
               )}
             </div>
+            {/* New Chat Button */}
+            <button
+              type="button"
+              onClick={handleOpenNewChat}
+              className="chat-sidebar-new-btn"
+              aria-label={t('chat.newChat')}
+            >
+              <i className="fas fa-plus" />
+              <span>{t('chat.newChat')}</span>
+            </button>
           </div>
 
           {/* Rooms List */}
@@ -614,7 +615,10 @@ export function ChatPage() {
               </div>
 
               {/* Messages */}
-              <div className="chat-messages flex-1 min-h-0 overscroll-contain">
+              <div
+                ref={messagesContainerRef}
+                className="chat-messages flex-1 min-h-0 overscroll-contain"
+              >
                 {(showSearchResults ? searchResults : messages).length === 0 &&
                   !showSearchResults && (
                     <div className="flex-1 flex items-center justify-center py-12">
