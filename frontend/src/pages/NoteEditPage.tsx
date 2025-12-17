@@ -379,7 +379,7 @@ export function NoteEditPage() {
                   id="body"
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] md:min-h-[400px] lg:min-h-[500px] font-mono text-sm resize-y"
+                  className="glass-textarea w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px] md:min-h-[400px] lg:min-h-[500px] font-mono text-sm resize-y"
                   placeholder={t('notes.contentPlaceholderMarkdown')}
                 />
               </>

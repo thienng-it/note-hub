@@ -251,15 +251,6 @@ export function NotesPage() {
         {/* Modern Header Section */}
         <div className="modern-page-header">
           <div className="flex items-center gap-4 mb-2">
-            {/* Mobile Folder Button */}
-            <button
-              type="button"
-              onClick={() => setIsFolderDrawerOpen(true)}
-              className="modern-icon-btn lg:hidden"
-              aria-label="Open folders"
-            >
-              <i className="fas fa-folder"></i>
-            </button>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-1">
                 <div
@@ -285,7 +276,7 @@ export function NotesPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="modern-stat-badge">
-                <i className="fas fa-file-alt text-blue-500 mr-2"></i>
+                <i className="glass-i fas fa-file-alt text-blue-500 mr-2"></i>
                 <span className="font-semibold">{notes.length}</span>
                 <span className="hidden sm:inline ml-1">{t('common.notesCount')}</span>
               </div>
@@ -295,23 +286,14 @@ export function NotesPage() {
                 <>
                   <button
                     type="button"
-                    onClick={hideAllNotes}
+                    onClick={hiddenNotes.size === 0 ? hideAllNotes : showAllNotes}
                     className="modern-btn-secondary"
-                    title={t('notes.hideAllNotes')}
+                    title={t(hiddenNotes.size === 0 ? 'notes.hideAllNotes' : 'notes.showAllNotes')}
                   >
-                    <i className="fas fa-eye-slash mr-2"></i>
-                    <span className="hidden sm:inline">{t('common.hideAll')}</span>
-                    <span className="sm:hidden">Hide</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={showAllNotes}
-                    className="modern-btn-secondary"
-                    title={t('notes.showAllNotes')}
-                  >
-                    <i className="fas fa-eye mr-2"></i>
-                    <span className="hidden sm:inline">{t('common.showAll')}</span>
-                    <span className="sm:hidden">Show</span>
+                    <i className={`fas ${hiddenNotes.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                    <span className="hidden sm:inline">
+                      {t(hiddenNotes.size === 0 ? 'common.hideAll' : 'common.showAll')}
+                    </span>
                   </button>
                 </>
               )}
@@ -325,7 +307,7 @@ export function NotesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <div className="lg:col-span-2">
                 <div className="modern-input-group">
-                  <i className="fas fa-search modern-input-icon text-blue-500"></i>
+                  <i className="glass-i fas fa-search modern-input-icon text-blue-500"></i>
                   <input
                     type="text"
                     value={query}
@@ -337,7 +319,7 @@ export function NotesPage() {
               </div>
               <div>
                 <div className="modern-input-group">
-                  <i className="fas fa-tag modern-input-icon text-purple-500"></i>
+                  <i className="glass-i fas fa-tag modern-input-icon text-purple-500"></i>
                   <input
                     type="text"
                     value={tagFilter}
@@ -349,17 +331,13 @@ export function NotesPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button type="submit" className="modern-btn-primary flex-1 sm:flex-none">
-                <i className="fas fa-search mr-2"></i>
-                <span>{t('common.search')}</span>
-              </button>
               {(query || tagFilter) && (
                 <button
                   type="button"
                   onClick={clearSearch}
                   className="modern-btn-secondary flex-1 sm:flex-none"
                 >
-                  <i className="fas fa-times mr-2"></i>
+                  <i className="glass-i fas fa-times mr-2"></i>
                   <span>{t('common.clear')}</span>
                 </button>
               )}
@@ -370,28 +348,28 @@ export function NotesPage() {
         {/* Modern Filter Tabs */}
         <div className="modern-filter-tabs">
           <Link to="/" className={`modern-filter-tab ${view === 'all' ? 'active' : ''}`}>
-            <i className="fas fa-home mr-2"></i>
+            <i className="glass-i fas fa-home mr-2"></i>
             <span>All</span>
           </Link>
           <Link
             to="/?view=favorites"
             className={`modern-filter-tab ${view === 'favorites' ? 'active' : ''}`}
           >
-            <i className="fas fa-heart mr-2"></i>
+            <i className="glass-i fas fa-heart mr-2"></i>
             <span>Favorites</span>
           </Link>
           <Link
             to="/?view=archived"
             className={`modern-filter-tab ${view === 'archived' ? 'active' : ''}`}
           >
-            <i className="fas fa-archive mr-2"></i>
+            <i className="glass-i fas fa-archive mr-2"></i>
             <span>{t('notes.archived')}</span>
           </Link>
           <Link
             to="/?view=shared"
             className={`modern-filter-tab ${view === 'shared' ? 'active' : ''}`}
           >
-            <i className="fas fa-share-alt mr-2"></i>
+            <i className="glass-i fas fa-share-alt mr-2"></i>
             <span>Shared</span>
           </Link>
         </div>
@@ -399,7 +377,7 @@ export function NotesPage() {
         {/* Error Message */}
         {error && (
           <div className="modern-error-alert">
-            <i className="fas fa-exclamation-triangle mr-3"></i>
+            <i className="glass-i fas fa-exclamation-triangle mr-3"></i>
             <span>{error}</span>
           </div>
         )}
@@ -408,7 +386,7 @@ export function NotesPage() {
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
             <div className="modern-spinner">
-              <i className="fas fa-circle-notch fa-spin text-5xl text-blue-500"></i>
+              <i className="glass-i fas fa-circle-notch fa-spin text-5xl text-blue-500"></i>
             </div>
           </div>
         ) : (
@@ -427,17 +405,17 @@ export function NotesPage() {
                     <div className="modern-note-badges">
                       {note.pinned && (
                         <div className="modern-badge badge-pinned" title={t('notes.pinned')}>
-                          <i className="fas fa-thumbtack"></i>
+                          <i className="glass-i fas fa-thumbtack"></i>
                         </div>
                       )}
                       {note.favorite && (
                         <div className="modern-badge badge-favorite" title={t('notes.favorite')}>
-                          <i className="fas fa-heart"></i>
+                          <i className="glass-i fas fa-heart"></i>
                         </div>
                       )}
                       {note.archived && (
                         <div className="modern-badge badge-archived" title={t('notes.archived')}>
-                          <i className="fas fa-archive"></i>
+                          <i className="glass-i fas fa-archive"></i>
                         </div>
                       )}
                     </div>
@@ -453,7 +431,7 @@ export function NotesPage() {
                       {hiddenNotes.has(note.id) ? (
                         <div className="modern-hidden-content">
                           <div className="modern-hidden-icon">
-                            <i className="fas fa-eye-slash text-2xl"></i>
+                            <i className="glass-i fas fa-eye-slash text-2xl"></i>
                           </div>
                           <span className="modern-hidden-text">Content hidden for privacy</span>
                           <button
@@ -464,7 +442,7 @@ export function NotesPage() {
                             }}
                             className="modern-btn-primary modern-btn-sm"
                           >
-                            <i className="fas fa-eye mr-2"></i>
+                            <i className="glass-i fas fa-eye mr-2"></i>
                             Show Content
                           </button>
                         </div>
@@ -480,7 +458,7 @@ export function NotesPage() {
                                   key={tag.id}
                                   className={`modern-tag ${getTagColor(tag.name)}`}
                                 >
-                                  <i className="fas fa-tag mr-1"></i>
+                                  <i className="glass-i fas fa-tag mr-1"></i>
                                   {tag.name}
                                 </span>
                               ))}
@@ -497,11 +475,11 @@ export function NotesPage() {
                     <div className="modern-note-footer">
                       <div className="modern-note-meta">
                         <span className="modern-meta-item">
-                          <i className="fas fa-clock mr-1.5 text-blue-500"></i>
+                          <i className="glass-i fas fa-clock mr-1.5 text-blue-500"></i>
                           {note.reading_time || Math.ceil((note.body?.length || 0) / 1000)}m
                         </span>
                         <span className="modern-meta-item">
-                          <i className="fas fa-calendar-alt mr-1.5 text-purple-500"></i>
+                          <i className="glass-i fas fa-calendar-alt mr-1.5 text-purple-500"></i>
                           {note.updated_at
                             ? new Date(note.updated_at).toLocaleDateString('en-US', {
                                 month: 'short',
@@ -528,14 +506,14 @@ export function NotesPage() {
                           className="modern-action-btn action-default hover:action-blue"
                           title={t('notes.editTooltip')}
                         >
-                          <i className="fas fa-edit"></i>
+                          <i className="glass-i fas fa-edit"></i>
                         </Link>
                         <Link
                           to={`/notes/${note.id}/share`}
                           className="modern-action-btn action-default hover:action-green"
                           title={t('notes.shareTooltip')}
                         >
-                          <i className="fas fa-share-alt"></i>
+                          <i className="glass-i fas fa-share-alt"></i>
                         </Link>
                         <button
                           type="button"
@@ -543,7 +521,7 @@ export function NotesPage() {
                           className={`modern-action-btn ${note.favorite ? 'action-active action-red' : 'action-default'}`}
                           title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
                         >
-                          <i className="fas fa-heart"></i>
+                          <i className="glass-i fas fa-heart"></i>
                         </button>
                       </div>
                     </div>
@@ -554,7 +532,7 @@ export function NotesPage() {
               /* Modern Empty State */
               <div className="modern-empty-state">
                 <div className="modern-empty-icon">
-                  <i className="fas fa-folder-open"></i>
+                  <i className="glass-i fas fa-folder-open"></i>
                 </div>
                 <h3 className="modern-empty-title">
                   {selectedFolder ? `No notes in "${selectedFolder.name}"` : t('notes.noNotes')}
@@ -565,7 +543,7 @@ export function NotesPage() {
                     : 'Start creating notes to organize them'}
                 </p>
                 <Link to="/notes/new" className="modern-btn-primary mt-4">
-                  <i className="fas fa-plus mr-2"></i>
+                  <i className="glass-i fas fa-plus mr-2"></i>
                   {t('common.addNote')}
                 </Link>
               </div>
