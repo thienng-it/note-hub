@@ -422,12 +422,16 @@ export function FolderItem({
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteConfirm}
         title={t('folders.deleteConfirm')}
-        message={`${t('folders.deleteWarning')}\n\nFolder: "${folder.name}"`}
+        message={t('folders.deleteWarning')}
         confirmText={t('common.delete')}
         cancelText={t('common.cancel')}
         variant="danger"
         isLoading={isDeleting}
-      />
+      >
+        <div className="text-center text-sm text-[var(--text-primary)] font-semibold">
+          "{folder.name}"
+        </div>
+      </ConfirmModal>
     </div>
   );
 }
