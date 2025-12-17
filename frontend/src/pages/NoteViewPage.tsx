@@ -171,22 +171,17 @@ export function NoteViewPage() {
   }
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <Link
-          to="/"
-          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-        >
-          <i className="glass-i fas fa-arrow-left mr-2"></i>Back to Notes
+    <div className="note-view-container">
+      {/* Header Navigation */}
+      <div className="note-view-header">
+        <Link to="/" className="note-view-back-btn">
+          <i className="fas fa-arrow-left"></i>
+          <span>Back to Notes</span>
         </Link>
 
         {/* Share Button - Always visible for own notes */}
         {note.can_edit !== false && (
-          <Link
-            to={`/notes/${note.id}/share`}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white transition-colors"
-          >
+          <Link to={`/notes/${note.id}/share`} className="note-view-share-btn">
             <i className="fas fa-share-alt"></i>
             <span>Share Note</span>
           </Link>
@@ -194,38 +189,40 @@ export function NoteViewPage() {
       </div>
 
       {/* Note Card */}
-      <div className="glass-card rounded-2xl overflow-hidden">
+      <div className="note-view-card">
         {/* Note Header */}
-        <div className="p-6 border-b border-[var(--border-color)]">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
+        <div className="note-view-card-header">
+          <div className="note-view-header-content">
+            {/* Title Section */}
+            <div className="note-view-title-section">
+              {/* Status Badges */}
+              <div className="note-view-badges">
                 {note.pinned && (
-                  <span className="text-yellow-500" title="Pinned">
-                    <i className="glass-i fas fa-thumbtack"></i>
+                  <span className="note-view-badge badge-pinned" title="Pinned">
+                    <i className="fas fa-thumbtack"></i>
                   </span>
                 )}
                 {note.favorite && (
-                  <span className="text-red-500" title="Favorite">
-                    <i className="glass-i fas fa-heart"></i>
+                  <span className="note-view-badge badge-favorite" title="Favorite">
+                    <i className="fas fa-heart"></i>
                   </span>
                 )}
                 {note.archived && (
-                  <span className="text-gray-500" title={t('notes.archived')}>
-                    <i className="glass-i fas fa-archive"></i>
+                  <span className="note-view-badge badge-archived" title={t('notes.archived')}>
+                    <i className="fas fa-archive"></i>
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl font-bold text-[var(--text-primary)]">{note.title}</h1>
+
+              {/* Title */}
+              <h1 className="note-view-title">{note.title}</h1>
 
               {/* Tags */}
               {note.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="note-view-tags">
                   {note.tags.map((tag) => (
-                    <span
-                      key={tag.id}
-                      className={`px-3 py-1 text-sm font-medium rounded-full border ${getTagColor(tag.name)}`}
-                    >
+                    <span key={tag.id} className={`note-view-tag ${getTagColor(tag.name)}`}>
+                      <i className="fas fa-tag"></i>
                       {tag.name}
                     </span>
                   ))}
@@ -233,21 +230,21 @@ export function NoteViewPage() {
               )}
 
               {/* Meta Info */}
-              <div className="flex items-center gap-4 mt-4 text-sm text-[var(--text-muted)]">
-                <span>
-                  <i className="glass-i fas fa-clock mr-1"></i>
-                  {Math.ceil((note.body?.length || 0) / 1000)} min read
+              <div className="note-view-meta">
+                <span className="note-view-meta-item">
+                  <i className="fas fa-clock"></i>
+                  <span>{Math.ceil((note.body?.length || 0) / 1000)} min read</span>
                 </span>
                 {note.created_at && (
-                  <span>
-                    <i className="glass-i fas fa-calendar-plus mr-1"></i>
-                    Created {new Date(note.created_at).toLocaleDateString()}
+                  <span className="note-view-meta-item">
+                    <i className="fas fa-calendar-plus"></i>
+                    <span>Created {new Date(note.created_at).toLocaleDateString()}</span>
                   </span>
                 )}
                 {note.updated_at && (
-                  <span>
-                    <i className="glass-i fas fa-edit mr-1"></i>
-                    Updated {new Date(note.updated_at).toLocaleDateString()}
+                  <span className="note-view-meta-item">
+                    <i className="fas fa-edit"></i>
+                    <span>Updated {new Date(note.updated_at).toLocaleDateString()}</span>
                   </span>
                 )}
               </div>
@@ -255,58 +252,58 @@ export function NoteViewPage() {
 
             {/* Actions */}
             {note.can_edit !== false && (
-              <div className="flex items-center gap-2">
+              <div className="note-view-actions">
                 <Link
                   to={`/notes/${note.id}/edit`}
-                  className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-blue-600 transition-colors"
+                  className="note-view-action-btn action-edit"
                   title="Edit"
                 >
-                  <i className="glass-i fas fa-edit"></i>
+                  <i className="fas fa-edit"></i>
                 </Link>
                 <Link
                   to={`/notes/${note.id}/share`}
-                  className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-green-600 transition-colors"
+                  className="note-view-action-btn action-share"
                   title="Share"
                 >
-                  <i className="glass-i fas fa-share-alt"></i>
+                  <i className="fas fa-share-alt"></i>
                 </Link>
                 <button
                   type="button"
                   onClick={handleTogglePin}
-                  className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${
-                    note.pinned ? 'text-yellow-500' : 'text-[var(--text-muted)]'
+                  className={`note-view-action-btn ${
+                    note.pinned ? 'action-pin-active' : 'action-pin'
                   }`}
                   title={note.pinned ? 'Unpin' : 'Pin'}
                 >
-                  <i className="glass-i fas fa-thumbtack"></i>
+                  <i className="fas fa-thumbtack"></i>
                 </button>
                 <button
                   type="button"
                   onClick={handleToggleFavorite}
-                  className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${
-                    note.favorite ? 'text-red-500' : 'text-[var(--text-muted)]'
+                  className={`note-view-action-btn ${
+                    note.favorite ? 'action-favorite-active' : 'action-favorite'
                   }`}
                   title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
                 >
-                  <i className="glass-i fas fa-heart"></i>
+                  <i className="fas fa-heart"></i>
                 </button>
                 <button
                   type="button"
                   onClick={handleToggleArchive}
-                  className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${
-                    note.archived ? 'text-gray-500' : 'text-[var(--text-muted)]'
+                  className={`note-view-action-btn ${
+                    note.archived ? 'action-archive-active' : 'action-archive'
                   }`}
                   title={note.archived ? 'Unarchive' : 'Archive'}
                 >
-                  <i className="glass-i fas fa-archive"></i>
+                  <i className="fas fa-archive"></i>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="p-2 rounded-lg hover:bg-red-500/10 text-red-600 transition-colors"
+                  className="note-view-action-btn action-delete"
                   title="Delete"
                 >
-                  <i className="glass-i fas fa-trash"></i>
+                  <i className="fas fa-trash"></i>
                 </button>
               </div>
             )}
@@ -314,79 +311,71 @@ export function NoteViewPage() {
         </div>
 
         {/* Hide/Show Content Toggle */}
-        <div className="px-6 py-3 border-b border-[var(--border-color)] flex items-center justify-between">
+        <div className="note-view-toggle-section">
           <button
             type="button"
             onClick={toggleHideContent}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-              isContentHidden
-                ? 'bg-purple-500 text-white hover:bg-purple-600'
-                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]'
+            className={`note-view-toggle-btn ${
+              isContentHidden ? 'toggle-active' : 'toggle-inactive'
             }`}
           >
             <i className={`fas ${isContentHidden ? 'fa-eye' : 'fa-eye-slash'}`}></i>
             <span>{isContentHidden ? 'Show Content' : 'Hide Content'}</span>
           </button>
           {isContentHidden && (
-            <span className="text-sm text-[var(--text-muted)]">
-              <i className="fas fa-shield-alt mr-1"></i>
-              Content hidden for privacy
+            <span className="note-view-privacy-badge">
+              <i className="fas fa-shield-alt"></i>
+              <span>Content hidden for privacy</span>
             </span>
           )}
         </div>
 
         {isContentHidden ? (
           /* Hidden Content Placeholder */
-          <div className="p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
-              <i className="glass-i fas fa-eye-slash text-3xl text-purple-500"></i>
+          <div className="note-view-hidden-placeholder">
+            <div className="note-view-hidden-icon">
+              <i className="fas fa-eye-slash"></i>
             </div>
-            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
-              Content Hidden
-            </h3>
-            <p className="text-[var(--text-secondary)] mb-4 max-w-md">
+            <h3 className="note-view-hidden-title">Content Hidden</h3>
+            <p className="note-view-hidden-text">
               This note's content is hidden for privacy. Click the button above to reveal it.
             </p>
-            <button
-              type="button"
-              onClick={toggleHideContent}
-              className="px-6 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors"
-            >
-              <i className="glass-i fas fa-eye mr-2"></i>
-              Show Content
+            <button type="button" onClick={toggleHideContent} className="note-view-reveal-btn">
+              <i className="fas fa-eye"></i>
+              <span>Show Content</span>
             </button>
           </div>
         ) : (
           <>
             {/* AI Actions */}
             {note.body && (
-              <div className="px-6 pt-4 pb-2 border-b border-[var(--border-color)] overflow-visible relative z-10">
+              <div className="note-view-ai-section">
                 <AIActions text={note.body} />
               </div>
             )}
 
             {/* Images */}
             {note.images && note.images.length > 0 && (
-              <div className="px-6 pt-6 border-b border-[var(--border-color)]">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center">
-                  <i className="fas fa-images mr-2 text-blue-600"></i>
-                  Attached Images ({note.images.length})
+              <div className="note-view-images-section">
+                <h3 className="note-view-images-title">
+                  <i className="fas fa-images"></i>
+                  <span>Attached Images ({note.images.length})</span>
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-6">
+                <div className="note-view-images-grid">
                   {note.images.map((image, index) => (
                     <button
                       type="button"
                       key={index}
                       onClick={() => handleImageClick(index)}
-                      className="relative group overflow-hidden rounded-lg border-2 border-[var(--border-color)] hover:border-blue-500 transition-all cursor-pointer aspect-video bg-[var(--bg-tertiary)]"
+                      className="note-view-image-card group"
                     >
                       <img
                         src={image}
                         alt={`Attachment ${index + 1}`}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="note-view-image"
                       />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                        <i className="fas fa-search-plus text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                      <div className="note-view-image-overlay">
+                        <i className="fas fa-search-plus"></i>
                       </div>
                     </button>
                   ))}
@@ -395,8 +384,10 @@ export function NoteViewPage() {
             )}
 
             {/* Note Content */}
-            <div className="p-6 note-content prose prose-lg dark:prose-invert max-w-none">
-              <Markdown remarkPlugins={[remarkGfm]}>{note.body || '*No content*'}</Markdown>
+            <div className="note-view-content-section">
+              <div className="note-view-content prose prose-lg dark:prose-invert max-w-none">
+                <Markdown remarkPlugins={[remarkGfm]}>{note.body || '*No content*'}</Markdown>
+              </div>
             </div>
           </>
         )}
@@ -415,29 +406,30 @@ export function NoteViewPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="glass-card p-6 rounded-xl max-w-md w-full">
-            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
-              <i className="glass-i fas fa-exclamation-triangle text-red-500 mr-2"></i>
-              Delete Note?
-            </h3>
-            <p className="text-[var(--text-secondary)] mb-6">
+        <div className="note-view-modal-overlay">
+          <div className="note-view-modal">
+            <div className="note-view-modal-icon">
+              <i className="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 className="note-view-modal-title">Delete Note?</h3>
+            <p className="note-view-modal-text">
               Are you sure you want to delete "{note.title}"? This action cannot be undone.
             </p>
-            <div className="flex justify-end gap-3">
+            <div className="note-view-modal-actions">
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors"
+                className="note-view-modal-btn btn-cancel"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleDelete}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
+                className="note-view-modal-btn btn-delete"
               >
-                <i className="glass-i fas fa-trash mr-2"></i>Delete
+                <i className="fas fa-trash"></i>
+                <span>Delete</span>
               </button>
             </div>
           </div>
