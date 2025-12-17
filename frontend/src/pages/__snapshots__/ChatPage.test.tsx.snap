@@ -3,58 +3,11 @@
 exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
   >
     <div
-      class="modern-page-header flex-shrink-0"
+      class="chat-compact-header flex-shrink-0"
     >
-      <div
-        class="flex items-center gap-4 mb-2"
-      >
-        <div
-          class="flex-1 min-w-0"
-        >
-          <div
-            class="flex items-center gap-3 mb-1"
-          >
-            <div
-              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
-            >
-              <i
-                class="fas fa-comments text-white"
-              />
-            </div>
-            <h1
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
-            >
-              Chat
-            </h1>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-      >
-        <div
-          class="flex items-center gap-3"
-        />
-        <div
-          class="flex flex-wrap items-center gap-2"
-        >
-          <button
-            aria-label="New Chat"
-            class="modern-btn-primary"
-            type="button"
-          >
-            <i
-              class="fas fa-plus mr-2"
-            />
-            <span>
-              New Chat
-            </span>
-          </button>
-        </div>
-      </div>
       <div
         class="chat-notification-banner"
       >
@@ -101,30 +54,40 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
     >
       <div
-        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
       >
         <div
           class="chat-sidebar-header"
         >
           <div
-            class="flex items-center justify-between mb-3"
+            class="flex items-center justify-between gap-2"
           >
             <h2
               class="chat-sidebar-title"
             >
-              <i
-                class="fas fa-inbox mr-2 text-purple-500"
-              />
-              chat.conversations
+              Conversations
             </h2>
-            <span
-              class="chat-sidebar-count"
+            <div
+              class="flex items-center gap-1"
             >
-              1
-            </span>
+              <span
+                class="chat-sidebar-count"
+              >
+                1
+              </span>
+              <button
+                aria-label="Collapse sidebar"
+                class="chat-sidebar-collapse-btn"
+                type="button"
+              >
+                <i
+                  class="fas fa-chevron-left"
+                />
+              </button>
+            </div>
           </div>
           <div
             class="chat-sidebar-search"
@@ -135,11 +98,23 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
             <input
               aria-label="Search conversations"
               class="chat-sidebar-search-input"
-              placeholder="chat.searchConversations"
+              placeholder="Search conversations..."
               type="text"
               value=""
             />
           </div>
+          <button
+            aria-label="New Chat"
+            class="chat-sidebar-new-btn"
+            type="button"
+          >
+            <i
+              class="fas fa-plus"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
         </div>
         <div
           class="chat-sidebar-rooms"
@@ -244,76 +219,20 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
 exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
   >
     <div
-      class="modern-page-header flex-shrink-0"
+      class="chat-compact-header flex-shrink-0"
     >
       <div
-        class="flex items-center gap-4 mb-2"
+        class="chat-connection-status disconnected"
       >
-        <div
-          class="flex-1 min-w-0"
-        >
-          <div
-            class="flex items-center gap-3 mb-1"
-          >
-            <div
-              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
-            >
-              <i
-                class="fas fa-comments text-white"
-              />
-            </div>
-            <h1
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
-            >
-              Chat
-            </h1>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-      >
-        <div
-          class="flex items-center gap-3"
-        >
-          <div
-            class="modern-stat-badge"
-            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);"
-          >
-            <i
-              class="fas fa-exclamation-triangle text-red-500 mr-2"
-            />
-            <span
-              class="hidden sm:inline"
-            >
-              Disconnected
-            </span>
-            <span
-              class="sm:hidden"
-            >
-              Offline
-            </span>
-          </div>
-        </div>
-        <div
-          class="flex flex-wrap items-center gap-2"
-        >
-          <button
-            aria-label="New Chat"
-            class="modern-btn-primary"
-            type="button"
-          >
-            <i
-              class="fas fa-plus mr-2"
-            />
-            <span>
-              New Chat
-            </span>
-          </button>
-        </div>
+        <i
+          class="fas fa-wifi-slash mr-2"
+        />
+        <span>
+          Disconnected
+        </span>
       </div>
       <div
         class="chat-notification-banner"
@@ -361,30 +280,40 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
     >
       <div
-        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
       >
         <div
           class="chat-sidebar-header"
         >
           <div
-            class="flex items-center justify-between mb-3"
+            class="flex items-center justify-between gap-2"
           >
             <h2
               class="chat-sidebar-title"
             >
-              <i
-                class="fas fa-inbox mr-2 text-purple-500"
-              />
-              chat.conversations
+              Conversations
             </h2>
-            <span
-              class="chat-sidebar-count"
+            <div
+              class="flex items-center gap-1"
             >
-              1
-            </span>
+              <span
+                class="chat-sidebar-count"
+              >
+                1
+              </span>
+              <button
+                aria-label="Collapse sidebar"
+                class="chat-sidebar-collapse-btn"
+                type="button"
+              >
+                <i
+                  class="fas fa-chevron-left"
+                />
+              </button>
+            </div>
           </div>
           <div
             class="chat-sidebar-search"
@@ -395,11 +324,23 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
             <input
               aria-label="Search conversations"
               class="chat-sidebar-search-input"
-              placeholder="chat.searchConversations"
+              placeholder="Search conversations..."
               type="text"
               value=""
             />
           </div>
+          <button
+            aria-label="New Chat"
+            class="chat-sidebar-new-btn"
+            type="button"
+          >
+            <i
+              class="fas fa-plus"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
         </div>
         <div
           class="chat-sidebar-rooms"
@@ -504,58 +445,11 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
   >
     <div
-      class="modern-page-header flex-shrink-0"
+      class="chat-compact-header flex-shrink-0"
     >
-      <div
-        class="flex items-center gap-4 mb-2"
-      >
-        <div
-          class="flex-1 min-w-0"
-        >
-          <div
-            class="flex items-center gap-3 mb-1"
-          >
-            <div
-              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
-            >
-              <i
-                class="fas fa-comments text-white"
-              />
-            </div>
-            <h1
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
-            >
-              Chat
-            </h1>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-      >
-        <div
-          class="flex items-center gap-3"
-        />
-        <div
-          class="flex flex-wrap items-center gap-2"
-        >
-          <button
-            aria-label="New Chat"
-            class="modern-btn-primary"
-            type="button"
-          >
-            <i
-              class="fas fa-plus mr-2"
-            />
-            <span>
-              New Chat
-            </span>
-          </button>
-        </div>
-      </div>
       <div
         class="chat-notification-banner"
       >
@@ -602,30 +496,35 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
     >
       <div
-        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
       >
         <div
           class="chat-sidebar-header"
         >
           <div
-            class="flex items-center justify-between mb-3"
+            class="flex items-center justify-between gap-2"
           >
             <h2
               class="chat-sidebar-title"
             >
-              <i
-                class="fas fa-inbox mr-2 text-purple-500"
-              />
-              chat.conversations
+              Conversations
             </h2>
-            <span
-              class="chat-sidebar-count"
+            <div
+              class="flex items-center gap-1"
             >
-              0
-            </span>
+              <button
+                aria-label="Collapse sidebar"
+                class="chat-sidebar-collapse-btn"
+                type="button"
+              >
+                <i
+                  class="fas fa-chevron-left"
+                />
+              </button>
+            </div>
           </div>
           <div
             class="chat-sidebar-search"
@@ -636,11 +535,23 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
             <input
               aria-label="Search conversations"
               class="chat-sidebar-search-input"
-              placeholder="chat.searchConversations"
+              placeholder="Search conversations..."
               type="text"
               value=""
             />
           </div>
+          <button
+            aria-label="New Chat"
+            class="chat-sidebar-new-btn"
+            type="button"
+          >
+            <i
+              class="fas fa-plus"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
         </div>
         <div
           class="chat-sidebar-rooms"
@@ -710,58 +621,11 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
 exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
   >
     <div
-      class="modern-page-header flex-shrink-0"
+      class="chat-compact-header flex-shrink-0"
     >
-      <div
-        class="flex items-center gap-4 mb-2"
-      >
-        <div
-          class="flex-1 min-w-0"
-        >
-          <div
-            class="flex items-center gap-3 mb-1"
-          >
-            <div
-              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
-            >
-              <i
-                class="fas fa-comments text-white"
-              />
-            </div>
-            <h1
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
-            >
-              Chat
-            </h1>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-      >
-        <div
-          class="flex items-center gap-3"
-        />
-        <div
-          class="flex flex-wrap items-center gap-2"
-        >
-          <button
-            aria-label="New Chat"
-            class="modern-btn-primary"
-            type="button"
-          >
-            <i
-              class="fas fa-plus mr-2"
-            />
-            <span>
-              New Chat
-            </span>
-          </button>
-        </div>
-      </div>
       <div
         class="chat-notification-banner"
       >
@@ -808,30 +672,35 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
     >
       <div
-        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
       >
         <div
           class="chat-sidebar-header"
         >
           <div
-            class="flex items-center justify-between mb-3"
+            class="flex items-center justify-between gap-2"
           >
             <h2
               class="chat-sidebar-title"
             >
-              <i
-                class="fas fa-inbox mr-2 text-purple-500"
-              />
-              chat.conversations
+              Conversations
             </h2>
-            <span
-              class="chat-sidebar-count"
+            <div
+              class="flex items-center gap-1"
             >
-              0
-            </span>
+              <button
+                aria-label="Collapse sidebar"
+                class="chat-sidebar-collapse-btn"
+                type="button"
+              >
+                <i
+                  class="fas fa-chevron-left"
+                />
+              </button>
+            </div>
           </div>
           <div
             class="chat-sidebar-search"
@@ -842,11 +711,23 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
             <input
               aria-label="Search conversations"
               class="chat-sidebar-search-input"
-              placeholder="chat.searchConversations"
+              placeholder="Search conversations..."
               type="text"
               value=""
             />
           </div>
+          <button
+            aria-label="New Chat"
+            class="chat-sidebar-new-btn"
+            type="button"
+          >
+            <i
+              class="fas fa-plus"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
         </div>
         <div
           class="chat-sidebar-rooms"
@@ -900,58 +781,11 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
   >
     <div
-      class="modern-page-header flex-shrink-0"
+      class="chat-compact-header flex-shrink-0"
     >
-      <div
-        class="flex items-center gap-4 mb-2"
-      >
-        <div
-          class="flex-1 min-w-0"
-        >
-          <div
-            class="flex items-center gap-3 mb-1"
-          >
-            <div
-              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
-            >
-              <i
-                class="fas fa-comments text-white"
-              />
-            </div>
-            <h1
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
-            >
-              Chat
-            </h1>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-      >
-        <div
-          class="flex items-center gap-3"
-        />
-        <div
-          class="flex flex-wrap items-center gap-2"
-        >
-          <button
-            aria-label="New Chat"
-            class="modern-btn-primary"
-            type="button"
-          >
-            <i
-              class="fas fa-plus mr-2"
-            />
-            <span>
-              New Chat
-            </span>
-          </button>
-        </div>
-      </div>
       <div
         class="chat-notification-banner"
       >
@@ -998,30 +832,40 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
     >
       <div
-        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 hidden md:flex md:flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 hidden md:flex md:flex-col"
       >
         <div
           class="chat-sidebar-header"
         >
           <div
-            class="flex items-center justify-between mb-3"
+            class="flex items-center justify-between gap-2"
           >
             <h2
               class="chat-sidebar-title"
             >
-              <i
-                class="fas fa-inbox mr-2 text-purple-500"
-              />
-              chat.conversations
+              Conversations
             </h2>
-            <span
-              class="chat-sidebar-count"
+            <div
+              class="flex items-center gap-1"
             >
-              1
-            </span>
+              <span
+                class="chat-sidebar-count"
+              >
+                1
+              </span>
+              <button
+                aria-label="Collapse sidebar"
+                class="chat-sidebar-collapse-btn"
+                type="button"
+              >
+                <i
+                  class="fas fa-chevron-left"
+                />
+              </button>
+            </div>
           </div>
           <div
             class="chat-sidebar-search"
@@ -1032,11 +876,23 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
             <input
               aria-label="Search conversations"
               class="chat-sidebar-search-input"
-              placeholder="chat.searchConversations"
+              placeholder="Search conversations..."
               type="text"
               value=""
             />
           </div>
+          <button
+            aria-label="New Chat"
+            class="chat-sidebar-new-btn"
+            type="button"
+          >
+            <i
+              class="fas fa-plus"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
         </div>
         <div
           class="chat-sidebar-rooms"
@@ -1299,76 +1155,20 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
   >
     <div
-      class="modern-page-header flex-shrink-0"
+      class="chat-compact-header flex-shrink-0"
     >
       <div
-        class="flex items-center gap-4 mb-2"
+        class="chat-connection-status disconnected"
       >
-        <div
-          class="flex-1 min-w-0"
-        >
-          <div
-            class="flex items-center gap-3 mb-1"
-          >
-            <div
-              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
-            >
-              <i
-                class="fas fa-comments text-white"
-              />
-            </div>
-            <h1
-              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
-            >
-              Chat
-            </h1>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-      >
-        <div
-          class="flex items-center gap-3"
-        >
-          <div
-            class="modern-stat-badge"
-            style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);"
-          >
-            <i
-              class="fas fa-exclamation-triangle text-red-500 mr-2"
-            />
-            <span
-              class="hidden sm:inline"
-            >
-              Disconnected
-            </span>
-            <span
-              class="sm:hidden"
-            >
-              Offline
-            </span>
-          </div>
-        </div>
-        <div
-          class="flex flex-wrap items-center gap-2"
-        >
-          <button
-            aria-label="New Chat"
-            class="modern-btn-primary"
-            type="button"
-          >
-            <i
-              class="fas fa-plus mr-2"
-            />
-            <span>
-              New Chat
-            </span>
-          </button>
-        </div>
+        <i
+          class="fas fa-wifi-slash mr-2"
+        />
+        <span>
+          Disconnected
+        </span>
       </div>
       <div
         class="chat-notification-banner"
@@ -1416,30 +1216,40 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
     >
       <div
-        class="w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
       >
         <div
           class="chat-sidebar-header"
         >
           <div
-            class="flex items-center justify-between mb-3"
+            class="flex items-center justify-between gap-2"
           >
             <h2
               class="chat-sidebar-title"
             >
-              <i
-                class="fas fa-inbox mr-2 text-purple-500"
-              />
-              chat.conversations
+              Conversations
             </h2>
-            <span
-              class="chat-sidebar-count"
+            <div
+              class="flex items-center gap-1"
             >
-              1
-            </span>
+              <span
+                class="chat-sidebar-count"
+              >
+                1
+              </span>
+              <button
+                aria-label="Collapse sidebar"
+                class="chat-sidebar-collapse-btn"
+                type="button"
+              >
+                <i
+                  class="fas fa-chevron-left"
+                />
+              </button>
+            </div>
           </div>
           <div
             class="chat-sidebar-search"
@@ -1450,11 +1260,23 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
             <input
               aria-label="Search conversations"
               class="chat-sidebar-search-input"
-              placeholder="chat.searchConversations"
+              placeholder="Search conversations..."
               type="text"
               value=""
             />
           </div>
+          <button
+            aria-label="New Chat"
+            class="chat-sidebar-new-btn"
+            type="button"
+          >
+            <i
+              class="fas fa-plus"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
         </div>
         <div
           class="chat-sidebar-rooms"

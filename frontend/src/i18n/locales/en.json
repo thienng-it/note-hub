@@ -365,6 +365,9 @@
   },
   "chat": {
     "title": "Chat",
+    "conversations": "Conversations",
+    "searchConversations": "Search conversations...",
+    "noMessagesYet": "No messages yet",
     "newChat": "New Chat",
     "startChat": "Start Chat",
     "selectUser": "Select a user to start chatting",
