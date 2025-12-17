@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export function Modal({ isOpen, onClose, title, children, showCloseButton = true
     }
   };
 
-  return (
+  const modalContent = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={handleBackdropClick}
@@ -70,6 +71,8 @@ export function Modal({ isOpen, onClose, title, children, showCloseButton = true
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
 
 interface ConfirmModalProps {
