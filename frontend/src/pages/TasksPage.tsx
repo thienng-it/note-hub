@@ -294,7 +294,7 @@ export function TasksPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-1">
                 <div className="modern-icon-badge bg-gradient-to-br from-green-500 to-emerald-600">
-                  <i className="fas fa-tasks text-white"></i>
+                  <i className="glass-i fas fa-tasks text-white"></i>
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
                   Tasks
@@ -312,7 +312,7 @@ export function TasksPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3 flex-wrap">
               <div className="modern-stat-badge">
-                <i className="fas fa-tasks text-blue-500 mr-2"></i>
+                <i className="glass-i fas fa-tasks text-blue-500 mr-2"></i>
                 <span className="font-semibold">{stats.total}</span>
                 <span className="hidden sm:inline ml-1">Total</span>
               </div>
@@ -323,7 +323,7 @@ export function TasksPage() {
                   borderColor: 'rgba(52, 199, 89, 0.2)',
                 }}
               >
-                <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                <i className="glass-i fas fa-check-circle text-green-500 mr-2"></i>
                 <span className="font-semibold">{stats.completed}</span>
                 <span className="hidden sm:inline ml-1">Done</span>
               </div>
@@ -335,7 +335,7 @@ export function TasksPage() {
                     borderColor: 'rgba(239, 68, 68, 0.2)',
                   }}
                 >
-                  <i className="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                  <i className="glass-i fas fa-exclamation-triangle text-red-500 mr-2"></i>
                   <span className="font-semibold">{stats.overdue}</span>
                   <span className="hidden sm:inline ml-1">Overdue</span>
                 </div>
@@ -350,7 +350,7 @@ export function TasksPage() {
                     className="modern-btn-secondary"
                     title="Hide all task contents"
                   >
-                    <i className="fas fa-eye-slash mr-2"></i>
+                    <i className="glass-i fas fa-eye-slash mr-2"></i>
                     <span className="hidden sm:inline">{t('common.hideAll')}</span>
                     <span className="sm:hidden">Hide</span>
                   </button>
@@ -360,7 +360,7 @@ export function TasksPage() {
                     className="modern-btn-secondary"
                     title="Show all task contents"
                   >
-                    <i className="fas fa-eye mr-2"></i>
+                    <i className="glass-i fas fa-eye mr-2"></i>
                     <span className="hidden sm:inline">{t('common.showAll')}</span>
                     <span className="sm:hidden">Show</span>
                   </button>
@@ -471,7 +471,7 @@ export function TasksPage() {
                   id="description"
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  className="glass-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                  className="glass-textarea w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                   placeholder="Add more details (optional)"
                   rows={2}
                 />
@@ -574,7 +574,7 @@ export function TasksPage() {
               className={`modern-filter-tab ${filter === f ? 'active' : ''}`}
             >
               <i
-                className={`fas ${f === 'all' ? 'fa-list' : f === 'active' ? 'fa-clock' : f === 'completed' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2`}
+                className={`glass-i fas ${f === 'all' ? 'fa-list' : f === 'active' ? 'fa-clock' : f === 'completed' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2`}
               ></i>
               <span className="capitalize">{f}</span>
             </button>
@@ -719,7 +719,7 @@ export function TasksPage() {
                           </div>
                           {hiddenTasks.has(task.id) ? (
                             <div className="flex items-center py-2 bg-[var(--bg-tertiary)] rounded-lg mb-2 px-3">
-                              <i className="fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
+                              <i className="glass-i fas fa-eye-slash text-[var(--text-muted)] mr-2"></i>
                               <span className="text-sm text-[var(--text-muted)]">
                                 Content hidden
                               </span>
