@@ -33,6 +33,29 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 
 ### New Features (December 2024)
 
+#### UI/UX Improvements
+![Modern UI](docs/screenshots/modern-ui.png)
+*Clean, modern design with Apple-inspired glassmorphism*
+
+**NotesPage & TasksPage**:
+- Removed redundant elements for cleaner interface
+- Consistent modern design across both pages
+- Improved mobile experience with better dock positioning
+- Enhanced folder management with glassmorphism effects
+
+**Mobile Navigation**:
+- Fixed minimized dock visibility on mobile landscape
+- Scrollable expanded dock for small screens
+- Improved tap targets and touch interactions
+
+**Folder Management**:
+- Always visible 3-dot menu on mobile
+- Glassmorphism design with smooth animations
+- Confirmation modal for safe deletions
+- Improved context menu positioning
+
+> 📋 **Detailed Changes**: See [UI Improvements Documentation](docs/CHANGES_DECEMBER_2024.md)
+
 #### Google OAuth Single Sign-On
 ![Google OAuth](docs/screenshots/google-oauth.png)
 *One-click sign-in with automatic account creation*
@@ -73,6 +96,23 @@ A modern, secure, and feature-rich personal notes application with a React SPA f
 | **CI/CD**        | GitHub Actions + GitHub Pages       |
 
 ## 🚀 Recent Improvements
+
+### UI/UX Improvements (December 2024)
+- 🎨 **Modern Design System** - Apple-inspired glassmorphism across the application
+  - Consistent modern header design on Notes and Tasks pages
+  - Removed redundant UI elements for cleaner interface
+  - Enhanced visual hierarchy with gradient badges and modern buttons
+- 📱 **Mobile Experience** - Significantly improved mobile usability
+  - Fixed dock positioning on mobile landscape view
+  - Scrollable navigation dock for small screens
+  - Improved touch targets and tap actions
+  - Better folder management on mobile devices
+- 📁 **Folder Management** - Enhanced folder interaction and safety
+  - Always visible 3-dot menu on mobile (hover on desktop)
+  - Glassmorphism effects with smooth animations
+  - Confirmation modal prevents accidental deletions
+  - Increased spacing and improved context menu positioning
+- ✨ See [Detailed UI Changes Documentation](docs/CHANGES_DECEMBER_2024.md)
 
 ### Architecture Improvements (December 2024)
 - 🔄 **Traefik Integration** - Migrated from nginx to Traefik for better container-native routing
