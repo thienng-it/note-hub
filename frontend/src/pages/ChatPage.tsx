@@ -362,91 +362,153 @@ export function ChatPage() {
       <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Rooms list - Hidden on mobile when chat is selected */}
         <div
-          className={`w-full md:w-72 lg:w-80 xl:w-96 chat-sidebar overflow-y-auto flex-shrink-0 scroll-smooth overscroll-contain ${
+          className={`w-full md:w-80 lg:w-88 xl:w-96 chat-sidebar-enhanced overflow-hidden flex-shrink-0 ${
             currentRoom ? 'hidden md:flex md:flex-col' : 'flex flex-col'
           }`}
         >
-          {isLoading && rooms.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center p-4 text-center">
-              <div>
-                <i className="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500" />
-                <p className="text-sm md:text-base text-[var(--text-secondary)]">
-                  {t('chat.loadingChats')}
-                </p>
-              </div>
+          {/* Sidebar Header */}
+          <div className="chat-sidebar-header">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="chat-sidebar-title">
+                <i className="fas fa-inbox mr-2 text-purple-500" />
+                {t('chat.conversations') || 'Conversations'}
+              </h2>
+              <span className="chat-sidebar-count">{rooms.length}</span>
             </div>
-          ) : rooms.length === 0 ? (
-            <div className="chat-empty-state">
-              <div className="chat-empty-icon">
-                <i className="fas fa-comments" />
-              </div>
-              <p className="chat-empty-title">{t('chat.noChats')}</p>
-              <p className="chat-empty-subtitle">{t('chat.startNewChat')}</p>
+            {/* Sidebar Search */}
+            <div className="chat-sidebar-search">
+              <i className="fas fa-search chat-sidebar-search-icon" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('chat.searchConversations') || 'Search conversations...'}
+                className="chat-sidebar-search-input"
+                aria-label="Search conversations"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="chat-sidebar-search-clear"
+                  aria-label="Clear search"
+                >
+                  <i className="fas fa-times" />
+                </button>
+              )}
             </div>
-          ) : (
-            <div className="flex-1">
-              {rooms.map((room) => {
-                const otherUser = getOtherParticipant(room);
-                const displayName = room.is_group ? room.name : otherUser?.username || 'Unknown';
-                const userStatus = otherUser
-                  ? getUserStatus(otherUser.id, otherUser.status)
-                  : 'offline';
+          </div>
 
-                return (
-                  <button
-                    type="button"
-                    key={room.id}
-                    onClick={() => selectRoom(room.id)}
-                    className={`chat-room-item w-full text-left ${
-                      currentRoom?.id === room.id ? 'active' : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {!room.is_group && otherUser && (
-                        <UserAvatar
-                          username={otherUser.username}
-                          avatarUrl={otherUser.avatar_url}
-                          size="md"
-                          status={userStatus as 'online' | 'offline' | 'away' | 'busy'}
-                          showStatus={true}
-                        />
-                      )}
-                      {room.is_group && (
-                        <div className="chat-room-avatar group">
-                          <i className="fas fa-users text-white text-sm" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="chat-room-name truncate">{displayName}</span>
-                          {room.lastMessage && (
-                            <span className="chat-room-time">
-                              {formatTime(room.lastMessage.created_at)}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between gap-2 mt-0.5">
-                          {room.lastMessage ? (
-                            <p className="chat-room-preview truncate">
-                              <span className="sender">{room.lastMessage.sender.username}:</span>{' '}
-                              {room.lastMessage.message}
-                            </p>
+          {/* Rooms List */}
+          <div className="chat-sidebar-rooms">
+            {isLoading && rooms.length === 0 ? (
+              <div className="chat-sidebar-loading">
+                <div className="chat-sidebar-loading-spinner">
+                  <i className="fas fa-circle-notch fa-spin" />
+                </div>
+                <p>{t('chat.loadingChats')}</p>
+              </div>
+            ) : rooms.length === 0 ? (
+              <div className="chat-sidebar-empty">
+                <div className="chat-sidebar-empty-icon">
+                  <i className="fas fa-comments" />
+                </div>
+                <p className="chat-sidebar-empty-title">{t('chat.noChats')}</p>
+                <p className="chat-sidebar-empty-subtitle">{t('chat.startNewChat')}</p>
+                <button
+                  type="button"
+                  onClick={handleOpenNewChat}
+                  className="chat-sidebar-empty-btn"
+                >
+                  <i className="fas fa-plus mr-2" />
+                  {t('chat.newChat')}
+                </button>
+              </div>
+            ) : (
+              <div className="chat-room-list">
+                {rooms
+                  .filter((room) => {
+                    if (!searchQuery.trim()) return true;
+                    const otherUser = getOtherParticipant(room);
+                    const displayName = room.is_group
+                      ? room.name
+                      : otherUser?.username || 'Unknown';
+                    return displayName.toLowerCase().includes(searchQuery.toLowerCase());
+                  })
+                  .map((room) => {
+                    const otherUser = getOtherParticipant(room);
+                    const displayName = room.is_group
+                      ? room.name
+                      : otherUser?.username || 'Unknown';
+                    const userStatus = otherUser
+                      ? getUserStatus(otherUser.id, otherUser.status)
+                      : 'offline';
+
+                    return (
+                      <button
+                        type="button"
+                        key={room.id}
+                        onClick={() => selectRoom(room.id)}
+                        className={`chat-room-card ${currentRoom?.id === room.id ? 'active' : ''}`}
+                      >
+                        <div className="chat-room-card-avatar">
+                          {!room.is_group && otherUser ? (
+                            <UserAvatar
+                              username={otherUser.username}
+                              avatarUrl={otherUser.avatar_url}
+                              size="md"
+                              status={userStatus as 'online' | 'offline' | 'away' | 'busy'}
+                              showStatus={true}
+                            />
                           ) : (
-                            <p className="chat-room-preview italic">No messages yet</p>
-                          )}
-                          {room.unreadCount > 0 && (
-                            <span className="chat-unread-badge">
-                              {room.unreadCount > 99 ? '99+' : room.unreadCount}
-                            </span>
+                            <div className="chat-room-group-avatar">
+                              <i className="fas fa-users" />
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                        <div className="chat-room-card-content">
+                          <div className="chat-room-card-header">
+                            <span className="chat-room-card-name">{displayName}</span>
+                            {room.lastMessage && (
+                              <span className="chat-room-card-time">
+                                {formatTime(room.lastMessage.created_at)}
+                              </span>
+                            )}
+                          </div>
+                          <div className="chat-room-card-body">
+                            {room.lastMessage ? (
+                              <p className="chat-room-card-preview">
+                                <span className="chat-room-card-sender">
+                                  {room.lastMessage.sender.username}:
+                                </span>{' '}
+                                {room.lastMessage.photo_url ? (
+                                  <span className="chat-room-card-media">
+                                    <i className="fas fa-image mr-1" />
+                                    Photo
+                                  </span>
+                                ) : (
+                                  room.lastMessage.message
+                                )}
+                              </p>
+                            ) : (
+                              <p className="chat-room-card-preview empty">
+                                <i className="fas fa-comment-slash mr-1" />
+                                {t('chat.noMessagesYet') || 'No messages yet'}
+                              </p>
+                            )}
+                            {room.unreadCount > 0 && (
+                              <span className="chat-room-card-badge">
+                                {room.unreadCount > 99 ? '99+' : room.unreadCount}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Chat area - Full width on mobile when chat is selected */}
