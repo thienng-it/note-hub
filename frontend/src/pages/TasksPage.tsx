@@ -291,15 +291,6 @@ export function TasksPage() {
         {/* Modern Header Section */}
         <div className="modern-page-header">
           <div className="flex items-center gap-4 mb-2">
-            {/* Mobile Folder Button */}
-            <button
-              type="button"
-              onClick={() => setIsFolderDrawerOpen(true)}
-              className="modern-icon-btn lg:hidden"
-              aria-label="Open folders"
-            >
-              <i className="fas fa-folder"></i>
-            </button>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-1">
                 <div className="modern-icon-badge bg-gradient-to-br from-green-500 to-emerald-600">
