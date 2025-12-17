@@ -69,6 +69,16 @@
   --mobile-radius: 0.75rem;
   --tablet-radius: 1rem;
   --desktop-radius: 1.5rem;
+  --breakpoint-mobile-max: 639px;
+  --breakpoint-tablet-min: 640px;
+  --breakpoint-tablet-max: 1023px;
+  --breakpoint-desktop: 1024px;
+  --text-base: 0.95rem;
+  --heading-xl: 1.6rem;
+  --heading-lg: 1.35rem;
+  --heading-md: 1.15rem;
+  --section-spacing: 1rem;
+  --paragraph-spacing: 0.8rem;
 }
 
 /* Dark mode color overrides */
@@ -92,6 +102,29 @@
   --glass-depth-3: 0 20px 60px 0 rgba(0, 0, 0, 0.5);
 }
 
+/* Responsive typography scale */
+@media (min-width: var(--breakpoint-tablet-min)) and (max-width: var(--breakpoint-tablet-max)) {
+  :root {
+    --text-base: 1rem;
+    --heading-xl: 1.75rem;
+    --heading-lg: 1.45rem;
+    --heading-md: 1.2rem;
+    --section-spacing: 1.15rem;
+    --paragraph-spacing: 0.9rem;
+  }
+}
+
+@media (min-width: var(--breakpoint-desktop)) {
+  :root {
+    --text-base: 1.05rem;
+    --heading-xl: 1.9rem;
+    --heading-lg: 1.6rem;
+    --heading-md: 1.3rem;
+    --section-spacing: 1.35rem;
+    --paragraph-spacing: 1rem;
+  }
+}
+
 /* ============================================================
    BASE STYLES & RESETS
    ============================================================ */
@@ -113,6 +146,7 @@ html {
 
 body {
   font-family: var(--font-sans);
+  font-size: var(--text-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
@@ -122,6 +156,31 @@ body {
   color: var(--text-primary);
   /* Improve touch scrolling on mobile */
   -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive typography and spacing */
+h1,
+h2,
+h3 {
+  margin-bottom: var(--section-spacing);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--heading-xl);
+}
+
+h2 {
+  font-size: var(--heading-lg);
+}
+
+h3 {
+  font-size: var(--heading-md);
+}
+
+p {
+  margin-bottom: var(--paragraph-spacing);
 }
 
 /* Dark mode background */
@@ -2157,8 +2216,17 @@ body.dark {
   max-width: 100%;
   overflow-x: auto;
   overflow-y: visible;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .liquid-glass-nav-container {
+    scroll-snap-type: x proximity;
+  }
 }
 
 /* Navigation Container - Minimized State - Modern Floating Button */
@@ -2307,6 +2375,7 @@ body.dark {
   min-width: 2.75rem;
   border-radius: 0.75rem;
   flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 /* Icon Wrapper with Glassmorphism */
