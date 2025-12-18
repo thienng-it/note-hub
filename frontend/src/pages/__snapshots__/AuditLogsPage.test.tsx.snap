@@ -3,103 +3,219 @@
 exports[`AuditLogsPage > matches snapshot - default state 1`] = `
 <div>
   <div
-    class="max-w-7xl mx-auto px-4 py-8"
+    class="container-responsive py-4 sm:py-6"
   >
     <div
-      class="mb-6"
+      class="modern-page-header mb-6"
     >
       <div
-        class="flex items-center justify-between mb-4"
+        class="flex items-center gap-4 mb-2"
       >
-        <div>
-          <h1
-            class="text-3xl font-bold text-[var(--text-primary)]"
+        <div
+          class="flex-1 min-w-0"
+        >
+          <div
+            class="flex items-center gap-3 mb-1"
           >
-            Audit Logs
-          </h1>
+            <div
+              class="modern-icon-badge bg-gradient-to-br from-purple-500 to-indigo-600"
+            >
+              <i
+                class="fas fa-clipboard-list text-white"
+              />
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate"
+            >
+              Audit Logs
+            </h1>
+          </div>
           <p
-            class="text-[var(--text-secondary)] mt-1"
+            class="text-sm sm:text-base text-[var(--text-secondary)] ml-1"
           >
             View and analyze system activity logs for compliance and security monitoring
           </p>
         </div>
-        <a
-          class="px-4 py-2 bg-[var(--background-secondary)] text-[var(--text-primary)] rounded hover:bg-[var(--hover-bg)] transition-colors"
-          data-discover="true"
-          href="/admin"
+      </div>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+      >
+        <div
+          class="flex flex-wrap items-center gap-2"
         >
-          ← Back to Admin
-        </a>
+          <a
+            class="modern-btn-secondary"
+            data-discover="true"
+            href="/admin"
+          >
+            <i
+              class="fas fa-arrow-left mr-2"
+            />
+            <span
+              class="hidden sm:inline"
+            >
+              Back to Admin
+            </span>
+            <span
+              class="sm:hidden"
+            >
+              Back
+            </span>
+          </a>
+        </div>
       </div>
     </div>
     <div
-      class="responsive-grid mb-6"
+      class="responsive-grid-glass mb-6 sm:mb-8"
     >
       <div
-        class="glass-card p-4"
+        class="stat-card stat-card-purple"
       >
         <div
-          class="text-sm text-[var(--text-secondary)]"
+          class="flex items-center justify-between"
         >
-          Total Logs
-        </div>
-        <div
-          class="text-2xl font-bold text-[var(--text-primary)] mt-1"
-        >
-          150
+          <div
+            class="flex-1"
+          >
+            <p
+              class="stat-card-label"
+            >
+              Total Logs
+            </p>
+            <p
+              class="stat-card-value"
+            >
+              150
+            </p>
+            <div
+              class="stat-card-progress"
+            />
+          </div>
+          <div
+            class="stat-card-icon"
+          >
+            <i
+              aria-hidden="true"
+              class="fas fa-list"
+            />
+          </div>
         </div>
       </div>
       <div
-        class="glass-card p-4"
+        class="stat-card stat-card-blue"
       >
         <div
-          class="text-sm text-[var(--text-secondary)]"
+          class="flex items-center justify-between"
         >
-          Last 24 Hours
-        </div>
-        <div
-          class="text-2xl font-bold text-[var(--text-primary)] mt-1"
-        >
-          25
+          <div
+            class="flex-1"
+          >
+            <p
+              class="stat-card-label"
+            >
+              Last 24 Hours
+            </p>
+            <p
+              class="stat-card-value"
+            >
+              25
+            </p>
+            <div
+              class="stat-card-progress"
+            />
+          </div>
+          <div
+            class="stat-card-icon"
+          >
+            <i
+              aria-hidden="true"
+              class="fas fa-clock"
+            />
+          </div>
         </div>
       </div>
       <div
-        class="glass-card p-4"
+        class="stat-card stat-card-indigo"
       >
         <div
-          class="text-sm text-[var(--text-secondary)]"
+          class="flex items-center justify-between"
         >
-          Most Common Action
-        </div>
-        <div
-          class="text-xl font-bold text-[var(--text-primary)] mt-1"
-        >
-          view
+          <div
+            class="flex-1"
+          >
+            <p
+              class="stat-card-label"
+            >
+              Most Common Action
+            </p>
+            <p
+              class="stat-card-value uppercase"
+            >
+              view
+            </p>
+            <div
+              class="stat-card-progress"
+            />
+          </div>
+          <div
+            class="stat-card-icon"
+          >
+            <i
+              aria-hidden="true"
+              class="fas fa-bolt"
+            />
+          </div>
         </div>
       </div>
       <div
-        class="glass-card p-4"
+        class="stat-card stat-card-cyan"
       >
         <div
-          class="text-sm text-[var(--text-secondary)]"
+          class="flex items-center justify-between"
         >
-          Active Users
-        </div>
-        <div
-          class="text-2xl font-bold text-[var(--text-primary)] mt-1"
-        >
-          2
+          <div
+            class="flex-1"
+          >
+            <p
+              class="stat-card-label"
+            >
+              Active Users
+            </p>
+            <p
+              class="stat-card-value"
+            >
+              2
+            </p>
+            <div
+              class="stat-card-progress"
+            />
+          </div>
+          <div
+            class="stat-card-icon"
+          >
+            <i
+              aria-hidden="true"
+              class="fas fa-users"
+            />
+          </div>
         </div>
       </div>
     </div>
     <div
       class="glass-panel p-4 sm:p-6 mb-6"
     >
-      <h2
-        class="text-lg font-semibold text-[var(--text-primary)] mb-4"
+      <div
+        class="flex items-center gap-2 mb-4"
       >
-        Filters
-      </h2>
+        <i
+          class="fas fa-filter text-[var(--text-secondary)]"
+        />
+        <h2
+          class="text-lg font-semibold text-[var(--text-primary)]"
+        >
+          Filters
+        </h2>
+      </div>
       <div
         class="responsive-grid"
       >
@@ -233,35 +349,61 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
             class="btn-apple flex-1 sm:flex-initial"
             type="button"
           >
-            Apply Filters
+            <i
+              aria-hidden="true"
+              class="glass-i fas fa-check mr-2"
+            />
+            <span>
+              Apply Filters
+            </span>
           </button>
           <button
             class="btn-secondary-glass flex-1 sm:flex-initial"
             type="button"
           >
-            Clear Filters
+            <i
+              aria-hidden="true"
+              class="glass-i fas fa-times mr-2"
+            />
+            <span>
+              Clear Filters
+            </span>
           </button>
         </div>
         <div
           class="flex gap-2 flex-wrap"
         >
           <button
-            class="btn-apple flex-1 sm:flex-initial bg-green-600 hover:bg-green-700"
+            class="btn-apple flex-1 sm:flex-initial"
+            style="background: linear-gradient(135deg, rgb(16, 185, 129) 0%, rgb(5, 150, 105) 100%);"
             type="button"
           >
-            Export CSV
+            <i
+              aria-hidden="true"
+              class="glass-i fas fa-file-csv mr-2"
+            />
+            <span>
+              Export CSV
+            </span>
           </button>
           <button
-            class="btn-apple flex-1 sm:flex-initial bg-indigo-600 hover:bg-indigo-700"
+            class="btn-apple flex-1 sm:flex-initial"
+            style="background: linear-gradient(135deg, rgb(99, 102, 241) 0%, rgb(79, 70, 229) 100%);"
             type="button"
           >
-            Export JSON
+            <i
+              aria-hidden="true"
+              class="glass-i fas fa-file-code mr-2"
+            />
+            <span>
+              Export JSON
+            </span>
           </button>
         </div>
       </div>
     </div>
     <div
-      class="glass-card overflow-hidden"
+      class="glass-card rounded-xl overflow-hidden"
     >
       <div
         class="overflow-x-auto"
@@ -270,38 +412,38 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
           class="w-full"
         >
           <thead
-            class="bg-[var(--background-secondary)] border-b border-[var(--border-color)]"
+            class="bg-[var(--bg-tertiary)]"
           >
             <tr>
               <th
-                class="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)]"
+                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider"
               >
                 Time
               </th>
               <th
-                class="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)]"
+                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider"
               >
                 User
               </th>
               <th
-                class="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)]"
+                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider"
               >
                 Action
               </th>
               <th
-                class="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)]"
+                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell"
               >
                 Entity
               </th>
               <th
-                class="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)]"
+                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell"
               >
                 IP Address
               </th>
               <th
-                class="px-4 py-3 text-left text-sm font-semibold text-[var(--text-primary)]"
+                class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden xl:table-cell"
               >
-                Details
+                Metadata
               </th>
             </tr>
           </thead>
@@ -309,39 +451,50 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
             class="divide-y divide-[var(--border-color)]"
           >
             <tr
-              class="hover:bg-[var(--hover-bg)]"
+              class="hover:bg-[var(--bg-tertiary)]/50 transition-colors"
             >
               <td
-                class="px-4 py-3 text-sm text-[var(--text-secondary)]"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)]"
               >
                 12/12/2024, 10:00:00 AM
               </td>
               <td
-                class="px-4 py-3 text-sm"
+                class="px-4 sm:px-6 py-4 text-sm"
               >
                 <div
-                  class="text-[var(--text-primary)] font-medium"
+                  class="flex items-center gap-3"
                 >
-                  testuser
-                </div>
-                <div
-                  class="text-xs text-[var(--text-secondary)]"
-                >
-                  ID: 
-                  1
+                  <div
+                    class="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
+                  >
+                    T
+                  </div>
+                  <div>
+                    <div
+                      class="text-[var(--text-primary)] font-medium"
+                    >
+                      testuser
+                    </div>
+                    <div
+                      class="text-xs text-[var(--text-muted)]"
+                    >
+                      ID: 
+                      1
+                    </div>
+                  </div>
                 </div>
               </td>
               <td
-                class="px-4 py-3"
+                class="px-4 sm:px-6 py-4"
               >
                 <span
-                  class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                  class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                 >
                   create
                 </span>
               </td>
               <td
-                class="px-4 py-3 text-sm"
+                class="px-4 sm:px-6 py-4 text-sm hidden md:table-cell"
               >
                 <div
                   class="text-[var(--text-primary)]"
@@ -356,12 +509,12 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
                 </div>
               </td>
               <td
-                class="px-4 py-3 text-sm text-[var(--text-secondary)] font-mono"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] font-mono hidden lg:table-cell"
               >
                 192.168.1.1
               </td>
               <td
-                class="px-4 py-3 text-sm"
+                class="px-4 sm:px-6 py-4 text-sm hidden xl:table-cell"
               >
                 <details
                   class="cursor-pointer"
@@ -372,7 +525,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
                     View metadata
                   </summary>
                   <pre
-                    class="mt-2 p-2 bg-[var(--background-secondary)] rounded text-xs overflow-x-auto"
+                    class="mt-2 p-2 bg-[var(--bg-secondary)] rounded text-xs overflow-x-auto"
                   >
                     {
   "title": "Test Note"
@@ -382,39 +535,50 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
               </td>
             </tr>
             <tr
-              class="hover:bg-[var(--hover-bg)]"
+              class="hover:bg-[var(--bg-tertiary)]/50 transition-colors"
             >
               <td
-                class="px-4 py-3 text-sm text-[var(--text-secondary)]"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)]"
               >
                 12/12/2024, 11:00:00 AM
               </td>
               <td
-                class="px-4 py-3 text-sm"
+                class="px-4 sm:px-6 py-4 text-sm"
               >
                 <div
-                  class="text-[var(--text-primary)] font-medium"
+                  class="flex items-center gap-3"
                 >
-                  user2
-                </div>
-                <div
-                  class="text-xs text-[var(--text-secondary)]"
-                >
-                  ID: 
-                  2
+                  <div
+                    class="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
+                  >
+                    U
+                  </div>
+                  <div>
+                    <div
+                      class="text-[var(--text-primary)] font-medium"
+                    >
+                      user2
+                    </div>
+                    <div
+                      class="text-xs text-[var(--text-muted)]"
+                    >
+                      ID: 
+                      2
+                    </div>
+                  </div>
                 </div>
               </td>
               <td
-                class="px-4 py-3"
+                class="px-4 sm:px-6 py-4"
               >
                 <span
-                  class="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                 >
                   update
                 </span>
               </td>
               <td
-                class="px-4 py-3 text-sm"
+                class="px-4 sm:px-6 py-4 text-sm hidden md:table-cell"
               >
                 <div
                   class="text-[var(--text-primary)]"
@@ -429,12 +593,12 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
                 </div>
               </td>
               <td
-                class="px-4 py-3 text-sm text-[var(--text-secondary)] font-mono"
+                class="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] font-mono hidden lg:table-cell"
               >
                 192.168.1.2
               </td>
               <td
-                class="px-4 py-3 text-sm"
+                class="px-4 sm:px-6 py-4 text-sm hidden xl:table-cell"
               >
                 <details
                   class="cursor-pointer"
@@ -445,7 +609,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
                     View metadata
                   </summary>
                   <pre
-                    class="mt-2 p-2 bg-[var(--background-secondary)] rounded text-xs overflow-x-auto"
+                    class="mt-2 p-2 bg-[var(--bg-secondary)] rounded text-xs overflow-x-auto"
                   >
                     {
   "description": true

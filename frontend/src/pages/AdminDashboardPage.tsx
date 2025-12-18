@@ -233,22 +233,24 @@ export function AdminDashboardPage() {
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="modern-stat-badge">
-              <i className="fas fa-users text-blue-500 mr-2"></i>
-              <span className="font-semibold">{stats.total_users}</span>
-              <span className="hidden sm:inline ml-1">Total Users</span>
+            <div className="modern-stat-badge bg-gradient-to-r from-blue-500/10 to-blue-600/10 border-blue-500/30 hover:from-blue-500/20 hover:to-blue-600/20 hover:border-blue-500/40 hover:scale-105 transition-all duration-200">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                <i className="fas fa-users text-white text-sm"></i>
+              </div>
+              <span className="font-bold text-lg tabular-nums">{stats.total_users}</span>
+              <span className="hidden sm:inline text-sm font-medium">Total Users</span>
             </div>
             {stats.locked_users > 0 && (
-              <div
-                className="modern-stat-badge"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  borderColor: 'rgba(239, 68, 68, 0.2)',
-                }}
-              >
-                <i className="fas fa-lock text-red-500 mr-2"></i>
-                <span className="font-semibold">{stats.locked_users}</span>
-                <span className="hidden sm:inline ml-1">Locked</span>
+              <div className="modern-stat-badge bg-gradient-to-r from-red-500/10 to-red-600/10 border-red-500/30 hover:from-red-500/20 hover:to-red-600/20 hover:border-red-500/40 hover:scale-105 transition-all duration-200">
+                <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-md animate-pulse">
+                  <i className="fas fa-lock text-white text-sm"></i>
+                </div>
+                <span className="font-bold text-lg tabular-nums text-red-600 dark:text-red-400">
+                  {stats.locked_users}
+                </span>
+                <span className="hidden sm:inline text-sm font-medium text-red-600 dark:text-red-400">
+                  Locked
+                </span>
               </div>
             )}
           </div>
@@ -268,70 +270,75 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="responsive-grid mb-6 sm:mb-8">
-        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+      <div className="responsive-grid-glass mb-6 sm:mb-8">
+        <div className="stat-card stat-card-blue">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-blue-100 text-sm mb-2">Total Users</p>
-              <p className="text-3xl font-bold">{stats.total_users}</p>
+            <div className="flex-1">
+              <p className="stat-card-label">Total Users</p>
+              <p className="stat-card-value">{stats.total_users}</p>
+              <div className="stat-card-progress"></div>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-users text-xl" aria-hidden="true"></i>
+            <div className="stat-card-icon">
+              <i className="fas fa-users" aria-hidden="true"></i>
             </div>
           </div>
         </div>
 
-        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white">
+        <div className="stat-card stat-card-green">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-green-100 text-sm mb-2">2FA Enabled</p>
-              <p className="text-3xl font-bold">{stats.users_with_2fa}</p>
+            <div className="flex-1">
+              <p className="stat-card-label">2FA Enabled</p>
+              <p className="stat-card-value">{stats.users_with_2fa}</p>
+              <div className="stat-card-progress"></div>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-shield-alt text-xl" aria-hidden="true"></i>
+            <div className="stat-card-icon">
+              <i className="fas fa-shield-alt" aria-hidden="true"></i>
             </div>
           </div>
         </div>
 
-        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+        <div className="stat-card stat-card-purple">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-purple-100 text-sm mb-2">With Email</p>
-              <p className="text-3xl font-bold">{stats.users_with_email}</p>
+            <div className="flex-1">
+              <p className="stat-card-label">With Email</p>
+              <p className="stat-card-value">{stats.users_with_email}</p>
+              <div className="stat-card-progress"></div>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-envelope text-xl" aria-hidden="true"></i>
+            <div className="stat-card-icon">
+              <i className="fas fa-envelope" aria-hidden="true"></i>
             </div>
           </div>
         </div>
 
-        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+        <div className="stat-card stat-card-orange">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-orange-100 text-sm mb-2">Admins</p>
-              <p className="text-3xl font-bold">{stats.admin_users}</p>
+            <div className="flex-1">
+              <p className="stat-card-label">Admins</p>
+              <p className="stat-card-value">{stats.admin_users}</p>
+              <div className="stat-card-progress"></div>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-crown text-xl" aria-hidden="true"></i>
+            <div className="stat-card-icon">
+              <i className="fas fa-crown" aria-hidden="true"></i>
             </div>
           </div>
         </div>
 
-        <div className="glass-card p-6 rounded-xl bg-gradient-to-br from-red-500 to-red-600 text-white">
+        <div className="stat-card stat-card-red">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-red-100 text-sm mb-2">Locked</p>
-              <p className="text-3xl font-bold">{stats.locked_users}</p>
+            <div className="flex-1">
+              <p className="stat-card-label">Locked</p>
+              <p className="stat-card-value">{stats.locked_users}</p>
+              <div className="stat-card-progress"></div>
             </div>
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-lock text-xl" aria-hidden="true"></i>
+            <div className="stat-card-icon">
+              <i className="fas fa-lock" aria-hidden="true"></i>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="glass-panel p-4 sm:p-6 mb-6">
+      <div className="modern-search-card p-4 sm:p-6 mb-6">
         <form onSubmit={handleSearch} className="stack-mobile">
           <div className="flex-1 relative">
             <i
@@ -347,10 +354,6 @@ export function AdminDashboardPage() {
             />
           </div>
           <div className="flex gap-2">
-            <button type="submit" className="btn-apple flex-1 sm:flex-initial">
-              <i className="glass-i fas fa-search" aria-hidden="true"></i>
-              <span className="ml-2">{t('common.search')}</span>
-            </button>
             {searchQuery && (
               <button
                 type="button"
@@ -398,7 +401,7 @@ export function AdminDashboardPage() {
       ) : (
         <>
           {/* Users Table */}
-          <div className="glass-card rounded-xl overflow-hidden">
+          <div className="glass-panel rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-[var(--bg-tertiary)]">
@@ -439,7 +442,11 @@ export function AdminDashboardPage() {
                     </tr>
                   ) : (
                     users.map((u) => (
-                      <tr key={u.id} className="hover:bg-[var(--bg-tertiary)]/50 transition-colors">
+                      <tr
+                        key={u.id}
+                        className="hover:bg-[var(--bg-tertiary)]/50 transition-colors"
+                        style={{ marginTop: '1rem', marginBottom: '1rem' }}
+                      >
                         {/* User Column */}
                         <td className="px-4 sm:px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -450,8 +457,8 @@ export function AdminDashboardPage() {
                               <div className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2 flex-wrap">
                                 {u.username}
                                 {u.is_admin && (
-                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-500/20 text-orange-600 dark:text-orange-400">
-                                    <i className="fas fa-crown mr-1" aria-hidden="true"></i>
+                                  <span className="status-badge badge-admin">
+                                    <i className="fas fa-crown" aria-hidden="true"></i>
                                     Admin
                                   </span>
                                 )}
@@ -470,21 +477,21 @@ export function AdminDashboardPage() {
 
                         {/* Status Column */}
                         <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col gap-2">
                             {u.is_locked ? (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-600 dark:text-red-400 w-fit">
-                                <i className="fas fa-lock mr-1" aria-hidden="true"></i>
+                              <span className="status-badge badge-locked">
+                                <i className="fas fa-lock" aria-hidden="true"></i>
                                 Locked
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-600 dark:text-green-400 w-fit">
-                                <i className="fas fa-check-circle mr-1" aria-hidden="true"></i>
+                              <span className="status-badge badge-active">
+                                <i className="fas fa-check-circle" aria-hidden="true"></i>
                                 Active
                               </span>
                             )}
                             {u.has_2fa && (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-600 dark:text-blue-400 w-fit">
-                                <i className="fas fa-shield-alt mr-1" aria-hidden="true"></i>
+                              <span className="status-badge badge-2fa">
+                                <i className="fas fa-shield-alt" aria-hidden="true"></i>
                                 2FA
                               </span>
                             )}
@@ -505,20 +512,20 @@ export function AdminDashboardPage() {
                                 <button
                                   type="button"
                                   onClick={() => handleUnlockUser(u.id, u.username)}
-                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20 transition-colors"
+                                  className="action-btn action-btn-unlock"
                                   title="Unlock user account"
                                 >
-                                  <i className="fas fa-unlock mr-1.5" aria-hidden="true"></i>
+                                  <i className="fas fa-unlock" aria-hidden="true"></i>
                                   Unlock
                                 </button>
                               ) : (
                                 <button
                                   type="button"
                                   onClick={() => handleLockUser(u.id, u.username)}
-                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500/20 transition-colors"
+                                  className="action-btn action-btn-lock"
                                   title="Lock user account"
                                 >
-                                  <i className="fas fa-lock mr-1.5" aria-hidden="true"></i>
+                                  <i className="fas fa-lock" aria-hidden="true"></i>
                                   Lock
                                 </button>
                               ))}
@@ -530,20 +537,20 @@ export function AdminDashboardPage() {
                                 <button
                                   type="button"
                                   onClick={() => handleRevokeAdmin(u.id, u.username)}
-                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+                                  className="action-btn action-btn-revoke"
                                   title="Revoke admin privileges"
                                 >
-                                  <i className="fas fa-crown mr-1.5" aria-hidden="true"></i>
+                                  <i className="fas fa-crown" aria-hidden="true"></i>
                                   Revoke
                                 </button>
                               ) : (
                                 <button
                                   type="button"
                                   onClick={() => handleGrantAdmin(u.id, u.username)}
-                                  className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors"
+                                  className="action-btn action-btn-grant"
                                   title="Grant admin privileges"
                                 >
-                                  <i className="fas fa-crown mr-1.5" aria-hidden="true"></i>
+                                  <i className="fas fa-crown" aria-hidden="true"></i>
                                   Grant
                                 </button>
                               ))}
@@ -553,10 +560,10 @@ export function AdminDashboardPage() {
                               <button
                                 type="button"
                                 onClick={() => handleDisable2FA(u.id, u.username)}
-                                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors"
+                                className="action-btn action-btn-2fa"
                                 title="Disable 2FA for account recovery"
                               >
-                                <i className="fas fa-shield-alt mr-1.5" aria-hidden="true"></i>
+                                <i className="fas fa-shield-alt" aria-hidden="true"></i>
                                 Disable 2FA
                               </button>
                             )}
@@ -566,10 +573,10 @@ export function AdminDashboardPage() {
                               <button
                                 type="button"
                                 onClick={() => handleDeleteUser(u.id, u.username)}
-                                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
+                                className="action-btn action-btn-delete"
                                 title="Delete user account permanently"
                               >
-                                <i className="fas fa-trash mr-1.5" aria-hidden="true"></i>
+                                <i className="fas fa-trash" aria-hidden="true"></i>
                                 Delete
                               </button>
                             )}
