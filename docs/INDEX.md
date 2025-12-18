@@ -83,6 +83,7 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - **[DATABASE_MIGRATION_GUIDE](guides/DATABASE_MIGRATION_GUIDE.md)** ⭐ NEW - Centralized database migration system guide
 
 ### Features & Configuration
+- **[OFFLINE_MODE](guides/OFFLINE_MODE.md)** ⭐ NEW - Complete offline functionality with automatic sync
 - **[LIQUID_GLASS_NAVBAR](features/LIQUID_GLASS_NAVBAR.md)** ⭐ NEW - Mac-style liquid glass navigation with dock effect
 - **[REAL_TIME_COLLABORATION](features/REAL_TIME_COLLABORATION.md)** ⭐ - Real-time collaboration feature overview
 - **[PHASE_2_ENHANCEMENTS](features/PHASE_2_ENHANCEMENTS.md)** ⭐ NEW - Phase 2: Rich presence and task sharing
