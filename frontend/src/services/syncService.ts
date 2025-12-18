@@ -1,7 +1,15 @@
 import { foldersApi, notesApi, tasksApi } from '../api/client';
 import type { Folder, Note, Task } from '../types';
 import { offlineDetector } from '../utils/offlineDetector';
-import { offlineStorage, type SyncQueueItem } from './offlineStorage';
+import type { SyncQueueItem } from './offlineStorage';
+import {
+  initSecureStorage,
+  secureFoldersStorage,
+  secureMetadata,
+  secureNotesStorage,
+  secureSyncQueue,
+  secureTasksStorage,
+} from './secureOfflineStorage';
 
 type SyncStatusCallback = (status: SyncStatus) => void;
 
@@ -19,7 +27,7 @@ class SyncService {
 
   async init(): Promise<void> {
     // Initialize offline storage
-    await offlineStorage.init();
+    await initSecureStorage();
 
     // Subscribe to online status changes
     this.unsubscribeOffline = offlineDetector.subscribe((isOnline) => {
@@ -47,8 +55,8 @@ class SyncService {
   }
 
   private async notifyStatus(): Promise<void> {
-    const queue = await offlineStorage.getSyncQueue();
-    const lastSyncTime = await offlineStorage.getLastSyncTime();
+    const queue = await secureSyncQueue.getSyncQueue();
+    const lastSyncTime = await secureMetadata.getLastSyncTime();
 
     const status: SyncStatus = {
       isSyncing: this.syncInProgress,
@@ -91,7 +99,7 @@ class SyncService {
       await this.fetchLatestData();
 
       // Update last sync time
-      await offlineStorage.setLastSyncTime(Date.now());
+      await secureMetadata.setLastSyncTime(Date.now());
 
       await this.notifyStatus();
     } catch (error) {
@@ -115,7 +123,7 @@ class SyncService {
    * Process all items in the sync queue
    */
   private async processSyncQueue(): Promise<void> {
-    const queue = await offlineStorage.getSyncQueue();
+    const queue = await secureSyncQueue.getSyncQueue();
 
     // Sort by timestamp to process in order
     queue.sort((a, b) => a.timestamp - b.timestamp);
@@ -123,7 +131,7 @@ class SyncService {
     for (const item of queue) {
       try {
         await this.processSyncQueueItem(item);
-        await offlineStorage.removeSyncQueueItem(item.id);
+        await secureSyncQueue.removeSyncQueueItem(item.id);
       } catch (error) {
         console.error('Failed to process sync queue item:', item, error);
 
@@ -133,11 +141,11 @@ class SyncService {
 
         // Keep item in queue if retry count is less than 3
         if (item.retryCount < 3) {
-          await offlineStorage.updateSyncQueueItem(item);
+          await secureSyncQueue.updateSyncQueueItem(item);
         } else {
           // Remove after 3 failed attempts
           console.error('Max retries reached, removing item from queue:', item);
-          await offlineStorage.removeSyncQueueItem(item.id);
+          await secureSyncQueue.removeSyncQueueItem(item.id);
         }
       }
     }
@@ -168,19 +176,19 @@ class SyncService {
         if (item.data) {
           const note = await notesApi.create(item.data as Note);
           // Update local storage with server-assigned ID
-          await offlineStorage.saveNote(note);
+          await secureNotesStorage.saveNote(note);
         }
         break;
       case 'update':
         if (item.entityId && item.data) {
           const note = await notesApi.update(item.entityId, item.data as Note);
-          await offlineStorage.saveNote(note);
+          await secureNotesStorage.saveNote(note);
         }
         break;
       case 'delete':
         if (item.entityId) {
           await notesApi.delete(item.entityId);
-          await offlineStorage.deleteNote(item.entityId);
+          await secureNotesStorage.deleteNote(item.entityId);
         }
         break;
     }
@@ -191,19 +199,19 @@ class SyncService {
       case 'create':
         if (item.data) {
           const task = await tasksApi.create(item.data as Task);
-          await offlineStorage.saveTask(task);
+          await secureTasksStorage.saveTask(task);
         }
         break;
       case 'update':
         if (item.entityId && item.data) {
           const task = await tasksApi.update(item.entityId, item.data as Task);
-          await offlineStorage.saveTask(task);
+          await secureTasksStorage.saveTask(task);
         }
         break;
       case 'delete':
         if (item.entityId) {
           await tasksApi.delete(item.entityId);
-          await offlineStorage.deleteTask(item.entityId);
+          await secureTasksStorage.deleteTask(item.entityId);
         }
         break;
     }
@@ -214,19 +222,19 @@ class SyncService {
       case 'create':
         if (item.data) {
           const folder = await foldersApi.create(item.data as Folder);
-          await offlineStorage.saveFolder(folder);
+          await secureFoldersStorage.saveFolder(folder);
         }
         break;
       case 'update':
         if (item.entityId && item.data) {
           const folder = await foldersApi.update(item.entityId, item.data as Folder);
-          await offlineStorage.saveFolder(folder);
+          await secureFoldersStorage.saveFolder(folder);
         }
         break;
       case 'delete':
         if (item.entityId) {
           await foldersApi.delete(item.entityId);
-          await offlineStorage.deleteFolder(item.entityId);
+          await secureFoldersStorage.deleteFolder(item.entityId);
         }
         break;
     }
@@ -249,9 +257,9 @@ class SyncService {
 
       // Update local storage
       await Promise.all([
-        offlineStorage.saveNotes(notes),
-        offlineStorage.saveTasks(tasks),
-        offlineStorage.saveFolders(folders),
+        secureNotesStorage.saveNotes(notes),
+        secureTasksStorage.saveTasks(tasks),
+        secureFoldersStorage.saveFolders(folders),
       ]);
     } catch (error) {
       console.error('Failed to fetch latest data:', error);
@@ -263,7 +271,8 @@ class SyncService {
    * Clear all local data and sync queue
    */
   async clearAllData(): Promise<void> {
-    await offlineStorage.clearAll();
+    const { clearAllOfflineData } = await import('./secureOfflineStorage');
+    await clearAllOfflineData();
     await this.notifyStatus();
   }
 
@@ -271,7 +280,7 @@ class SyncService {
    * Get pending sync count
    */
   async getPendingCount(): Promise<number> {
-    const queue = await offlineStorage.getSyncQueue();
+    const queue = await secureSyncQueue.getSyncQueue();
     return queue.length;
   }
 

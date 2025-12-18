@@ -10,7 +10,12 @@ import type {
   TaskFormData,
 } from '../types';
 import { offlineDetector } from '../utils/offlineDetector';
-import { offlineStorage } from './offlineStorage';
+import {
+  secureFoldersStorage,
+  secureNotesStorage,
+  secureSyncQueue,
+  secureTasksStorage,
+} from './secureOfflineStorage';
 
 /**
  * Wrapper around API client that handles offline operations
@@ -30,7 +35,7 @@ export const offlineNotesApi = {
       try {
         const notes = await notesApi.list(view, query, tagFilter);
         // Cache in IndexedDB for offline access
-        await offlineStorage.saveNotes(notes);
+        await secureNotesStorage.saveNotes(notes);
         return notes;
       } catch (error) {
         console.warn('Failed to fetch notes from server, using cached data:', error);
@@ -38,7 +43,7 @@ export const offlineNotesApi = {
     }
 
     // Fallback to cached data
-    let notes = await offlineStorage.getNotes();
+    let notes = await secureNotesStorage.getNotes();
 
     // Apply view filter
     if (view === 'favorites') {
@@ -71,14 +76,14 @@ export const offlineNotesApi = {
     if (offlineDetector.isOnline) {
       try {
         const note = await notesApi.get(id);
-        await offlineStorage.saveNote(note);
+        await secureNotesStorage.saveNote(note);
         return note;
       } catch (error) {
         console.warn('Failed to fetch note from server, using cached data:', error);
       }
     }
 
-    const note = await offlineStorage.getNote(id);
+    const note = await secureNotesStorage.getNote(id);
     if (!note) {
       throw new Error('Note not found');
     }
@@ -89,7 +94,7 @@ export const offlineNotesApi = {
     if (offlineDetector.isOnline) {
       try {
         const note = await notesApi.create(data);
-        await offlineStorage.saveNote(note);
+        await secureNotesStorage.saveNote(note);
         return note;
       } catch (error) {
         console.warn('Failed to create note online, creating offline:', error);
@@ -117,8 +122,8 @@ export const offlineNotesApi = {
       user_id: 0, // Will be set by server
     };
 
-    await offlineStorage.saveNote(tempNote);
-    await offlineStorage.addToSyncQueue({
+    await secureNotesStorage.saveNote(tempNote);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'create',
       entityType: 'note',
       data: data,
@@ -131,7 +136,7 @@ export const offlineNotesApi = {
     if (offlineDetector.isOnline) {
       try {
         const note = await notesApi.update(id, data);
-        await offlineStorage.saveNote(note);
+        await secureNotesStorage.saveNote(note);
         return note;
       } catch (error) {
         console.warn('Failed to update note online, updating offline:', error);
@@ -139,7 +144,7 @@ export const offlineNotesApi = {
     }
 
     // Update note offline
-    const existingNote = await offlineStorage.getNote(id);
+    const existingNote = await secureNotesStorage.getNote(id);
     if (!existingNote) {
       throw new Error('Note not found');
     }
@@ -156,8 +161,8 @@ export const offlineNotesApi = {
       updated_at: new Date().toISOString(),
     };
 
-    await offlineStorage.saveNote(updatedNote);
-    await offlineStorage.addToSyncQueue({
+    await secureNotesStorage.saveNote(updatedNote);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'update',
       entityType: 'note',
       entityId: id,
@@ -171,15 +176,15 @@ export const offlineNotesApi = {
     if (offlineDetector.isOnline) {
       try {
         await notesApi.delete(id);
-        await offlineStorage.deleteNote(id);
+        await secureNotesStorage.deleteNote(id);
         return;
       } catch (error) {
         console.warn('Failed to delete note online, deleting offline:', error);
       }
     }
 
-    await offlineStorage.deleteNote(id);
-    await offlineStorage.addToSyncQueue({
+    await secureNotesStorage.deleteNote(id);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'delete',
       entityType: 'note',
       entityId: id,
@@ -205,14 +210,14 @@ export const offlineTasksApi = {
     if (offlineDetector.isOnline) {
       try {
         const tasks = await tasksApi.list(filter);
-        await offlineStorage.saveTasks(tasks);
+        await secureTasksStorage.saveTasks(tasks);
         return tasks;
       } catch (error) {
         console.warn('Failed to fetch tasks from server, using cached data:', error);
       }
     }
 
-    let tasks = await offlineStorage.getTasks();
+    let tasks = await secureTasksStorage.getTasks();
 
     // Apply filter
     if (filter === 'completed') {
@@ -228,14 +233,14 @@ export const offlineTasksApi = {
     if (offlineDetector.isOnline) {
       try {
         const task = await tasksApi.get(id);
-        await offlineStorage.saveTask(task);
+        await secureTasksStorage.saveTask(task);
         return task;
       } catch (error) {
         console.warn('Failed to fetch task from server, using cached data:', error);
       }
     }
 
-    const task = await offlineStorage.getTask(id);
+    const task = await secureTasksStorage.getTask(id);
     if (!task) {
       throw new Error('Task not found');
     }
@@ -246,7 +251,7 @@ export const offlineTasksApi = {
     if (offlineDetector.isOnline) {
       try {
         const task = await tasksApi.create(data);
-        await offlineStorage.saveTask(task);
+        await secureTasksStorage.saveTask(task);
         return task;
       } catch (error) {
         console.warn('Failed to create task online, creating offline:', error);
@@ -265,8 +270,8 @@ export const offlineTasksApi = {
       user_id: 0,
     };
 
-    await offlineStorage.saveTask(tempTask);
-    await offlineStorage.addToSyncQueue({
+    await secureTasksStorage.saveTask(tempTask);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'create',
       entityType: 'task',
       data: data,
@@ -279,14 +284,14 @@ export const offlineTasksApi = {
     if (offlineDetector.isOnline) {
       try {
         const task = await tasksApi.update(id, data);
-        await offlineStorage.saveTask(task);
+        await secureTasksStorage.saveTask(task);
         return task;
       } catch (error) {
         console.warn('Failed to update task online, updating offline:', error);
       }
     }
 
-    const existingTask = await offlineStorage.getTask(id);
+    const existingTask = await secureTasksStorage.getTask(id);
     if (!existingTask) {
       throw new Error('Task not found');
     }
@@ -297,8 +302,8 @@ export const offlineTasksApi = {
       updated_at: new Date().toISOString(),
     };
 
-    await offlineStorage.saveTask(updatedTask);
-    await offlineStorage.addToSyncQueue({
+    await secureTasksStorage.saveTask(updatedTask);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'update',
       entityType: 'task',
       entityId: id,
@@ -312,15 +317,15 @@ export const offlineTasksApi = {
     if (offlineDetector.isOnline) {
       try {
         await tasksApi.delete(id);
-        await offlineStorage.deleteTask(id);
+        await secureTasksStorage.deleteTask(id);
         return;
       } catch (error) {
         console.warn('Failed to delete task online, deleting offline:', error);
       }
     }
 
-    await offlineStorage.deleteTask(id);
-    await offlineStorage.addToSyncQueue({
+    await secureTasksStorage.deleteTask(id);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'delete',
       entityType: 'task',
       entityId: id,
@@ -338,14 +343,14 @@ export const offlineFoldersApi = {
     if (offlineDetector.isOnline) {
       try {
         const result = await foldersApi.list();
-        await offlineStorage.saveFolders(result.folders);
+        await secureFoldersStorage.saveFolders(result.folders);
         return result;
       } catch (error) {
         console.warn('Failed to fetch folders from server, using cached data:', error);
       }
     }
 
-    const folders = await offlineStorage.getFolders();
+    const folders = await secureFoldersStorage.getFolders();
     return { folders };
   },
 
@@ -353,14 +358,14 @@ export const offlineFoldersApi = {
     if (offlineDetector.isOnline) {
       try {
         const folder = await foldersApi.get(id);
-        await offlineStorage.saveFolder(folder);
+        await secureFoldersStorage.saveFolder(folder);
         return folder;
       } catch (error) {
         console.warn('Failed to fetch folder from server, using cached data:', error);
       }
     }
 
-    const folder = await offlineStorage.getFolder(id);
+    const folder = await secureFoldersStorage.getFolder(id);
     if (!folder) {
       throw new Error('Folder not found');
     }
@@ -371,7 +376,7 @@ export const offlineFoldersApi = {
     if (offlineDetector.isOnline) {
       try {
         const folder = await foldersApi.create(data);
-        await offlineStorage.saveFolder(folder);
+        await secureFoldersStorage.saveFolder(folder);
         return folder;
       } catch (error) {
         console.warn('Failed to create folder online, creating offline:', error);
@@ -389,8 +394,8 @@ export const offlineFoldersApi = {
       updated_at: new Date().toISOString(),
     };
 
-    await offlineStorage.saveFolder(tempFolder);
-    await offlineStorage.addToSyncQueue({
+    await secureFoldersStorage.saveFolder(tempFolder);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'create',
       entityType: 'folder',
       data: data,
@@ -403,14 +408,14 @@ export const offlineFoldersApi = {
     if (offlineDetector.isOnline) {
       try {
         const folder = await foldersApi.update(id, data);
-        await offlineStorage.saveFolder(folder);
+        await secureFoldersStorage.saveFolder(folder);
         return folder;
       } catch (error) {
         console.warn('Failed to update folder online, updating offline:', error);
       }
     }
 
-    const existingFolder = await offlineStorage.getFolder(id);
+    const existingFolder = await secureFoldersStorage.getFolder(id);
     if (!existingFolder) {
       throw new Error('Folder not found');
     }
@@ -421,8 +426,8 @@ export const offlineFoldersApi = {
       updated_at: new Date().toISOString(),
     };
 
-    await offlineStorage.saveFolder(updatedFolder);
-    await offlineStorage.addToSyncQueue({
+    await secureFoldersStorage.saveFolder(updatedFolder);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'update',
       entityType: 'folder',
       entityId: id,
@@ -436,15 +441,15 @@ export const offlineFoldersApi = {
     if (offlineDetector.isOnline) {
       try {
         await foldersApi.delete(id);
-        await offlineStorage.deleteFolder(id);
+        await secureFoldersStorage.deleteFolder(id);
         return;
       } catch (error) {
         console.warn('Failed to delete folder online, deleting offline:', error);
       }
     }
 
-    await offlineStorage.deleteFolder(id);
-    await offlineStorage.addToSyncQueue({
+    await secureFoldersStorage.deleteFolder(id);
+    await secureSyncQueue.addToSyncQueue({
       operation: 'delete',
       entityType: 'folder',
       entityId: id,

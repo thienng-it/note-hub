@@ -1,7 +1,9 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { clearAllOfflineData } from '../services/secureOfflineStorage';
 import type { SyncStatus } from '../services/syncService';
 import { syncService } from '../services/syncService';
 import { offlineDetector } from '../utils/offlineDetector';
+import { useAuth } from './AuthContext';
 
 interface OfflineContextType {
   isOnline: boolean;
@@ -13,6 +15,7 @@ interface OfflineContextType {
 const OfflineContext = createContext<OfflineContextType | undefined>(undefined);
 
 export function OfflineProvider({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
   const [isOnline, setIsOnline] = useState(offlineDetector.isOnline);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     isSyncing: false,
@@ -22,7 +25,15 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    // Initialize sync service
+    if (!isAuthenticated) {
+      // Clear offline data when user is not authenticated
+      clearAllOfflineData().catch((error) => {
+        console.error('Failed to clear offline data on logout:', error);
+      });
+      return;
+    }
+
+    // Initialize sync service only when authenticated
     syncService.init().catch((error) => {
       console.error('Failed to initialize sync service:', error);
     });
@@ -37,7 +48,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
       unsubscribeOnline();
       unsubscribeSync();
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const triggerSync = async () => {
     try {
@@ -50,7 +61,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
 
   const clearOfflineData = async () => {
     try {
-      await syncService.clearAllData();
+      await clearAllOfflineData();
     } catch (error) {
       console.error('Failed to clear offline data:', error);
       throw error;

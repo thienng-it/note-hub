@@ -272,17 +272,34 @@ await syncService.clearAllData();
 
 ## Security Considerations
 
+### Data Encryption 🔐
+- **AES-GCM Encryption**: All sensitive note and task data is encrypted at rest using AES-256-GCM
+- **Web Crypto API**: Uses browser's native crypto for secure key derivation
+- **User-Specific Keys**: Encryption keys derived from user ID and JWT token (PBKDF2 with 100,000 iterations)
+- **Per-Session Keys**: Keys are session-specific and cleared on logout
+- **Automatic Encryption**: Encryption happens transparently in the background
+
 ### Data Privacy
 - All offline data is stored in browser's IndexedDB
-- Data is not encrypted at rest (relies on device security)
+- **Encrypted at rest** - Note titles, bodies, and task descriptions are encrypted
+- Data encrypted with user-specific derived keys
 - Clearing browser data removes all offline data
+- **User Isolation**: Data is validated to ensure it belongs to authenticated user only
 - Shared devices: Always log out when done
 
-### Authentication
+### Authentication & Session Security
 - JWT tokens are stored in localStorage
 - Tokens remain valid while offline
 - Expired tokens are refreshed when online
-- Logout immediately clears all cached data
+- **Automatic Data Clearing**: Logout immediately clears all cached data
+- **Session Validation**: Every offline operation validates user session
+- **User Mismatch Detection**: Automatically clears data if different user logs in
+
+### Data Integrity
+- SHA-256 hashing for data integrity verification
+- Session validation before every offline operation
+- Automatic cleanup on user session changes
+- Protection against data corruption
 
 ## Performance Impact
 
@@ -317,7 +334,7 @@ A: Last write wins. The device that syncs last will overwrite earlier changes.
 A: No, you need to log in online at least once to download initial data.
 
 **Q: Are my offline notes encrypted?**  
-A: No, they're stored in plain text in IndexedDB. Use device encryption for security.
+A: Yes! All note and task content is encrypted using AES-256-GCM with keys derived from your session. The encryption is automatic and transparent.
 
 **Q: Does offline mode work on mobile?**  
 A: Yes! Works on iOS and Android browsers that support PWA features.
