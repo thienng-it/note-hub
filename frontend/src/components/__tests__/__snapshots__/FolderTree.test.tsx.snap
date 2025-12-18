@@ -126,11 +126,14 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
           </span>
         </div>
         <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Folder options"
           class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg
-            aria-label="Menu"
+            aria-hidden="true"
             class="w-4 h-4"
             fill="currentColor"
             role="img"
@@ -192,11 +195,14 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
               </span>
             </div>
             <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Folder options"
               class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
               type="button"
             >
               <svg
-                aria-label="Menu"
+                aria-hidden="true"
                 class="w-4 h-4"
                 fill="currentColor"
                 role="img"
@@ -258,11 +264,14 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
           </span>
         </div>
         <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Folder options"
           class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg
-            aria-label="Menu"
+            aria-hidden="true"
             class="w-4 h-4"
             fill="currentColor"
             role="img"
@@ -477,11 +486,14 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
           </span>
         </div>
         <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Folder options"
           class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg
-            aria-label="Menu"
+            aria-hidden="true"
             class="w-4 h-4"
             fill="currentColor"
             role="img"
@@ -543,11 +555,14 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
               </span>
             </div>
             <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Folder options"
               class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
               type="button"
             >
               <svg
-                aria-label="Menu"
+                aria-hidden="true"
                 class="w-4 h-4"
                 fill="currentColor"
                 role="img"
@@ -609,11 +624,14 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
           </span>
         </div>
         <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-label="Folder options"
           class="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-gray-600/50 transition-all md:opacity-0 md:group-hover:opacity-100"
           type="button"
         >
           <svg
-            aria-label="Menu"
+            aria-hidden="true"
             class="w-4 h-4"
             fill="currentColor"
             role="img"

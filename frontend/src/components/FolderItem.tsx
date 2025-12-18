@@ -1,6 +1,7 @@
-import { type JSX, useState } from 'react';
+import { type JSX, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Folder } from '../types';
+import { ContextMenu, type ContextMenuItem } from './ContextMenu';
 import { ConfirmModal } from './Modal';
 
 interface FolderItemProps {
@@ -203,6 +204,7 @@ export function FolderItem({
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
 
   const hasChildren = folder.children && folder.children.length > 0;
   const isSelected = selectedFolderId === folder.id;
@@ -234,17 +236,14 @@ export function FolderItem({
   };
 
   const handleCreateSubfolder = () => {
-    setShowMenu(false);
     onCreate(folder.id);
   };
 
   const handleEdit = () => {
-    setShowMenu(false);
     onEdit(folder);
   };
 
   const handleDelete = () => {
-    setShowMenu(false);
     setShowDeleteConfirm(true);
   };
 
@@ -259,6 +258,30 @@ export function FolderItem({
       setIsDeleting(false);
     }
   };
+
+  // Context menu items
+  const contextMenuItems: ContextMenuItem[] = [
+    {
+      id: 'create-subfolder',
+      label: t('folders.createSubfolder'),
+      icon: 'fas fa-folder-plus',
+      onClick: handleCreateSubfolder,
+    },
+    {
+      id: 'edit',
+      label: t('folders.edit'),
+      icon: 'fas fa-edit',
+      onClick: handleEdit,
+    },
+    {
+      id: 'delete',
+      label: t('folders.delete'),
+      icon: 'fas fa-trash',
+      onClick: handleDelete,
+      variant: 'danger',
+      divider: true,
+    },
+  ];
 
   return (
     <div className="folder-item" style={{ marginBottom: '0.5rem' }}>
@@ -321,6 +344,7 @@ export function FolderItem({
 
         {/* Context menu button - Always visible on mobile, hover on desktop */}
         <button
+          ref={menuTriggerRef}
           type="button"
           onClick={(e) => {
             e.stopPropagation();
@@ -330,72 +354,30 @@ export function FolderItem({
           style={{
             opacity: showMenu ? 1 : undefined,
           }}
+          aria-label="Folder options"
+          aria-haspopup="menu"
+          aria-expanded={showMenu}
         >
           <svg
             className="w-4 h-4"
             fill="currentColor"
             viewBox="0 0 24 24"
             role="img"
-            aria-label="Menu"
+            aria-hidden="true"
           >
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
           </svg>
         </button>
-
-        {/* Context menu - Improved positioning and glassmorphism */}
-        {showMenu && (
-          <>
-            <button
-              type="button"
-              className="fixed inset-0 z-10 bg-transparent border-0 cursor-default"
-              onClick={() => setShowMenu(false)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setShowMenu(false);
-                }
-              }}
-              aria-label="Close menu"
-            />
-            <div
-              className="absolute right-0 bottom-full mt-2 z-20 rounded-xl shadow-2xl border py-2 min-w-[180px] overflow-hidden"
-              style={{
-                background: 'var(--glass-bg)',
-                backdropFilter: 'blur(20px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                borderColor: 'var(--glass-border)',
-                boxShadow:
-                  '0 20px 60px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              }}
-            >
-              <button
-                type="button"
-                onClick={handleCreateSubfolder}
-                className="w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors flex items-center gap-2"
-              >
-                <i className="fas fa-folder-plus text-blue-600 dark:text-blue-400 w-4"></i>
-                {t('folders.createSubfolder')}
-              </button>
-              <button
-                type="button"
-                onClick={handleEdit}
-                className="w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors flex items-center gap-2"
-              >
-                <i className="fas fa-edit text-gray-600 dark:text-gray-400 w-4"></i>
-                {t('folders.edit')}
-              </button>
-              <div className="my-1 border-t border-gray-200/50 dark:border-gray-700/50"></div>
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
-              >
-                <i className="fas fa-trash w-4"></i>
-                {t('folders.delete')}
-              </button>
-            </div>
-          </>
-        )}
       </div>
+
+      {/* Context Menu */}
+      <ContextMenu
+        items={contextMenuItems}
+        isOpen={showMenu}
+        onClose={() => setShowMenu(false)}
+        triggerRef={menuTriggerRef}
+        position="auto"
+      />
 
       {/* Children folders */}
       {isExpanded && hasChildren && (

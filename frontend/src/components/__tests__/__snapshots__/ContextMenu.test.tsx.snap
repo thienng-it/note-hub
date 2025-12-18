@@ -1,0 +1,114 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContextMenu > matches snapshot - danger variant 1`] = `
+<div
+  aria-orientation="vertical"
+  class="context-menu context-menu-bottom"
+  role="menu"
+  style="position: fixed; top: 4px; z-index: 50; left: 8px;"
+>
+  <div>
+    <button
+      class="context-menu-item context-menu-item-danger"
+      role="menuitem"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="fas fa-trash-alt context-menu-item-icon"
+      />
+      <span>
+        Delete All
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`ContextMenu > matches snapshot - default state 1`] = `
+<div
+  aria-orientation="vertical"
+  class="context-menu context-menu-bottom"
+  role="menu"
+  style="position: fixed; top: 4px; z-index: 50; left: 8px;"
+>
+  <div>
+    <button
+      class="context-menu-item "
+      role="menuitem"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="fas fa-edit context-menu-item-icon"
+      />
+      <span>
+        Edit
+      </span>
+    </button>
+  </div>
+  <div>
+    <div
+      aria-hidden="true"
+      class="context-menu-divider"
+    />
+    <button
+      class="context-menu-item context-menu-item-danger"
+      role="menuitem"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="fas fa-trash context-menu-item-icon"
+      />
+      <span>
+        Delete
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`ContextMenu > matches snapshot - with divider 1`] = `
+<div
+  aria-orientation="vertical"
+  class="context-menu context-menu-bottom"
+  role="menu"
+  style="position: fixed; top: 4px; z-index: 50; left: 8px;"
+>
+  <div>
+    <button
+      class="context-menu-item "
+      role="menuitem"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="fas fa-edit context-menu-item-icon"
+      />
+      <span>
+        Edit
+      </span>
+    </button>
+  </div>
+  <div>
+    <div
+      aria-hidden="true"
+      class="context-menu-divider"
+    />
+    <button
+      class="context-menu-item context-menu-item-danger"
+      role="menuitem"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="fas fa-trash context-menu-item-icon"
+      />
+      <span>
+        Delete
+      </span>
+    </button>
+  </div>
+</div>
+`;
