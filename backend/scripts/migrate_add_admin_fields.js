@@ -47,13 +47,13 @@ async function migrate() {
       console.log('🗄️  Migrating MySQL database...');
 
       // Check if columns exist
-      const [adminColumn] = await db.db.query(
+      const [adminColumn] = await db.query(
         `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_admin'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
       );
 
-      const [lockedColumn] = await db.db.query(
+      const [lockedColumn] = await db.query(
         `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_locked'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
