@@ -62,10 +62,10 @@ async function migrate() {
       // Add is_admin column
       if (adminColumn.length === 0) {
         console.log('  ➕ Adding is_admin column...');
-        await db.db.run('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
+        await db.run('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
 
         // Set admin user to is_admin = 1
-        await db.db.run('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
+        await db.run('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
         console.log('  ✅ is_admin column added and admin user updated');
       } else {
         console.log('  ⏭️  is_admin column already exists, skipping...');
@@ -74,7 +74,7 @@ async function migrate() {
       // Add is_locked column
       if (lockedColumn.length === 0) {
         console.log('  ➕ Adding is_locked column...');
-        await db.db.run('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
+        await db.run('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
         console.log('  ✅ is_locked column added');
       } else {
         console.log('  ⏭️  is_locked column already exists, skipping...');
