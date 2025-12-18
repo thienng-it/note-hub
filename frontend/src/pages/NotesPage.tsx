@@ -147,7 +147,7 @@ export function NotesPage() {
 
   const handleToggleFavorite = async (note: Note) => {
     try {
-      const updated = await notesApi.toggleFavorite(note);
+      const updated = await offlineNotesApi.toggleFavorite(note);
       // Update the note in the list while preserving all fields
       setNotes((prevNotes) => prevNotes.map((n) => (n.id === note.id ? { ...n, ...updated } : n)));
     } catch (err) {
@@ -177,7 +177,7 @@ export function NotesPage() {
       return;
     }
     try {
-      await foldersApi.delete(folder.id);
+      await offlineFoldersApi.delete(folder.id);
       await loadFolders();
       if (selectedFolder?.id === folder.id) {
         setSelectedFolder(null);
@@ -189,9 +189,9 @@ export function NotesPage() {
 
   const handleSaveFolder = async (name: string, icon: string, color: string) => {
     if (folderToEdit) {
-      await foldersApi.update(folderToEdit.id, { name, icon, color });
+      await offlineFoldersApi.update(folderToEdit.id, { name, icon, color });
     } else {
-      await foldersApi.create({
+      await offlineFoldersApi.create({
         name,
         parent_id: folderParentId,
         icon,
