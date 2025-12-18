@@ -17,22 +17,22 @@ let encryptionEnabled = false;
  */
 export async function initSecureStorage(): Promise<void> {
   await offlineStorage.init();
-  
+
   // Check if encryption is supported
   encryptionEnabled = isEncryptionSupported();
-  
+
   if (!encryptionEnabled) {
     console.warn('Web Crypto API not available - data will not be encrypted at rest');
   }
-  
+
   // Validate user session
   const user = getStoredUser();
   const token = getStoredToken();
-  
+
   if (!user || !token) {
     throw new Error('User must be authenticated to use offline storage');
   }
-  
+
   // Store user ID in metadata for validation
   await offlineStorage.setMetadata('userId', user.id);
 }
@@ -43,11 +43,11 @@ export async function initSecureStorage(): Promise<void> {
 async function validateUserSession(): Promise<{ userId: number; token: string }> {
   const user = getStoredUser();
   const token = getStoredToken();
-  
+
   if (!user || !token) {
     throw new Error('No active user session');
   }
-  
+
   // Check if stored user ID matches current user
   const storedUserId = await offlineStorage.getMetadata('userId');
   if (storedUserId && storedUserId !== user.id) {
@@ -56,7 +56,7 @@ async function validateUserSession(): Promise<{ userId: number; token: string }>
     await offlineStorage.clearAll();
     await offlineStorage.setMetadata('userId', user.id);
   }
-  
+
   return { userId: user.id, token };
 }
 
@@ -65,9 +65,9 @@ async function validateUserSession(): Promise<{ userId: number; token: string }>
  */
 async function encryptNote(note: Note): Promise<Note> {
   if (!encryptionEnabled) return note;
-  
+
   const { userId, token } = await validateUserSession();
-  
+
   // Encrypt sensitive fields
   const encrypted: Note = {
     ...note,
@@ -75,7 +75,7 @@ async function encryptNote(note: Note): Promise<Note> {
     body: await encryptData(note.body, userId, token),
     tags: await encryptData(note.tags, userId, token),
   };
-  
+
   return encrypted;
 }
 
@@ -84,9 +84,9 @@ async function encryptNote(note: Note): Promise<Note> {
  */
 async function decryptNote(note: Note): Promise<Note> {
   if (!encryptionEnabled) return note;
-  
+
   const { userId, token } = await validateUserSession();
-  
+
   try {
     const decrypted: Note = {
       ...note,
@@ -94,7 +94,7 @@ async function decryptNote(note: Note): Promise<Note> {
       body: await decryptData<string>(note.body, userId, token),
       tags: await decryptData<typeof note.tags>(note.tags, userId, token),
     };
-    
+
     return decrypted;
   } catch (error) {
     console.error('Failed to decrypt note:', error);
@@ -108,15 +108,15 @@ async function decryptNote(note: Note): Promise<Note> {
  */
 async function encryptTask(task: Task): Promise<Task> {
   if (!encryptionEnabled) return task;
-  
+
   const { userId, token } = await validateUserSession();
-  
+
   const encrypted: Task = {
     ...task,
     title: await encryptData(task.title, userId, token),
     description: await encryptData(task.description, userId, token),
   };
-  
+
   return encrypted;
 }
 
@@ -125,16 +125,16 @@ async function encryptTask(task: Task): Promise<Task> {
  */
 async function decryptTask(task: Task): Promise<Task> {
   if (!encryptionEnabled) return task;
-  
+
   const { userId, token } = await validateUserSession();
-  
+
   try {
     const decrypted: Task = {
       ...task,
       title: await decryptData<string>(task.title, userId, token),
       description: await decryptData<string>(task.description, userId, token),
     };
-    
+
     return decrypted;
   } catch (error) {
     console.error('Failed to decrypt task:', error);
@@ -237,7 +237,7 @@ export const secureFoldersStorage = {
 // Secure Sync Queue API
 export const secureSyncQueue = {
   async addToSyncQueue(
-    item: Omit<SyncQueueItem, 'id' | 'timestamp' | 'retryCount'>
+    item: Omit<SyncQueueItem, 'id' | 'timestamp' | 'retryCount'>,
   ): Promise<void> {
     await validateUserSession();
     await offlineStorage.addToSyncQueue(item);

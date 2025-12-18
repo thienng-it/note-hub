@@ -15,14 +15,14 @@ const IV_LENGTH = 12; // 96 bits for GCM mode
 async function deriveKey(userId: number, token: string): Promise<CryptoKey> {
   // Create a deterministic salt based on userId
   const salt = new TextEncoder().encode(`notehub-v1-${userId}`);
-  
+
   // Import the token as key material
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
     new TextEncoder().encode(token),
     { name: 'PBKDF2' },
     false,
-    ['deriveBits', 'deriveKey']
+    ['deriveBits', 'deriveKey'],
   );
 
   // Derive actual encryption key
@@ -36,7 +36,7 @@ async function deriveKey(userId: number, token: string): Promise<CryptoKey> {
     keyMaterial,
     { name: ALGORITHM, length: KEY_LENGTH },
     false, // Not extractable for security
-    ['encrypt', 'decrypt']
+    ['encrypt', 'decrypt'],
   );
 }
 
@@ -44,11 +44,7 @@ async function deriveKey(userId: number, token: string): Promise<CryptoKey> {
  * Encrypts data using AES-GCM
  * Returns base64 encoded encrypted data with IV prepended
  */
-export async function encryptData(
-  data: unknown,
-  userId: number,
-  token: string
-): Promise<string> {
+export async function encryptData(data: unknown, userId: number, token: string): Promise<string> {
   try {
     // Convert data to JSON string
     const jsonString = JSON.stringify(data);
@@ -67,7 +63,7 @@ export async function encryptData(
         iv: iv,
       },
       key,
-      dataBuffer
+      dataBuffer,
     );
 
     // Combine IV + encrypted data
@@ -90,7 +86,7 @@ export async function encryptData(
 export async function decryptData<T>(
   encryptedData: string,
   userId: number,
-  token: string
+  token: string,
 ): Promise<T> {
   try {
     // Decode from base64
@@ -110,7 +106,7 @@ export async function decryptData<T>(
         iv: iv,
       },
       key,
-      encryptedBuffer
+      encryptedBuffer,
     );
 
     // Convert back to JSON

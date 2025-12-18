@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import type { Folder, Note, Task } from '../../types';
 import { offlineStorage } from '../offlineStorage';
-import type { Note, Task, Folder } from '../../types';
 
 describe('OfflineStorage', () => {
   beforeEach(async () => {
