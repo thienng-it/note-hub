@@ -343,21 +343,19 @@ export function TasksPage() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {tasks.length > 0 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={hiddenTasks.size === 0 ? hideAllTasks : showAllTasks}
-                    className="btn-secondary-glass"
-                    title="Hide all task contents"
-                  >
-                    <i
-                      className={`glass-i fas ${hiddenTasks.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
-                    ></i>
-                    <span className="hidden sm:inline">
-                      {t(hiddenTasks.size === 0 ? 'common.hideAll' : 'common.showAll')}
-                    </span>
-                  </button>
-                </>
+                <button
+                  type="button"
+                  onClick={hiddenTasks.size === 0 ? hideAllTasks : showAllTasks}
+                  className="btn-secondary-glass"
+                  title="Hide all task contents"
+                >
+                  <i
+                    className={`glass-i fas ${hiddenTasks.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
+                  ></i>
+                  <span className="hidden sm:inline">
+                    {t(hiddenTasks.size === 0 ? 'common.hideAll' : 'common.showAll')}
+                  </span>
+                </button>
               )}
               <button type="button" onClick={() => setShowForm(!showForm)} className="btn-apple">
                 <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>

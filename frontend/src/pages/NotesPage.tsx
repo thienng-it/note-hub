@@ -284,21 +284,19 @@ export function NotesPage() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {notes.length > 0 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={hiddenNotes.size === 0 ? hideAllNotes : showAllNotes}
-                    className="modern-btn-secondary"
-                    title={t(hiddenNotes.size === 0 ? 'notes.hideAllNotes' : 'notes.showAllNotes')}
-                  >
-                    <i
-                      className={`glass-i fas ${hiddenNotes.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
-                    ></i>
-                    <span className="hidden sm:inline">
-                      {t(hiddenNotes.size === 0 ? 'common.hideAll' : 'common.showAll')}
-                    </span>
-                  </button>
-                </>
+                <button
+                  type="button"
+                  onClick={hiddenNotes.size === 0 ? hideAllNotes : showAllNotes}
+                  className="modern-btn-secondary"
+                  title={t(hiddenNotes.size === 0 ? 'notes.hideAllNotes' : 'notes.showAllNotes')}
+                >
+                  <i
+                    className={`glass-i fas ${hiddenNotes.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
+                  ></i>
+                  <span className="hidden sm:inline">
+                    {t(hiddenNotes.size === 0 ? 'common.hideAll' : 'common.showAll')}
+                  </span>
+                </button>
               )}
             </div>
           </div>

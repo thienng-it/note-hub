@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { Folder, Note, Task } from '../../types';
 import { offlineStorage } from '../offlineStorage';
 
+import 'fake-indexeddb/auto';
+
 describe('OfflineStorage', () => {
   beforeEach(async () => {
     await offlineStorage.init();
