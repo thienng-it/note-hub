@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
-import { foldersApi, notesApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import { ImageUpload } from '../components/ImageUpload';
 import { MarkdownToolbar } from '../components/MarkdownToolbar';
+import { offlineFoldersApi, offlineNotesApi } from '../services/offlineApiWrapper';
 import type { Folder, Note } from '../types';
 import { flattenFolders } from '../utils/folderUtils';
 import { type NoteTemplate, noteTemplates } from '../utils/templates';
@@ -39,7 +39,7 @@ export function NoteEditPage() {
     setIsLoading(true);
     setError('');
     try {
-      const note = await notesApi.get(parseInt(id, 10));
+      const note = await offlineNotesApi.get(parseInt(id, 10));
       setTitle(note.title);
       setBody(note.body);
       setTags(note.tags.map((t) => t.name).join(', '));
@@ -65,7 +65,7 @@ export function NoteEditPage() {
   useEffect(() => {
     const loadFolders = async () => {
       try {
-        const { folders: fetchedFolders } = await foldersApi.list();
+        const { folders: fetchedFolders } = await offlineFoldersApi.list();
         setFolders(fetchedFolders);
       } catch (err) {
         console.error('Failed to load folders:', err);
@@ -98,10 +98,10 @@ export function NoteEditPage() {
       let note: Note;
 
       if (isNew) {
-        note = await notesApi.create(data);
+        note = await offlineNotesApi.create(data);
       } else {
         if (!id) throw new Error('Note ID is required');
-        note = await notesApi.update(parseInt(id, 10), data);
+        note = await offlineNotesApi.update(parseInt(id, 10), data);
       }
 
       navigate(`/notes/${note.id}`);

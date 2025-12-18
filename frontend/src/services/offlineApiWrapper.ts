@@ -185,6 +185,18 @@ export const offlineNotesApi = {
       entityId: id,
     });
   },
+
+  async toggleFavorite(note: Note): Promise<Note> {
+    return this.update(note.id, { favorite: !note.favorite });
+  },
+
+  async togglePinned(note: Note): Promise<Note> {
+    return this.update(note.id, { pinned: !note.pinned });
+  },
+
+  async toggleArchived(note: Note): Promise<Note> {
+    return this.update(note.id, { archived: !note.archived });
+  },
 };
 
 // Tasks API with offline support
@@ -313,6 +325,10 @@ export const offlineTasksApi = {
       entityType: 'task',
       entityId: id,
     });
+  },
+
+  async toggleComplete(task: Task): Promise<Task> {
+    return this.update(task.id, { completed: !task.completed });
   },
 };
 
