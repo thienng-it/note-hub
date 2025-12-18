@@ -151,7 +151,7 @@ export const migration = {
 
      if (column.length === 0) {
        logger.info('  🔄 Adding ${columnName} to ${tableName}...');
-       await db.query('ALTER TABLE ${tableName} ADD COLUMN ${columnName} TYPE DEFAULT value');
+       await db.run('ALTER TABLE ${tableName} ADD COLUMN ${columnName} TYPE DEFAULT value');
        logger.info('  ✅ ${columnName} added');
      }
   },

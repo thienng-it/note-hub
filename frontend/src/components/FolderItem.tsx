@@ -247,11 +247,10 @@ export function FolderItem({
     setShowDeleteConfirm(true);
   };
 
-  const handleDeleteConfirm = async (e) => {
-    e.preventDefault();
+  const handleDeleteConfirm = () => {
     setIsDeleting(true);
     try {
-      await onDelete(folder);
+      onDelete(folder);
       setShowDeleteConfirm(false);
     } catch (error) {
       console.error('Failed to delete folder:', error);
@@ -289,7 +288,7 @@ export function FolderItem({
       <div
         role="button"
         tabIndex={0}
-        className={`flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group ${
+        className={`glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group ${
           isSelected
             ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-700 dark:text-blue-400 shadow-sm border border-blue-200/50 dark:border-blue-700/50'
             : 'hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm'
@@ -365,6 +364,7 @@ export function FolderItem({
             viewBox="0 0 24 24"
             role="img"
             aria-hidden="true"
+            style={{ cursor: 'pointer' }}
           >
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
           </svg>
@@ -376,7 +376,6 @@ export function FolderItem({
         items={contextMenuItems}
         isOpen={showMenu}
         onClose={() => setShowMenu(false)}
-        triggerRef={menuTriggerRef}
         position="auto"
       />
 
@@ -410,11 +409,7 @@ export function FolderItem({
         cancelText={t('common.cancel')}
         variant="danger"
         isLoading={isDeleting}
-      >
-        <div className="text-center text-sm text-[var(--text-primary)] font-semibold">
-          "{folder.name}"
-        </div>
-      </ConfirmModal>
+      ></ConfirmModal>
     </div>
   );
 }

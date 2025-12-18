@@ -173,9 +173,6 @@ export function NotesPage() {
   };
 
   const handleDeleteFolder = async (folder: Folder) => {
-    if (!confirm(`${t('folders.deleteConfirm')}\n\n${t('folders.deleteWarning')}`)) {
-      return;
-    }
     try {
       await offlineFoldersApi.delete(folder.id);
       await loadFolders();
