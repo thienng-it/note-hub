@@ -247,7 +247,8 @@ export function FolderItem({
     setShowDeleteConfirm(true);
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (e) => {
+    e.preventDefault();
     setIsDeleting(true);
     try {
       await onDelete(folder);

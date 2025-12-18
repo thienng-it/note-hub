@@ -59,6 +59,7 @@ export interface Folder {
   note_count?: number;
   task_count?: number;
   children?: Folder[];
+  user_id?: number;
 }
 
 export interface FolderFormData {
@@ -97,6 +98,7 @@ export interface Note {
   tags: Tag[];
   can_edit?: boolean;
   reading_time?: number;
+  user_id?: number;
 }
 
 export interface NoteFormData {
@@ -122,6 +124,7 @@ export interface Task {
   folder_id?: number | null;
   created_at?: string;
   is_overdue?: boolean;
+  updated_at?: string;
 }
 
 export interface TaskFormData {
@@ -131,6 +134,7 @@ export interface TaskFormData {
   due_date?: string;
   priority?: 'low' | 'medium' | 'high';
   folder_id?: number | null;
+  completed?: boolean;
 }
 
 // API response types
@@ -173,8 +177,8 @@ export interface UsersResponse {
 }
 
 // View types
-export type NoteViewType = 'all' | 'favorites' | 'archived' | 'shared';
-export type TaskFilterType = 'all' | 'active' | 'completed' | 'overdue';
+export type NoteViewType = 'all' | 'favorites' | 'archived' | 'shared' | 'pinned';
+export type TaskFilterType = 'all' | 'active' | 'completed' | 'overdue' | 'pending';
 export type ThemeType = 'light' | 'dark';
 
 // AI types
