@@ -3,6 +3,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { versionApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { LiquidGlassNav } from './LiquidGlassNav';
+import { OfflineIndicator } from './OfflineIndicator';
 
 // Version is injected at build time by Vite
 declare const __APP_VERSION__: string;
@@ -92,6 +93,9 @@ export function Layout() {
 
       {/* Mac-Style Liquid Glass Navigation - All screen sizes */}
       {user && <LiquidGlassNav />}
+
+      {/* Offline Indicator */}
+      {user && <OfflineIndicator />}
     </div>
   );
 }

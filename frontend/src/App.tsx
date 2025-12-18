@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ChatProvider } from './context/ChatContext';
+import { OfflineProvider } from './context/OfflineContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { AuditLogsPage } from './pages/AuditLogsPage';
@@ -96,9 +97,11 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <ChatProvider>
-            <AppRoutes />
-          </ChatProvider>
+          <OfflineProvider>
+            <ChatProvider>
+              <AppRoutes />
+            </ChatProvider>
+          </OfflineProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
