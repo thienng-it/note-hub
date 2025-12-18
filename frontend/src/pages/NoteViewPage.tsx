@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
-import { notesApi, profileApi } from '../api/client';
+import { profileApi } from '../api/client';
 import { AIActions } from '../components/AIActions';
 import { ImageModal } from '../components/ImageModal';
 import { useAuth } from '../context/AuthContext';
+import { offlineNotesApi } from '../services/offlineApiWrapper';
 import type { Note } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
@@ -77,7 +78,7 @@ export function NoteViewPage() {
     setIsLoading(true);
     setError('');
     try {
-      const fetchedNote = await notesApi.get(parseInt(id, 10));
+      const fetchedNote = await offlineNotesApi.get(parseInt(id, 10));
       setNote(fetchedNote);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load note');
@@ -93,7 +94,7 @@ export function NoteViewPage() {
   const handleTogglePin = async () => {
     if (!note) return;
     try {
-      const updated = await notesApi.togglePinned(note);
+      const updated = await offlineNotesApi.togglePinned(note);
       setNote(updated);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update note');
@@ -103,7 +104,7 @@ export function NoteViewPage() {
   const handleToggleFavorite = async () => {
     if (!note) return;
     try {
-      const updated = await notesApi.toggleFavorite(note);
+      const updated = await offlineNotesApi.toggleFavorite(note);
       // Merge updated data with existing note to preserve all fields
       setNote((prev) => (prev ? { ...prev, ...updated } : updated));
     } catch (err) {
@@ -114,7 +115,7 @@ export function NoteViewPage() {
   const handleToggleArchive = async () => {
     if (!note) return;
     try {
-      const updated = await notesApi.toggleArchived(note);
+      const updated = await offlineNotesApi.toggleArchived(note);
       setNote(updated);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update note');
@@ -124,7 +125,7 @@ export function NoteViewPage() {
   const handleDelete = async () => {
     if (!note) return;
     try {
-      await notesApi.delete(note.id);
+      await offlineNotesApi.delete(note.id);
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete note');

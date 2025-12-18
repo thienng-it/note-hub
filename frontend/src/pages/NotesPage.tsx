@@ -1,11 +1,12 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { foldersApi, notesApi, profileApi } from '../api/client';
+import { profileApi } from '../api/client';
 import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
 import { FolderModal } from '../components/FolderModal';
 import { FolderSidebar } from '../components/FolderSidebar';
 import { useAuth } from '../context/AuthContext';
+import { offlineFoldersApi, offlineNotesApi } from '../services/offlineApiWrapper';
 import type { Folder, Note, NoteViewType, Tag } from '../types';
 import { getTagColor } from '../utils/tagColors';
 
@@ -82,7 +83,7 @@ export function NotesPage() {
     setIsLoading(true);
     setError('');
     try {
-      const fetchedNotes = await notesApi.list(view, query, tagFilter);
+      const fetchedNotes = await offlineNotesApi.list(view, query, tagFilter);
       setNotes(fetchedNotes);
 
       // Extract unique tags with counts
@@ -111,7 +112,7 @@ export function NotesPage() {
 
   const loadFolders = useCallback(async () => {
     try {
-      const { folders: fetchedFolders } = await foldersApi.list();
+      const { folders: fetchedFolders } = await offlineFoldersApi.list();
       setFolders(fetchedFolders);
     } catch (err) {
       console.error('Failed to load folders:', err);
@@ -283,21 +284,19 @@ export function NotesPage() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {notes.length > 0 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={hiddenNotes.size === 0 ? hideAllNotes : showAllNotes}
-                    className="modern-btn-secondary"
-                    title={t(hiddenNotes.size === 0 ? 'notes.hideAllNotes' : 'notes.showAllNotes')}
-                  >
-                    <i
-                      className={`glass-i fas ${hiddenNotes.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
-                    ></i>
-                    <span className="hidden sm:inline">
-                      {t(hiddenNotes.size === 0 ? 'common.hideAll' : 'common.showAll')}
-                    </span>
-                  </button>
-                </>
+                <button
+                  type="button"
+                  onClick={hiddenNotes.size === 0 ? hideAllNotes : showAllNotes}
+                  className="modern-btn-secondary"
+                  title={t(hiddenNotes.size === 0 ? 'notes.hideAllNotes' : 'notes.showAllNotes')}
+                >
+                  <i
+                    className={`glass-i fas ${hiddenNotes.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
+                  ></i>
+                  <span className="hidden sm:inline">
+                    {t(hiddenNotes.size === 0 ? 'common.hideAll' : 'common.showAll')}
+                  </span>
+                </button>
               )}
             </div>
           </div>

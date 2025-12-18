@@ -168,8 +168,9 @@ All new features are **optional** and designed for graceful degradation. NoteHub
 - 👥 **Collaboration** - Share notes with other users with view/edit permissions
 - 🎨 **Customizable UI** - Light/dark mode, responsive glassmorphism design
 - 🌍 **Internationalization (i18n)** - Multi-language support (English, German, Vietnamese, Japanese)
-- 📱 **Mobile-Friendly** - Works seamlessly on all devices
+- 📱 **Mobile-Friendly** - Works seamlessly on all devices, installable as PWA
 - 👤 **User Profiles** - Customizable profiles with themes and bio
+- 🔌 **Offline Mode** - Full offline support with automatic sync when reconnected
 
 ### Security & Authentication
 - 🔐 **Two-Factor Authentication** - TOTP-based 2FA with QR code setup and simplified management
@@ -183,6 +184,7 @@ All new features are **optional** and designed for graceful degradation. NoteHub
 - 🔍 **Elasticsearch Integration** - Optional full-text search with fuzzy matching (5x faster)
 - 🗄️ **SQL Query Optimization** - Composite indexes for complex query patterns
 - 📊 **Performance Monitoring** - Built-in query performance tracking
+- 💾 **IndexedDB Storage** - Large offline data capacity with automatic caching
 
 ### Developer Experience
 - 🧪 **Comprehensive Test Suite** - 34 frontend tests with snapshot testing, 60+ backend integration tests

@@ -1,11 +1,11 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { foldersApi, tasksApi } from '../api/client';
 import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
 import { FolderModal } from '../components/FolderModal';
 import { FolderSidebar } from '../components/FolderSidebar';
 import { ImageUpload } from '../components/ImageUpload';
 import { ConfirmModal } from '../components/Modal';
+import { offlineFoldersApi, offlineTasksApi } from '../services/offlineApiWrapper';
 import type { Folder, Task, TaskFilterType } from '../types';
 import { flattenFolders } from '../utils/folderUtils';
 import { type TaskTemplate, taskTemplates } from '../utils/templates';
@@ -90,7 +90,7 @@ export function TasksPage() {
     setIsLoading(true);
     setError('');
     try {
-      const fetchedTasks = await tasksApi.list(filter);
+      const fetchedTasks = await offlineTasksApi.list(filter);
       setTasks(fetchedTasks);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load tasks');
@@ -101,7 +101,7 @@ export function TasksPage() {
 
   const loadFolders = useCallback(async () => {
     try {
-      const { folders: fetchedFolders } = await foldersApi.list();
+      const { folders: fetchedFolders } = await offlineFoldersApi.list();
       setFolders(fetchedFolders);
     } catch (err) {
       console.error('Failed to load folders:', err);
@@ -135,7 +135,7 @@ export function TasksPage() {
       return;
     }
     try {
-      await foldersApi.delete(folder.id);
+      await offlineFoldersApi.delete(folder.id);
       await loadFolders();
       if (selectedFolder?.id === folder.id) {
         setSelectedFolder(null);
@@ -147,9 +147,9 @@ export function TasksPage() {
 
   const handleSaveFolder = async (name: string, icon: string, color: string) => {
     if (folderToEdit) {
-      await foldersApi.update(folderToEdit.id, { name, icon, color });
+      await offlineFoldersApi.update(folderToEdit.id, { name, icon, color });
     } else {
-      await foldersApi.create({
+      await offlineFoldersApi.create({
         name,
         parent_id: folderParentId,
         icon,
@@ -168,7 +168,7 @@ export function TasksPage() {
 
     setIsCreating(true);
     try {
-      const task = await tasksApi.create({
+      const task = await offlineTasksApi.create({
         title: newTitle.trim(),
         description: newDescription.trim() || undefined,
         images: newImages,
@@ -187,7 +187,7 @@ export function TasksPage() {
 
   const handleToggleComplete = async (task: Task) => {
     try {
-      const updated = await tasksApi.toggleComplete(task);
+      const updated = await offlineTasksApi.toggleComplete(task);
       setTasks(tasks.map((t) => (t.id === task.id ? updated : t)));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update task');
@@ -203,7 +203,7 @@ export function TasksPage() {
 
     setIsDeleting(true);
     try {
-      await tasksApi.delete(deleteModal.task.id);
+      await offlineTasksApi.delete(deleteModal.task.id);
       setTasks(tasks.filter((t) => t.id !== deleteModal.task.id));
       setDeleteModal(null);
     } catch (err) {
@@ -218,7 +218,7 @@ export function TasksPage() {
     if (!editingTask) return;
 
     try {
-      const updated = await tasksApi.update(editingTask.id, {
+      const updated = await offlineTasksApi.update(editingTask.id, {
         title: editingTask.title,
         description: editingTask.description,
         due_date: editingTask.due_date,
@@ -343,21 +343,19 @@ export function TasksPage() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {tasks.length > 0 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={hiddenTasks.size === 0 ? hideAllTasks : showAllTasks}
-                    className="btn-secondary-glass"
-                    title="Hide all task contents"
-                  >
-                    <i
-                      className={`glass-i fas ${hiddenTasks.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
-                    ></i>
-                    <span className="hidden sm:inline">
-                      {t(hiddenTasks.size === 0 ? 'common.hideAll' : 'common.showAll')}
-                    </span>
-                  </button>
-                </>
+                <button
+                  type="button"
+                  onClick={hiddenTasks.size === 0 ? hideAllTasks : showAllTasks}
+                  className="btn-secondary-glass"
+                  title="Hide all task contents"
+                >
+                  <i
+                    className={`glass-i fas ${hiddenTasks.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
+                  ></i>
+                  <span className="hidden sm:inline">
+                    {t(hiddenTasks.size === 0 ? 'common.hideAll' : 'common.showAll')}
+                  </span>
+                </button>
               )}
               <button type="button" onClick={() => setShowForm(!showForm)} className="btn-apple">
                 <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
