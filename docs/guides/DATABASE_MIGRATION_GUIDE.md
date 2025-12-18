@@ -470,7 +470,7 @@ Currently, the migration system does not support automatic rollbacks. To revert 
     );
     if (column.length === 0) {
       logger.info('  🔄 Adding phone column to users table...');
-      await db.query('ALTER TABLE users ADD COLUMN phone VARCHAR(20)');
+      await db.run('ALTER TABLE users ADD COLUMN phone VARCHAR(20)');
       logger.info('  ✅ phone column added');
     }
   },
@@ -501,7 +501,7 @@ Currently, the migration system does not support automatic rollbacks. To revert 
     );
     if (column.length === 0) {
       logger.info('  🔄 Adding category column to notes table...');
-      await db.query('ALTER TABLE notes ADD COLUMN category VARCHAR(50) DEFAULT "general"');
+      await db.run('ALTER TABLE notes ADD COLUMN category VARCHAR(50) DEFAULT "general"');
       await db.query('CREATE INDEX idx_notes_category ON notes(category)');
       logger.info('  ✅ category column and index added');
     }

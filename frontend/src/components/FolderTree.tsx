@@ -32,7 +32,7 @@ export function FolderTree({
         <button
           type="button"
           onClick={() => onCreateFolder(null)}
-          className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+          className="btn-secondary-glass p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
           title={t('folders.createNew')}
         >
           <svg

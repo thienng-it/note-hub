@@ -61,14 +61,14 @@ const MIGRATIONS = [
 
       if (adminColumn.length === 0) {
         logger.info('  🔄 Adding is_admin column to users table...');
-        await db.query('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
-        await db.query('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
+        await db.run('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
+        await db.run('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
         logger.info('  ✅ is_admin column added');
       }
 
       if (lockedColumn.length === 0) {
         logger.info('  🔄 Adding is_locked column to users table...');
-        await db.query('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
+        await db.run('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
         logger.info('  ✅ is_locked column added');
       }
     },
@@ -126,7 +126,7 @@ const MIGRATIONS = [
 
       if (avatarColumn.length === 0) {
         logger.info('  🔄 Adding avatar_url column to users table...');
-        await db.query('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT NULL');
+        await db.run('ALTER TABLE users ADD COLUMN avatar_url TEXT DEFAULT NULL');
         logger.info('  ✅ avatar_url column added');
       }
     },
@@ -183,7 +183,7 @@ const MIGRATIONS = [
 
       if (notesFolderColumn.length === 0) {
         logger.info('  🔄 Adding folder_id column to notes table...');
-        await db.query('ALTER TABLE notes ADD COLUMN folder_id INT DEFAULT NULL');
+        await db.run('ALTER TABLE notes ADD COLUMN folder_id INT DEFAULT NULL');
         logger.info('  ✅ folder_id column added to notes');
       }
 
@@ -204,7 +204,7 @@ const MIGRATIONS = [
 
       if (tasksFolderColumn.length === 0) {
         logger.info('  🔄 Adding folder_id column to tasks table...');
-        await db.query('ALTER TABLE tasks ADD COLUMN folder_id INT DEFAULT NULL');
+        await db.run('ALTER TABLE tasks ADD COLUMN folder_id INT DEFAULT NULL');
         logger.info('  ✅ folder_id column added to tasks');
       }
 
@@ -253,7 +253,7 @@ const MIGRATIONS = [
 
       if (notesImagesColumn.length === 0) {
         logger.info('  🔄 Adding images column to notes table...');
-        await db.query('ALTER TABLE notes ADD COLUMN images TEXT');
+        await db.run('ALTER TABLE notes ADD COLUMN images TEXT');
         logger.info('  ✅ images column added to notes');
       }
 
@@ -266,7 +266,7 @@ const MIGRATIONS = [
 
       if (tasksImagesColumn.length === 0) {
         logger.info('  🔄 Adding images column to tasks table...');
-        await db.query('ALTER TABLE tasks ADD COLUMN images TEXT');
+        await db.run('ALTER TABLE tasks ADD COLUMN images TEXT');
         logger.info('  ✅ images column added to tasks');
       }
     },
@@ -302,7 +302,7 @@ const MIGRATIONS = [
 
       if (hiddenNotesColumn.length === 0) {
         logger.info('  🔄 Adding hidden_notes column to users table...');
-        await db.query('ALTER TABLE users ADD COLUMN hidden_notes TEXT');
+        await db.run('ALTER TABLE users ADD COLUMN hidden_notes TEXT');
         logger.info('  ✅ hidden_notes column added');
       }
 
@@ -343,7 +343,7 @@ const MIGRATIONS = [
 
       if (encryptionSaltColumn.length === 0) {
         logger.info('  🔄 Adding encryption_salt column to chat_rooms table...');
-        await db.query('ALTER TABLE chat_rooms ADD COLUMN encryption_salt VARCHAR(64)');
+        await db.run('ALTER TABLE chat_rooms ADD COLUMN encryption_salt VARCHAR(64)');
         logger.info('  ✅ encryption_salt column added');
       }
     },
@@ -379,7 +379,7 @@ const MIGRATIONS = [
 
       if (photoUrlColumn.length === 0) {
         logger.info('  🔄 Adding photo_url column to chat_messages table...');
-        await db.query('ALTER TABLE chat_messages ADD COLUMN photo_url TEXT');
+        await db.run('ALTER TABLE chat_messages ADD COLUMN photo_url TEXT');
         logger.info('  ✅ photo_url column added');
       }
 
@@ -391,7 +391,7 @@ const MIGRATIONS = [
 
       if (isEncryptedColumn.length === 0) {
         logger.info('  🔄 Adding is_encrypted column to chat_messages table...');
-        await db.query('ALTER TABLE chat_messages ADD COLUMN is_encrypted BOOLEAN DEFAULT TRUE');
+        await db.run('ALTER TABLE chat_messages ADD COLUMN is_encrypted BOOLEAN DEFAULT TRUE');
         logger.info('  ✅ is_encrypted column added');
       }
     },
@@ -429,7 +429,7 @@ const MIGRATIONS = [
 
       if (column.length === 0) {
         logger.info('  🔄 Adding encryption_salt to chat_messages...');
-        await db.query('ALTER TABLE chat_messages ADD COLUMN encryption_salt VARCHAR(64)');
+        await db.run('ALTER TABLE chat_messages ADD COLUMN encryption_salt VARCHAR(64)');
         logger.info('  ✅ encryption_salt added');
       }
     },

@@ -48,13 +48,13 @@ async function migrate() {
 
       // Check if columns exist
       const [adminColumn] = await db.db.query(
-        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_admin'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
       );
 
       const [lockedColumn] = await db.db.query(
-        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'is_locked'`,
         [process.env.MYSQL_DATABASE || 'notehub'],
       );
@@ -62,10 +62,10 @@ async function migrate() {
       // Add is_admin column
       if (adminColumn.length === 0) {
         console.log('  ➕ Adding is_admin column...');
-        await db.db.query('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
+        await db.db.run('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
 
         // Set admin user to is_admin = 1
-        await db.db.query('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
+        await db.db.run('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
         console.log('  ✅ is_admin column added and admin user updated');
       } else {
         console.log('  ⏭️  is_admin column already exists, skipping...');
@@ -74,7 +74,7 @@ async function migrate() {
       // Add is_locked column
       if (lockedColumn.length === 0) {
         console.log('  ➕ Adding is_locked column...');
-        await db.db.query('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
+        await db.db.run('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
         console.log('  ✅ is_locked column added');
       } else {
         console.log('  ⏭️  is_locked column already exists, skipping...');

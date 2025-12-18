@@ -847,15 +847,15 @@ class Database {
 
       if (adminColumn.length === 0) {
         logger.info('  🔄 Migrating: Adding is_admin column to users table...');
-        await this.db.query('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
+        await this.db.run('ALTER TABLE users ADD COLUMN is_admin TINYINT DEFAULT 0');
         // Set admin user to is_admin = 1
-        await this.db.query('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
+        await this.db.run('UPDATE users SET is_admin = 1 WHERE username = ?', ['admin']);
         logger.info('  ✅ Migration: is_admin column added');
       }
 
       if (lockedColumn.length === 0) {
         logger.info('  🔄 Migrating: Adding is_locked column to users table...');
-        await this.db.query('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
+        await this.db.run('ALTER TABLE users ADD COLUMN is_locked TINYINT DEFAULT 0');
         logger.info('  ✅ Migration: is_locked column added');
       }
     } catch (error) {
@@ -873,7 +873,7 @@ class Database {
 
       if (notesFolderColumn.length === 0) {
         logger.info('  🔄 Migrating: Adding folder_id column to notes table...');
-        await this.db.query('ALTER TABLE notes ADD COLUMN folder_id INT DEFAULT NULL');
+        await this.db.run('ALTER TABLE notes ADD COLUMN folder_id INT DEFAULT NULL');
         logger.info('  ✅ Migration: folder_id column added to notes');
       }
 
@@ -898,7 +898,7 @@ class Database {
 
       if (tasksFolderColumn.length === 0) {
         logger.info('  🔄 Migrating: Adding folder_id column to tasks table...');
-        await this.db.query('ALTER TABLE tasks ADD COLUMN folder_id INT DEFAULT NULL');
+        await this.db.run('ALTER TABLE tasks ADD COLUMN folder_id INT DEFAULT NULL');
         logger.info('  ✅ Migration: folder_id column added to tasks');
       }
 

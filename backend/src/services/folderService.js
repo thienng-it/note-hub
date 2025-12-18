@@ -26,8 +26,8 @@ export default class FolderService {
     // Note: Counts include all items (archived/completed) to show true folder contents
     // UI can filter the displayed items separately based on user preference
     const sql = `
-      SELECT 
-        f.id, f.name, f.parent_id, f.description, f.icon, f.color, 
+      SELECT
+        f.id, f.name, f.parent_id, f.description, f.icon, f.color,
         f.position, f.is_expanded, f.created_at, f.updated_at,
         COUNT(DISTINCT n.id) as note_count,
         COUNT(DISTINCT t.id) as task_count
@@ -85,8 +85,8 @@ export default class FolderService {
    */
   static async getFolderById(folderId, userId) {
     const sql = `
-      SELECT 
-        f.id, f.name, f.parent_id, f.description, f.icon, f.color, 
+      SELECT
+        f.id, f.name, f.parent_id, f.description, f.icon, f.color,
         f.position, f.is_expanded, f.created_at, f.updated_at,
         COUNT(DISTINCT n.id) as note_count,
         COUNT(DISTINCT t.id) as task_count
@@ -138,9 +138,9 @@ export default class FolderService {
     }
 
     const sql = db.isSQLite
-      ? `INSERT INTO folders (name, user_id, parent_id, description, icon, color, position) 
+      ? `INSERT INTO folders (name, user_id, parent_id, description, icon, color, position)
          VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`
-      : `INSERT INTO folders (name, user_id, parent_id, description, icon, color, position) 
+      : `INSERT INTO folders (name, user_id, parent_id, description, icon, color, position)
          VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
     if (db.isSQLite) {
@@ -226,7 +226,7 @@ export default class FolderService {
 
     values.push(folderId, userId);
     const sql = `UPDATE folders SET ${updateFields.join(', ')} WHERE id = ? AND user_id = ?`;
-    await db.query(sql, values);
+    await db.run(sql, values);
 
     await FolderService.invalidateCache(userId);
     return await FolderService.getFolderById(folderId, userId);
@@ -249,7 +249,7 @@ export default class FolderService {
     }
 
     // Delete the folder (notes and tasks will have folder_id set to NULL due to ON DELETE SET NULL)
-    await db.query('DELETE FROM folders WHERE id = ? AND user_id = ?', [folderId, userId]);
+    await db.run('DELETE FROM folders WHERE id = ? AND user_id = ?', [folderId, userId]);
     await FolderService.invalidateCache(userId);
 
     return { success: true };
@@ -328,7 +328,7 @@ export default class FolderService {
   static async getNotesInFolder(folderId, userId, recursive = false) {
     if (!recursive) {
       const sql = `
-        SELECT n.*, 
+        SELECT n.*,
           GROUP_CONCAT(t.name) as tag_names,
           GROUP_CONCAT(t.id) as tag_ids
         FROM notes n
@@ -347,7 +347,7 @@ export default class FolderService {
 
     const placeholders = folderIds.map(() => '?').join(',');
     const sql = `
-      SELECT n.*, 
+      SELECT n.*,
         GROUP_CONCAT(t.name) as tag_names,
         GROUP_CONCAT(t.id) as tag_ids
       FROM notes n
@@ -401,7 +401,7 @@ export default class FolderService {
       throw new Error('Note not found');
     }
 
-    await db.query('UPDATE notes SET folder_id = ? WHERE id = ? AND owner_id = ?', [
+    await db.run('UPDATE notes SET folder_id = ? WHERE id = ? AND owner_id = ?', [
       folderId,
       noteId,
       userId,
@@ -432,7 +432,7 @@ export default class FolderService {
       throw new Error('Task not found');
     }
 
-    await db.query('UPDATE tasks SET folder_id = ? WHERE id = ? AND owner_id = ?', [
+    await db.run('UPDATE tasks SET folder_id = ? WHERE id = ? AND owner_id = ?', [
       folderId,
       taskId,
       userId,

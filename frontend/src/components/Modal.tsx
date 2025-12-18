@@ -147,7 +147,7 @@ export function ConfirmModal({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-4 py-3 rounded-lg bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:opacity-80 transition-colors disabled:opacity-50"
+            className="btn-secondary-glass flex-1 px-4 py-3 rounded-lg bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:opacity-80 transition-colors disabled:opacity-50"
           >
             {cancelText}
           </button>
@@ -155,7 +155,7 @@ export function ConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`flex-1 px-4 py-3 rounded-lg transition-colors disabled:opacity-50 ${style.button}`}
+            className={`btn-danger-glass flex-1 px-4 py-3 rounded-lg transition-colors disabled:opacity-50 ${style.button}`}
           >
             {isLoading ? (
               <>
