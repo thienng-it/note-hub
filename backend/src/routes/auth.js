@@ -20,6 +20,7 @@ import {
   validateRequiredFields,
 } from '../middleware/validation.js';
 import AuthService from '../services/authService.js';
+import emailService from '../services/emailService.js';
 import googleOAuthService from '../services/googleOAuthService.js';
 import jwtService from '../services/jwtService.js';
 import * as responseHandler from '../utils/responseHandler.js';
@@ -224,8 +225,10 @@ router.post('/forgot-password', async (req, res) => {
     const user = await db.queryOne(`SELECT * FROM users WHERE username = ?`, [username]);
 
     if (!user) {
-      // Don't reveal if user exists
-      return res.json({ message: 'If the account exists, a reset token has been generated' });
+      // Don't reveal if user exists - always return success message
+      return res.json({
+        message: 'If the account exists, a password reset email will be sent',
+      });
     }
 
     // Check if 2FA is required
@@ -233,14 +236,33 @@ router.post('/forgot-password', async (req, res) => {
       return res.json({ requires_2fa: true, user_id: user.id });
     }
 
+    // Check if user has an email address
+    if (!user.email) {
+      logger.warn(
+        `[SECURITY] Password reset requested for user '${user.username}' but no email on file`,
+      );
+      // Still return success to not reveal if user exists
+      return res.json({
+        message: 'If the account exists, a password reset email will be sent',
+      });
+    }
+
     const token = await AuthService.generateResetToken(user.id);
 
-    // In production, this would be sent via email
-    logger.info(`[SECURITY] Password reset token for '${user.username}': ${token}`);
+    // Send password reset email via Mailjet
+    const emailResult = await emailService.sendPasswordResetEmail(user.email, user.username, token);
 
+    if (emailResult.success) {
+      logger.info(`[SECURITY] Password reset email sent to '${user.username}' at ${user.email}`);
+    } else {
+      logger.error(
+        `[SECURITY] Failed to send password reset email to '${user.username}': ${emailResult.error}`,
+      );
+    }
+
+    // Always return success message to prevent user enumeration
     res.json({
-      message: 'Reset token generated',
-      token, // Only for development - remove in production
+      message: 'If the account exists, a password reset email will be sent',
     });
   } catch (error) {
     logger.error('Forgot password error:', error);
