@@ -114,6 +114,27 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
   return (data.success !== undefined ? data.data : data) as T;
 }
 
+async function publicRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: { message: 'Request failed' } }));
+    const errorMessage = errorData.error?.message || errorData.error || 'Request failed';
+    throw new Error(errorMessage);
+  }
+
+  const data = await response.json();
+  return (data.success !== undefined ? data.data : data) as T;
+}
+
 // Refresh token with rotation support
 async function refreshToken(): Promise<boolean> {
   const refresh = getStoredRefreshToken();
@@ -411,6 +432,31 @@ export const notesApi = {
       errors: Array<{ file?: string; error: string }>;
     };
   },
+
+  async getPublicShare(id: number): Promise<{ token: string; expires_at: string | null } | null> {
+    const response = await apiRequest<{
+      share: { token: string; expires_at: string | null } | null;
+    }>(`${API_VERSION}/notes/${id}/public-share`);
+    return response.share;
+  },
+
+  async createPublicShare(
+    id: number,
+    data?: { expires_at?: string | null },
+  ): Promise<{ token: string; expires_at: string | null }> {
+    const response = await apiRequest<{ share: { token: string; expires_at: string | null } }>(
+      `${API_VERSION}/notes/${id}/public-share`,
+      {
+        method: 'POST',
+        body: JSON.stringify(data || {}),
+      },
+    );
+    return response.share;
+  },
+
+  async revokePublicShare(id: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/notes/${id}/public-share`, { method: 'DELETE' });
+  },
 };
 
 // Tasks API
@@ -448,6 +494,45 @@ export const tasksApi = {
 
   async toggleComplete(task: Task): Promise<Task> {
     return this.update(task.id, { completed: !task.completed });
+  },
+
+  async getPublicShare(id: number): Promise<{ token: string; expires_at: string | null } | null> {
+    const response = await apiRequest<{
+      share: { token: string; expires_at: string | null } | null;
+    }>(`${API_VERSION}/tasks/${id}/public-share`);
+    return response.share;
+  },
+
+  async createPublicShare(
+    id: number,
+    data?: { expires_at?: string | null },
+  ): Promise<{ token: string; expires_at: string | null }> {
+    const response = await apiRequest<{ share: { token: string; expires_at: string | null } }>(
+      `${API_VERSION}/tasks/${id}/public-share`,
+      {
+        method: 'POST',
+        body: JSON.stringify(data || {}),
+      },
+    );
+    return response.share;
+  },
+
+  async revokePublicShare(id: number): Promise<void> {
+    await apiRequest(`${API_VERSION}/tasks/${id}/public-share`, { method: 'DELETE' });
+  },
+};
+
+export const publicApi = {
+  async getSharedNote(token: string): Promise<{ note: Note }> {
+    return publicRequest<{ note: Note }>(
+      `${API_VERSION}/public/notes/${encodeURIComponent(token)}`,
+    );
+  },
+
+  async getSharedTask(token: string): Promise<{ task: Task }> {
+    return publicRequest<{ task: Task }>(
+      `${API_VERSION}/public/tasks/${encodeURIComponent(token)}`,
+    );
   },
 };
 

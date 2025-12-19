@@ -7,6 +7,7 @@ import AuditService from '../services/auditService.js';
 
 const router = express.Router();
 
+import crypto from 'node:crypto';
 import path from 'node:path';
 import multer from 'multer';
 import db from '../config/database.js';
@@ -605,6 +606,120 @@ router.post('/:id/toggle-archive', jwtRequired, async (req, res) => {
     });
   } catch (error) {
     logger.error('Toggle archive error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.get('/:id/public-share', jwtRequired, async (req, res) => {
+  try {
+    const noteId = parseInt(req.params.id, 10);
+    const note = await NoteService.getNoteById(noteId);
+
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    if (note.owner_id !== req.userId) {
+      return res.status(403).json({ error: 'Only the note owner can manage public sharing' });
+    }
+
+    const share = await db.queryOne(
+      `
+      SELECT id, token, expires_at
+      FROM public_note_shares
+      WHERE note_id = ?
+        AND revoked_at IS NULL
+        AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+      ORDER BY created_at DESC
+      LIMIT 1
+      `,
+      [noteId],
+    );
+
+    res.json({
+      share: share
+        ? {
+            id: share.id,
+            token: share.token,
+            expires_at: share.expires_at,
+          }
+        : null,
+    });
+  } catch (error) {
+    logger.error('Get public share note error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.post('/:id/public-share', jwtRequired, async (req, res) => {
+  try {
+    const noteId = parseInt(req.params.id, 10);
+    const { expires_at = null } = req.body || {};
+
+    const note = await NoteService.getNoteById(noteId);
+
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    if (note.owner_id !== req.userId) {
+      return res.status(403).json({ error: 'Only the note owner can manage public sharing' });
+    }
+
+    await db.run(
+      `
+      UPDATE public_note_shares
+      SET revoked_at = CURRENT_TIMESTAMP
+      WHERE note_id = ? AND revoked_at IS NULL
+      `,
+      [noteId],
+    );
+
+    const token = crypto.randomBytes(32).toString('hex');
+
+    const result = await db.run(
+      `
+      INSERT INTO public_note_shares (note_id, token, created_by_id, expires_at)
+      VALUES (?, ?, ?, ?)
+      `,
+      [noteId, token, req.userId, expires_at],
+    );
+
+    res.status(201).json({
+      share: {
+        id: result.insertId,
+        token,
+        expires_at,
+      },
+    });
+  } catch (error) {
+    logger.error('Create public share note error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.delete('/:id/public-share', jwtRequired, async (req, res) => {
+  try {
+    const noteId = parseInt(req.params.id, 10);
+    const note = await NoteService.getNoteById(noteId);
+
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    if (note.owner_id !== req.userId) {
+      return res.status(403).json({ error: 'Only the note owner can manage public sharing' });
+    }
+
+    await db.run(
+      `
+      UPDATE public_note_shares
+      SET revoked_at = CURRENT_TIMESTAMP
+      WHERE note_id = ? AND revoked_at IS NULL
+      `,
+      [noteId],
+    );
+
+    res.json({ message: 'Public share link revoked' });
+  } catch (error) {
+    logger.error('Revoke public share note error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -1,12 +1,15 @@
 /**
  * Tasks Routes.
  */
+
+import crypto from 'node:crypto';
 import express from 'express';
 import logger from '../config/logger.js';
 import AuditService from '../services/auditService.js';
 
 const router = express.Router();
 
+import db from '../config/database.js';
 import { jwtRequired } from '../middleware/auth.js';
 import TaskService from '../services/taskService.js';
 
@@ -135,6 +138,108 @@ router.post('/', jwtRequired, async (req, res) => {
     });
   } catch (error) {
     logger.error('Create task error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.get('/:id/public-share', jwtRequired, async (req, res) => {
+  try {
+    const taskId = parseInt(req.params.id, 10);
+    const task = await TaskService.checkTaskAccess(taskId, req.userId);
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found or access denied' });
+    }
+
+    const share = await db.queryOne(
+      `
+      SELECT id, token, expires_at
+      FROM public_task_shares
+      WHERE task_id = ?
+        AND revoked_at IS NULL
+        AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+      ORDER BY created_at DESC
+      LIMIT 1
+      `,
+      [taskId],
+    );
+
+    res.json({
+      share: share
+        ? {
+            id: share.id,
+            token: share.token,
+            expires_at: share.expires_at,
+          }
+        : null,
+    });
+  } catch (error) {
+    logger.error('Get public share task error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.post('/:id/public-share', jwtRequired, async (req, res) => {
+  try {
+    const taskId = parseInt(req.params.id, 10);
+    const { expires_at = null } = req.body || {};
+
+    const task = await TaskService.checkTaskAccess(taskId, req.userId);
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found or access denied' });
+    }
+
+    await db.run(
+      `
+      UPDATE public_task_shares
+      SET revoked_at = CURRENT_TIMESTAMP
+      WHERE task_id = ? AND revoked_at IS NULL
+      `,
+      [taskId],
+    );
+
+    const token = crypto.randomBytes(32).toString('hex');
+
+    const result = await db.run(
+      `
+      INSERT INTO public_task_shares (task_id, token, created_by_id, expires_at)
+      VALUES (?, ?, ?, ?)
+      `,
+      [taskId, token, req.userId, expires_at],
+    );
+
+    res.status(201).json({
+      share: {
+        id: result.insertId,
+        token,
+        expires_at,
+      },
+    });
+  } catch (error) {
+    logger.error('Create public share task error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.delete('/:id/public-share', jwtRequired, async (req, res) => {
+  try {
+    const taskId = parseInt(req.params.id, 10);
+    const task = await TaskService.checkTaskAccess(taskId, req.userId);
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found or access denied' });
+    }
+
+    await db.run(
+      `
+      UPDATE public_task_shares
+      SET revoked_at = CURRENT_TIMESTAMP
+      WHERE task_id = ? AND revoked_at IS NULL
+      `,
+      [taskId],
+    );
+
+    res.json({ message: 'Public share link revoked' });
+  } catch (error) {
+    logger.error('Revoke public share task error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

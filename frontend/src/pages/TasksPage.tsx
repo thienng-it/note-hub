@@ -1,5 +1,6 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
 import { FolderModal } from '../components/FolderModal';
 import { FolderSidebar } from '../components/FolderSidebar';
@@ -757,6 +758,13 @@ export function TasksPage() {
                               className={`glass-i fas ${hiddenTasks.has(task.id) ? 'fa-eye' : 'fa-eye-slash'}`}
                             ></i>
                           </button>
+                          <Link
+                            to={`/tasks/${task.id}/share`}
+                            className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-green-600 transition-colors"
+                            title="Share"
+                          >
+                            <i className="glass-i fas fa-share-alt"></i>
+                          </Link>
                           <button
                             type="button"
                             onClick={() => setEditingTask(task)}
