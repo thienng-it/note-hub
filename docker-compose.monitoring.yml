@@ -139,32 +139,32 @@ services:
   # Grafana - Metrics Visualization and Dashboards
   # ==========================================================================
   grafana:
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:11.6.9
     container_name: notehub-grafana
     restart: unless-stopped
     environment:
       # Admin credentials (change these in production!)
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
-      
+
       # Server configuration
       - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
       - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN:-localhost}
-      
+
       # Database (using SQLite by default for simplicity)
       - GF_DATABASE_TYPE=sqlite3
       - GF_DATABASE_PATH=/var/lib/grafana/grafana.db
-      
+
       # Session configuration
       - GF_SESSION_PROVIDER=file
-      
+
       # Anonymous access (disable in production)
       - GF_AUTH_ANONYMOUS_ENABLED=false
-      
+
       # Disable telemetry
       - GF_ANALYTICS_REPORTING_ENABLED=false
       - GF_ANALYTICS_CHECK_FOR_UPDATES=false
-      
+
       # Performance optimization for 2GB RAM VPS
       - GF_LOG_LEVEL=warn
       - GF_DATABASE_CACHE_MODE=shared
@@ -194,27 +194,27 @@ services:
     labels:
       # Enable Traefik for Grafana
       - "traefik.enable=true"
-      
+
       # HTTP router with subdomain (e.g., monitoring.yourdomain.com)
       # Use GRAFANA_ROUTER_RULE to customize routing
       # Default: Host-based for production, localhost for development
       - "traefik.http.routers.grafana-http.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`)}"
       - "traefik.http.routers.grafana-http.entrypoints=web"
       - "traefik.http.routers.grafana-http.priority=10"
-      
+
       # HTTPS router with subdomain
       - "traefik.http.routers.grafana.rule=${GRAFANA_ROUTER_RULE:-Host(`monitoring.${DOMAIN:-localhost}`)}"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.priority=10"
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
-      
+
       # Middleware for path stripping if using /grafana path
       - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
-      
+
       # Service configuration
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-      
+
       - "com.notehub.description=Grafana metrics dashboard"
 
   # ==========================================================================
@@ -315,7 +315,7 @@ networks:
   # Connect to existing NoteHub network to access services and Traefik
   notehub-network:
     external: true
-  
+
   # Dedicated monitoring network for internal communication
   monitoring-network:
     name: monitoring-network
