@@ -31,7 +31,6 @@ storage_config:
     active_index_directory: /loki/index
     cache_location: /loki/cache
     cache_ttl: 24h
-    shared_store: filesystem
 
   filesystem:
     directory: /loki/chunks
