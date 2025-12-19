@@ -241,3 +241,136 @@
 .h-22 {
   height: 5.5rem;
 }
+
+/* Logo & Brand */
+.logo-gradient {
+  background: linear-gradient(135deg, #007aff 0%, #af52de 100%);
+}
+
+/* Shadow Utilities */
+.shadow-apple {
+  box-shadow: 0 12px 40px rgba(0, 122, 255, 0.4);
+}
+
+/* Link Colors */
+.text-apple-blue {
+  color: var(--apple-blue);
+}
+
+/* Glass Icon */
+.glass-i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.glass-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  transition: all var(--transition-base);
+}
+
+.glass-icon:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: scale(1.05);
+}
+
+/* Glass Span */
+.glass-span {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.125rem var(--space-2);
+}
+
+.dark .glass-span {
+  background: rgba(51, 65, 85, 0.6);
+}
+
+/* Glass Div */
+.glass-div {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.glass-div-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 80px;
+}
+
+/* Glass Section */
+.glass-section {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin: var(--space-4) 0;
+}
+
+/* ============================================================
+   SCROLL UTILITIES
+   ============================================================ */
+.ios-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+}
+
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* ============================================================
+   NOTCH SAFE AREAS
+   ============================================================ */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .notch-safe-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  .notch-safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .notch-safe-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  .notch-safe-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* ============================================================
+   PROSE STYLING
+   ============================================================ */
+.prose {
+  color: var(--text-primary);
+}
+
+.prose-invert {
+  color: var(--text-primary);
+}
