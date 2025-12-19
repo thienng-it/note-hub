@@ -54,7 +54,7 @@ services:
   # Loki - Log Aggregation Server
   # ==========================================================================
   loki:
-    image: grafana/loki:3.3.2
+    image: grafana/loki:3.5.9
     container_name: loki
     restart: unless-stopped
     ports:
@@ -146,24 +146,24 @@ services:
     labels:
       # Enable Traefik for Grafana Loki
       - "traefik.enable=true"
-      
+
       # HTTP router with subdomain (e.g., logs.yourdomain.com)
       # Use LOKI_GRAFANA_ROUTER_RULE to customize routing
       - "traefik.http.routers.grafana-loki-http.rule=${LOKI_GRAFANA_ROUTER_RULE:-Host(`logs.${DOMAIN:-localhost}`)}"
       - "traefik.http.routers.grafana-loki-http.entrypoints=web"
       - "traefik.http.routers.grafana-loki-http.priority=10"
-      
+
       # HTTPS router with subdomain
       - "traefik.http.routers.grafana-loki.rule=${LOKI_GRAFANA_ROUTER_RULE:-Host(`logs.${DOMAIN:-localhost}`)}"
       - "traefik.http.routers.grafana-loki.entrypoints=websecure"
       - "traefik.http.routers.grafana-loki.priority=10"
       - "traefik.http.routers.grafana-loki.tls=true"
       - "traefik.http.routers.grafana-loki.tls.certresolver=letsencrypt"
-      
+
       # Service configuration
       - "traefik.http.services.grafana-loki.loadbalancer.server.port=3000"
       - "traefik.docker.network=notehub-network"
-      
+
       - "com.notehub.description=Grafana Loki log visualization"
 
 networks:
