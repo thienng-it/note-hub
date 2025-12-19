@@ -21,6 +21,9 @@ export async function getChatRooms(): Promise<ChatRoom[]> {
 export async function createDirectChat(userId: number): Promise<ChatRoom> {
   return apiClient.post<ChatRoom>(`${API_VERSION}/chat/rooms/direct`, { userId });
 }
+export async function createGroupChat(name: string, participantIds: number[]): Promise<ChatRoom> {
+  return apiClient.post<ChatRoom>(`${API_VERSION}/chat/rooms/group`, { name, participantIds });
+}
 
 /**
  * Get messages in a chat room
@@ -133,6 +136,7 @@ export async function uploadPhoto(file: File): Promise<{ photoUrl: string }> {
 export const chatApi = {
   getChatRooms,
   createDirectChat,
+  createGroupChat,
   getRoomMessages,
   sendMessage,
   markMessagesAsRead,

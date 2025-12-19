@@ -355,6 +355,62 @@ export const notesApi = {
   async toggleArchived(note: Note): Promise<Note> {
     return this.update(note.id, { archived: !note.archived });
   },
+
+  async importMarkdown(
+    files: File[],
+    options?: { tags?: string; overwrite?: boolean; folder_id?: number | null },
+  ): Promise<{
+    imported: number;
+    updated: number;
+    failed: number;
+    notes: Array<{ id: number; title: string; action: 'created' | 'updated' }>;
+    errors: Array<{ file?: string; error: string }>;
+  }> {
+    const formData = new FormData();
+    for (const file of files) {
+      const relativePath = (file as unknown as { webkitRelativePath?: string }).webkitRelativePath;
+      formData.append(
+        'files',
+        file,
+        relativePath && relativePath.length > 0 ? relativePath : file.name,
+      );
+    }
+    if (options?.tags) {
+      formData.append('tags', options.tags);
+    }
+    if (options?.overwrite !== undefined) {
+      formData.append('overwrite', String(options.overwrite));
+    }
+    if (options?.folder_id !== undefined) {
+      formData.append('folder_id', options.folder_id === null ? '' : String(options.folder_id));
+    }
+
+    const token = getStoredToken();
+    const response = await fetch(`${API_BASE_URL}${API_VERSION}/notes/import/markdown`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: { message: 'Import failed' } }));
+      const errorMessage = errorData.error?.message || errorData.error || 'Import failed';
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    return (data.success !== undefined ? data.data : data) as {
+      imported: number;
+      updated: number;
+      failed: number;
+      notes: Array<{ id: number; title: string; action: 'created' | 'updated' }>;
+      errors: Array<{ file?: string; error: string }>;
+    };
+  },
 };
 
 // Tasks API

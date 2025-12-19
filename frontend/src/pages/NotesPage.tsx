@@ -1,10 +1,11 @@
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
-import { profileApi } from '../api/client';
+import { notesApi, profileApi } from '../api/client';
 import { FolderBreadcrumb } from '../components/FolderBreadcrumb';
 import { FolderModal } from '../components/FolderModal';
 import { FolderSidebar } from '../components/FolderSidebar';
+import { ConfirmModal } from '../components/Modal';
 import { useAuth } from '../context/AuthContext';
 import { offlineFoldersApi, offlineNotesApi } from '../services/offlineApiWrapper';
 import type { Folder, Note, NoteViewType, Tag } from '../types';
@@ -14,10 +15,18 @@ export function NotesPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const markdownFileInputRef = useRef<HTMLInputElement>(null);
+  const markdownFolderInputRef = useRef<HTMLInputElement>(null);
   const [notes, setNotes] = useState<Note[]>([]);
   const [_allTags, setAllTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isMarkdownImporting, setIsMarkdownImporting] = useState(false);
+  const [markdownOverwrite, setMarkdownOverwrite] = useState(false);
+  const [markdownImportMessage, setMarkdownImportMessage] = useState('');
+  const [markdownImportError, setMarkdownImportError] = useState('');
+  const [isMarkdownFolderConfirmOpen, setIsMarkdownFolderConfirmOpen] = useState(false);
+  const [pendingMarkdownFolderFiles, setPendingMarkdownFolderFiles] = useState<File[] | null>(null);
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '');
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -38,6 +47,13 @@ export function NotesPage() {
       return new Set();
     }
   });
+
+  useEffect(() => {
+    const input = markdownFolderInputRef.current;
+    if (!input) return;
+    input.setAttribute('webkitdirectory', '');
+    input.setAttribute('directory', '');
+  }, []);
 
   const syncHiddenNotesToBackend = async (hiddenNoteIds: number[]) => {
     try {
@@ -118,6 +134,91 @@ export function NotesPage() {
       console.error('Failed to load folders:', err);
     }
   }, []);
+
+  const handleMarkdownImportFilesClick = () => {
+    markdownFileInputRef.current?.click();
+  };
+
+  const handleMarkdownImportFolderClick = () => {
+    markdownFolderInputRef.current?.click();
+  };
+
+  const importMarkdownFiles = async (files: File[]) => {
+    setIsMarkdownImporting(true);
+    setMarkdownImportMessage('');
+    setMarkdownImportError('');
+
+    try {
+      const result = await notesApi.importMarkdown(files, {
+        overwrite: markdownOverwrite,
+        folder_id: selectedFolder?.id ?? null,
+      });
+      setMarkdownImportMessage(
+        t('markdownImport.resultMessage', {
+          imported: result.imported,
+          updated: result.updated,
+          failed: result.failed,
+        }),
+      );
+      if (result.errors && result.errors.length > 0) {
+        const first = result.errors[0];
+        setMarkdownImportError(
+          t('markdownImport.fileError', {
+            file: first.file || t('markdownImport.file'),
+            error: first.error,
+          }),
+        );
+      }
+      await loadFolders();
+      await loadNotes();
+    } catch (err) {
+      setMarkdownImportError(err instanceof Error ? err.message : t('markdownImport.failed'));
+    } finally {
+      setIsMarkdownImporting(false);
+      if (markdownFileInputRef.current) {
+        markdownFileInputRef.current.value = '';
+      }
+      if (markdownFolderInputRef.current) {
+        markdownFolderInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleMarkdownFilesChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files ? Array.from(event.target.files) : [];
+    if (files.length === 0) return;
+
+    const isFolderUpload = event.target === markdownFolderInputRef.current;
+    if (isFolderUpload) {
+      setMarkdownImportMessage('');
+      setMarkdownImportError('');
+      setPendingMarkdownFolderFiles(files);
+      setIsMarkdownFolderConfirmOpen(true);
+      return;
+    }
+
+    await importMarkdownFiles(files);
+  };
+
+  const handleConfirmMarkdownFolderImport = async () => {
+    if (!pendingMarkdownFolderFiles || pendingMarkdownFolderFiles.length === 0) {
+      setIsMarkdownFolderConfirmOpen(false);
+      return;
+    }
+
+    await importMarkdownFiles(pendingMarkdownFolderFiles);
+    setPendingMarkdownFolderFiles(null);
+    setIsMarkdownFolderConfirmOpen(false);
+  };
+
+  const handleCloseMarkdownFolderConfirm = () => {
+    if (isMarkdownImporting) return;
+    setIsMarkdownFolderConfirmOpen(false);
+    setPendingMarkdownFolderFiles(null);
+    if (markdownFolderInputRef.current) {
+      markdownFolderInputRef.current.value = '';
+    }
+  };
 
   useEffect(() => {
     loadNotes();
@@ -280,6 +381,54 @@ export function NotesPage() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] px-2">
+                <input
+                  type="checkbox"
+                  checked={markdownOverwrite}
+                  onChange={(e) => setMarkdownOverwrite(e.target.checked)}
+                  disabled={isMarkdownImporting}
+                />
+                <span>{t('markdownImport.overwrite')}</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleMarkdownImportFilesClick}
+                disabled={isMarkdownImporting}
+                className="modern-btn-secondary"
+                title={t('markdownImport.importFilesTooltip')}
+              >
+                <i
+                  className={`glass-i fas ${isMarkdownImporting ? 'fa-spinner fa-spin' : 'fa-file-import'}`}
+                ></i>
+                <span className="hidden sm:inline">{t('markdownImport.import')}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleMarkdownImportFolderClick}
+                disabled={isMarkdownImporting}
+                className="modern-btn-secondary"
+                title={t('markdownImport.importFolderTooltip')}
+              >
+                <i
+                  className={`glass-i fas ${isMarkdownImporting ? 'fa-spinner fa-spin' : 'fa-folder-open'}`}
+                ></i>
+                <span className="hidden sm:inline">{t('markdownImport.folder')}</span>
+              </button>
+              <input
+                ref={markdownFileInputRef}
+                type="file"
+                accept="text/markdown,.md,.markdown"
+                multiple
+                onChange={handleMarkdownFilesChange}
+                className="hidden"
+              />
+              <input
+                ref={markdownFolderInputRef}
+                type="file"
+                multiple
+                onChange={handleMarkdownFilesChange}
+                className="hidden"
+              />
               {notes.length > 0 && (
                 <button
                   type="button"
@@ -298,6 +447,19 @@ export function NotesPage() {
             </div>
           </div>
         </div>
+
+        {markdownImportMessage && (
+          <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 text-sm">
+            <i className="glass-i fas fa-check-circle mr-2"></i>
+            {markdownImportMessage}
+          </div>
+        )}
+        {markdownImportError && (
+          <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">
+            <i className="glass-i fas fa-exclamation-circle mr-2"></i>
+            {markdownImportError}
+          </div>
+        )}
 
         {/* Modern Search Section */}
         <div className="modern-search-card">
@@ -561,6 +723,20 @@ export function NotesPage() {
           }}
         />
       )}
+
+      <ConfirmModal
+        isOpen={isMarkdownFolderConfirmOpen}
+        onClose={handleCloseMarkdownFolderConfirm}
+        onConfirm={handleConfirmMarkdownFolderImport}
+        title={t('markdownImport.confirmFolderTitle')}
+        message={t('markdownImport.confirmFolderMessage', {
+          count: pendingMarkdownFolderFiles?.length || 0,
+        })}
+        confirmText={t('markdownImport.confirmFolderConfirm')}
+        cancelText={t('common.cancel')}
+        variant="warning"
+        isLoading={isMarkdownImporting}
+      />
     </div>
   );
 }

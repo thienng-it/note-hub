@@ -53,6 +53,19 @@ router.post('/rooms/direct', jwtRequired, async (req, res) => {
   }
 });
 
+router.post('/rooms/group', jwtRequired, async (req, res) => {
+  try {
+    const { name, participantIds } = req.body;
+    const room = await chatService.createGroupChat(req.userId, name, participantIds);
+    return responseHandler.success(res, room, {
+      message: 'Group chat room created',
+      statusCode: 201,
+    });
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: 500 });
+  }
+});
+
 /**
  * GET /api/v1/chat/rooms/:roomId/messages
  * Get messages in a chat room

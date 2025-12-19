@@ -46,26 +46,39 @@ export async function checkRoomAccess(roomId, userId) {
  */
 export async function getOrCreateDirectChat(userId1, userId2) {
   try {
-    // Find existing direct chat between these users
-    const existingRoom = await ChatRoom.findOne({
-      where: { is_group: false },
-      include: [
-        {
-          model: ChatParticipant,
-          as: 'participants',
-          where: {
-            user_id: {
-              [Op.in]: [userId1, userId2],
-            },
-          },
-          attributes: ['user_id'],
+    const sequelize = ChatParticipant.sequelize;
+    const candidateRows = await ChatParticipant.findAll({
+      where: {
+        user_id: {
+          [Op.in]: [userId1, userId2],
         },
-      ],
+      },
+      attributes: ['room_id'],
+      group: ['room_id'],
+      having: sequelize.literal('COUNT(DISTINCT user_id) = 2'),
     });
 
-    // If room exists with exactly 2 participants that match both users
-    if (existingRoom && isDirectChatBetween(existingRoom, userId1, userId2)) {
-      return existingRoom;
+    const candidateRoomIds = candidateRows.map((r) => r.room_id);
+    if (candidateRoomIds.length > 0) {
+      const existingRoom = await ChatRoom.findOne({
+        where: {
+          id: {
+            [Op.in]: candidateRoomIds,
+          },
+          is_group: false,
+        },
+        include: [
+          {
+            model: ChatParticipant,
+            as: 'participants',
+            attributes: ['user_id'],
+          },
+        ],
+      });
+
+      if (existingRoom && isDirectChatBetween(existingRoom, userId1, userId2)) {
+        return existingRoom;
+      }
     }
 
     // Create new direct chat room with encryption salt
@@ -91,6 +104,46 @@ export async function getOrCreateDirectChat(userId1, userId2) {
     return newRoom;
   } catch (error) {
     logger.error('Error creating direct chat', { error: error.message });
+    throw error;
+  }
+}
+
+export async function createGroupChat(creatorUserId, name, participantIds) {
+  try {
+    const trimmedName = typeof name === 'string' ? name.trim() : '';
+    if (!trimmedName) {
+      throw new Error('Group name is required');
+    }
+
+    const uniqueParticipants = Array.from(
+      new Set([creatorUserId, ...(Array.isArray(participantIds) ? participantIds : [])]),
+    ).filter((id) => Number.isInteger(id) && id > 0);
+
+    if (uniqueParticipants.length < 3) {
+      throw new Error('Group chat must include at least 3 participants');
+    }
+
+    const encryptionSalt = generateSalt();
+    const room = await ChatRoom.create({
+      is_group: true,
+      name: trimmedName,
+      created_by_id: creatorUserId,
+      encryption_salt: encryptionSalt,
+    });
+
+    await ChatParticipant.bulkCreate(
+      uniqueParticipants.map((userId) => ({ room_id: room.id, user_id: userId })),
+    );
+
+    logger.info('Group chat room created', {
+      roomId: room.id,
+      createdBy: creatorUserId,
+      participantCount: uniqueParticipants.length,
+    });
+
+    return room;
+  } catch (error) {
+    logger.error('Error creating group chat', { error: error.message, createdBy: creatorUserId });
     throw error;
   }
 }
@@ -142,6 +195,37 @@ export async function getUserChatRooms(userId) {
     const rooms = await Promise.all(
       participations.map(async (p) => {
         const unreadCount = await getUnreadCount(p.room.id, userId);
+
+        const lastMsg = p.room.messages[0] || null;
+        let lastMessage = null;
+        if (lastMsg) {
+          let decryptedMessage = lastMsg.message;
+          if (lastMsg.is_encrypted && p.room.encryption_salt) {
+            try {
+              decryptedMessage = decryptMessage(
+                lastMsg.message,
+                ENCRYPTION_SECRET,
+                p.room.encryption_salt,
+              );
+            } catch (error) {
+              logger.error('Failed to decrypt last message for room list', {
+                messageId: lastMsg.id,
+                roomId: p.room.id,
+                error: error.message,
+              });
+              decryptedMessage = '[Encrypted message - decryption failed]';
+            }
+          }
+
+          lastMessage = {
+            id: lastMsg.id,
+            message: decryptedMessage,
+            photo_url: lastMsg.photo_url,
+            sender: lastMsg.sender,
+            created_at: lastMsg.created_at,
+          };
+        }
+
         return {
           id: p.room.id,
           name: p.room.name,
@@ -152,14 +236,7 @@ export async function getUserChatRooms(userId) {
             avatar_url: participant.user.avatar_url,
             status: participant.user.status,
           })),
-          lastMessage: p.room.messages[0]
-            ? {
-                id: p.room.messages[0].id,
-                message: p.room.messages[0].message,
-                sender: p.room.messages[0].sender,
-                created_at: p.room.messages[0].created_at,
-              }
-            : null,
+          lastMessage,
           unreadCount,
           created_at: p.room.created_at,
           updated_at: p.room.updated_at,

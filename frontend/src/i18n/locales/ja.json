@@ -139,6 +139,23 @@
     "unpinTooltip": "Unpin",
     "backToNotes": "Back to Notes"
   },
+  "markdownImport": {
+    "sectionTitle": "Markdownをインポート",
+    "sectionDescription": ".mdファイルまたは.mdファイルを含むフォルダーを新しいメモとしてインポートします",
+    "overwrite": "上書き",
+    "import": "インポート",
+    "file": "ファイル",
+    "folder": "フォルダー",
+    "importing": "インポート中...",
+    "importFilesTooltip": "Markdownファイルをインポート",
+    "importFolderTooltip": "Markdownフォルダーをインポート",
+    "confirmFolderTitle": "このサイトを信頼しますか？",
+    "confirmFolderMessage": "このサイトが選択したフォルダーから{{count}}件のファイルをアップロードすることを許可しますか？これらのファイルはメモとしてインポートされます。",
+    "confirmFolderConfirm": "アップロードしてインポート",
+    "resultMessage": "{{imported}}件をインポート、{{updated}}件を更新、{{failed}}件失敗しました。",
+    "fileError": "{{file}}: {{error}}",
+    "failed": "Markdownのインポートに失敗しました"
+  },
   "tasks": {
     "title": "タスク",
     "newTask": "新規タスク",

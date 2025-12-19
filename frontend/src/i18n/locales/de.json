@@ -139,6 +139,23 @@
     "unpinTooltip": "Unpin",
     "backToNotes": "Back to Notes"
   },
+  "markdownImport": {
+    "sectionTitle": "Markdown importieren",
+    "sectionDescription": "Eine .md-Datei oder einen Ordner mit .md-Dateien als neue Notizen importieren",
+    "overwrite": "Überschreiben",
+    "import": "Importieren",
+    "file": "Datei",
+    "folder": "Ordner",
+    "importing": "Importiere...",
+    "importFilesTooltip": "Markdown-Datei(en) importieren",
+    "importFolderTooltip": "Markdown-Ordner importieren",
+    "confirmFolderTitle": "Dieser Website vertrauen?",
+    "confirmFolderMessage": "Vertrauen Sie dieser Website, {{count}} Datei(en) aus dem ausgewählten Ordner hochzuladen? Diese Dateien werden als Notizen importiert.",
+    "confirmFolderConfirm": "Hochladen & Importieren",
+    "resultMessage": "{{imported}} Notizen importiert, {{updated}} aktualisiert, {{failed}} fehlgeschlagen.",
+    "fileError": "{{file}}: {{error}}",
+    "failed": "Markdown-Import fehlgeschlagen"
+  },
   "tasks": {
     "title": "Aufgaben",
     "newTask": "Neue Aufgabe",

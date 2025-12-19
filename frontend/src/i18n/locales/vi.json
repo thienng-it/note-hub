@@ -139,6 +139,23 @@
     "unpinTooltip": "Unpin",
     "backToNotes": "Back to Notes"
   },
+  "markdownImport": {
+    "sectionTitle": "Nhập Markdown",
+    "sectionDescription": "Nhập một tệp .md hoặc một thư mục chứa các tệp .md thành ghi chú mới",
+    "overwrite": "Ghi đè",
+    "import": "Nhập",
+    "file": "Tệp",
+    "folder": "Thư mục",
+    "importing": "Đang nhập...",
+    "importFilesTooltip": "Nhập tệp Markdown",
+    "importFolderTooltip": "Nhập thư mục Markdown",
+    "confirmFolderTitle": "Bạn có tin cậy trang này không?",
+    "confirmFolderMessage": "Bạn có tin cậy trang này để tải lên {{count}} tệp từ thư mục đã chọn không? Các tệp này sẽ được nhập thành ghi chú.",
+    "confirmFolderConfirm": "Tải lên & Nhập",
+    "resultMessage": "Đã nhập {{imported}} ghi chú, cập nhật {{updated}}, thất bại {{failed}}.",
+    "fileError": "{{file}}: {{error}}",
+    "failed": "Nhập Markdown thất bại"
+  },
   "tasks": {
     "title": "Nhiệm vụ",
     "newTask": "Nhiệm vụ mới",

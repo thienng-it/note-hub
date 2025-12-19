@@ -35,6 +35,7 @@ interface ChatContextType {
   selectRoom: (roomId: number) => void;
   clearRoom: () => void;
   startChat: (userId: number) => Promise<void>;
+  startGroupChat: (name: string, participantIds: number[]) => Promise<void>;
   sendMessage: (message: string, photoUrl?: string) => void;
   loadMoreMessages: () => Promise<void>;
   setTyping: (isTyping: boolean) => void;
@@ -163,7 +164,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     newSocket.on('user:online', (payload: UserOnlinePayload) => {
       setOnlineUsers((prev) => new Set(prev).add(payload.userId));
       if (payload.status) {
-        setUserStatuses((prev) => new Map(prev).set(payload.userId, payload.status));
+        setUserStatuses((prev) => new Map(prev).set(payload.userId, payload.status!));
       }
     });
 
@@ -217,7 +218,16 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   // Select a room
   const selectRoom = useCallback(
     async (roomId: number) => {
-      const room = rooms.find((r) => r.id === roomId);
+      let room = rooms.find((r) => r.id === roomId);
+      if (!room) {
+        try {
+          const fetchedRooms = await chatApi.getChatRooms();
+          setRooms(fetchedRooms);
+          room = fetchedRooms.find((r) => r.id === roomId);
+        } catch {
+          return;
+        }
+      }
       if (!room) return;
 
       setCurrentRoom(room);
@@ -257,14 +267,47 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   // Start new chat
   const startChat = useCallback(
     async (userId: number) => {
-      setIsLoading(true);
-      setError(null);
       try {
+        if (!user) return;
+
+        const existingRoom = rooms.find(
+          (r) =>
+            !r.is_group &&
+            r.participants.length === 2 &&
+            r.participants.some((p) => p.id === user.id) &&
+            r.participants.some((p) => p.id === userId),
+        );
+
+        if (existingRoom) {
+          selectRoom(existingRoom.id);
+          return;
+        }
+
+        setIsLoading(true);
+        setError(null);
         const room = await chatApi.createDirectChat(userId);
         await loadRooms();
         selectRoom(room.id);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to start chat');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [user, rooms, loadRooms, selectRoom],
+  );
+
+  const startGroupChat = useCallback(
+    async (name: string, participantIds: number[]) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const room = await chatApi.createGroupChat(name, participantIds);
+        await loadRooms();
+        selectRoom(room.id);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to start group chat');
+        throw err;
       } finally {
         setIsLoading(false);
       }
@@ -328,15 +371,27 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
       setError(null);
       try {
+        const roomId = currentRoom.id;
+        const isDeletingLastMessage =
+          rooms.find((r) => r.id === roomId)?.lastMessage?.id === messageId;
+
         await chatApi.deleteMessage(currentRoom.id, messageId);
         // Remove message from local state
         setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+
+        if (isDeletingLastMessage) {
+          const latestMessages = await chatApi.getRoomMessages(roomId, 1, 0);
+          const newLastMessage = latestMessages.length > 0 ? latestMessages[0] : null;
+          setRooms((prev) =>
+            prev.map((r) => (r.id === roomId ? { ...r, lastMessage: newLastMessage } : r)),
+          );
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to delete message');
         throw err;
       }
     },
-    [currentRoom],
+    [currentRoom, rooms],
   );
 
   // Delete a room
@@ -409,6 +464,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     selectRoom,
     clearRoom,
     startChat,
+    startGroupChat,
     sendMessage,
     loadMoreMessages,
     setTyping,
