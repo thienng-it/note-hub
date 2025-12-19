@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
-import { apiClient } from '../api/client';
+import { apiClient, notesApi } from '../api/client';
 import { ConfirmModal } from '../components/Modal';
 
 interface SharedUser {
@@ -33,6 +33,9 @@ export function ShareNotePage() {
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [publicToken, setPublicToken] = useState<string | null>(null);
+  const [isPublicSubmitting, setIsPublicSubmitting] = useState(false);
+  const [revokePublicModalOpen, setRevokePublicModalOpen] = useState(false);
   const [unshareModal, setUnshareModal] = useState<{ userId: number; userName: string } | null>(
     null,
   );
@@ -43,14 +46,26 @@ export function ShareNotePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
+  const publicUrl = publicToken ? `${window.location.origin}/public/notes/${publicToken}` : '';
+
   const fetchNoteAndShares = useCallback(async () => {
     try {
+      const noteId = id ? Number.parseInt(id, 10) : NaN;
+      if (!Number.isFinite(noteId)) {
+        setError('Failed to load note');
+        setIsLoading(false);
+        return;
+      }
+
       const [noteData, sharesData] = await Promise.all([
-        apiClient.get<{ note: Note }>(`/api/v1/notes/${id}`),
-        apiClient.get<{ shares: SharedUser[] }>(`/api/v1/notes/${id}/shares`),
+        apiClient.get<{ note: Note }>(`/api/v1/notes/${noteId}`),
+        apiClient.get<{ shares: SharedUser[] }>(`/api/v1/notes/${noteId}/shares`),
       ]);
+
+      const publicShare = await notesApi.getPublicShare(noteId);
       setNote(noteData.note);
       setSharedWith(sharesData.shares || []);
+      setPublicToken(publicShare?.token || null);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load note';
       setError(errorMessage);
@@ -138,6 +153,59 @@ export function ShareNotePage() {
     }
   };
 
+  const copyPublicLink = async () => {
+    if (!publicUrl) return;
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setSuccess('Link copied');
+      setError('');
+    } catch {
+      setSuccess('');
+      setError('Failed to copy link');
+    }
+  };
+
+  const createPublicLink = async () => {
+    if (!id) return;
+    const noteId = Number.parseInt(id, 10);
+    if (!Number.isFinite(noteId)) return;
+
+    setIsPublicSubmitting(true);
+    setError('');
+    setSuccess('');
+    try {
+      const share = await notesApi.createPublicShare(noteId);
+      setPublicToken(share.token);
+      setSuccess('Public link created');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create public link';
+      setError(errorMessage);
+    } finally {
+      setIsPublicSubmitting(false);
+    }
+  };
+
+  const revokePublicLink = async () => {
+    if (!id) return;
+    const noteId = Number.parseInt(id, 10);
+    if (!Number.isFinite(noteId)) return;
+
+    setIsPublicSubmitting(true);
+    setError('');
+    setSuccess('');
+    try {
+      await notesApi.revokePublicShare(noteId);
+      setPublicToken(null);
+      setSuccess('Public link revoked');
+      setRevokePublicModalOpen(false);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to revoke public link';
+      setError(errorMessage);
+    } finally {
+      setIsPublicSubmitting(false);
+    }
+  };
+
   const selectUser = (user: UserSuggestion) => {
     setUsername(user.username);
     setShowSuggestions(false);
@@ -210,18 +278,18 @@ export function ShareNotePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="glass-panel">
       {/* Header */}
-      <div className="mb-6">
+      <div className="note-view-card-header">
         <Link
           to={`/notes/${id}`}
-          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
+          className="modern-btn-secondary flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4"
           aria-label="Back to Note"
         >
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
           Back to Note
         </Link>
-        <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
+        <h1 className="modern-search-card text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i className="glass-i fas fa-share-alt mr-3 text-blue-600" aria-hidden="true"></i>
           Share Note
         </h1>
@@ -246,8 +314,77 @@ export function ShareNotePage() {
         </output>
       )}
 
+      <div className="glass-panel p-6 rounded-xl mb-6">
+        <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Public link</h2>
+
+        {publicToken ? (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                value={publicUrl}
+                readOnly
+                className="glass-input w-full px-4 py-3 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)]"
+              />
+              <button
+                type="button"
+                onClick={copyPublicLink}
+                className="modern-btn-primary px-6 py-2.5 rounded-lg font-medium"
+              >
+                <i className="glass-i fas fa-copy mr-2" aria-hidden="true"></i>
+                Copy
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={publicUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary-glass px-6 py-2.5 rounded-lg"
+              >
+                <i className="glass-i fas fa-external-link-alt mr-2" aria-hidden="true"></i>
+                Open
+              </a>
+              <button
+                type="button"
+                onClick={() => setRevokePublicModalOpen(true)}
+                className="btn-danger-glass px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+                disabled={isPublicSubmitting}
+              >
+                <i className="glass-i fas fa-ban mr-2" aria-hidden="true"></i>
+                Revoke
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-[var(--text-secondary)]">
+              Create a public link so anyone with the URL can view this note without logging in.
+            </p>
+            <button
+              type="button"
+              onClick={createPublicLink}
+              className="btn-primary px-6 py-2.5 rounded-lg font-medium"
+              disabled={isPublicSubmitting}
+            >
+              {isPublicSubmitting ? (
+                <>
+                  <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <i className="glass-i fas fa-link mr-2" aria-hidden="true"></i>
+                  Create public link
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Share Form */}
-      <div className="glass-card p-6 rounded-xl mb-6">
+      <div className="glass-panel p-6 rounded-xl mb-6">
         <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Share with User</h2>
         <form onSubmit={handleShare} className="space-y-4">
           <div className="relative">
@@ -268,7 +405,7 @@ export function ShareNotePage() {
               onFocus={() =>
                 username.length >= 2 && userSuggestions.length > 0 && setShowSuggestions(true)
               }
-              className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+              className="glass-input w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
               placeholder={t('share.usernamePlaceholder')}
               autoComplete="off"
             />
@@ -282,7 +419,7 @@ export function ShareNotePage() {
                     key={user.id}
                     type="button"
                     onClick={() => selectUser(user)}
-                    className={`w-full px-4 py-3 text-left hover:bg-[var(--bg-secondary)] transition-colors flex items-center gap-3 ${
+                    className={`modern-btn-primary w-full px-4 py-3 text-left hover:bg-[var(--bg-secondary)] transition-colors flex items-center gap-3 ${
                       index === selectedIndex ? 'bg-[var(--bg-secondary)]' : ''
                     }`}
                   >
@@ -308,15 +445,20 @@ export function ShareNotePage() {
               checked={canEdit}
               onChange={(e) => setCanEdit(e.target.checked)}
               className="w-5 h-5 text-blue-600 border-[var(--border-color)] rounded focus:ring-blue-500"
+              style={{ marginBottom: '1rem' }}
             />
-            <label htmlFor="canEdit" className="text-sm text-[var(--text-secondary)]">
+            <label
+              htmlFor="canEdit"
+              className="text-sm text-[var(--text-secondary)]"
+              style={{ marginBottom: '1rem' }}
+            >
               Allow editing
             </label>
           </div>
 
           <button
             type="submit"
-            className="btn-primary px-6 py-2.5 rounded-lg font-medium"
+            className="modern-btn-primary px-6 py-2.5 rounded-lg font-medium"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
@@ -396,6 +538,18 @@ export function ShareNotePage() {
         cancelText="Cancel"
         variant="danger"
         isLoading={isUnsharing}
+      />
+
+      <ConfirmModal
+        isOpen={revokePublicModalOpen}
+        onClose={() => setRevokePublicModalOpen(false)}
+        onConfirm={revokePublicLink}
+        title="Revoke public link"
+        message="Anyone with the old link will no longer be able to access this note. Continue?"
+        confirmText="Revoke"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isPublicSubmitting}
       />
     </div>
   );

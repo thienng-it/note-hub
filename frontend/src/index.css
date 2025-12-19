@@ -461,6 +461,7 @@ body.dark {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 0.5rem;
 }
 
 .btn-secondary-glass:hover {
@@ -663,6 +664,7 @@ body.dark {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 14px rgba(255, 59, 48, 0.4);
+  margin-top: 0.5rem;
 }
 
 .btn-danger-glass:hover {

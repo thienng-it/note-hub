@@ -434,6 +434,82 @@ const MIGRATIONS = [
       }
     },
   },
+  {
+    id: '20251219T170800_add_public_share_tables',
+    description: 'Add public share tables for notes and tasks (token-based public access)',
+
+    async sqlite(db) {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS public_note_shares (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          note_id INTEGER NOT NULL,
+          token TEXT UNIQUE NOT NULL,
+          created_by_id INTEGER NOT NULL,
+          expires_at DATETIME,
+          revoked_at DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE,
+          FOREIGN KEY (created_by_id) REFERENCES users(id)
+        );
+        CREATE INDEX IF NOT EXISTS ix_public_note_shares_note ON public_note_shares(note_id);
+        CREATE INDEX IF NOT EXISTS ix_public_note_shares_token ON public_note_shares(token);
+
+        CREATE TABLE IF NOT EXISTS public_task_shares (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          task_id INTEGER NOT NULL,
+          token TEXT UNIQUE NOT NULL,
+          created_by_id INTEGER NOT NULL,
+          expires_at DATETIME,
+          revoked_at DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+          FOREIGN KEY (created_by_id) REFERENCES users(id)
+        );
+        CREATE INDEX IF NOT EXISTS ix_public_task_shares_task ON public_task_shares(task_id);
+        CREATE INDEX IF NOT EXISTS ix_public_task_shares_token ON public_task_shares(token);
+      `);
+    },
+
+    async mysql(db) {
+      await db.execute(`
+        CREATE TABLE IF NOT EXISTS public_note_shares (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          note_id INT NOT NULL,
+          token VARCHAR(128) NOT NULL,
+          created_by_id INT NOT NULL,
+          expires_at DATETIME NULL,
+          revoked_at DATETIME NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          UNIQUE KEY uk_public_note_shares_token (token),
+          INDEX ix_public_note_shares_note (note_id),
+          INDEX ix_public_note_shares_token (token),
+          FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE,
+          FOREIGN KEY (created_by_id) REFERENCES users(id)
+        )
+      `);
+
+      await db.execute(`
+        CREATE TABLE IF NOT EXISTS public_task_shares (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          task_id INT NOT NULL,
+          token VARCHAR(128) NOT NULL,
+          created_by_id INT NOT NULL,
+          expires_at DATETIME NULL,
+          revoked_at DATETIME NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          UNIQUE KEY uk_public_task_shares_token (token),
+          INDEX ix_public_task_shares_task (task_id),
+          INDEX ix_public_task_shares_token (token),
+          FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+          FOREIGN KEY (created_by_id) REFERENCES users(id)
+        )
+      `);
+    },
+  },
 ];
 
 /**

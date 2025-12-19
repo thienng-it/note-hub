@@ -23,10 +23,13 @@ import { NoteEditPage } from './pages/NoteEditPage';
 import { NotesPage } from './pages/NotesPage';
 import { NoteViewPage } from './pages/NoteViewPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { PublicNotePage } from './pages/PublicNotePage';
+import { PublicTaskPage } from './pages/PublicTaskPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { Setup2FAPage } from './pages/Setup2FAPage';
 import { ShareNotePage } from './pages/ShareNotePage';
+import { ShareTaskPage } from './pages/ShareTaskPage';
 import { TasksPage } from './pages/TasksPage';
 
 function AppRoutes() {
@@ -59,6 +62,8 @@ function AppRoutes() {
         element={isAuthenticated ? <Navigate to="/" replace /> : <ForgotPasswordPage />}
       />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/public/notes/:token" element={<PublicNotePage />} />
+      <Route path="/public/tasks/:token" element={<PublicTaskPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
       <Route path="/auth/github/callback" element={<GitHubCallbackPage />} />
       <Route
@@ -76,6 +81,7 @@ function AppRoutes() {
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/tasks/new" element={<EditTaskPage />} />
         <Route path="/tasks/:id/edit" element={<EditTaskPage />} />
+        <Route path="/tasks/:id/share" element={<ShareTaskPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<EditProfilePage />} />

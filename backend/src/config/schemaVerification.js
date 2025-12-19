@@ -122,6 +122,32 @@ const EXPECTED_SCHEMA = {
     ],
     indexes: ['ix_share_tasks_task', 'ix_share_tasks_shared_with'],
   },
+  public_note_shares: {
+    columns: [
+      'id',
+      'note_id',
+      'token',
+      'created_by_id',
+      'expires_at',
+      'revoked_at',
+      'created_at',
+      'updated_at',
+    ],
+    indexes: ['ix_public_note_shares_note', 'ix_public_note_shares_token'],
+  },
+  public_task_shares: {
+    columns: [
+      'id',
+      'task_id',
+      'token',
+      'created_by_id',
+      'expires_at',
+      'revoked_at',
+      'created_at',
+      'updated_at',
+    ],
+    indexes: ['ix_public_task_shares_task', 'ix_public_task_shares_token'],
+  },
   password_reset_tokens: {
     columns: ['id', 'user_id', 'token', 'expires_at', 'used', 'created_at', 'updated_at'],
     indexes: ['ix_reset_tokens'],

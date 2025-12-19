@@ -47,6 +47,7 @@ import foldersRoutes from './routes/folders.js';
 import notesRoutes from './routes/notes.js';
 import passkeyRoutes from './routes/passkey.js';
 import profileRoutes from './routes/profile.js';
+import publicRoutes from './routes/public.js';
 import tasksRoutes from './routes/tasks.js';
 import uploadRoutes from './routes/upload.js';
 import usersRoutes from './routes/users.js';
@@ -159,6 +160,7 @@ app.use(`${API_VERSION}/ai`, markAsV1, aiRoutes);
 app.use(`${API_VERSION}/upload`, markAsV1, uploadRoutes);
 app.use(`${API_VERSION}/export`, markAsV1, exportRoutes);
 app.use(`${API_VERSION}/chat`, markAsV1, chatRoutes);
+app.use(`${API_VERSION}/public`, markAsV1, publicRoutes);
 
 // Health check endpoints with standardized response
 import * as responseHandler from './utils/responseHandler.js';
