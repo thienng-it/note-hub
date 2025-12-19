@@ -6049,7 +6049,6 @@ body.dark {
 .chat-main-wrapper {
   position: relative;
   border-radius: 0.75rem;
-  overflow: hidden;
 }
 
 /* ===========================================
