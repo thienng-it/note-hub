@@ -39,9 +39,6 @@ storage_config:
   filesystem:
     directory: /loki/chunks
 
-  delete_requests:
-    directory: /loki/delete-requests
-
 ######################################
 # Ingester
 ######################################
