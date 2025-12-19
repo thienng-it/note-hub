@@ -41,7 +41,7 @@
   box-shadow: 4px 0 32px rgba(0, 0, 0, 0.3);
 }
 
-.chat-sidebar-collapsed { width: 0; min-width: 0; padding: 0; border: none; overflow: hidden; }
+.chat-sidebar-collapsed { width: 0; min-width: 0; padding: 0; border: none; }
 
 .chat-sidebar-expand-btn {
   position: absolute;
