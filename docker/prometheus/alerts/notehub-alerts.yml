@@ -323,6 +323,57 @@ groups:
           description: "{{ $value | humanize }} server errors per second"
           runbook: "Review error logs, check for exceptions, verify external dependencies"
 
+  - name: notehub-vps
+    interval: 30s
+    rules:
+      - alert: HostHighCpuUsage
+        expr: |
+          (1 - avg(rate(node_cpu_seconds_total{job="node-exporter",mode="idle"}[5m])) by (instance)) > 0.85
+        for: 15m
+        labels:
+          severity: high
+          component: vps
+        annotations:
+          summary: "High host CPU usage"
+          description: "Host CPU usage is {{ $value | humanizePercentage }}"
+          runbook: "Check CPU-intensive processes, container CPU usage, and recent deployments"
+
+      - alert: HostLowMemoryAvailable
+        expr: |
+          (node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"}) < 0.10
+        for: 10m
+        labels:
+          severity: critical
+          component: vps
+        annotations:
+          summary: "Low host memory available"
+          description: "Available memory is {{ $value | humanizePercentage }}"
+          runbook: "Check memory usage (containers + host), look for leaks, consider adding RAM or tuning services"
+
+      - alert: HostLowDiskSpace
+        expr: |
+          (node_filesystem_avail_bytes{job="node-exporter",fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{job="node-exporter",fstype!~"tmpfs|overlay"}) < 0.10
+        for: 10m
+        labels:
+          severity: critical
+          component: vps
+        annotations:
+          summary: "Low host disk space"
+          description: "Disk free is {{ $value | humanizePercentage }}"
+          runbook: "Check docker disk usage, logs, backups, and cleanup old images/volumes"
+
+      - alert: HostLowDiskInodes
+        expr: |
+          (node_filesystem_files_free{job="node-exporter",fstype!~"tmpfs|overlay"} / node_filesystem_files{job="node-exporter",fstype!~"tmpfs|overlay"}) < 0.10
+        for: 10m
+        labels:
+          severity: high
+          component: vps
+        annotations:
+          summary: "Low host disk inodes"
+          description: "Inodes free is {{ $value | humanizePercentage }}"
+          runbook: "Check for many small files (logs, cache dirs, docker layers), cleanup as needed"
+
 # =============================================================================
 # Alert Configuration Notes
 # =============================================================================

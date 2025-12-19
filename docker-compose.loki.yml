@@ -65,6 +65,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - loki-network
+      - notehub-network
     deploy:
       resources:
         limits:

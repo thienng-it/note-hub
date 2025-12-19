@@ -9,6 +9,9 @@ docker compose up -d
 # Start Monitoring
 docker compose -f docker-compose.monitoring.yml up -d
 
+# (Optional) Start Loki log aggregation
+docker compose -f docker-compose.loki.yml up -d
+
 # Access Grafana
 http://localhost:3000
 # Login: admin / admin
@@ -21,6 +24,10 @@ http://localhost:3000
 - 📈 **Pre-built Dashboard**: HTTP requests, latency, memory, CPU, users, notes, tasks
 - 🐳 **Container Metrics**: Docker resource usage via cAdvisor
 - 💻 **System Metrics**: CPU, memory, disk, network via Node Exporter
+- 🚨 **Alerting**: Prometheus alert rules + Alertmanager for routing notifications
+- 🌐 **Endpoint Probing**: HTTP health checks + latency via Blackbox Exporter
+- 🧾 **Logs (Loki)**: Query Docker/system logs from the same Grafana UI via Loki datasource
+- 🖥️ **VPS Dashboard**: Host CPU/RAM/disk/network overview dashboard for capacity and health
 
 ## Port Allocation (No Conflicts!)
 
@@ -30,6 +37,7 @@ http://localhost:3000
 | Drone CI | 8080, 8443 | External HTTPS |
 | Grafana | 3000 | Via Traefik (subdomain) |
 | Prometheus | 9090 | Internal only |
+| Alertmanager | 9093 | Internal only |
 
 ## Memory Usage (2GB RAM VPS)
 
@@ -90,6 +98,11 @@ docker compose -f docker-compose.monitoring.yml up -d
 - Disk I/O
 - Network traffic
 
+### Uptime / Endpoint Probes
+- Backend health endpoint availability and latency
+- Frontend root availability and latency
+- Monitoring stack self-health checks (Grafana, Prometheus)
+
 ### Container Metrics
 - Per-container CPU/memory
 - Container network I/O
@@ -100,6 +113,14 @@ docker compose -f docker-compose.monitoring.yml up -d
 1. Open Grafana (see deployment method above)
 2. Login with credentials
 3. Go to: **Dashboards** → **NoteHub** → **NoteHub Overview**
+
+## View Logs (Loki)
+
+1. Start Loki stack (optional): `docker compose -f docker-compose.loki.yml up -d`
+2. Open Grafana (monitoring)
+3. Go to **Explore**
+4. Select datasource **Loki**
+5. Try a query like: `{job="containers"}` or `{container="notehub-backend"}`
 
 ## Troubleshooting
 
@@ -125,6 +146,13 @@ docker compose -f docker-compose.monitoring.yml restart grafana
 
 # Check backend metrics endpoint
 curl http://localhost:5000/metrics
+
+# Check Prometheus targets
+# (Prometheus is internal by default; expose port 9090 or use an SSH tunnel)
+# Status → Targets should include: notehub-backend, cadvisor, node-exporter, blackbox-http
+
+# Check alert rules
+# Status → Rules should list NoteHub alerts (if rules are loaded)
 ```
 
 ### High memory usage?

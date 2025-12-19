@@ -28,16 +28,14 @@ global:
     monitor: 'notehub-monitoring'
     environment: 'production'
 
-# Alertmanager configuration (optional - can be added later)
-# alerting:
-#   alertmanagers:
-#     - static_configs:
-#         - targets:
-#           - alertmanager:9093
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
 
-# Load rules once and periodically evaluate them
-# rule_files:
-#   - "alerts/*.yml"
+rule_files:
+  - "alerts/*.yml"
 
 # Scrape configurations
 scrape_configs:
@@ -162,6 +160,30 @@ scrape_configs:
           service: 'node-exporter'
           component: 'monitoring'
           app: 'system'
+
+  # ==========================================================================
+  # Blackbox Exporter - HTTP(S) Endpoint Probing
+  # ==========================================================================
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http://notehub-backend:5000/api/health
+          - http://notehub-frontend:80/
+          - http://grafana:3000/api/health
+          - http://prometheus:9090/-/healthy
+        labels:
+          service: 'notehub'
+          component: 'probe'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
 
 # =============================================================================
 # Storage Configuration
