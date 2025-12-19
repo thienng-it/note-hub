@@ -44,6 +44,16 @@ This directory contains pre-built Grafana dashboards for NoteHub monitoring.
   - Search operations rate and duration
 - **Best for**: Product analytics, understanding user behavior, tracking feature adoption
 
+### notehub-vps-overview.json
+- **Purpose**: Host/VPS monitoring (infrastructure health)
+- **Metrics**:
+  - Host CPU usage
+  - Host memory usage
+  - Disk usage
+  - Network throughput
+  - Disk I/O throughput
+- **Best for**: VPS health checks, capacity monitoring, diagnosing resource bottlenecks
+
 **Note**: Tasks total and notes by status metrics have been removed as they provided minimal observability value.
 
 ## Customizing Dashboards

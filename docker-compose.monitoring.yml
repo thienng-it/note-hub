@@ -80,6 +80,7 @@ services:
       - '--web.enable-admin-api'
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus/alerts:/etc/prometheus/alerts:ro
       - prometheus-data:/prometheus
     # Prometheus is exposed internally only (no external port by default)
     # Uncomment the following to expose Prometheus UI externally
@@ -103,6 +104,36 @@ services:
           memory: 256M
     labels:
       - "com.notehub.description=Prometheus metrics collector"
+
+  # ==========================================================================
+  # Alertmanager - Prometheus Alert Routing (notifications)
+  # ==========================================================================
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    container_name: notehub-alertmanager
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    volumes:
+      - ./docker/prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    networks:
+      - notehub-network
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+    labels:
+      - "com.notehub.description=Alertmanager for Prometheus alerts"
 
   # ==========================================================================
   # Grafana - Metrics Visualization and Dashboards
@@ -218,6 +249,35 @@ services:
           memory: 64M
     labels:
       - "com.notehub.description=Container metrics collector"
+
+  # ==========================================================================
+  # Blackbox Exporter - Endpoint Probing (uptime/latency)
+  # ==========================================================================
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.26.0
+    container_name: notehub-blackbox-exporter
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/blackbox_exporter/config.yml'
+    volumes:
+      - ./docker/blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+    networks:
+      - notehub-network
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:9115/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+    labels:
+      - "com.notehub.description=Blackbox exporter for HTTP endpoint probes"
 
   # ==========================================================================
   # Node Exporter - System Metrics
