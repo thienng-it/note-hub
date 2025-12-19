@@ -2280,7 +2280,7 @@ body.dark {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -2698,6 +2698,8 @@ body.dark {
     border-radius: 1rem 1rem 0 0;
     border-bottom: none;
     flex-wrap: nowrap;
+    width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1rem);
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
@@ -2726,7 +2728,7 @@ body.dark {
     position: fixed;
     inset: 0;
     background: transparent;
-    z-index: 998;
+    z-index: 999;
   }
 }
 
@@ -6043,6 +6045,7 @@ body.dark {
 
 /* Main wrapper */
 .chat-main-wrapper {
+  position: relative;
   border-radius: 0.75rem;
   overflow: hidden;
 }
@@ -6091,7 +6094,7 @@ body.dark {
   justify-content: center;
   border: none;
   cursor: pointer;
-  z-index: 10;
+  z-index: 50;
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
   transition: all 0.2s ease;
 }

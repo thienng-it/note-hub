@@ -139,6 +139,23 @@
     "unpinTooltip": "Unpin",
     "backToNotes": "Back to Notes"
   },
+  "markdownImport": {
+    "sectionTitle": "Import Markdown",
+    "sectionDescription": "Import a .md file or a folder of .md files as new notes",
+    "overwrite": "Overwrite",
+    "import": "Import",
+    "file": "File",
+    "folder": "Folder",
+    "importing": "Importing...",
+    "importFilesTooltip": "Import Markdown file(s)",
+    "importFolderTooltip": "Import Markdown folder",
+    "confirmFolderTitle": "Trust this site?",
+    "confirmFolderMessage": "Do you trust this site to upload {{count}} file(s) from the selected folder? These files will be imported as notes.",
+    "confirmFolderConfirm": "Upload & Import",
+    "resultMessage": "Imported {{imported}} notes, updated {{updated}}, failed {{failed}}.",
+    "fileError": "{{file}}: {{error}}",
+    "failed": "Markdown import failed"
+  },
   "tasks": {
     "title": "Tasks",
     "newTask": "New Task",

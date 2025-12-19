@@ -47,6 +47,7 @@ export function ChatPage() {
     selectRoom,
     clearRoom,
     startChat,
+    startGroupChat,
     sendMessage,
     setTyping,
     deleteMessage,
@@ -74,6 +75,9 @@ export function ChatPage() {
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string>('');
   const [viewingPhoto, setViewingPhoto] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isGroupChatMode, setIsGroupChatMode] = useState(false);
+  const [groupChatName, setGroupChatName] = useState('');
+  const [selectedGroupUserIds, setSelectedGroupUserIds] = useState<Set<number>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -140,6 +144,35 @@ export function ChatPage() {
       setAvailableUsers(users);
     } catch (err) {
       console.error('Failed to load users:', err);
+    }
+  };
+
+  const handleToggleGroupUser = (userId: number) => {
+    setSelectedGroupUserIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
+      }
+      return next;
+    });
+  };
+
+  const handleCreateGroupChat = async () => {
+    const name = groupChatName.trim();
+    const participantIds = Array.from(selectedGroupUserIds);
+    if (!name || participantIds.length < 2) return;
+
+    try {
+      await startGroupChat(name, participantIds);
+      setShowNewChatModal(false);
+      setSearchQuery('');
+      setIsGroupChatMode(false);
+      setGroupChatName('');
+      setSelectedGroupUserIds(new Set());
+    } catch (err) {
+      console.error('Failed to create group chat:', err);
     }
   };
 
@@ -432,14 +465,14 @@ export function ChatPage() {
                     if (!searchQuery.trim()) return true;
                     const otherUser = getOtherParticipant(room);
                     const displayName = room.is_group
-                      ? room.name
+                      ? room.name || 'Group'
                       : otherUser?.username || 'Unknown';
                     return displayName.toLowerCase().includes(searchQuery.toLowerCase());
                   })
                   .map((room) => {
                     const otherUser = getOtherParticipant(room);
                     const displayName = room.is_group
-                      ? room.name
+                      ? room.name || 'Group'
                       : otherUser?.username || 'Unknown';
                     const userStatus = otherUser
                       ? getUserStatus(otherUser.id, otherUser.status)
@@ -777,14 +810,42 @@ export function ChatPage() {
               <h2 id="new-chat-title" className="chat-modal-title">
                 {t('chat.newChat')}
               </h2>
-              <button
-                type="button"
-                onClick={() => setShowNewChatModal(false)}
-                className="chat-modal-close"
-                aria-label="Close"
-              >
-                <i className="fas fa-times text-lg" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsGroupChatMode(false);
+                    setGroupChatName('');
+                    setSelectedGroupUserIds(new Set());
+                  }}
+                  className={`chat-input-btn ${!isGroupChatMode ? 'bg-blue-100 dark:bg-blue-900/30' : ''}`}
+                  aria-pressed={!isGroupChatMode}
+                >
+                  <i className="fas fa-user" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsGroupChatMode(true)}
+                  className={`chat-input-btn ${isGroupChatMode ? 'bg-blue-100 dark:bg-blue-900/30' : ''}`}
+                  aria-pressed={isGroupChatMode}
+                >
+                  <i className="fas fa-users" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowNewChatModal(false);
+                    setSearchQuery('');
+                    setIsGroupChatMode(false);
+                    setGroupChatName('');
+                    setSelectedGroupUserIds(new Set());
+                  }}
+                  className="chat-modal-close"
+                  aria-label="Close"
+                >
+                  <i className="fas fa-times text-lg" />
+                </button>
+              </div>
             </div>
 
             <div className="chat-modal-search">
@@ -799,6 +860,18 @@ export function ChatPage() {
                   aria-label="Search users"
                 />
               </div>
+              {isGroupChatMode && (
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    value={groupChatName}
+                    onChange={(e) => setGroupChatName(e.target.value)}
+                    placeholder="Group name"
+                    className="chat-search-input"
+                    aria-label="Group name"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="chat-modal-body">
@@ -813,17 +886,37 @@ export function ChatPage() {
                 <div className="space-y-2">
                   {filteredUsers.map((chatUser) => {
                     const userStatus = getUserStatus(chatUser.id, chatUser.status);
+                    const isSelected = selectedGroupUserIds.has(chatUser.id);
                     return (
                       <button
                         type="button"
                         key={chatUser.id}
                         onClick={() => {
-                          startChat(chatUser.id);
-                          setShowNewChatModal(false);
-                          setSearchQuery('');
+                          if (isGroupChatMode) {
+                            handleToggleGroupUser(chatUser.id);
+                          } else {
+                            startChat(chatUser.id);
+                            setShowNewChatModal(false);
+                            setSearchQuery('');
+                            setIsGroupChatMode(false);
+                            setGroupChatName('');
+                            setSelectedGroupUserIds(new Set());
+                          }
                         }}
-                        className="chat-user-item"
+                        className={`chat-user-item ${isGroupChatMode && isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
                       >
+                        {isGroupChatMode && (
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleGroupUser(chatUser.id);
+                            }}
+                            className="mr-2"
+                            aria-label={`Select ${chatUser.username}`}
+                          />
+                        )}
                         <UserAvatar
                           username={chatUser.username}
                           avatarUrl={chatUser.avatar_url}
@@ -845,6 +938,19 @@ export function ChatPage() {
                 </div>
               )}
             </div>
+
+            {isGroupChatMode && (
+              <div className="chat-confirm-actions" style={{ padding: '0 1.25rem 1.25rem' }}>
+                <button
+                  type="button"
+                  onClick={handleCreateGroupChat}
+                  disabled={groupChatName.trim().length === 0 || selectedGroupUserIds.size < 2}
+                  className="chat-confirm-btn delete"
+                >
+                  {t('chat.startChat')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

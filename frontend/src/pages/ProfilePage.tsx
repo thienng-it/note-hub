@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { exportApi } from '../api/client';
+import { exportApi, notesApi } from '../api/client';
+import { ConfirmModal } from '../components/Modal';
 import { PasskeyManager } from '../components/PasskeyManager';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,10 +12,25 @@ export function ProfilePage() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const markdownFileInputRef = useRef<HTMLInputElement>(null);
+  const markdownFolderInputRef = useRef<HTMLInputElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importMessage, setImportMessage] = useState('');
   const [importError, setImportError] = useState('');
+  const [isMarkdownImporting, setIsMarkdownImporting] = useState(false);
+  const [markdownImportMessage, setMarkdownImportMessage] = useState('');
+  const [markdownImportError, setMarkdownImportError] = useState('');
+  const [markdownOverwrite, setMarkdownOverwrite] = useState(false);
+  const [isMarkdownFolderConfirmOpen, setIsMarkdownFolderConfirmOpen] = useState(false);
+  const [pendingMarkdownFolderFiles, setPendingMarkdownFolderFiles] = useState<File[] | null>(null);
+
+  useEffect(() => {
+    const input = markdownFolderInputRef.current;
+    if (!input) return;
+    input.setAttribute('webkitdirectory', '');
+    input.setAttribute('directory', '');
+  }, []);
 
   if (!user) {
     return null;
@@ -42,8 +58,88 @@ export function ProfilePage() {
     }
   };
 
+  const importMarkdownFiles = async (files: File[]) => {
+    setIsMarkdownImporting(true);
+    setMarkdownImportMessage('');
+    setMarkdownImportError('');
+
+    try {
+      const result = await notesApi.importMarkdown(files, { overwrite: markdownOverwrite });
+      setMarkdownImportMessage(
+        t('markdownImport.resultMessage', {
+          imported: result.imported,
+          updated: result.updated,
+          failed: result.failed,
+        }),
+      );
+      if (result.errors && result.errors.length > 0) {
+        const first = result.errors[0];
+        setMarkdownImportError(
+          t('markdownImport.fileError', {
+            file: first.file || t('markdownImport.file'),
+            error: first.error,
+          }),
+        );
+      }
+    } catch (error) {
+      setMarkdownImportError(error instanceof Error ? error.message : t('markdownImport.failed'));
+    } finally {
+      setIsMarkdownImporting(false);
+      if (markdownFileInputRef.current) {
+        markdownFileInputRef.current.value = '';
+      }
+      if (markdownFolderInputRef.current) {
+        markdownFolderInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleMarkdownFilesChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files ? Array.from(event.target.files) : [];
+    if (files.length === 0) return;
+
+    const isFolderUpload = event.target === markdownFolderInputRef.current;
+    if (isFolderUpload) {
+      setMarkdownImportMessage('');
+      setMarkdownImportError('');
+      setPendingMarkdownFolderFiles(files);
+      setIsMarkdownFolderConfirmOpen(true);
+      return;
+    }
+
+    await importMarkdownFiles(files);
+  };
+
+  const handleConfirmMarkdownFolderImport = async () => {
+    if (!pendingMarkdownFolderFiles || pendingMarkdownFolderFiles.length === 0) {
+      setIsMarkdownFolderConfirmOpen(false);
+      return;
+    }
+
+    await importMarkdownFiles(pendingMarkdownFolderFiles);
+    setPendingMarkdownFolderFiles(null);
+    setIsMarkdownFolderConfirmOpen(false);
+  };
+
+  const handleCloseMarkdownFolderConfirm = () => {
+    if (isMarkdownImporting) return;
+    setIsMarkdownFolderConfirmOpen(false);
+    setPendingMarkdownFolderFiles(null);
+    if (markdownFolderInputRef.current) {
+      markdownFolderInputRef.current.value = '';
+    }
+  };
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleMarkdownImportFilesClick = () => {
+    markdownFileInputRef.current?.click();
+  };
+
+  const handleMarkdownImportFolderClick = () => {
+    markdownFolderInputRef.current?.click();
   };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -355,6 +451,95 @@ export function ProfilePage() {
               </div>
             )}
           </div>
+
+          <div className="py-3 border-t border-[var(--border-color)]">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex-1">
+                <span className="font-medium text-[var(--text-primary)]">
+                  {t('markdownImport.sectionTitle')}
+                </span>
+                <p className="text-sm text-[var(--text-muted)]">
+                  {t('markdownImport.sectionDescription')}
+                </p>
+              </div>
+              <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] mr-3">
+                <input
+                  type="checkbox"
+                  checked={markdownOverwrite}
+                  onChange={(e) => setMarkdownOverwrite(e.target.checked)}
+                  disabled={isMarkdownImporting}
+                />
+                <span>{t('markdownImport.overwrite')}</span>
+              </label>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleMarkdownImportFilesClick}
+                  disabled={isMarkdownImporting}
+                  className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
+                >
+                  {isMarkdownImporting ? (
+                    <>
+                      <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
+                      {t('markdownImport.importing')}
+                    </>
+                  ) : (
+                    <>
+                      <i className="glass-i fas fa-file-alt mr-2"></i>
+                      {t('markdownImport.file')}
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleMarkdownImportFolderClick}
+                  disabled={isMarkdownImporting}
+                  className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
+                >
+                  {isMarkdownImporting ? (
+                    <>
+                      <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
+                      {t('markdownImport.importing')}
+                    </>
+                  ) : (
+                    <>
+                      <i className="glass-i fas fa-folder-open mr-2"></i>
+                      {t('markdownImport.folder')}
+                    </>
+                  )}
+                </button>
+              </div>
+              <input
+                ref={markdownFileInputRef}
+                type="file"
+                accept="text/markdown,.md,.markdown"
+                multiple
+                onChange={handleMarkdownFilesChange}
+                className="hidden"
+              />
+              <input
+                ref={markdownFolderInputRef}
+                type="file"
+                multiple
+                onChange={handleMarkdownFilesChange}
+                className="hidden"
+              />
+            </div>
+            {markdownImportMessage && (
+              <div className="mt-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 text-sm">
+                <i className="glass-i fas fa-check-circle mr-2"></i>
+                {markdownImportMessage}
+              </div>
+            )}
+            {markdownImportError && (
+              <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">
+                <i className="glass-i fas fa-exclamation-circle mr-2"></i>
+                {markdownImportError}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -384,6 +569,20 @@ export function ProfilePage() {
           </li>
         </ul>
       </div>
+
+      <ConfirmModal
+        isOpen={isMarkdownFolderConfirmOpen}
+        onClose={handleCloseMarkdownFolderConfirm}
+        onConfirm={handleConfirmMarkdownFolderImport}
+        title={t('markdownImport.confirmFolderTitle')}
+        message={t('markdownImport.confirmFolderMessage', {
+          count: pendingMarkdownFolderFiles?.length || 0,
+        })}
+        confirmText={t('markdownImport.confirmFolderConfirm')}
+        cancelText={t('common.cancel')}
+        variant="warning"
+        isLoading={isMarkdownImporting}
+      />
     </div>
   );
 }
