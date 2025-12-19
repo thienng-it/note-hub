@@ -270,7 +270,18 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       try {
         if (!user) return;
 
-        const existingRoom = rooms.find(
+        // Prevent duplicate calls while loading
+        if (isLoading) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        // Refresh rooms from API to get the latest state and prevent duplicates
+        const freshRooms = await chatApi.getChatRooms();
+        setRooms(freshRooms);
+
+        // Check for existing direct chat with fresh data
+        const existingRoom = freshRooms.find(
           (r) =>
             !r.is_group &&
             r.participants.length === 2 &&
@@ -283,8 +294,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        setIsLoading(true);
-        setError(null);
+        // Create new direct chat (backend also has duplicate prevention)
         const room = await chatApi.createDirectChat(userId);
         await loadRooms();
         selectRoom(room.id);
@@ -294,7 +304,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     },
-    [user, rooms, loadRooms, selectRoom],
+    [user, isLoading, loadRooms, selectRoom],
   );
 
   const startGroupChat = useCallback(
@@ -372,26 +382,24 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       setError(null);
       try {
         const roomId = currentRoom.id;
-        const isDeletingLastMessage =
-          rooms.find((r) => r.id === roomId)?.lastMessage?.id === messageId;
 
         await chatApi.deleteMessage(currentRoom.id, messageId);
         // Remove message from local state
         setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
 
-        if (isDeletingLastMessage) {
-          const latestMessages = await chatApi.getRoomMessages(roomId, 1, 0);
-          const newLastMessage = latestMessages.length > 0 ? latestMessages[0] : null;
-          setRooms((prev) =>
-            prev.map((r) => (r.id === roomId ? { ...r, lastMessage: newLastMessage } : r)),
-          );
-        }
+        // Always fetch and update the last message to keep sidebar in sync
+        // This ensures the sidebar shows the correct last message after deletion
+        const latestMessages = await chatApi.getRoomMessages(roomId, 1, 0);
+        const newLastMessage = latestMessages.length > 0 ? latestMessages[0] : null;
+        setRooms((prev) =>
+          prev.map((r) => (r.id === roomId ? { ...r, lastMessage: newLastMessage } : r)),
+        );
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to delete message');
         throw err;
       }
     },
-    [currentRoom, rooms],
+    [currentRoom],
   );
 
   // Delete a room
