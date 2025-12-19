@@ -70,7 +70,6 @@ storage_config:
     active_index_directory: /loki/boltdb-shipper-active
     cache_location: /loki/boltdb-shipper-cache
     cache_ttl: 24h
-    shared_store: filesystem
 
   filesystem:
     directory: /loki/chunks
