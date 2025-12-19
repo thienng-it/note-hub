@@ -40,7 +40,9 @@
   --border-color: #e2e8f0;
 
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
 
   /* Glassmorphism - Consolidated */
   --glass-bg: rgba(255, 255, 255, 0.85);
@@ -111,7 +113,13 @@
 /* ============================================================
    BASE STYLES & RESETS
    ============================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 html {
   font-size: 16px;
@@ -132,21 +140,43 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-.dark body, body.dark {
+.dark body,
+body.dark {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
 
-#root { position: relative; z-index: 1; min-height: 100vh; }
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
 
 /* Typography */
-h1, h2, h3 { font-weight: 700; line-height: 1.2; margin-bottom: var(--space-4); }
-h1 { font-size: 1.75rem; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.25rem; }
-p { margin-bottom: var(--space-3); }
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-4);
+}
+h1 {
+  font-size: 1.75rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
+p {
+  margin-bottom: var(--space-3);
+}
 
 /* Focus & Accessibility */
-:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
+:focus-visible {
+  outline: 2px solid var(--apple-blue);
+  outline-offset: 2px;
+}
 
 .skip-link {
   position: absolute;
@@ -158,11 +188,15 @@ p { margin-bottom: var(--space-3); }
   z-index: 100;
   transition: top var(--transition-smooth);
 }
-.skip-link:focus { top: 0; }
+.skip-link:focus {
+  top: 0;
+}
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -170,7 +204,18 @@ p { margin-bottom: var(--space-3); }
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-tertiary); border-radius: 4px; }
-::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
