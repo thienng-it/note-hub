@@ -82,23 +82,6 @@ export function ChatPage() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-expand sidebar on mobile or when no room is selected
-  useEffect(() => {
-    const handleResize = () => {
-      // Auto-expand sidebar on mobile (below md breakpoint)
-      if (window.innerWidth < 768) {
-        setIsSidebarCollapsed(false);
-      }
-    };
-
-    // Check on mount
-    handleResize();
-
-    // Listen for resize events
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   // Load rooms on mount
   useEffect(() => {
     loadRooms();
@@ -387,7 +370,7 @@ export function ChatPage() {
           <button
             type="button"
             onClick={() => setIsSidebarCollapsed(false)}
-            className="chat-sidebar-expand-btn fixed hidden md:flex"
+            className="chat-sidebar-expand-btn fixed flex"
             aria-label="Expand sidebar"
           >
             <i className="fas fa-comments" />
@@ -397,7 +380,7 @@ export function ChatPage() {
         {/* Rooms list - Hidden on mobile when chat is selected, collapsible on desktop */}
         <div
           className={`chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 ${
-            isSidebarCollapsed ? 'chat-sidebar-collapsed hidden' : 'w-full md:w-80 lg:w-88'
+            isSidebarCollapsed ? 'chat-sidebar-collapsed !hidden' : 'w-full md:w-80 lg:w-88'
           } ${!isSidebarCollapsed && currentRoom ? 'hidden md:flex md:flex-col' : ''} ${
             !isSidebarCollapsed && !currentRoom ? 'flex flex-col' : ''
           }`}
@@ -411,7 +394,7 @@ export function ChatPage() {
                 <button
                   type="button"
                   onClick={() => setIsSidebarCollapsed(true)}
-                  className="chat-sidebar-collapse-btn hidden md:flex"
+                  className="chat-sidebar-collapse-btn flex"
                   aria-label="Collapse sidebar"
                 >
                   <i className="fas fa-chevron-left" />
