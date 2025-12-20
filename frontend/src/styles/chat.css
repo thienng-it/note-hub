@@ -197,7 +197,7 @@
   border-radius: 12px;
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: white;
-  display: flex;
+  /* Note: display is controlled by Tailwind classes (hidden md:flex) */
   align-items: center;
   justify-content: center;
   border: none;
@@ -248,7 +248,7 @@
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  display: flex;
+  /* Note: display is controlled by Tailwind classes (hidden md:flex) */
   align-items: center;
   justify-content: center;
   transition: all var(--transition-base);
