@@ -1,7 +1,13 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": { "ignoreUnknown": false },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -105,7 +111,12 @@
         }
       }
     },
-    { "includes": ["**/*.{ts,tsx}"], "javascript": { "globals": [] } },
+    {
+      "includes": ["**/*.{ts,tsx}"],
+      "javascript": {
+        "globals": []
+      }
+    },
     {
       "includes": [
         "**/*.{ts,tsx}",
@@ -119,7 +130,9 @@
       ],
       "linter": {
         "rules": {
-          "complexity": { "noArguments": "error" },
+          "complexity": {
+            "noArguments": "error"
+          },
           "correctness": {
             "noConstAssign": "off",
             "noGlobalObjectCalls": "off",
@@ -130,7 +143,9 @@
             "noUnreachable": "off",
             "noUnreachableSuper": "off"
           },
-          "style": { "useConst": "error" },
+          "style": {
+            "useConst": "error"
+          },
           "suspicious": {
             "noClassAssign": "off",
             "noDuplicateClassMembers": "off",
@@ -151,8 +166,12 @@
       "includes": ["**/*.{ts,tsx}"],
       "linter": {
         "rules": {
-          "complexity": { "noUselessTypeConstraint": "error" },
-          "correctness": { "noUnusedVariables": "error" },
+          "complexity": {
+            "noUselessTypeConstraint": "error"
+          },
+          "correctness": {
+            "noUnusedVariables": "error"
+          },
           "style": {
             "noCommonJs": "error",
             "noNamespace": "error",
@@ -181,7 +200,12 @@
         }
       }
     },
-    { "includes": ["**/*.{ts,tsx}"], "linter": { "rules": {} } },
+    {
+      "includes": ["**/*.{ts,tsx}"],
+      "linter": {
+        "rules": {}
+      }
+    },
     {
       "includes": ["**/*.{ts,tsx}"],
       "javascript": {
@@ -313,11 +337,35 @@
           "onemptied"
         ]
       },
-      "linter": { "rules": {} }
+      "linter": {
+        "rules": {}
+      }
+    },
+    {
+      "includes": ["**/index.css", "**/utilities.css"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noImportantStyles": "off"
+          },
+          "style": {
+            "noDescendingSpecificity": "off"
+          }
+        }
+      }
     }
   ],
   "assist": {
     "enabled": true,
-    "actions": { "source": { "organizeImports": "on" } }
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    }
   }
 }
