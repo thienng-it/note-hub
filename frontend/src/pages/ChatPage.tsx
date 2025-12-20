@@ -364,7 +364,7 @@ export function ChatPage() {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper">
+      <div className="flex-1 flex min-h-0 chat-main-wrapper">
         {/* Sidebar Collapse Toggle (visible when collapsed) */}
         {isSidebarCollapsed && (
           <button
