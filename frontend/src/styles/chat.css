@@ -207,9 +207,6 @@
   transition: all var(--transition-base);
 }
 
-.chat-sidebar-expand-btn.fixed {
-  position: fixed;
-}
 
 .chat-sidebar-expand-btn:hover {
   transform: scale(1.05);
