@@ -54,10 +54,10 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
     >
       <div
-        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col "
       >
         <div
           class="chat-sidebar-header"
@@ -80,7 +80,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn"
+                class="chat-sidebar-collapse-btn hidden md:flex"
                 type="button"
               >
                 <i
@@ -280,10 +280,10 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
     >
       <div
-        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col "
       >
         <div
           class="chat-sidebar-header"
@@ -306,7 +306,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn"
+                class="chat-sidebar-collapse-btn hidden md:flex"
                 type="button"
               >
                 <i
@@ -496,10 +496,10 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
     >
       <div
-        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col "
       >
         <div
           class="chat-sidebar-header"
@@ -517,7 +517,7 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
             >
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn"
+                class="chat-sidebar-collapse-btn hidden md:flex"
                 type="button"
               >
                 <i
@@ -672,10 +672,10 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
     >
       <div
-        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col "
       >
         <div
           class="chat-sidebar-header"
@@ -693,7 +693,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
             >
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn"
+                class="chat-sidebar-collapse-btn hidden md:flex"
                 type="button"
               >
                 <i
@@ -832,10 +832,10 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
     >
       <div
-        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 hidden md:flex md:flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 hidden md:flex md:flex-col "
       >
         <div
           class="chat-sidebar-header"
@@ -858,7 +858,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn"
+                class="chat-sidebar-collapse-btn hidden md:flex"
                 type="button"
               >
                 <i
@@ -1216,10 +1216,10 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
       </div>
     </div>
     <div
-      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper"
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
     >
       <div
-        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col"
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88 flex flex-col "
       >
         <div
           class="chat-sidebar-header"
@@ -1242,7 +1242,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn"
+                class="chat-sidebar-collapse-btn hidden md:flex"
                 type="button"
               >
                 <i

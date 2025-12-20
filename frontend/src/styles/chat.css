@@ -185,12 +185,13 @@
   min-width: 0;
   padding: 0;
   border: none;
+  overflow: hidden;
 }
 
 .chat-sidebar-expand-btn {
-  position: absolute;
-  left: var(--space-3);
-  top: var(--space-3);
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 12px;
@@ -201,7 +202,7 @@
   justify-content: center;
   border: none;
   cursor: pointer;
-  z-index: 50;
+  z-index: 1000;
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
   transition: all var(--transition-base);
 }
@@ -209,6 +210,14 @@
 .chat-sidebar-expand-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+/* Responsive positioning for expand button */
+@media (min-width: 768px) {
+  .chat-sidebar-expand-btn {
+    left: 1.5rem;
+    top: 1.5rem;
+  }
 }
 
 .chat-sidebar-header {
