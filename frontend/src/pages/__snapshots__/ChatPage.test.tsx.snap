@@ -80,7 +80,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -306,7 +306,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -517,7 +517,7 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
             >
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -693,7 +693,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
             >
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -858,7 +858,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -1242,7 +1242,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
