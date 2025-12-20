@@ -93,7 +93,7 @@ export function ChatPage() {
 
     // Check on mount
     handleResize();
-    
+
     // Listen for resize events
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
