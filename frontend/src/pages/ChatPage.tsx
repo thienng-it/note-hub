@@ -99,13 +99,6 @@ export function ChatPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Auto-expand sidebar when no room is selected
-  useEffect(() => {
-    if (!currentRoom) {
-      setIsSidebarCollapsed(false);
-    }
-  }, [currentRoom]);
-
   // Load rooms on mount
   useEffect(() => {
     loadRooms();
