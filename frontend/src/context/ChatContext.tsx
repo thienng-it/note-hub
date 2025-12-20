@@ -164,7 +164,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     newSocket.on('user:online', (payload: UserOnlinePayload) => {
       setOnlineUsers((prev) => new Set(prev).add(payload.userId));
       if (payload.status) {
-        setUserStatuses((prev) => new Map(prev).set(payload.userId, payload.status!));
+        setUserStatuses((prev) => new Map(prev).set(payload.userId, payload.status));
       }
     });
 

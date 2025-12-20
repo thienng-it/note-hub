@@ -404,9 +404,7 @@ export function ChatPage() {
         {/* Rooms list - Hidden on mobile when chat is selected, collapsible on desktop */}
         <div
           className={`chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 ${
-            isSidebarCollapsed
-              ? 'chat-sidebar-collapsed hidden'
-              : 'w-full md:w-80 lg:w-88'
+            isSidebarCollapsed ? 'chat-sidebar-collapsed hidden' : 'w-full md:w-80 lg:w-88'
           } ${!isSidebarCollapsed && currentRoom ? 'hidden md:flex md:flex-col' : ''} ${
             !isSidebarCollapsed && !currentRoom ? 'flex flex-col' : ''
           }`}

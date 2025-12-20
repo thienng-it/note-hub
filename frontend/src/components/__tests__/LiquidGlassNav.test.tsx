@@ -128,7 +128,9 @@ describe('LiquidGlassNav', () => {
     const backdrop = document.querySelector('.liquid-glass-dock-backdrop');
     expect(backdrop).toBeInTheDocument();
 
-    fireEvent.click(backdrop!);
+    if (backdrop) {
+      fireEvent.click(backdrop);
+    }
 
     expect(screen.queryByText(/favorites/i)).not.toBeInTheDocument();
   });
