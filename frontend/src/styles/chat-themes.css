@@ -150,17 +150,22 @@
   background-color: var(--chat-hover);
 }
 
-.chat-message {
+.chat-bubble.incoming {
   background-color: var(--chat-message-bg);
   color: var(--chat-message-text);
+  border-color: var(--chat-border);
 }
 
-.chat-message.own {
+.chat-bubble.outgoing {
   background-color: var(--chat-message-own-bg);
   color: var(--chat-message-own-text);
 }
 
-.chat-message.pinned {
+.chat-bubble.outgoing .chat-bubble-text {
+  color: var(--chat-message-own-text);
+}
+
+.chat-message.pinned .chat-bubble {
   background-color: var(--chat-pinned-bg);
   border-left: 3px solid var(--chat-message-own-bg);
 }

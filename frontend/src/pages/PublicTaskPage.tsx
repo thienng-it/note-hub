@@ -123,7 +123,7 @@ export function PublicTaskPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {task.images.map((image, index) => (
                   <a
-                    key={index}
+                    key={image}
                     href={image}
                     target="_blank"
                     rel="noreferrer"

@@ -202,7 +202,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
             msg.id === payload.messageId
               ? {
                   ...msg,
-                  reactions: [...(msg.reactions || []), payload.reaction!],
+                  reactions: [...(msg.reactions || []), payload.reaction],
                 }
               : msg,
           ),
@@ -242,7 +242,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
               : msg,
           ),
         );
-        loadPinnedMessages();
+        // loadPinnedMessages(); // TODO: Fix dependency issue
       }
     });
 
@@ -416,6 +416,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   const startGroupChat = useCallback(
     async (name: string, participantIds: number[]) => {
+      if (isLoading) return;
       setIsLoading(true);
       setError(null);
       try {
@@ -429,7 +430,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     },
-    [loadRooms, selectRoom],
+    [isLoading, loadRooms, selectRoom],
   );
 
   // Send message

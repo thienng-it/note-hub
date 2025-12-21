@@ -33,6 +33,11 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Initialize offline storage database first
+    offlineStorage.init().catch((error) => {
+      console.error('Failed to initialize offline storage:', error);
+    });
+
     // Initialize sync service only when authenticated
     syncService.init().catch((error) => {
       console.error('Failed to initialize sync service:', error);

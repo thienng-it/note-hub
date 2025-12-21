@@ -1036,7 +1036,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
           class="chat-messages flex-1 min-h-0 overscroll-contain"
         >
           <div
-            class="chat-message group "
+            class="chat-message group  "
           >
             <div
               class="relative flex-shrink-0 hidden sm:block self-end mb-5"
@@ -1107,7 +1107,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
             </div>
           </div>
           <div
-            class="chat-message group outgoing"
+            class="chat-message group outgoing "
           >
             <div
               class="chat-message-content"

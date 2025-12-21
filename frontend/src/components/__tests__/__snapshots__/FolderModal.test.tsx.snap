@@ -31,13 +31,11 @@ exports[`FolderModal > matches snapshot - create mode 1`] = `
         />
       </div>
       <div>
-        <div
-          aria-level="3"
+        <h3
           class="block text-sm font-medium mb-2 text-[var(--text-primary)]"
-          role="heading"
         >
           Icon
-        </div>
+        </h3>
         <div
           class="grid grid-cols-5 gap-1"
         >
@@ -114,13 +112,11 @@ exports[`FolderModal > matches snapshot - create mode 1`] = `
         </div>
       </div>
       <div>
-        <div
-          aria-level="3"
+        <h3
           class="block text-sm font-medium mb-2 text-[var(--text-primary)]"
-          role="heading"
         >
           Color
-        </div>
+        </h3>
         <div
           class="flex gap-1 flex-row"
           style="margin-bottom: 0.5rem; margin-top: 0.5rem;"
@@ -227,13 +223,11 @@ exports[`FolderModal > matches snapshot - edit mode 1`] = `
         />
       </div>
       <div>
-        <div
-          aria-level="3"
+        <h3
           class="block text-sm font-medium mb-2 text-[var(--text-primary)]"
-          role="heading"
         >
           Icon
-        </div>
+        </h3>
         <div
           class="grid grid-cols-5 gap-1"
         >
@@ -310,13 +304,11 @@ exports[`FolderModal > matches snapshot - edit mode 1`] = `
         </div>
       </div>
       <div>
-        <div
-          aria-level="3"
+        <h3
           class="block text-sm font-medium mb-2 text-[var(--text-primary)]"
-          role="heading"
         >
           Color
-        </div>
+        </h3>
         <div
           class="flex gap-1 flex-row"
           style="margin-bottom: 0.5rem; margin-top: 0.5rem;"

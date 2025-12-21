@@ -129,7 +129,7 @@ export function PublicNotePage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {note.images.map((image, index) => (
                   <button
-                    key={index}
+                    key={image}
                     type="button"
                     onClick={() => handleImageClick(index)}
                     className="group relative overflow-hidden rounded-xl border border-white/10 hover:border-blue-400/30 transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/10"

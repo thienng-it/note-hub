@@ -86,9 +86,9 @@ export function MarkdownToolbar({ onInsert, disabled = false }: MarkdownToolbarP
 
   return (
     <div className="glass-card-item flex flex-wrap gap-1 p-2 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-color)] mb-2">
-      {tools.map((tool, index) => (
+      {tools.map((tool) => (
         <button
-          key={index}
+          key={tool.icon}
           type="button"
           onClick={tool.action}
           disabled={disabled}

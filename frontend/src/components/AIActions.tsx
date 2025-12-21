@@ -245,11 +245,11 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
 
       {/* Click outside to close style menu */}
       {showStyleMenu && (
-        <div
-          className="fixed inset-0 z-40"
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-transparent border-none cursor-default"
           onClick={() => setShowStyleMenu(false)}
           onKeyDown={(e) => e.key === 'Escape' && setShowStyleMenu(false)}
-          role="button"
           tabIndex={-1}
           aria-label="Close style menu"
         />
