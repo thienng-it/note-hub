@@ -236,4 +236,127 @@ router.post('/upload', jwtRequired, upload.single('photo'), async (req, res) => 
   }
 });
 
+/**
+ * POST /api/v1/chat/rooms/:roomId/messages/:messageId/reactions
+ * Add reaction to a message
+ * Body: { emoji: string }
+ */
+router.post('/rooms/:roomId/messages/:messageId/reactions', jwtRequired, async (req, res) => {
+  try {
+    const messageId = Number.parseInt(req.params.messageId, 10);
+    const { emoji } = req.body;
+
+    if (!emoji) {
+      return responseHandler.error(res, 'Emoji is required', { statusCode: 400 });
+    }
+
+    const reaction = await chatService.addReaction(messageId, req.userId, emoji);
+    return responseHandler.success(res, reaction, {
+      message: 'Reaction added',
+      statusCode: 201,
+    });
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
+  }
+});
+
+/**
+ * DELETE /api/v1/chat/rooms/:roomId/messages/:messageId/reactions/:emoji
+ * Remove reaction from a message
+ */
+router.delete(
+  '/rooms/:roomId/messages/:messageId/reactions/:emoji',
+  jwtRequired,
+  async (req, res) => {
+    try {
+      const messageId = Number.parseInt(req.params.messageId, 10);
+      const { emoji } = req.params;
+
+      await chatService.removeReaction(messageId, req.userId, emoji);
+      return responseHandler.success(res, null, { message: 'Reaction removed' });
+    } catch (error) {
+      return responseHandler.error(res, error.message, {
+        statusCode: getChatErrorStatusCode(error),
+      });
+    }
+  },
+);
+
+/**
+ * POST /api/v1/chat/rooms/:roomId/messages/:messageId/pin
+ * Pin a message
+ */
+router.post('/rooms/:roomId/messages/:messageId/pin', jwtRequired, async (req, res) => {
+  try {
+    const messageId = Number.parseInt(req.params.messageId, 10);
+    const message = await chatService.pinMessage(messageId, req.userId);
+    return responseHandler.success(res, message, { message: 'Message pinned' });
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
+  }
+});
+
+/**
+ * DELETE /api/v1/chat/rooms/:roomId/messages/:messageId/pin
+ * Unpin a message
+ */
+router.delete('/rooms/:roomId/messages/:messageId/pin', jwtRequired, async (req, res) => {
+  try {
+    const messageId = Number.parseInt(req.params.messageId, 10);
+    const message = await chatService.unpinMessage(messageId, req.userId);
+    return responseHandler.success(res, message, { message: 'Message unpinned' });
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
+  }
+});
+
+/**
+ * GET /api/v1/chat/rooms/:roomId/pinned
+ * Get pinned messages in a room
+ */
+router.get('/rooms/:roomId/pinned', jwtRequired, async (req, res) => {
+  try {
+    const roomId = Number.parseInt(req.params.roomId, 10);
+    const messages = await chatService.getPinnedMessages(roomId, req.userId);
+    return responseHandler.success(res, messages, { message: 'Pinned messages retrieved' });
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
+  }
+});
+
+/**
+ * POST /api/v1/chat/rooms/:roomId/messages/:messageId/read
+ * Mark message as read
+ */
+router.post('/rooms/:roomId/messages/:messageId/read', jwtRequired, async (req, res) => {
+  try {
+    const messageId = Number.parseInt(req.params.messageId, 10);
+    const receipt = await chatService.markMessageRead(messageId, req.userId);
+    return responseHandler.success(res, receipt, { message: 'Message marked as read' });
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
+  }
+});
+
+/**
+ * PUT /api/v1/chat/rooms/:roomId/theme
+ * Update room theme
+ * Body: { theme: string }
+ */
+router.put('/rooms/:roomId/theme', jwtRequired, async (req, res) => {
+  try {
+    const roomId = Number.parseInt(req.params.roomId, 10);
+    const { theme } = req.body;
+
+    if (!theme) {
+      return responseHandler.error(res, 'Theme is required', { statusCode: 400 });
+    }
+
+    const room = await chatService.updateRoomTheme(roomId, req.userId, theme);
+    return responseHandler.success(res, room, { message: 'Room theme updated' });
+  } catch (error) {
+    return responseHandler.error(res, error.message, { statusCode: getChatErrorStatusCode(error) });
+  }
+});
+
 export default router;

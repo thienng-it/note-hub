@@ -67,6 +67,7 @@ const mockChatContext = {
   rooms: mockRooms,
   currentRoom: null,
   messages: [],
+  pinnedMessages: [],
   typingUsers: new Map(),
   onlineUsers: new Set([1, 2]),
   userStatuses: new Map(),
@@ -77,12 +78,19 @@ const mockChatContext = {
   selectRoom: vi.fn(),
   clearRoom: vi.fn(),
   startChat: vi.fn(),
+  startGroupChat: vi.fn(),
   sendMessage: vi.fn(),
   loadMoreMessages: vi.fn(),
   setTyping: vi.fn(),
   deleteMessage: vi.fn(),
   deleteRoom: vi.fn(),
   getUserStatus: vi.fn().mockReturnValue('online'),
+  addReaction: vi.fn(),
+  removeReaction: vi.fn(),
+  pinMessage: vi.fn(),
+  unpinMessage: vi.fn(),
+  loadPinnedMessages: vi.fn(),
+  updateRoomTheme: vi.fn(),
 };
 
 vi.mock('../context/ChatContext', async () => {
@@ -128,6 +136,7 @@ describe('ChatPage', () => {
     // Reset mock context
     mockChatContext.currentRoom = null;
     mockChatContext.messages = [];
+    mockChatContext.pinnedMessages = [];
     mockChatContext.rooms = mockRooms;
     mockChatContext.isLoading = false;
     mockChatContext.error = null;

@@ -3,7 +3,7 @@
 exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
   >
     <div
       class="chat-compact-header flex-shrink-0"
@@ -80,7 +80,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -219,7 +219,7 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
 exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
   >
     <div
       class="chat-compact-header flex-shrink-0"
@@ -306,7 +306,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -445,7 +445,7 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
   >
     <div
       class="chat-compact-header flex-shrink-0"
@@ -517,7 +517,7 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
             >
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -621,7 +621,7 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
 exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
   >
     <div
       class="chat-compact-header flex-shrink-0"
@@ -693,7 +693,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
             >
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -781,7 +781,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
   >
     <div
       class="chat-compact-header flex-shrink-0"
@@ -858,7 +858,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i
@@ -968,7 +968,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
         class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 flex"
       >
         <div
-          class="chat-header flex-shrink-0 safe-area-inset-top"
+          class="chat-header flex-shrink-0 safe-area-inset-top chat-theme-default"
         >
           <div
             class="flex items-center gap-2 md:gap-3 mb-3"
@@ -991,6 +991,20 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
               >
                 Chat with otheruser
               </h2>
+            </div>
+            <div
+              class="relative"
+            >
+              <button
+                aria-label="Change theme"
+                class="chat-input-btn"
+                title="Change theme"
+                type="button"
+              >
+                <i
+                  class="fas fa-palette text-sm"
+                />
+              </button>
             </div>
             <button
               aria-label="Delete chat"
@@ -1052,6 +1066,36 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                   >
                     Hello!
                   </p>
+                  <div
+                    class="message-reactions-container"
+                  >
+                    <div
+                      class="relative"
+                    >
+                      <button
+                        class="chat-reaction add-reaction"
+                        title="Add reaction"
+                      >
+                        <i
+                          class="fas fa-smile"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center gap-1"
+                >
+                  <button
+                    aria-label="Pin message"
+                    class="chat-message-delete "
+                    title="Pin message"
+                    type="button"
+                  >
+                    <i
+                      class="fas fa-thumbtack text-xs opacity-50"
+                    />
+                  </button>
                 </div>
               </div>
               <p
@@ -1078,25 +1122,54 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                   >
                     Hi there!
                   </p>
+                  <div
+                    class="message-reactions-container"
+                  >
+                    <div
+                      class="relative"
+                    >
+                      <button
+                        class="chat-reaction add-reaction"
+                        title="Add reaction"
+                      >
+                        <i
+                          class="fas fa-smile"
+                        />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  aria-label="Delete message"
-                  class="chat-message-delete"
-                  title="Delete message"
-                  type="button"
+                <div
+                  class="flex items-center gap-1"
                 >
-                  <i
-                    class="fas fa-trash text-xs"
-                  />
-                </button>
+                  <button
+                    aria-label="Pin message"
+                    class="chat-message-delete "
+                    title="Pin message"
+                    type="button"
+                  >
+                    <i
+                      class="fas fa-thumbtack text-xs opacity-50"
+                    />
+                  </button>
+                  <button
+                    aria-label="Delete message"
+                    class="chat-message-delete"
+                    title="Delete message"
+                    type="button"
+                  >
+                    <i
+                      class="fas fa-trash text-xs"
+                    />
+                  </button>
+                </div>
               </div>
               <p
                 class="chat-message-time"
               >
                 1/15/2024
-                <i
-                  class="chat-message-status fas fa-check"
-                  title="Sent"
+                <span
+                  class="message-status"
                 />
               </p>
             </div>
@@ -1155,7 +1228,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
 exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
 <div>
   <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding"
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
   >
     <div
       class="chat-compact-header flex-shrink-0"
@@ -1242,7 +1315,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
               </span>
               <button
                 aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn hidden md:flex"
+                class="chat-sidebar-collapse-btn flex"
                 type="button"
               >
                 <i

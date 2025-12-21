@@ -6,6 +6,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { chatApi } from '../api/chat';
+import {
+  MessageReactions,
+  MessageStatus,
+  PinnedMessagesBanner,
+  ThemeSelector,
+} from '../components/ChatFeatures';
 import { UserAvatar } from '../components/UserAvatar';
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
@@ -39,6 +45,7 @@ export function ChatPage() {
     rooms,
     currentRoom,
     messages,
+    pinnedMessages,
     typingUsers,
     isConnected,
     isLoading,
@@ -53,6 +60,12 @@ export function ChatPage() {
     deleteMessage,
     deleteRoom,
     getUserStatus,
+    addReaction,
+    removeReaction,
+    pinMessage,
+    unpinMessage,
+    loadPinnedMessages,
+    updateRoomTheme,
   } = useChat();
 
   const [messageInput, setMessageInput] = useState('');
@@ -78,6 +91,8 @@ export function ChatPage() {
   const [isGroupChatMode, setIsGroupChatMode] = useState(false);
   const [groupChatName, setGroupChatName] = useState('');
   const [selectedGroupUserIds, setSelectedGroupUserIds] = useState<Set<number>>(new Set());
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showPinnedModal, setShowPinnedModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,6 +101,13 @@ export function ChatPage() {
   useEffect(() => {
     loadRooms();
   }, [loadRooms]);
+
+  // Load pinned messages when room changes
+  useEffect(() => {
+    if (currentRoom) {
+      loadPinnedMessages();
+    }
+  }, [currentRoom, loadPinnedMessages]);
 
   // Check notification permission and show banner if needed
   useEffect(() => {
@@ -322,7 +344,9 @@ export function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding">
+    <div
+      className={`h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-${currentRoom?.theme || 'default'}`}
+    >
       {/* Compact Header - Only show notification banner and connection status */}
       {(showNotificationBanner || !isConnected) && (
         <div className="chat-compact-header flex-shrink-0">
@@ -566,7 +590,18 @@ export function ChatPage() {
           ) : (
             <>
               {/* Chat header */}
-              <div className="chat-header flex-shrink-0 safe-area-inset-top">
+              <div
+                className={`chat-header flex-shrink-0 safe-area-inset-top chat-theme-${currentRoom.theme || 'default'}`}
+              >
+                {/* Pinned messages banner */}
+                {pinnedMessages.length > 0 && (
+                  <PinnedMessagesBanner
+                    pinnedMessages={pinnedMessages}
+                    onViewPinned={() => setShowPinnedModal(true)}
+                    onUnpin={unpinMessage}
+                  />
+                )}
+
                 <div className="flex items-center gap-2 md:gap-3 mb-3">
                   {/* Back button for mobile */}
                   <button
@@ -595,6 +630,28 @@ export function ChatPage() {
                         </span>
                         {Array.from(typingUsers.values())[0]} {t('chat.typing')}
                       </p>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowThemeSelector(!showThemeSelector)}
+                      className="chat-input-btn"
+                      title="Change theme"
+                      aria-label="Change theme"
+                    >
+                      <i className="fas fa-palette text-sm" />
+                    </button>
+                    {showThemeSelector && (
+                      <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 z-10">
+                        <ThemeSelector
+                          currentTheme={currentRoom.theme || 'default'}
+                          onThemeChange={(theme) => {
+                            updateRoomTheme(theme);
+                            setShowThemeSelector(false);
+                          }}
+                        />
+                      </div>
                     )}
                   </div>
                   <button
@@ -707,24 +764,52 @@ export function ChatPage() {
                               </div>
                             )}
                             <p className="chat-bubble-text">{linkify(message.message)}</p>
+                            {/* Message reactions */}
+                            {user && (
+                              <MessageReactions
+                                message={message}
+                                currentUserId={user.id}
+                                onAddReaction={(emoji) => addReaction(message.id, emoji)}
+                                onRemoveReaction={(emoji) => removeReaction(message.id, emoji)}
+                              />
+                            )}
                           </div>
-                          {isSender && message.id && !showSearchResults && (
-                            <button
-                              type="button"
-                              onClick={() => setMessageToDelete(message.id)}
-                              className="chat-message-delete"
-                              title={t('chat.deleteMessage')}
-                              aria-label="Delete message"
-                            >
-                              <i className="fas fa-trash text-xs" />
-                            </button>
-                          )}
+                          <div className="flex items-center gap-1">
+                            {/* Pin button */}
+                            {message.id && !showSearchResults && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  message.is_pinned
+                                    ? unpinMessage(message.id)
+                                    : pinMessage(message.id)
+                                }
+                                className={`chat-message-delete ${message.is_pinned ? 'text-amber-600' : ''}`}
+                                title={message.is_pinned ? 'Unpin message' : 'Pin message'}
+                                aria-label={message.is_pinned ? 'Unpin message' : 'Pin message'}
+                              >
+                                <i
+                                  className={`fas fa-thumbtack text-xs ${message.is_pinned ? '' : 'opacity-50'}`}
+                                />
+                              </button>
+                            )}
+                            {/* Delete button */}
+                            {isSender && message.id && !showSearchResults && (
+                              <button
+                                type="button"
+                                onClick={() => setMessageToDelete(message.id)}
+                                className="chat-message-delete"
+                                title={t('chat.deleteMessage')}
+                                aria-label="Delete message"
+                              >
+                                <i className="fas fa-trash text-xs" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                         <p className="chat-message-time">
                           {formatTime(message.created_at)}
-                          {isSender && (
-                            <i className="chat-message-status fas fa-check" title="Sent" />
-                          )}
+                          {user && <MessageStatus message={message} currentUserId={user.id} />}
                         </p>
                       </div>
                     </div>
@@ -1066,6 +1151,75 @@ export function ChatPage() {
               onKeyDown={(e) => e.stopPropagation()}
               loading="lazy"
             />
+          </div>
+        </div>
+      )}
+
+      {/* Pinned messages modal */}
+      {showPinnedModal && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard handling is done via document-level event listener in useEffect
+        <div
+          className="chat-modal-overlay"
+          onClick={(e) => e.target === e.currentTarget && setShowPinnedModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pinned-messages-title"
+        >
+          <div className="chat-modal">
+            <div className="chat-modal-header">
+              <h2 id="pinned-messages-title" className="chat-modal-title">
+                <i className="fas fa-thumbtack mr-2 text-amber-600" />
+                Pinned Messages
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowPinnedModal(false)}
+                className="chat-modal-close"
+                aria-label="Close"
+              >
+                <i className="fas fa-times text-lg" />
+              </button>
+            </div>
+            <div className="chat-modal-body">
+              {pinnedMessages.length === 0 ? (
+                <div className="chat-empty-state" style={{ padding: '2rem 0' }}>
+                  <div className="chat-empty-icon" style={{ width: '4rem', height: '4rem' }}>
+                    <i className="fas fa-thumbtack" style={{ fontSize: '1.5rem' }} />
+                  </div>
+                  <p className="chat-empty-subtitle">No pinned messages</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pinnedMessages.map((message) => (
+                    <div
+                      key={message.id}
+                      className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg"
+                    >
+                      <div className="flex items-start gap-2 mb-2">
+                        <UserAvatar
+                          username={message.sender.username}
+                          avatarUrl={message.sender.avatar_url}
+                          size="sm"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm">{message.sender.username}</p>
+                          <p className="text-xs text-gray-500">{formatTime(message.created_at)}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => unpinMessage(message.id)}
+                          className="text-gray-500 hover:text-red-600"
+                          title="Unpin"
+                        >
+                          <i className="fas fa-times" />
+                        </button>
+                      </div>
+                      <p className="text-sm">{message.message}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

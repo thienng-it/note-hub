@@ -125,6 +125,10 @@ export function initializeSocketIO(httpServer) {
             message: newMessage.message,
             sender: newMessage.sender,
             created_at: newMessage.created_at,
+            sent_at: newMessage.sent_at,
+            reactions: newMessage.reactions || [],
+            readReceipts: newMessage.readReceipts || [],
+            is_pinned: newMessage.is_pinned,
           },
         });
 
@@ -136,6 +140,114 @@ export function initializeSocketIO(httpServer) {
       } catch (error) {
         socket.emit('chat:error', {
           message: 'Failed to send message',
+          error: error.message,
+        });
+      }
+    });
+
+    // Handle message reactions
+    socket.on('chat:reaction:add', async ({ roomId, messageId, emoji }) => {
+      try {
+        const reaction = await chatService.addReaction(messageId, userId, emoji);
+        io.to(`room:${roomId}`).emit('chat:reaction:added', {
+          roomId,
+          messageId,
+          reaction: {
+            id: reaction.id,
+            emoji: reaction.emoji,
+            user: reaction.user,
+            created_at: reaction.created_at,
+          },
+        });
+      } catch (error) {
+        socket.emit('chat:error', {
+          message: 'Failed to add reaction',
+          error: error.message,
+        });
+      }
+    });
+
+    socket.on('chat:reaction:remove', async ({ roomId, messageId, emoji }) => {
+      try {
+        await chatService.removeReaction(messageId, userId, emoji);
+        io.to(`room:${roomId}`).emit('chat:reaction:removed', {
+          roomId,
+          messageId,
+          emoji,
+          userId,
+        });
+      } catch (error) {
+        socket.emit('chat:error', {
+          message: 'Failed to remove reaction',
+          error: error.message,
+        });
+      }
+    });
+
+    // Handle message pinning
+    socket.on('chat:message:pin', async ({ roomId, messageId }) => {
+      try {
+        const message = await chatService.pinMessage(messageId, userId);
+        io.to(`room:${roomId}`).emit('chat:message:pinned', {
+          roomId,
+          messageId,
+          pinnedBy: userId,
+          pinnedAt: message.pinned_at,
+        });
+      } catch (error) {
+        socket.emit('chat:error', {
+          message: 'Failed to pin message',
+          error: error.message,
+        });
+      }
+    });
+
+    socket.on('chat:message:unpin', async ({ roomId, messageId }) => {
+      try {
+        await chatService.unpinMessage(messageId, userId);
+        io.to(`room:${roomId}`).emit('chat:message:unpinned', {
+          roomId,
+          messageId,
+        });
+      } catch (error) {
+        socket.emit('chat:error', {
+          message: 'Failed to unpin message',
+          error: error.message,
+        });
+      }
+    });
+
+    // Handle read receipts
+    socket.on('chat:message:read', async ({ roomId, messageId }) => {
+      try {
+        const receipt = await chatService.markMessageRead(messageId, userId);
+        if (receipt) {
+          io.to(`room:${roomId}`).emit('chat:message:read', {
+            roomId,
+            messageId,
+            userId,
+            readAt: receipt.read_at,
+          });
+        }
+      } catch (error) {
+        socket.emit('chat:error', {
+          message: 'Failed to mark message as read',
+          error: error.message,
+        });
+      }
+    });
+
+    // Handle room theme update
+    socket.on('chat:room:theme', async ({ roomId, theme }) => {
+      try {
+        await chatService.updateRoomTheme(roomId, userId, theme);
+        io.to(`room:${roomId}`).emit('chat:room:theme:updated', {
+          roomId,
+          theme,
+        });
+      } catch (error) {
+        socket.emit('chat:error', {
+          message: 'Failed to update room theme',
           error: error.message,
         });
       }

@@ -13,8 +13,13 @@ import * as socketService from '../services/socketService';
 import type {
   ChatMessage,
   ChatMessagePayload,
+  ChatMessageReadPayload,
+  ChatPinPayload,
+  ChatReactionPayload,
   ChatReadPayload,
   ChatRoom,
+  ChatTheme,
+  ChatThemePayload,
   ChatTypingPayload,
   UserOnlinePayload,
   UserStatusPayload,
@@ -25,6 +30,7 @@ interface ChatContextType {
   rooms: ChatRoom[];
   currentRoom: ChatRoom | null;
   messages: ChatMessage[];
+  pinnedMessages: ChatMessage[];
   typingUsers: Map<number, string>;
   onlineUsers: Set<number>;
   userStatuses: Map<number, string>;
@@ -42,6 +48,12 @@ interface ChatContextType {
   deleteMessage: (messageId: number) => Promise<void>;
   deleteRoom: (roomId: number) => Promise<void>;
   getUserStatus: (userId: number, userSetStatus?: string) => string;
+  addReaction: (messageId: number, emoji: string) => Promise<void>;
+  removeReaction: (messageId: number, emoji: string) => Promise<void>;
+  pinMessage: (messageId: number) => Promise<void>;
+  unpinMessage: (messageId: number) => Promise<void>;
+  loadPinnedMessages: () => Promise<void>;
+  updateRoomTheme: (theme: ChatTheme) => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -51,6 +63,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [currentRoom, setCurrentRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [pinnedMessages, setPinnedMessages] = useState<ChatMessage[]>([]);
   const [typingUsers, setTypingUsers] = useState<Map<number, string>>(new Map());
   const [onlineUsers, setOnlineUsers] = useState<Set<number>>(new Set());
   const [userStatuses, setUserStatuses] = useState<Map<number, string>>(new Map());
@@ -179,6 +192,100 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     // Handle user status changes
     newSocket.on('user:status', (payload: UserStatusPayload) => {
       setUserStatuses((prev) => new Map(prev).set(payload.userId, payload.status));
+    });
+
+    // Handle reactions
+    newSocket.on('chat:reaction:added', (payload: ChatReactionPayload) => {
+      if (currentRoomRef.current?.id === payload.roomId) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === payload.messageId
+              ? {
+                  ...msg,
+                  reactions: [...(msg.reactions || []), payload.reaction!],
+                }
+              : msg,
+          ),
+        );
+      }
+    });
+
+    newSocket.on('chat:reaction:removed', (payload: ChatReactionPayload) => {
+      if (currentRoomRef.current?.id === payload.roomId) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === payload.messageId
+              ? {
+                  ...msg,
+                  reactions: (msg.reactions || []).filter(
+                    (r) => !(r.emoji === payload.emoji && r.user.id === payload.userId),
+                  ),
+                }
+              : msg,
+          ),
+        );
+      }
+    });
+
+    // Handle pinning
+    newSocket.on('chat:message:pinned', (payload: ChatPinPayload) => {
+      if (currentRoomRef.current?.id === payload.roomId) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === payload.messageId
+              ? {
+                  ...msg,
+                  is_pinned: true,
+                  pinned_at: payload.pinnedAt,
+                  pinned_by_id: payload.pinnedBy,
+                }
+              : msg,
+          ),
+        );
+        loadPinnedMessages();
+      }
+    });
+
+    newSocket.on('chat:message:unpinned', (payload: ChatPinPayload) => {
+      if (currentRoomRef.current?.id === payload.roomId) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === payload.messageId
+              ? { ...msg, is_pinned: false, pinned_at: null, pinned_by_id: null }
+              : msg,
+          ),
+        );
+        setPinnedMessages((prev) => prev.filter((msg) => msg.id !== payload.messageId));
+      }
+    });
+
+    // Handle read receipts
+    newSocket.on('chat:message:read', (payload: ChatMessageReadPayload) => {
+      if (currentRoomRef.current?.id === payload.roomId) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === payload.messageId
+              ? {
+                  ...msg,
+                  readReceipts: [
+                    ...(msg.readReceipts || []),
+                    { id: 0, user: { id: payload.userId } as unknown, read_at: payload.readAt },
+                  ],
+                }
+              : msg,
+          ),
+        );
+      }
+    });
+
+    // Handle theme updates
+    newSocket.on('chat:room:theme:updated', (payload: ChatThemePayload) => {
+      if (currentRoomRef.current?.id === payload.roomId) {
+        setCurrentRoom((prev) => (prev ? { ...prev, theme: payload.theme } : null));
+        setRooms((prev) =>
+          prev.map((r) => (r.id === payload.roomId ? { ...r, theme: payload.theme } : r)),
+        );
+      }
     });
 
     return () => {
@@ -453,15 +560,120 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const clearRoom = useCallback(() => {
     setCurrentRoom(null);
     setMessages([]);
+    setPinnedMessages([]);
     setTypingUsers(new Map());
     setOffset(0);
     setHasMore(true);
   }, []);
 
+  // Add reaction to message
+  const addReaction = useCallback(
+    async (messageId: number, emoji: string) => {
+      if (!currentRoom) return;
+      try {
+        await chatApi.addReaction(currentRoom.id, messageId, emoji);
+        socketService.getSocket()?.emit('chat:reaction:add', {
+          roomId: currentRoom.id,
+          messageId,
+          emoji,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to add reaction');
+        throw err;
+      }
+    },
+    [currentRoom],
+  );
+
+  // Remove reaction from message
+  const removeReaction = useCallback(
+    async (messageId: number, emoji: string) => {
+      if (!currentRoom) return;
+      try {
+        await chatApi.removeReaction(currentRoom.id, messageId, emoji);
+        socketService.getSocket()?.emit('chat:reaction:remove', {
+          roomId: currentRoom.id,
+          messageId,
+          emoji,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to remove reaction');
+        throw err;
+      }
+    },
+    [currentRoom],
+  );
+
+  // Pin message
+  const pinMessage = useCallback(
+    async (messageId: number) => {
+      if (!currentRoom) return;
+      try {
+        await chatApi.pinMessage(currentRoom.id, messageId);
+        socketService.getSocket()?.emit('chat:message:pin', {
+          roomId: currentRoom.id,
+          messageId,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to pin message');
+        throw err;
+      }
+    },
+    [currentRoom],
+  );
+
+  // Unpin message
+  const unpinMessage = useCallback(
+    async (messageId: number) => {
+      if (!currentRoom) return;
+      try {
+        await chatApi.unpinMessage(currentRoom.id, messageId);
+        socketService.getSocket()?.emit('chat:message:unpin', {
+          roomId: currentRoom.id,
+          messageId,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to unpin message');
+        throw err;
+      }
+    },
+    [currentRoom],
+  );
+
+  // Load pinned messages
+  const loadPinnedMessages = useCallback(async () => {
+    if (!currentRoom) return;
+    try {
+      const pinned = await chatApi.getPinnedMessages(currentRoom.id);
+      setPinnedMessages(pinned);
+    } catch (err) {
+      console.error('Failed to load pinned messages:', err);
+    }
+  }, [currentRoom]);
+
+  // Update room theme
+  const updateRoomTheme = useCallback(
+    async (theme: ChatTheme) => {
+      if (!currentRoom) return;
+      try {
+        await chatApi.updateRoomTheme(currentRoom.id, theme);
+        socketService.getSocket()?.emit('chat:room:theme', {
+          roomId: currentRoom.id,
+          theme,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to update theme');
+        throw err;
+      }
+    },
+    [currentRoom],
+  );
+
   const value: ChatContextType = {
     rooms,
     currentRoom,
     messages,
+    pinnedMessages,
     typingUsers,
     onlineUsers,
     userStatuses,
@@ -479,6 +691,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     deleteMessage,
     deleteRoom,
     getUserStatus,
+    addReaction,
+    removeReaction,
+    pinMessage,
+    unpinMessage,
+    loadPinnedMessages,
+    updateRoomTheme,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
