@@ -7,6 +7,8 @@ interface MessageReactionsProps {
   onRemoveReaction: (emoji: string) => void;
 }
 
+import { useEffect, useRef, useState } from 'react';
+
 const EMOJI_OPTIONS = ['👍', '👎', '❤️', '😂', '😮', '😢', '🎉', '🔥'];
 
 export function MessageReactions({
@@ -16,6 +18,8 @@ export function MessageReactions({
   onRemoveReaction,
 }: MessageReactionsProps) {
   const [showPicker, setShowPicker] = useState(false);
+  const longPressTimer = useRef<number | null>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const reactionCounts = (message.reactions || []).reduce(
     (acc, r) => {
@@ -38,6 +42,47 @@ export function MessageReactions({
     setShowPicker(false);
   };
 
+  // Handle tap and hold for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    longPressTimer.current = window.setTimeout(() => {
+      setShowPicker(true);
+    }, 500); // 500ms long press
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  // Close picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setShowPicker(false);
+      }
+    };
+
+    if (showPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [showPicker]);
+
   return (
     <div className="message-reactions-container">
       {Object.entries(reactionCounts).map(([emoji, count]) => (
@@ -46,16 +91,21 @@ export function MessageReactions({
           onClick={() => handleReactionClick(emoji)}
           className={`chat-reaction ${userReactions.has(emoji) ? 'active' : ''}`}
           title={`${count} reaction${count > 1 ? 's' : ''}`}
+          type="button"
         >
           <span>{emoji}</span>
           <span className="reaction-count">{count}</span>
         </button>
       ))}
-      <div className="relative">
+      <div className="relative" ref={pickerRef}>
         <button
           onClick={() => setShowPicker(!showPicker)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchMove={handleTouchMove}
           className="chat-reaction add-reaction"
-          title="Add reaction"
+          title="Add reaction (tap and hold on mobile)"
+          type="button"
         >
           <i className="fas fa-smile" />
         </button>
@@ -66,6 +116,7 @@ export function MessageReactions({
                 key={emoji}
                 onClick={() => handleReactionClick(emoji)}
                 className="reaction-emoji"
+                type="button"
               >
                 {emoji}
               </button>
@@ -178,5 +229,3 @@ export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProp
     </div>
   );
 }
-
-import { useState } from 'react';
