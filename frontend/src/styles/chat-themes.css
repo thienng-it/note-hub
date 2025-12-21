@@ -168,6 +168,56 @@
 .chat-reaction {
   background-color: var(--chat-reaction-bg);
   border: 1px solid var(--chat-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chat-reaction:hover {
+  transform: scale(1.05);
+  background-color: var(--chat-hover);
+}
+
+.chat-reaction:active {
+  transform: scale(0.95);
+}
+
+.chat-reaction.active {
+  background-color: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.chat-reaction.add-reaction {
+  background-color: transparent;
+  border: 1px dashed var(--chat-border);
+  padding: 4px 6px;
+}
+
+.chat-reaction.add-reaction:hover {
+  border-style: solid;
+  background-color: var(--chat-hover);
+}
+
+.reaction-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.message-reactions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  align-items: center;
 }
 
 .chat-input-container {
@@ -205,29 +255,71 @@
 /* Reaction picker */
 .reaction-picker {
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% + 8px);
   right: 0;
   background: var(--chat-bg);
   border: 1px solid var(--chat-border);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 8px;
   display: flex;
-  gap: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   z-index: 10;
+  animation: reactionPickerSlideIn 0.2s ease;
+}
+
+@keyframes reactionPickerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .reaction-emoji {
   font-size: 1.5rem;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  transition: transform 0.2s;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
 }
 
 .reaction-emoji:hover {
   transform: scale(1.2);
   background-color: var(--chat-hover);
+}
+
+.reaction-emoji:active {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .reaction-picker {
+    bottom: auto;
+    top: calc(100% + 8px);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .reaction-emoji {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.75rem;
+  }
 }
 
 /* Pinned messages banner */

@@ -1074,7 +1074,8 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                     >
                       <button
                         class="chat-reaction add-reaction"
-                        title="Add reaction"
+                        title="Add reaction (tap and hold on mobile)"
+                        type="button"
                       >
                         <i
                           class="fas fa-smile"
@@ -1130,7 +1131,8 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                     >
                       <button
                         class="chat-reaction add-reaction"
-                        title="Add reaction"
+                        title="Add reaction (tap and hold on mobile)"
+                        type="button"
                       >
                         <i
                           class="fas fa-smile"
