@@ -725,7 +725,7 @@ export function ChatPage() {
                   return (
                     <div
                       key={message.id || index}
-                      className={`chat-message group ${isSender ? 'outgoing' : ''}`}
+                      className={`chat-message group ${isSender ? 'outgoing' : ''} ${message.is_pinned ? 'pinned' : ''}`}
                     >
                       {!isSender && (
                         <UserAvatar

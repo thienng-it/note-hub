@@ -92,13 +92,9 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
 
           {/* Icon Selection */}
           <div>
-            <div
-              className="block text-sm font-medium mb-2 text-[var(--text-primary)]"
-              role="heading"
-              aria-level={3}
-            >
+            <h3 className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
               {t('folders.icon')}
-            </div>
+            </h3>
             <div className="grid grid-cols-5 gap-1">
               {FOLDER_ICONS.map((iconOption) => (
                 <button
@@ -120,13 +116,9 @@ export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
 
           {/* Color Selection */}
           <div>
-            <div
-              className="block text-sm font-medium mb-2 text-[var(--text-primary)]"
-              role="heading"
-              aria-level={3}
-            >
+            <h3 className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
               {t('folders.color')}
-            </div>
+            </h3>
             <div
               className="flex gap-1 flex-row"
               style={{ marginBottom: '0.5rem', marginTop: '0.5rem' }}

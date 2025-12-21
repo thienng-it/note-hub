@@ -40,20 +40,14 @@ export function LanguageSelector() {
   }, [isOpen]);
 
   // Handle keyboard navigation
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const _handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
       setIsOpen(false);
     }
   };
 
   return (
-    <div
-      className="relative"
-      ref={dropdownRef}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={-1}
-    >
+    <div className="relative" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}

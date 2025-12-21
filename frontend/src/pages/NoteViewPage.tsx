@@ -366,7 +366,7 @@ export function NoteViewPage() {
                   {note.images.map((image, index) => (
                     <button
                       type="button"
-                      key={index}
+                      key={image}
                       onClick={() => handleImageClick(index)}
                       className="note-view-image-card group"
                     >

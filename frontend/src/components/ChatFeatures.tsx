@@ -185,11 +185,16 @@ export function PinnedMessagesBanner({
       </div>
       <div className="flex items-center gap-2">
         {pinnedMessages.length > 1 && (
-          <button onClick={onViewPinned} className="text-sm text-blue-600 hover:underline">
+          <button
+            type="button"
+            onClick={onViewPinned}
+            className="text-sm text-blue-600 hover:underline"
+          >
             View all ({pinnedMessages.length})
           </button>
         )}
         <button
+          type="button"
           onClick={() => onUnpin(latestPinned.id)}
           className="text-gray-500 hover:text-gray-700"
           title="Unpin"
@@ -219,6 +224,7 @@ export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProp
     <div className="theme-selector">
       {themes.map((theme) => (
         <button
+          type="button"
           key={theme.name}
           onClick={() => onThemeChange(theme.name)}
           className={`theme-option ${theme.name} ${currentTheme === theme.name ? 'active' : ''}`}

@@ -285,10 +285,10 @@ export function FolderItem({
 
   return (
     <div className="folder-item" style={{ marginBottom: '0.5rem' }}>
-      <div
-        role="button"
+      <button
+        type="button"
         tabIndex={0}
-        className={`glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group ${
+        className={`glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left ${
           isSelected
             ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-700 dark:text-blue-400 shadow-sm border border-blue-200/50 dark:border-blue-700/50'
             : 'hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm'
@@ -321,6 +321,7 @@ export function FolderItem({
               viewBox="0 0 24 24"
               aria-label={isExpanded ? 'Collapse' : 'Expand'}
             >
+              <title>{isExpanded ? 'Collapse' : 'Expand'}</title>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
@@ -369,7 +370,7 @@ export function FolderItem({
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
           </svg>
         </button>
-      </div>
+      </button>
 
       {/* Context Menu */}
       <ContextMenu

@@ -116,12 +116,20 @@ export function LiquidGlassNav() {
     <>
       {/* ───────── Backdrop for touch ───────── */}
       {isDockExpanded && (
-        <div
-          className="liquid-glass-dock-backdrop"
+        <button
+          type="button"
+          className="liquid-glass-dock-backdrop bg-transparent border-none cursor-default"
           onClick={() => {
             setIsDockExpanded(false);
             setHoveredIndex(null);
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setIsDockExpanded(false);
+              setHoveredIndex(null);
+            }
+          }}
+          aria-label="Close dock"
         />
       )}
 

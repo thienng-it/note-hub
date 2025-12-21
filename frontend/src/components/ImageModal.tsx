@@ -35,6 +35,10 @@ export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: Im
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
       onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="dialog"
+      tabIndex={-1}
+      aria-label="Image viewer"
     >
       <div className="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center">
         {/* Close button */}
@@ -90,6 +94,7 @@ export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: Im
           alt={`Attachment ${currentIndex + 1}`}
           className="max-w-full max-h-full object-contain"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.key === 'Enter' && e.stopPropagation()}
         />
       </div>
     </div>

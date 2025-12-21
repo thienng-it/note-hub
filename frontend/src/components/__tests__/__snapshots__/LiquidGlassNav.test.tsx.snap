@@ -1,8 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`LiquidGlassNav > matches snapshot – expanded state 1`] = `
-<div
-  class="liquid-glass-dock-backdrop"
+<button
+  aria-label="Close dock"
+  class="liquid-glass-dock-backdrop bg-transparent border-none cursor-default"
+  type="button"
 />
 `;
 
