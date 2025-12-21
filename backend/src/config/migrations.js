@@ -510,6 +510,152 @@ const MIGRATIONS = [
       `);
     },
   },
+  {
+    id: '009_add_chat_features',
+    description: 'Add message reactions, pinned messages, read receipts, and chat themes',
+    async sqlite(db) {
+      // Create chat_message_reactions table
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS chat_message_reactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          message_id INTEGER NOT NULL,
+          user_id INTEGER NOT NULL,
+          emoji VARCHAR(10) NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          UNIQUE(message_id, user_id, emoji)
+        )
+      `);
+
+      // Create chat_message_reads table
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS chat_message_reads (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          message_id INTEGER NOT NULL,
+          user_id INTEGER NOT NULL,
+          read_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          UNIQUE(message_id, user_id)
+        )
+      `);
+
+      // Add columns to chat_messages
+      const msgColumns = db.prepare('PRAGMA table_info(chat_messages)').all();
+      if (!msgColumns.some((col) => col.name === 'is_pinned')) {
+        db.exec('ALTER TABLE chat_messages ADD COLUMN is_pinned BOOLEAN DEFAULT 0');
+      }
+      if (!msgColumns.some((col) => col.name === 'pinned_at')) {
+        db.exec('ALTER TABLE chat_messages ADD COLUMN pinned_at DATETIME NULL');
+      }
+      if (!msgColumns.some((col) => col.name === 'pinned_by_id')) {
+        db.exec('ALTER TABLE chat_messages ADD COLUMN pinned_by_id INTEGER NULL');
+      }
+      if (!msgColumns.some((col) => col.name === 'sent_at')) {
+        db.exec('ALTER TABLE chat_messages ADD COLUMN sent_at DATETIME NULL');
+      }
+      if (!msgColumns.some((col) => col.name === 'delivered_at')) {
+        db.exec('ALTER TABLE chat_messages ADD COLUMN delivered_at DATETIME NULL');
+      }
+
+      // Add theme column to chat_rooms
+      const roomColumns = db.prepare('PRAGMA table_info(chat_rooms)').all();
+      if (!roomColumns.some((col) => col.name === 'theme')) {
+        db.exec("ALTER TABLE chat_rooms ADD COLUMN theme VARCHAR(20) DEFAULT 'default'");
+      }
+
+      // Create indexes
+      db.exec(
+        'CREATE INDEX IF NOT EXISTS idx_reactions_message ON chat_message_reactions(message_id)',
+      );
+      db.exec('CREATE INDEX IF NOT EXISTS idx_reactions_user ON chat_message_reactions(user_id)');
+      db.exec('CREATE INDEX IF NOT EXISTS idx_reads_message ON chat_message_reads(message_id)');
+      db.exec('CREATE INDEX IF NOT EXISTS idx_reads_user ON chat_message_reads(user_id)');
+      db.exec(
+        'CREATE INDEX IF NOT EXISTS idx_messages_pinned ON chat_messages(is_pinned, room_id)',
+      );
+
+      logger.info('  ✅ Chat features migration completed');
+    },
+    async mysql(db) {
+      const database = process.env.MYSQL_DATABASE || 'notehub';
+
+      // Create chat_message_reactions table
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS chat_message_reactions (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          message_id INT NOT NULL,
+          user_id INT NOT NULL,
+          emoji VARCHAR(10) NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE KEY uk_reactions (message_id, user_id, emoji),
+          INDEX idx_reactions_message (message_id),
+          INDEX idx_reactions_user (user_id),
+          FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
+
+      // Create chat_message_reads table
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS chat_message_reads (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          message_id INT NOT NULL,
+          user_id INT NOT NULL,
+          read_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE KEY uk_reads (message_id, user_id),
+          INDEX idx_reads_message (message_id),
+          INDEX idx_reads_user (user_id),
+          FOREIGN KEY (message_id) REFERENCES chat_messages(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
+
+      // Add columns to chat_messages
+      const [msgColumns] = await db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+         WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'chat_messages'`,
+        [database],
+      );
+      const msgColNames = msgColumns.map((c) => c.COLUMN_NAME);
+
+      if (!msgColNames.includes('is_pinned')) {
+        await db.query('ALTER TABLE chat_messages ADD COLUMN is_pinned TINYINT(1) DEFAULT 0');
+      }
+      if (!msgColNames.includes('pinned_at')) {
+        await db.query('ALTER TABLE chat_messages ADD COLUMN pinned_at DATETIME NULL');
+      }
+      if (!msgColNames.includes('pinned_by_id')) {
+        await db.query('ALTER TABLE chat_messages ADD COLUMN pinned_by_id INT NULL');
+      }
+      if (!msgColNames.includes('sent_at')) {
+        await db.query('ALTER TABLE chat_messages ADD COLUMN sent_at DATETIME NULL');
+      }
+      if (!msgColNames.includes('delivered_at')) {
+        await db.query('ALTER TABLE chat_messages ADD COLUMN delivered_at DATETIME NULL');
+      }
+
+      // Add theme column to chat_rooms
+      const [roomColumns] = await db.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+         WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'chat_rooms'`,
+        [database],
+      );
+      const roomColNames = roomColumns.map((c) => c.COLUMN_NAME);
+
+      if (!roomColNames.includes('theme')) {
+        await db.query("ALTER TABLE chat_rooms ADD COLUMN theme VARCHAR(20) DEFAULT 'default'");
+      }
+
+      // Create index for pinned messages
+      await db.query(
+        'CREATE INDEX IF NOT EXISTS idx_messages_pinned ON chat_messages(is_pinned, room_id)',
+      );
+
+      logger.info('  ✅ Chat features migration completed');
+    },
+  },
 ];
 
 /**

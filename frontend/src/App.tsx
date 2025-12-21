@@ -28,6 +28,7 @@ import { PublicTaskPage } from './pages/PublicTaskPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { Setup2FAPage } from './pages/Setup2FAPage';
+import './styles/chat-themes.css';
 import { ShareNotePage } from './pages/ShareNotePage';
 import { ShareTaskPage } from './pages/ShareTaskPage';
 import { TasksPage } from './pages/TasksPage';

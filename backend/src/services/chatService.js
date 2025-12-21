@@ -5,7 +5,14 @@
 
 import { Op } from 'sequelize';
 import logger from '../config/logger.js';
-import { ChatMessage, ChatParticipant, ChatRoom, User } from '../models/index.js';
+import {
+  ChatMessage,
+  ChatMessageReaction,
+  ChatMessageRead,
+  ChatParticipant,
+  ChatRoom,
+  User,
+} from '../models/index.js';
 import { decryptMessage, encryptMessage, generateSalt } from '../utils/encryption.js';
 
 // Get encryption secret from environment or use default for development
@@ -361,15 +368,38 @@ export async function sendMessage(roomId, senderId, message, photoUrl = null) {
       photo_url: photoUrl,
       is_encrypted: true,
       encryption_salt: encryptionSalt,
+      sent_at: new Date(),
     });
 
-    // Load sender info
+    // Load sender info and reactions
     const messageWithSender = await ChatMessage.findByPk(newMessage.id, {
       include: [
         {
           model: User,
           as: 'sender',
           attributes: ['id', 'username', 'avatar_url', 'status'],
+        },
+        {
+          model: ChatMessageReaction,
+          as: 'reactions',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'username'],
+            },
+          ],
+        },
+        {
+          model: ChatMessageRead,
+          as: 'readReceipts',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'username'],
+            },
+          ],
         },
       ],
     });
@@ -682,6 +712,283 @@ export async function deleteRoom(roomId, userId) {
   }
 }
 
+/**
+ * Add reaction to a message
+ * @param {number} messageId - Message ID
+ * @param {number} userId - User ID
+ * @param {string} emoji - Emoji reaction
+ * @returns {Promise<Object>} Created reaction
+ */
+export async function addReaction(messageId, userId, emoji) {
+  try {
+    const message = await ChatMessage.findByPk(messageId);
+    if (!message) {
+      throw new Error('Message not found');
+    }
+
+    // Check if user has access to the room
+    const hasAccess = await checkRoomAccess(message.room_id, userId);
+    if (!hasAccess) {
+      throw new Error('User does not have access to this chat room');
+    }
+
+    // Create or update reaction
+    const [reaction] = await ChatMessageReaction.findOrCreate({
+      where: { message_id: messageId, user_id: userId, emoji },
+      defaults: { message_id: messageId, user_id: userId, emoji },
+    });
+
+    const reactionWithUser = await ChatMessageReaction.findByPk(reaction.id, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username'],
+        },
+      ],
+    });
+
+    logger.info('Reaction added', { messageId, userId, emoji });
+    return reactionWithUser;
+  } catch (error) {
+    logger.error('Error adding reaction', { messageId, userId, emoji, error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Remove reaction from a message
+ * @param {number} messageId - Message ID
+ * @param {number} userId - User ID
+ * @param {string} emoji - Emoji reaction
+ * @returns {Promise<void>}
+ */
+export async function removeReaction(messageId, userId, emoji) {
+  try {
+    await ChatMessageReaction.destroy({
+      where: { message_id: messageId, user_id: userId, emoji },
+    });
+
+    logger.info('Reaction removed', { messageId, userId, emoji });
+  } catch (error) {
+    logger.error('Error removing reaction', { messageId, userId, emoji, error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Pin a message
+ * @param {number} messageId - Message ID
+ * @param {number} userId - User ID (must be room creator or participant)
+ * @returns {Promise<Object>} Updated message
+ */
+export async function pinMessage(messageId, userId) {
+  try {
+    const message = await ChatMessage.findByPk(messageId);
+    if (!message) {
+      throw new Error('Message not found');
+    }
+
+    // Check if user has access to the room
+    const hasAccess = await checkRoomAccess(message.room_id, userId);
+    if (!hasAccess) {
+      throw new Error('User does not have access to this chat room');
+    }
+
+    await message.update({
+      is_pinned: true,
+      pinned_at: new Date(),
+      pinned_by_id: userId,
+    });
+
+    logger.info('Message pinned', { messageId, userId });
+    return message;
+  } catch (error) {
+    logger.error('Error pinning message', { messageId, userId, error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Unpin a message
+ * @param {number} messageId - Message ID
+ * @param {number} userId - User ID
+ * @returns {Promise<Object>} Updated message
+ */
+export async function unpinMessage(messageId, userId) {
+  try {
+    const message = await ChatMessage.findByPk(messageId);
+    if (!message) {
+      throw new Error('Message not found');
+    }
+
+    // Check if user has access to the room
+    const hasAccess = await checkRoomAccess(message.room_id, userId);
+    if (!hasAccess) {
+      throw new Error('User does not have access to this chat room');
+    }
+
+    await message.update({
+      is_pinned: false,
+      pinned_at: null,
+      pinned_by_id: null,
+    });
+
+    logger.info('Message unpinned', { messageId, userId });
+    return message;
+  } catch (error) {
+    logger.error('Error unpinning message', { messageId, userId, error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Get pinned messages in a room
+ * @param {number} roomId - Chat room ID
+ * @param {number} userId - User ID (to verify access)
+ * @returns {Promise<Array>} Array of pinned messages
+ */
+export async function getPinnedMessages(roomId, userId) {
+  try {
+    const hasAccess = await checkRoomAccess(roomId, userId);
+    if (!hasAccess) {
+      throw new Error('User does not have access to this chat room');
+    }
+
+    const room = await ChatRoom.findByPk(roomId);
+    if (!room) {
+      throw new Error('Chat room not found');
+    }
+
+    const messages = await ChatMessage.findAll({
+      where: { room_id: roomId, is_pinned: true },
+      include: [
+        {
+          model: User,
+          as: 'sender',
+          attributes: ['id', 'username', 'avatar_url', 'status'],
+        },
+        {
+          model: User,
+          as: 'pinnedBy',
+          attributes: ['id', 'username'],
+        },
+        {
+          model: ChatMessageReaction,
+          as: 'reactions',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'username'],
+            },
+          ],
+        },
+      ],
+      order: [['pinned_at', 'DESC']],
+    });
+
+    // Decrypt messages
+    const decryptedMessages = messages.map((msg) => {
+      const msgData = msg.toJSON();
+      if (msgData.is_encrypted && room.encryption_salt) {
+        try {
+          msgData.message = decryptMessage(
+            msgData.message,
+            ENCRYPTION_SECRET,
+            room.encryption_salt,
+          );
+        } catch (error) {
+          logger.error('Failed to decrypt pinned message', {
+            messageId: msg.id,
+            error: error.message,
+          });
+          msgData.message = '[Encrypted message - decryption failed]';
+        }
+      }
+      return msgData;
+    });
+
+    return decryptedMessages;
+  } catch (error) {
+    logger.error('Error getting pinned messages', { roomId, userId, error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Mark message as read by user
+ * @param {number} messageId - Message ID
+ * @param {number} userId - User ID
+ * @returns {Promise<Object>} Read receipt
+ */
+export async function markMessageRead(messageId, userId) {
+  try {
+    const message = await ChatMessage.findByPk(messageId);
+    if (!message) {
+      throw new Error('Message not found');
+    }
+
+    // Don't mark own messages as read
+    if (message.sender_id === userId) {
+      return null;
+    }
+
+    const hasAccess = await checkRoomAccess(message.room_id, userId);
+    if (!hasAccess) {
+      throw new Error('User does not have access to this chat room');
+    }
+
+    const [readReceipt] = await ChatMessageRead.findOrCreate({
+      where: { message_id: messageId, user_id: userId },
+      defaults: { message_id: messageId, user_id: userId, read_at: new Date() },
+    });
+
+    // Update message delivered_at if not set
+    if (!message.delivered_at) {
+      await message.update({ delivered_at: new Date() });
+    }
+
+    return readReceipt;
+  } catch (error) {
+    logger.error('Error marking message as read', { messageId, userId, error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Update chat room theme
+ * @param {number} roomId - Chat room ID
+ * @param {number} userId - User ID (must be creator)
+ * @param {string} theme - Theme name
+ * @returns {Promise<Object>} Updated room
+ */
+export async function updateRoomTheme(roomId, userId, theme) {
+  try {
+    const room = await ChatRoom.findByPk(roomId);
+    if (!room) {
+      throw new Error('Chat room not found');
+    }
+
+    // Only creator can change theme
+    if (room.created_by_id !== userId) {
+      throw new Error('Only room creator can change theme');
+    }
+
+    const validThemes = ['default', 'ocean', 'sunset', 'forest', 'midnight'];
+    if (!validThemes.includes(theme)) {
+      throw new Error('Invalid theme');
+    }
+
+    await room.update({ theme });
+    logger.info('Room theme updated', { roomId, theme });
+    return room;
+  } catch (error) {
+    logger.error('Error updating room theme', { roomId, userId, theme, error: error.message });
+    throw error;
+  }
+}
+
 export default {
   getOrCreateDirectChat,
   getUserChatRooms,
@@ -694,4 +1001,11 @@ export default {
   deleteMessage,
   deleteRoom,
   searchRoomMessages,
+  addReaction,
+  removeReaction,
+  pinMessage,
+  unpinMessage,
+  getPinnedMessages,
+  markMessageRead,
+  updateRoomTheme,
 };

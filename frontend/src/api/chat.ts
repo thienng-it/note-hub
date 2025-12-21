@@ -133,6 +133,84 @@ export async function uploadPhoto(file: File): Promise<{ photoUrl: string }> {
   return data.data;
 }
 
+/**
+ * Add reaction to a message
+ * @param roomId - Chat room ID
+ * @param messageId - Message ID
+ * @param emoji - Emoji reaction
+ */
+export async function addReaction(roomId: number, messageId: number, emoji: string): Promise<void> {
+  await apiClient.post<void>(
+    `${API_VERSION}/chat/rooms/${roomId}/messages/${messageId}/reactions`,
+    {
+      emoji,
+    },
+  );
+}
+
+/**
+ * Remove reaction from a message
+ * @param roomId - Chat room ID
+ * @param messageId - Message ID
+ * @param emoji - Emoji reaction
+ */
+export async function removeReaction(
+  roomId: number,
+  messageId: number,
+  emoji: string,
+): Promise<void> {
+  await apiClient.delete<void>(
+    `${API_VERSION}/chat/rooms/${roomId}/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`,
+  );
+}
+
+/**
+ * Pin a message
+ * @param roomId - Chat room ID
+ * @param messageId - Message ID
+ */
+export async function pinMessage(roomId: number, messageId: number): Promise<void> {
+  await apiClient.post<void>(`${API_VERSION}/chat/rooms/${roomId}/messages/${messageId}/pin`);
+}
+
+/**
+ * Unpin a message
+ * @param roomId - Chat room ID
+ * @param messageId - Message ID
+ */
+export async function unpinMessage(roomId: number, messageId: number): Promise<void> {
+  await apiClient.delete<void>(`${API_VERSION}/chat/rooms/${roomId}/messages/${messageId}/pin`);
+}
+
+/**
+ * Get pinned messages in a room
+ * @param roomId - Chat room ID
+ */
+export async function getPinnedMessages(roomId: number): Promise<ChatMessage[]> {
+  return apiClient.get<ChatMessage[]>(`${API_VERSION}/chat/rooms/${roomId}/pinned`);
+}
+
+/**
+ * Mark message as read
+ * @param roomId - Chat room ID
+ * @param messageId - Message ID
+ */
+export async function markMessageRead(roomId: number, messageId: number): Promise<void> {
+  await apiClient.post<void>(`${API_VERSION}/chat/rooms/${roomId}/messages/${messageId}/read`);
+}
+
+/**
+ * Update room theme
+ * @param roomId - Chat room ID
+ * @param theme - Theme name
+ */
+export async function updateRoomTheme(
+  roomId: number,
+  theme: 'default' | 'ocean' | 'sunset' | 'forest' | 'midnight',
+): Promise<void> {
+  await apiClient.put<void>(`${API_VERSION}/chat/rooms/${roomId}/theme`, { theme });
+}
+
 export const chatApi = {
   getChatRooms,
   createDirectChat,
@@ -145,4 +223,11 @@ export const chatApi = {
   deleteRoom,
   searchMessages,
   uploadPhoto,
+  addReaction,
+  removeReaction,
+  pinMessage,
+  unpinMessage,
+  getPinnedMessages,
+  markMessageRead,
+  updateRoomTheme,
 };

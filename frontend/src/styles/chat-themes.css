@@ -1,0 +1,295 @@
+/* Chat Themes */
+
+/* Default Theme */
+.chat-theme-default {
+  --chat-bg: #ffffff;
+  --chat-sidebar-bg: #f8f9fa;
+  --chat-message-bg: #e9ecef;
+  --chat-message-own-bg: #007bff;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #212529;
+  --chat-border: #dee2e6;
+  --chat-hover: #e9ecef;
+  --chat-pinned-bg: #fff3cd;
+  --chat-reaction-bg: #f8f9fa;
+}
+
+.dark .chat-theme-default {
+  --chat-bg: #1a1a1a;
+  --chat-sidebar-bg: #2d2d2d;
+  --chat-message-bg: #3a3a3a;
+  --chat-message-own-bg: #0056b3;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #e0e0e0;
+  --chat-border: #404040;
+  --chat-hover: #3a3a3a;
+  --chat-pinned-bg: #4a4a2d;
+  --chat-reaction-bg: #3a3a3a;
+}
+
+/* Ocean Theme */
+.chat-theme-ocean {
+  --chat-bg: #e0f2f7;
+  --chat-sidebar-bg: #b2dfdb;
+  --chat-message-bg: #b2ebf2;
+  --chat-message-own-bg: #0097a7;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #004d40;
+  --chat-border: #80deea;
+  --chat-hover: #80deea;
+  --chat-pinned-bg: #ffecb3;
+  --chat-reaction-bg: #e0f7fa;
+}
+
+.dark .chat-theme-ocean {
+  --chat-bg: #004d40;
+  --chat-sidebar-bg: #00695c;
+  --chat-message-bg: #00796b;
+  --chat-message-own-bg: #00acc1;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #e0f2f1;
+  --chat-border: #00897b;
+  --chat-hover: #00897b;
+  --chat-pinned-bg: #5d4037;
+  --chat-reaction-bg: #00695c;
+}
+
+/* Sunset Theme */
+.chat-theme-sunset {
+  --chat-bg: #fff3e0;
+  --chat-sidebar-bg: #ffe0b2;
+  --chat-message-bg: #ffccbc;
+  --chat-message-own-bg: #ff6f00;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #bf360c;
+  --chat-border: #ffab91;
+  --chat-hover: #ffab91;
+  --chat-pinned-bg: #fff9c4;
+  --chat-reaction-bg: #ffe0b2;
+}
+
+.dark .chat-theme-sunset {
+  --chat-bg: #3e2723;
+  --chat-sidebar-bg: #4e342e;
+  --chat-message-bg: #5d4037;
+  --chat-message-own-bg: #e65100;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #ffccbc;
+  --chat-border: #6d4c41;
+  --chat-hover: #6d4c41;
+  --chat-pinned-bg: #4e342e;
+  --chat-reaction-bg: #4e342e;
+}
+
+/* Forest Theme */
+.chat-theme-forest {
+  --chat-bg: #e8f5e9;
+  --chat-sidebar-bg: #c8e6c9;
+  --chat-message-bg: #a5d6a7;
+  --chat-message-own-bg: #2e7d32;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #1b5e20;
+  --chat-border: #81c784;
+  --chat-hover: #81c784;
+  --chat-pinned-bg: #fff9c4;
+  --chat-reaction-bg: #c8e6c9;
+}
+
+.dark .chat-theme-forest {
+  --chat-bg: #1b5e20;
+  --chat-sidebar-bg: #2e7d32;
+  --chat-message-bg: #388e3c;
+  --chat-message-own-bg: #43a047;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #c8e6c9;
+  --chat-border: #4caf50;
+  --chat-hover: #4caf50;
+  --chat-pinned-bg: #33691e;
+  --chat-reaction-bg: #2e7d32;
+}
+
+/* Midnight Theme */
+.chat-theme-midnight {
+  --chat-bg: #1a1a2e;
+  --chat-sidebar-bg: #16213e;
+  --chat-message-bg: #0f3460;
+  --chat-message-own-bg: #533483;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #e0e0e0;
+  --chat-border: #1f4068;
+  --chat-hover: #1f4068;
+  --chat-pinned-bg: #3d2c5a;
+  --chat-reaction-bg: #16213e;
+}
+
+.dark .chat-theme-midnight {
+  --chat-bg: #0a0a14;
+  --chat-sidebar-bg: #0d1321;
+  --chat-message-bg: #1a1a2e;
+  --chat-message-own-bg: #6a4c93;
+  --chat-message-own-text: #ffffff;
+  --chat-message-text: #e0e0e0;
+  --chat-border: #16213e;
+  --chat-hover: #16213e;
+  --chat-pinned-bg: #2d1b4e;
+  --chat-reaction-bg: #0d1321;
+}
+
+/* Apply theme variables */
+.chat-container {
+  background-color: var(--chat-bg);
+  color: var(--chat-message-text);
+}
+
+.chat-sidebar {
+  background-color: var(--chat-sidebar-bg);
+  border-right: 1px solid var(--chat-border);
+}
+
+.chat-room-item:hover {
+  background-color: var(--chat-hover);
+}
+
+.chat-message {
+  background-color: var(--chat-message-bg);
+  color: var(--chat-message-text);
+}
+
+.chat-message.own {
+  background-color: var(--chat-message-own-bg);
+  color: var(--chat-message-own-text);
+}
+
+.chat-message.pinned {
+  background-color: var(--chat-pinned-bg);
+  border-left: 3px solid var(--chat-message-own-bg);
+}
+
+.chat-reaction {
+  background-color: var(--chat-reaction-bg);
+  border: 1px solid var(--chat-border);
+}
+
+.chat-input-container {
+  border-top: 1px solid var(--chat-border);
+  background-color: var(--chat-bg);
+}
+
+/* Message status indicators */
+.message-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-left: 8px;
+}
+
+.message-status-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.message-status-sent {
+  color: #6c757d;
+}
+
+.message-status-delivered {
+  color: #0dcaf0;
+}
+
+.message-status-read {
+  color: #198754;
+}
+
+/* Reaction picker */
+.reaction-picker {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background: var(--chat-bg);
+  border: 1px solid var(--chat-border);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.reaction-emoji {
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: transform 0.2s;
+}
+
+.reaction-emoji:hover {
+  transform: scale(1.2);
+  background-color: var(--chat-hover);
+}
+
+/* Pinned messages banner */
+.pinned-messages-banner {
+  background-color: var(--chat-pinned-bg);
+  border-bottom: 1px solid var(--chat-border);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pinned-message-preview {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+/* Theme selector */
+.theme-selector {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--chat-border);
+}
+
+.theme-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.theme-option:hover {
+  transform: scale(1.1);
+}
+
+.theme-option.active {
+  border-color: var(--chat-message-own-bg);
+  box-shadow: 0 0 0 2px var(--chat-bg);
+}
+
+.theme-option.default {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.theme-option.ocean {
+  background: linear-gradient(135deg, #0097a7 0%, #00acc1 100%);
+}
+
+.theme-option.sunset {
+  background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 100%);
+}
+
+.theme-option.forest {
+  background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+}
+
+.theme-option.midnight {
+  background: linear-gradient(135deg, #533483 0%, #6a4c93 100%);
+}

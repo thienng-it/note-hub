@@ -103,6 +103,8 @@ export async function initializeSequelize() {
     ChatRoom,
     ChatMessage,
     ChatParticipant,
+    ChatMessageReaction,
+    ChatMessageRead,
   } = models);
 
   // Test connection
@@ -534,6 +536,11 @@ function defineModels() {
         allowNull: true,
         comment: 'Salt used for encrypting messages in this room',
       },
+      theme: {
+        type: DataTypes.STRING(20),
+        defaultValue: 'default',
+        comment: 'Chat theme: default, ocean, sunset, forest, midnight',
+      },
     },
     {
       tableName: 'chat_rooms',
@@ -541,6 +548,90 @@ function defineModels() {
       createdAt: 'created_at',
       updatedAt: 'updated_at',
       indexes: [{ fields: ['created_by_id'] }],
+    },
+  );
+
+  // ChatMessageReaction Model
+  const ChatMessageReaction = sequelize.define(
+    'ChatMessageReaction',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      message_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'chat_messages',
+          key: 'id',
+        },
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      emoji: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+      },
+    },
+    {
+      tableName: 'chat_message_reactions',
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: false,
+      indexes: [
+        { fields: ['message_id'] },
+        { fields: ['user_id'] },
+        { fields: ['message_id', 'user_id', 'emoji'], unique: true },
+      ],
+    },
+  );
+
+  // ChatMessageRead Model
+  const ChatMessageRead = sequelize.define(
+    'ChatMessageRead',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      message_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'chat_messages',
+          key: 'id',
+        },
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      read_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      tableName: 'chat_message_reads',
+      timestamps: false,
+      indexes: [
+        { fields: ['message_id'] },
+        { fields: ['user_id'] },
+        { fields: ['message_id', 'user_id'], unique: true },
+      ],
     },
   );
 
@@ -593,13 +684,42 @@ function defineModels() {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      is_pinned: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      pinned_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      pinned_by_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      sent_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      delivered_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       tableName: 'chat_messages',
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
-      indexes: [{ fields: ['room_id'] }, { fields: ['sender_id'] }, { fields: ['created_at'] }],
+      indexes: [
+        { fields: ['room_id'] },
+        { fields: ['sender_id'] },
+        { fields: ['created_at'] },
+        { fields: ['is_pinned', 'room_id'] },
+      ],
     },
   );
 
@@ -680,6 +800,21 @@ function defineModels() {
   User.hasMany(ChatParticipant, { foreignKey: 'user_id', as: 'chatParticipations' });
   ChatParticipant.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
+  // Reaction associations
+  ChatMessage.hasMany(ChatMessageReaction, { foreignKey: 'message_id', as: 'reactions' });
+  ChatMessageReaction.belongsTo(ChatMessage, { foreignKey: 'message_id', as: 'message' });
+  User.hasMany(ChatMessageReaction, { foreignKey: 'user_id', as: 'messageReactions' });
+  ChatMessageReaction.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+  // Read receipt associations
+  ChatMessage.hasMany(ChatMessageRead, { foreignKey: 'message_id', as: 'readReceipts' });
+  ChatMessageRead.belongsTo(ChatMessage, { foreignKey: 'message_id', as: 'message' });
+  User.hasMany(ChatMessageRead, { foreignKey: 'user_id', as: 'messageReads' });
+  ChatMessageRead.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+  // Pinned by association
+  ChatMessage.belongsTo(User, { foreignKey: 'pinned_by_id', as: 'pinnedBy' });
+
   // Export models
   return {
     User,
@@ -693,12 +828,14 @@ function defineModels() {
     ChatRoom,
     ChatMessage,
     ChatParticipant,
+    ChatMessageReaction,
+    ChatMessageRead,
   };
 }
 
 // Module-level model exports
 let User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag;
-let ChatRoom, ChatMessage, ChatParticipant;
+let ChatRoom, ChatMessage, ChatParticipant, ChatMessageReaction, ChatMessageRead;
 
 /**
  * Sync database schema.
@@ -732,4 +869,4 @@ export async function closeDatabase() {
 
 // Export models
 export { User, Tag, Note, Task, ShareNote, PasswordResetToken, Invitation, NoteTag };
-export { ChatRoom, ChatMessage, ChatParticipant };
+export { ChatRoom, ChatMessage, ChatParticipant, ChatMessageReaction, ChatMessageRead };

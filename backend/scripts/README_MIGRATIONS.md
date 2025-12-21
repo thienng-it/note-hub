@@ -15,7 +15,6 @@ node scripts/migrate.js run
 
 # Verify schema completeness
 node scripts/migrate.js verify
-
 # Create new migration template
 node scripts/migrate.js create "add column name"
 ```
