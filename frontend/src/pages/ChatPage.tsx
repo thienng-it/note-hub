@@ -184,7 +184,11 @@ export function ChatPage() {
   const handleCreateGroupChat = async () => {
     const name = groupChatName.trim();
     const participantIds = Array.from(selectedGroupUserIds);
-    if (!name || participantIds.length < 2) return;
+
+    if (!name || participantIds.length < 2) {
+      setError(t('chat.groupNameRequired'));
+      return;
+    }
 
     try {
       await startGroupChat(name, participantIds);
@@ -195,6 +199,7 @@ export function ChatPage() {
       setSelectedGroupUserIds(new Set());
     } catch (err) {
       console.error('Failed to create group chat:', err);
+      setError(err instanceof Error ? err.message : t('chat.failedToCreateGroupChat'));
     }
   };
 
@@ -219,6 +224,7 @@ export function ChatPage() {
       setTyping(false);
     } catch (error) {
       console.error('Failed to send message:', error);
+      setError(t('chat.messageFailed'));
       setUploadingPhoto(false);
     }
   };
@@ -328,6 +334,9 @@ export function ChatPage() {
     const diff = now.getTime() - date.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
 
+    if (hours < 1) {
+      return t('chat.today');
+    }
     if (hours < 24) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
@@ -350,10 +359,15 @@ export function ChatPage() {
       {/* Compact Header - Only show notification banner and connection status */}
       {(showNotificationBanner || !isConnected) && (
         <div className="chat-compact-header flex-shrink-0">
-          {!isConnected && (
+          {isConnected ? (
+            <div className="chat-connection-status connected">
+              <i className="fas fa-wifi mr-2" />
+              <span>{t('chat.connected')}</span>
+            </div>
+          ) : (
             <div className="chat-connection-status disconnected">
               <i className="fas fa-wifi-slash mr-2" />
-              <span>{t('chat.disconnected')}</span>
+              <span>{t('chat.reconnecting')}</span>
             </div>
           )}
           {showNotificationBanner && (
@@ -466,7 +480,7 @@ export function ChatPage() {
                 <div className="chat-sidebar-loading-spinner">
                   <i className="fas fa-circle-notch fa-spin" />
                 </div>
-                <p>{t('chat.loadingChats')}</p>
+                <p>{t('chat.loadingMessages')}</p>
               </div>
             ) : rooms.length === 0 ? (
               <div className="chat-sidebar-empty">
@@ -491,15 +505,15 @@ export function ChatPage() {
                     if (!searchQuery.trim()) return true;
                     const otherUser = getOtherParticipant(room);
                     const displayName = room.is_group
-                      ? room.name || 'Group'
-                      : otherUser?.username || 'Unknown';
+                      ? room.name || t('chat.group')
+                      : otherUser?.username || t('chat.unknown');
                     return displayName.toLowerCase().includes(searchQuery.toLowerCase());
                   })
                   .map((room) => {
                     const otherUser = getOtherParticipant(room);
                     const displayName = room.is_group
-                      ? room.name || 'Group'
-                      : otherUser?.username || 'Unknown';
+                      ? room.name || t('chat.group')
+                      : otherUser?.username || t('chat.unknown');
                     const userStatus = otherUser
                       ? getUserStatus(otherUser.id, otherUser.status)
                       : 'offline';
@@ -557,7 +571,10 @@ export function ChatPage() {
                               </p>
                             )}
                             {room.unreadCount > 0 && (
-                              <span className="chat-room-card-badge">
+                              <span
+                                className="chat-room-card-badge"
+                                title={t('chat.unreadMessages', { count: room.unreadCount })}
+                              >
                                 {room.unreadCount > 99 ? '99+' : room.unreadCount}
                               </span>
                             )}
@@ -583,9 +600,7 @@ export function ChatPage() {
                 <i className="fas fa-comment-dots" />
               </div>
               <p className="chat-empty-title">{t('chat.noChatSelected')}</p>
-              <p className="chat-empty-subtitle">
-                Select a conversation from the list or start a new chat
-              </p>
+              <p className="chat-empty-subtitle">{t('chat.selectConversationHint')}</p>
             </div>
           ) : (
             <>
@@ -618,7 +633,8 @@ export function ChatPage() {
                       {currentRoom.is_group
                         ? currentRoom.name
                         : t('chat.chatWith', {
-                            username: getOtherParticipant(currentRoom)?.username || 'Unknown',
+                            username:
+                              getOtherParticipant(currentRoom)?.username || t('chat.unknown'),
                           })}
                     </h2>
                     {typingUsers.size > 0 && (
@@ -637,7 +653,7 @@ export function ChatPage() {
                       type="button"
                       onClick={() => setShowThemeSelector(!showThemeSelector)}
                       className="chat-input-btn"
-                      title="Change theme"
+                      title={t('common.changeThemeTitle')}
                       aria-label="Change theme"
                     >
                       <i className="fas fa-palette text-sm" />
@@ -716,7 +732,7 @@ export function ChatPage() {
                     <div className="flex-1 flex items-center justify-center py-12">
                       <div className="text-center text-[var(--text-tertiary)]">
                         <i className="fas fa-comments text-3xl mb-3 opacity-50" />
-                        <p className="text-sm">No messages yet. Start the conversation!</p>
+                        <p className="text-sm">{t('common.noMessagesYet')}</p>
                       </div>
                     </div>
                   )}
@@ -755,7 +771,7 @@ export function ChatPage() {
                                 >
                                   <img
                                     src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${message.photo_url}`}
-                                    alt="Chat attachment"
+                                    alt={t('common.chatAttachmentAlt')}
                                     className="max-w-full h-auto"
                                     style={{ maxHeight: '280px' }}
                                     loading="lazy"
@@ -785,8 +801,12 @@ export function ChatPage() {
                                     : pinMessage(message.id)
                                 }
                                 className={`chat-message-delete ${message.is_pinned ? 'text-amber-600' : ''}`}
-                                title={message.is_pinned ? 'Unpin message' : 'Pin message'}
-                                aria-label={message.is_pinned ? 'Unpin message' : 'Pin message'}
+                                title={
+                                  message.is_pinned ? t('chat.unpinMessage') : t('chat.pinMessage')
+                                }
+                                aria-label={
+                                  message.is_pinned ? t('chat.unpinMessage') : t('chat.pinMessage')
+                                }
                               >
                                 <i
                                   className={`fas fa-thumbtack text-xs ${message.is_pinned ? '' : 'opacity-50'}`}
@@ -824,7 +844,7 @@ export function ChatPage() {
                 {/* Photo preview */}
                 {photoPreviewUrl && (
                   <div className="chat-photo-preview">
-                    <img src={photoPreviewUrl} alt="Preview" />
+                    <img src={photoPreviewUrl} alt={t('common.previewAlt')} />
                     <button
                       type="button"
                       onClick={handleClearPhoto}
@@ -867,7 +887,7 @@ export function ChatPage() {
                     type="submit"
                     disabled={(!messageInput.trim() && !selectedPhoto) || uploadingPhoto}
                     className="chat-input-btn send"
-                    aria-label={uploadingPhoto ? t('chat.uploading') : t('chat.send')}
+                    aria-label={uploadingPhoto ? t('chat.sendingMessage') : t('chat.send')}
                   >
                     {uploadingPhoto ? (
                       <i className="fas fa-spinner fa-spin" />
@@ -936,6 +956,21 @@ export function ChatPage() {
             </div>
 
             <div className="chat-modal-search">
+              <div
+                style={{
+                  marginBottom: '0.75rem',
+                  display: isGroupChatMode ? 'block' : 'none',
+                }}
+              >
+                <input
+                  type="text"
+                  value={groupChatName}
+                  onChange={(e) => setGroupChatName(e.target.value)}
+                  placeholder={t('chat.enterGroupName')}
+                  className="chat-search-input"
+                  aria-label={t('chat.groupName')}
+                />
+              </div>
               <div className="chat-search-container">
                 <i className="fas fa-search chat-search-icon" />
                 <input
@@ -947,18 +982,6 @@ export function ChatPage() {
                   aria-label="Search users"
                 />
               </div>
-              {isGroupChatMode && (
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    value={groupChatName}
-                    onChange={(e) => setGroupChatName(e.target.value)}
-                    placeholder="Group name"
-                    className="chat-search-input"
-                    aria-label="Group name"
-                  />
-                </div>
-              )}
             </div>
 
             <div className="chat-modal-body">
@@ -967,7 +990,7 @@ export function ChatPage() {
                   <div className="chat-empty-icon" style={{ width: '4rem', height: '4rem' }}>
                     <i className="fas fa-users" style={{ fontSize: '1.5rem' }} />
                   </div>
-                  <p className="chat-empty-subtitle">{t('chat.selectUser')}</p>
+                  <p className="chat-empty-subtitle">{t('chat.selectUserToChat')}</p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -1001,7 +1024,7 @@ export function ChatPage() {
                               handleToggleGroupUser(chatUser.id);
                             }}
                             className="mr-2"
-                            aria-label={`Select ${chatUser.username}`}
+                            aria-label={t('chat.selectUserLabel', { username: chatUser.username })}
                           />
                         )}
                         <UserAvatar
@@ -1033,6 +1056,7 @@ export function ChatPage() {
                   onClick={handleCreateGroupChat}
                   disabled={groupChatName.trim().length === 0 || selectedGroupUserIds.size < 2}
                   className="chat-confirm-btn delete"
+                  style={{ width: '100%' }}
                 >
                   {t('chat.startChat')}
                 </button>
@@ -1146,7 +1170,7 @@ export function ChatPage() {
             {/* Prevent modal from closing when clicking the image itself */}
             <img
               src={viewingPhoto}
-              alt="Full size view"
+              alt={t('common.fullSizeViewAlt')}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => e.stopPropagation()}
               loading="lazy"
@@ -1186,7 +1210,7 @@ export function ChatPage() {
                   <div className="chat-empty-icon" style={{ width: '4rem', height: '4rem' }}>
                     <i className="fas fa-thumbtack" style={{ fontSize: '1.5rem' }} />
                   </div>
-                  <p className="chat-empty-subtitle">No pinned messages</p>
+                  <p className="chat-empty-subtitle">{t('common.noPinnedMessages')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -1209,7 +1233,7 @@ export function ChatPage() {
                           type="button"
                           onClick={() => unpinMessage(message.id)}
                           className="text-gray-500 hover:text-red-600"
-                          title="Unpin"
+                          title={t('common.unpinTitle')}
                         >
                           <i className="fas fa-times" />
                         </button>

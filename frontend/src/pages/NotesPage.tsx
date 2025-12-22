@@ -120,7 +120,7 @@ export function NotesPage() {
           .sort((a, b) => (b.note_count || 0) - (a.note_count || 0)),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load notes');
+      setError(err instanceof Error ? err.message : t('notes.failedToLoadNote'));
     } finally {
       setIsLoading(false);
     }
@@ -228,7 +228,7 @@ export function NotesPage() {
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (query && query.trim().length < 3) {
-      setError('Search query must be at least 3 characters long.');
+      setError(t('notes.searchMinLength'));
       return;
     }
     const params = new URLSearchParams();
@@ -252,7 +252,7 @@ export function NotesPage() {
       // Update the note in the list while preserving all fields
       setNotes((prevNotes) => prevNotes.map((n) => (n.id === note.id ? { ...n, ...updated } : n)));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update note');
+      setError(err instanceof Error ? err.message : t('notes.failedToUpdateNote'));
     }
   };
 
@@ -507,14 +507,14 @@ export function NotesPage() {
         <div className="modern-filter-tabs">
           <Link to="/" className={`modern-filter-tab ${view === 'all' ? 'active' : ''}`}>
             <i className="glass-i fas fa-home mr-2"></i>
-            <span>All</span>
+            <span>{t('common.all')}</span>
           </Link>
           <Link
             to="/?view=favorites"
             className={`modern-filter-tab ${view === 'favorites' ? 'active' : ''}`}
           >
             <i className="glass-i fas fa-heart mr-2"></i>
-            <span>Favorites</span>
+            <span>{t('common.favorites')}</span>
           </Link>
           <Link
             to="/?view=archived"
@@ -528,7 +528,7 @@ export function NotesPage() {
             className={`modern-filter-tab ${view === 'shared' ? 'active' : ''}`}
           >
             <i className="glass-i fas fa-share-alt mr-2"></i>
-            <span>Shared</span>
+            <span>{t('common.shared')}</span>
           </Link>
         </div>
 
@@ -653,7 +653,11 @@ export function NotesPage() {
                           type="button"
                           onClick={() => toggleHideNote(note.id)}
                           className={`modern-action-btn ${hiddenNotes.has(note.id) ? 'action-active action-purple' : 'action-default'}`}
-                          title={hiddenNotes.has(note.id) ? 'Show content' : 'Hide content'}
+                          title={
+                            hiddenNotes.has(note.id)
+                              ? t('notes.showContentTitle')
+                              : t('notes.hideContentTitle')
+                          }
                         >
                           <i
                             className={`fas ${hiddenNotes.has(note.id) ? 'fa-eye' : 'fa-eye-slash'}`}
@@ -677,7 +681,11 @@ export function NotesPage() {
                           type="button"
                           onClick={() => handleToggleFavorite(note)}
                           className={`modern-action-btn ${note.favorite ? 'action-active action-red' : 'action-default'}`}
-                          title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                          title={
+                            note.favorite
+                              ? t('notes.removeFromFavoritesTitle')
+                              : t('notes.addToFavoritesTitle')
+                          }
                         >
                           <i className="glass-i fas fa-heart"></i>
                         </button>
@@ -696,9 +704,7 @@ export function NotesPage() {
                   {selectedFolder ? `No notes in "${selectedFolder.name}"` : t('notes.noNotes')}
                 </h3>
                 <p className="modern-empty-text">
-                  {selectedFolder
-                    ? 'Create a note or move existing notes to this folder'
-                    : 'Start creating notes to organize them'}
+                  {selectedFolder ? t('notes.createOrMoveToFolder') : t('notes.startCreatingNotes')}
                 </p>
                 <Link to="/notes/new" className="btn-apple mt-4">
                   <i className="glass-i fas fa-plus mr-2"></i>

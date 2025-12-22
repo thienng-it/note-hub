@@ -27,7 +27,7 @@ exports[`GoogleCallbackPage > matches snapshot 1`] = `
         <p
           class="text-[var(--text-secondary)]"
         >
-          Completing Google authentication
+          Completing Google authentication...
         </p>
       </div>
     </div>

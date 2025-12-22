@@ -197,7 +197,7 @@ export function PinnedMessagesBanner({
           type="button"
           onClick={() => onUnpin(latestPinned.id)}
           className="text-gray-500 hover:text-gray-700"
-          title="Unpin"
+          title={t('common.unpinTitle')}
         >
           <i className="fas fa-times" />
         </button>

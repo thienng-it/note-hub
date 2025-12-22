@@ -1013,6 +1013,12 @@
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
 }
 
+.chat-confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .safe-area-inset-top {
   padding-top: env(safe-area-inset-top);
 }

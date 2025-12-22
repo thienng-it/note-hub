@@ -348,7 +348,7 @@ export function TasksPage() {
                   type="button"
                   onClick={hiddenTasks.size === 0 ? hideAllTasks : showAllTasks}
                   className="btn-secondary-glass"
-                  title="Hide all task contents"
+                  title={t('common.hideAllTasksTitle')}
                 >
                   <i
                     className={`glass-i fas ${hiddenTasks.size === 0 ? 'fa-eye' : 'fa-eye-slash'}`}
@@ -360,7 +360,7 @@ export function TasksPage() {
               )}
               <button type="button" onClick={() => setShowForm(!showForm)} className="btn-apple">
                 <i className={`glass-i fas fa-${showForm ? 'times' : 'plus'} mr-2`}></i>
-                <span>{showForm ? 'Cancel' : 'New Task'}</span>
+                <span>{showForm ? t('common.cancel') : t('tasks.newTask')}</span>
               </button>
             </div>
           </div>
@@ -494,9 +494,9 @@ export function TasksPage() {
                     onChange={(e) => setNewPriority(e.target.value as 'low' | 'medium' | 'high')}
                     className="glass-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
+                    <option value="low">{t('common.low')}</option>
+                    <option value="medium">{t('common.medium')}</option>
+                    <option value="high">{t('common.high')}</option>
                   </select>
                 </div>
               </div>
@@ -515,7 +515,7 @@ export function TasksPage() {
                     onChange={(e) => setNewFolderId(e.target.value ? Number(e.target.value) : null)}
                     className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">No folder</option>
+                    <option value="">{t('notes.noFolder')}</option>
                     {flattenFolders(folders).map((folder) => (
                       <option key={folder.id} value={folder.id}>
                         {folder.name}
@@ -649,9 +649,9 @@ export function TasksPage() {
                             }
                             className="glass-input w-full px-3 py-2 rounded-lg"
                           >
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
+                            <option value="low">{t('common.low')}</option>
+                            <option value="medium">{t('common.medium')}</option>
+                            <option value="high">{t('common.high')}</option>
                           </select>
                         </div>
                         <div className="flex justify-end gap-2">
@@ -761,7 +761,7 @@ export function TasksPage() {
                           <Link
                             to={`/tasks/${task.id}/share`}
                             className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-green-600 transition-colors"
-                            title="Share"
+                            title={t('common.shareTitle')}
                           >
                             <i className="glass-i fas fa-share-alt"></i>
                           </Link>
@@ -769,7 +769,7 @@ export function TasksPage() {
                             type="button"
                             onClick={() => setEditingTask(task)}
                             className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-blue-600 transition-colors"
-                            title="Edit"
+                            title={t('common.editTitle')}
                           >
                             <i className="glass-i fas fa-edit"></i>
                           </button>
@@ -777,7 +777,7 @@ export function TasksPage() {
                             type="button"
                             onClick={() => handleDeleteTask(task)}
                             className="p-2 rounded-lg hover:bg-red-500/10 text-red-600 transition-colors"
-                            title="Delete"
+                            title={t('common.deleteTitle')}
                           >
                             <i className="glass-i fas fa-trash"></i>
                           </button>

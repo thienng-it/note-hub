@@ -69,7 +69,7 @@ export function AdminDashboardPage() {
       });
       setTotalPages(data.pagination.total_pages);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load users');
+      setError(err instanceof Error ? err.message : t('admin.failedToLoadUsers'));
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +120,7 @@ export function AdminDashboardPage() {
 
     // For delete user, check if confirmation text matches
     if (modalState.type === 'deleteUser' && deleteConfirmText !== modalState.username) {
-      setError('Deletion cancelled: Username did not match');
+      setError(t('admin.deletionCancelled'));
       return;
     }
 
@@ -198,10 +198,10 @@ export function AdminDashboardPage() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 mb-6">
             <i className="glass-i fas fa-ban text-3xl text-red-500" aria-hidden="true"></i>
           </div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Access Denied</h1>
-          <p className="text-[var(--text-secondary)] mb-6">
-            You don't have permission to access the admin dashboard.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
+            {t('common.accessDenied')}
+          </h1>
+          <p className="text-[var(--text-secondary)] mb-6">{t('admin.noPermission')}</p>
           <Link to="/" className="btn-apple">
             <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
             <span>{t('admin.backToNotes')}</span>
@@ -222,11 +222,11 @@ export function AdminDashboardPage() {
                 <i className="fas fa-users-cog text-white"></i>
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
-                Admin Dashboard
+                {t('admin.adminDashboard')}
               </h1>
             </div>
             <p className="text-sm sm:text-base text-[var(--text-secondary)] ml-1">
-              Manage users and view system statistics
+              {t('admin.manageUsers')}
             </p>
           </div>
         </div>
@@ -238,7 +238,7 @@ export function AdminDashboardPage() {
                 <i className="fas fa-users text-white text-sm"></i>
               </div>
               <span className="font-bold text-lg tabular-nums">{stats.total_users}</span>
-              <span className="hidden sm:inline text-sm font-medium">Total Users</span>
+              <span className="hidden sm:inline text-sm font-medium">{t('common.totalUsers')}</span>
             </div>
             {stats.locked_users > 0 && (
               <div className="modern-stat-badge bg-gradient-to-r from-red-500/10 to-red-600/10 border-red-500/30 hover:from-red-500/20 hover:to-red-600/20 hover:border-red-500/40 hover:scale-105 transition-all duration-200">
@@ -249,7 +249,7 @@ export function AdminDashboardPage() {
                   {stats.locked_users}
                 </span>
                 <span className="hidden sm:inline text-sm font-medium text-red-600 dark:text-red-400">
-                  Locked
+                  {t('admin.lockedAccounts')}
                 </span>
               </div>
             )}
@@ -257,13 +257,13 @@ export function AdminDashboardPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link to="/admin/audit-logs" className="modern-btn-secondary">
               <i className="fas fa-clipboard-list mr-2"></i>
-              <span className="hidden sm:inline">Audit Logs</span>
-              <span className="sm:hidden">Logs</span>
+              <span className="hidden sm:inline">{t('common.auditLogs')}</span>
+              <span className="sm:hidden">{t('common.logs')}</span>
             </Link>
             <Link to="/" className="modern-btn-secondary">
               <i className="fas fa-arrow-left mr-2"></i>
               <span className="hidden sm:inline">{t('admin.backToNotes')}</span>
-              <span className="sm:hidden">Back</span>
+              <span className="sm:hidden">{t('admin.back')}</span>
             </Link>
           </div>
         </div>
@@ -274,7 +274,7 @@ export function AdminDashboardPage() {
         <div className="stat-card stat-card-blue">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="stat-card-label">Total Users</p>
+              <p className="stat-card-label">{t('common.totalUsers')}</p>
               <p className="stat-card-value">{stats.total_users}</p>
               <div className="stat-card-progress"></div>
             </div>
@@ -287,7 +287,7 @@ export function AdminDashboardPage() {
         <div className="stat-card stat-card-green">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="stat-card-label">2FA Enabled</p>
+              <p className="stat-card-label">{t('common.2faEnabled')}</p>
               <p className="stat-card-value">{stats.users_with_2fa}</p>
               <div className="stat-card-progress"></div>
             </div>
@@ -300,7 +300,7 @@ export function AdminDashboardPage() {
         <div className="stat-card stat-card-purple">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="stat-card-label">With Email</p>
+              <p className="stat-card-label">{t('common.withEmail')}</p>
               <p className="stat-card-value">{stats.users_with_email}</p>
               <div className="stat-card-progress"></div>
             </div>
@@ -313,7 +313,7 @@ export function AdminDashboardPage() {
         <div className="stat-card stat-card-orange">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="stat-card-label">Admins</p>
+              <p className="stat-card-label">{t('common.admins')}</p>
               <p className="stat-card-value">{stats.admin_users}</p>
               <div className="stat-card-progress"></div>
             </div>
@@ -326,7 +326,7 @@ export function AdminDashboardPage() {
         <div className="stat-card stat-card-red">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="stat-card-label">Locked</p>
+              <p className="stat-card-label">{t('common.locked')}</p>
               <p className="stat-card-value">{stats.locked_users}</p>
               <div className="stat-card-progress"></div>
             </div>
@@ -396,7 +396,7 @@ export function AdminDashboardPage() {
             className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
             aria-hidden="true"
           ></i>
-          <p className="text-[var(--text-secondary)]">Loading users...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loadingUsers')}</p>
         </div>
       ) : (
         <>
@@ -407,19 +407,19 @@ export function AdminDashboardPage() {
                 <thead className="bg-[var(--bg-tertiary)]">
                   <tr>
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                      User
+                      {t('admin.user')}
                     </th>
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden sm:table-cell">
-                      Email
+                      {t('admin.email')}
                     </th>
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell">
-                      Status
+                      {t('admin.status')}
                     </th>
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell">
-                      Created
+                      {t('admin.created')}
                     </th>
                     <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                      Actions
+                      {t('admin.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -434,9 +434,9 @@ export function AdminDashboardPage() {
                           className="glass-i fas fa-users text-4xl mb-4 text-[var(--text-muted)]"
                           aria-hidden="true"
                         ></i>
-                        <p className="text-lg">No users found</p>
+                        <p className="text-lg">{t('common.noUsersFound')}</p>
                         {searchQuery && (
-                          <p className="text-sm mt-2">Try adjusting your search criteria</p>
+                          <p className="text-sm mt-2">{t('common.tryAdjustingSearch')}</p>
                         )}
                       </td>
                     </tr>
@@ -471,7 +471,9 @@ export function AdminDashboardPage() {
                         {/* Email Column */}
                         <td className="px-4 sm:px-6 py-4 text-sm text-[var(--text-secondary)] hidden sm:table-cell">
                           {u.email || (
-                            <span className="text-[var(--text-muted)] italic">No email</span>
+                            <span className="text-[var(--text-muted)] italic">
+                              {t('common.noEmail')}
+                            </span>
                           )}
                         </td>
 
@@ -513,20 +515,20 @@ export function AdminDashboardPage() {
                                   type="button"
                                   onClick={() => handleUnlockUser(u.id, u.username)}
                                   className="action-btn action-btn-unlock"
-                                  title="Unlock user account"
+                                  title={t('common.unlockUserTitle')}
                                 >
                                   <i className="fas fa-unlock" aria-hidden="true"></i>
-                                  Unlock
+                                  {t('admin.unlockUserButton')}
                                 </button>
                               ) : (
                                 <button
                                   type="button"
                                   onClick={() => handleLockUser(u.id, u.username)}
                                   className="action-btn action-btn-lock"
-                                  title="Lock user account"
+                                  title={t('common.lockUserTitle')}
                                 >
                                   <i className="fas fa-lock" aria-hidden="true"></i>
-                                  Lock
+                                  {t('admin.lockUserButton')}
                                 </button>
                               ))}
 
@@ -538,20 +540,20 @@ export function AdminDashboardPage() {
                                   type="button"
                                   onClick={() => handleRevokeAdmin(u.id, u.username)}
                                   className="action-btn action-btn-revoke"
-                                  title="Revoke admin privileges"
+                                  title={t('common.revokeAdminTitle')}
                                 >
                                   <i className="fas fa-crown" aria-hidden="true"></i>
-                                  Revoke
+                                  {t('admin.revokeAdminButton')}
                                 </button>
                               ) : (
                                 <button
                                   type="button"
                                   onClick={() => handleGrantAdmin(u.id, u.username)}
                                   className="action-btn action-btn-grant"
-                                  title="Grant admin privileges"
+                                  title={t('common.grantAdminTitle')}
                                 >
                                   <i className="fas fa-crown" aria-hidden="true"></i>
-                                  Grant
+                                  {t('admin.grantAdminButton')}
                                 </button>
                               ))}
 
@@ -561,10 +563,10 @@ export function AdminDashboardPage() {
                                 type="button"
                                 onClick={() => handleDisable2FA(u.id, u.username)}
                                 className="action-btn action-btn-2fa"
-                                title="Disable 2FA for account recovery"
+                                title={t('common.disable2FATitle')}
                               >
                                 <i className="fas fa-shield-alt" aria-hidden="true"></i>
-                                Disable 2FA
+                                {t('admin.disable2FAButton')}
                               </button>
                             )}
 
@@ -574,10 +576,10 @@ export function AdminDashboardPage() {
                                 type="button"
                                 onClick={() => handleDeleteUser(u.id, u.username)}
                                 className="action-btn action-btn-delete"
-                                title="Delete user account permanently"
+                                title={t('admin.deleteUserPermanently')}
                               >
                                 <i className="fas fa-trash" aria-hidden="true"></i>
-                                Delete
+                                {t('admin.deleteUserButton')}
                               </button>
                             )}
                           </div>
@@ -594,7 +596,7 @@ export function AdminDashboardPage() {
           {totalPages > 1 && (
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-[var(--text-secondary)]">
-                Page {page} of {totalPages}
+                {t('admin.page')} {page} {t('admin.of')} {totalPages}
               </div>
               <div className="flex gap-2">
                 {page > 1 && (
@@ -604,7 +606,7 @@ export function AdminDashboardPage() {
                     className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
                   >
                     <i className="glass-i fas fa-chevron-left" aria-hidden="true"></i>
-                    <span className="hidden sm:inline">Previous</span>
+                    <span className="hidden sm:inline">{t('common.previous')}</span>
                   </button>
                 )}
 
@@ -633,7 +635,7 @@ export function AdminDashboardPage() {
                     onClick={() => setPage(page + 1)}
                     className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors flex items-center gap-2"
                   >
-                    <span className="hidden sm:inline">Next</span>
+                    <span className="hidden sm:inline">{t('common.next')}</span>
                     <i className="glass-i fas fa-chevron-right" aria-hidden="true"></i>
                   </button>
                 )}

@@ -49,7 +49,7 @@ export function NoteEditPage() {
       setArchived(note.archived);
       setFolderId(note.folder_id ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load note');
+      setError(err instanceof Error ? err.message : t('notes.failedToLoadNote'));
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +77,7 @@ export function NoteEditPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError('Title is required');
+      setError(t('notes.titleRequired'));
       return;
     }
 
@@ -106,7 +106,7 @@ export function NoteEditPage() {
 
       navigate(`/notes/${note.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save note');
+      setError(err instanceof Error ? err.message : t('notes.failedToSaveNote'));
     } finally {
       setIsSaving(false);
     }
@@ -162,8 +162,10 @@ export function NoteEditPage() {
           className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors inline-flex items-center text-sm sm:text-base touch-no-select"
         >
           <i className="glass-i fas fa-arrow-left mr-2"></i>
-          <span className="hidden xs:inline">{id ? 'Back to Note' : 'Back to Notes'}</span>
-          <span className="xs:hidden">Back</span>
+          <span className="hidden xs:inline">
+            {id ? t('common.backToNote') : t('common.backToNotes')}
+          </span>
+          <span className="xs:hidden">{t('common.back')}</span>
         </Link>
       </div>
 
@@ -171,8 +173,10 @@ export function NoteEditPage() {
         <div className="p-3 sm:p-4 md:p-6 border-b border-[var(--border-color)]">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-[var(--text-primary)]">
             <i className={`fas ${isNew ? 'fa-plus' : 'fa-edit'} mr-2 text-blue-600`}></i>
-            <span className="hidden sm:inline">{isNew ? 'Create New Note' : 'Edit Note'}</span>
-            <span className="sm:hidden">{isNew ? 'New Note' : 'Edit'}</span>
+            <span className="hidden sm:inline">
+              {isNew ? t('common.createNewNote') : t('common.editNote')}
+            </span>
+            <span className="sm:hidden">{isNew ? t('common.newNote') : t('common.edit')}</span>
           </h1>
         </div>
 
@@ -195,8 +199,8 @@ export function NoteEditPage() {
                   <div className="flex items-center justify-between">
                     <h2 className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
                       <i className="glass-i fas fa-magic mr-2 text-purple-600"></i>
-                      <span className="hidden xs:inline">Choose a Template</span>
-                      <span className="xs:hidden">Templates</span>
+                      <span className="hidden xs:inline">{t('common.chooseTemplate')}</span>
+                      <span className="xs:hidden">{t('common.chooseTemplate')}</span>
                     </h2>
                     <button
                       type="button"
@@ -204,11 +208,11 @@ export function NoteEditPage() {
                       className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors touch-no-select"
                     >
                       <i className="glass-i fas fa-times mr-1"></i>
-                      Skip templates
+                      {t('common.skipTemplates')}
                     </button>
                   </div>
                   <p className="text-sm text-[var(--text-secondary)]">
-                    Start with a pre-formatted template or create a blank note
+                    {t('markdownImport.templateDescription')}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {noteTemplates.map((template) => (
@@ -274,7 +278,7 @@ export function NoteEditPage() {
               htmlFor="title"
               className="block text-sm font-medium text-[var(--text-primary)] mb-2"
             >
-              Title <span className="text-red-500">*</span>
+              {t('notes.titleLabel')} <span className="text-red-500">{t('common.required')}</span>
             </label>
             <input
               id="title"
@@ -306,9 +310,7 @@ export function NoteEditPage() {
                 placeholder={t('notes.tagsPlaceholder')}
               />
             </div>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">
-              Separate multiple tags with commas
-            </p>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">{t('markdownImport.tagsHelp')}</p>
           </div>
 
           {/* Folder */}
@@ -317,7 +319,7 @@ export function NoteEditPage() {
               htmlFor="folder"
               className="block text-sm font-medium text-[var(--text-primary)] mb-2"
             >
-              Folder (optional)
+              {t('notes.folderLabel')}
             </label>
             <div className="relative">
               <i className="glass-i fas fa-folder absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)]"></i>
@@ -327,7 +329,7 @@ export function NoteEditPage() {
                 onChange={(e) => setFolderId(e.target.value ? Number(e.target.value) : null)}
                 className="glass-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">No folder</option>
+                <option value="">{t('markdownImport.noFolder')}</option>
                 {flattenFolders(folders).map((folder) => (
                   <option key={folder.id} value={folder.id}>
                     {folder.name}
@@ -335,9 +337,7 @@ export function NoteEditPage() {
                 ))}
               </select>
             </div>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">
-              Organize your note into a folder
-            </p>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">{t('notes.organizeFolderHint')}</p>
           </div>
 
           {/* Images */}
@@ -355,7 +355,7 @@ export function NoteEditPage() {
                 htmlFor="body"
                 className="block text-sm font-medium text-[var(--text-primary)]"
               >
-                Content (Markdown supported)
+                {t('notes.contentMarkdownLabel')}
               </label>
               <button
                 type="button"
@@ -363,7 +363,7 @@ export function NoteEditPage() {
                 className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
               >
                 <i className={`fas fa-${showPreview ? 'edit' : 'eye'} mr-1`}></i>
-                {showPreview ? 'Edit' : 'Preview'}
+                {showPreview ? t('common.edit') : 'Preview'}
               </button>
             </div>
 
@@ -397,7 +397,7 @@ export function NoteEditPage() {
               />
               <span className="text-[var(--text-primary)]">
                 <i className="glass-i fas fa-thumbtack text-yellow-500 mr-1"></i>
-                Pinned
+                {t('notes.pinned')}
               </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
@@ -409,7 +409,7 @@ export function NoteEditPage() {
               />
               <span className="text-[var(--text-primary)]">
                 <i className="glass-i fas fa-heart text-red-500 mr-1"></i>
-                Favorite
+                {t('notes.favorite')}
               </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
@@ -440,7 +440,7 @@ export function NoteEditPage() {
               ) : (
                 <>
                   <i className="glass-i fas fa-save mr-2"></i>
-                  {isNew ? 'Create Note' : 'Save Changes'}
+                  {isNew ? t('notes.createNote') : t('notes.saveChanges')}
                 </>
               )}
             </button>

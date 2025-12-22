@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../api/client';
@@ -66,7 +67,7 @@ export function Disable2FAPage() {
                 aria-hidden="true"
               ></i>
               <div className="text-sm text-yellow-700 dark:text-yellow-300">
-                <p className="font-semibold mb-1">Security Warning</p>
+                <p className="font-semibold mb-1">{t('common.securityWarning')}</p>
                 <p>
                   Disabling 2FA will make your account less secure. You will only need your password
                   to log in.
@@ -83,7 +84,7 @@ export function Disable2FAPage() {
                 aria-hidden="true"
               ></i>
               <div className="text-sm text-blue-700 dark:text-blue-300">
-                <p className="font-semibold mb-1">No OTP Required</p>
+                <p className="font-semibold mb-1">{t('common.noOtpRequired')}</p>
                 <p>
                   You're already authenticated. Simply confirm to disable 2FA - no authenticator
                   code needed.

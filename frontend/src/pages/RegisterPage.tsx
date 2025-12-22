@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../api/client';
@@ -63,7 +64,9 @@ export function RegisterPage() {
               <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold mb-2 text-gradient tracking-tight">Create Account</h1>
+          <h1 className="text-4xl font-bold mb-2 text-gradient tracking-tight">
+            {t('common.createAccount')}
+          </h1>
           <p className="text-muted-glass text-lg">
             Join NoteHub and start organizing your thoughts
           </p>
@@ -114,7 +117,7 @@ export function RegisterPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="glass-input"
-                placeholder="Choose a username (min. 3 characters)"
+                placeholder={t('auth.register.usernamePlaceholder')}
                 required
                 minLength={3}
                 autoComplete="username"
@@ -154,7 +157,7 @@ export function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="glass-input pr-12"
-                  placeholder="Use at least 12 characters with mixed types"
+                  placeholder={t('common.passwordPlaceholder')}
                   required
                   minLength={12}
                   autoComplete="new-password"
@@ -209,7 +212,7 @@ export function RegisterPage() {
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
                   className="glass-input pr-12"
-                  placeholder="Confirm your password"
+                  placeholder={t('common.confirmPasswordPlaceholder')}
                   required
                   autoComplete="new-password"
                 />
@@ -278,7 +281,7 @@ export function RegisterPage() {
                   Creating account...
                 </span>
               ) : (
-                <span>Create Account</span>
+                <span>{t('common.createAccount')}</span>
               )}
             </button>
           </form>
@@ -287,7 +290,7 @@ export function RegisterPage() {
           <div className="text-center">
             <div className="border-t border-gray-200/50 my-5" />
 
-            <p className="text-muted-glass mb-4">Already have an account?</p>
+            <p className="text-muted-glass mb-4">{t('common.alreadyHaveAccount')}</p>
 
             <Link to="/login" className="btn-secondary-glass w-full py-4 block">
               Sign In

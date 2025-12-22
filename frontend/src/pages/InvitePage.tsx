@@ -83,7 +83,7 @@ export function InvitePage() {
             className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
             aria-hidden="true"
           ></i>
-          <p className="text-[var(--text-secondary)]">Loading invitations...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loadingInvitations')}</p>
         </div>
       </div>
     );
@@ -97,7 +97,7 @@ export function InvitePage() {
           <i className="glass-i fas fa-user-plus mr-3 text-blue-600" aria-hidden="true"></i>
           Invite Users
         </h1>
-        <p className="mt-2 text-[var(--text-secondary)]">Invite others to join NoteHub</p>
+        <p className="mt-2 text-[var(--text-secondary)]">{t('common.inviteOthersToJoin')}</p>
       </div>
 
       {/* Error */}
@@ -150,7 +150,7 @@ export function InvitePage() {
               onChange={(e) => setMessage(e.target.value)}
               className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)] resize-none"
               rows={3}
-              placeholder="Add a personal message..."
+              placeholder={t('common.personalMessagePlaceholder')}
             />
           </div>
 
@@ -301,7 +301,7 @@ export function InvitePage() {
               className="glass-i fas fa-inbox text-4xl text-[var(--text-muted)] mb-4"
               aria-hidden="true"
             ></i>
-            <p className="text-[var(--text-secondary)]">You haven't created any invitations yet.</p>
+            <p className="text-[var(--text-secondary)]">{t('common.noInvitationsYet')}</p>
           </div>
         )}
       </div>

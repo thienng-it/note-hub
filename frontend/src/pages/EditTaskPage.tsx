@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
@@ -82,7 +83,7 @@ export function EditTaskPage() {
             className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
             aria-hidden="true"
           ></i>
-          <p className="text-[var(--text-secondary)]">Loading task...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loadingTask')}</p>
         </div>
       </div>
     );
@@ -98,7 +99,7 @@ export function EditTaskPage() {
           aria-label="Back to Tasks"
         >
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
-          Back to Tasks
+          {t('common.backToTasks')}
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i
@@ -130,7 +131,7 @@ export function EditTaskPage() {
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
               <i className="glass-i fas fa-heading mr-2" aria-hidden="true"></i>
-              Task Title <span className="text-red-500">*</span>
+              {t('tasks.titleLabel')} <span className="text-red-500">{t('common.required')}</span>
             </label>
             <input
               type="text"
@@ -151,7 +152,7 @@ export function EditTaskPage() {
               className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
             >
               <i className="glass-i fas fa-align-left mr-2" aria-hidden="true"></i>
-              Description
+              {t('tasks.descriptionLabel')}
             </label>
             <textarea
               id="description"
@@ -172,7 +173,7 @@ export function EditTaskPage() {
                 className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
               >
                 <i className="glass-i fas fa-flag mr-2" aria-hidden="true"></i>
-                Priority
+                {t('tasks.priorityLabel')}
               </label>
               <select
                 id="priority"
@@ -182,9 +183,9 @@ export function EditTaskPage() {
                 }
                 className="w-full px-4 py-3 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 bg-[var(--bg-primary)] text-[var(--text-primary)]"
               >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
+                <option value="low">{t('common.low')}</option>
+                <option value="medium">{t('common.medium')}</option>
+                <option value="high">{t('common.high')}</option>
               </select>
             </div>
 
@@ -195,7 +196,7 @@ export function EditTaskPage() {
                 className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
               >
                 <i className="glass-i fas fa-calendar mr-2" aria-hidden="true"></i>
-                Due Date
+                {t('tasks.dueDateLabel')}
               </label>
               <input
                 type="date"
@@ -228,7 +229,7 @@ export function EditTaskPage() {
               ) : (
                 <>
                   <i className="glass-i fas fa-save mr-2" aria-hidden="true"></i>
-                  {isEdit ? 'Update' : 'Create'} Task
+                  {t(isEdit ? 'tasks.updateTask' : 'tasks.createTask')}
                 </>
               )}
             </button>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ImageModalProps {
   images: string[];
@@ -9,6 +10,7 @@ interface ImageModalProps {
 }
 
 export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: ImageModalProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
@@ -38,7 +40,7 @@ export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: Im
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
       role="dialog"
       tabIndex={-1}
-      aria-label="Image viewer"
+      aria-label={t('common.imageViewer')}
     >
       <div className="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center">
         {/* Close button */}
@@ -46,7 +48,7 @@ export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: Im
           type="button"
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-          title="Close (ESC)"
+          title={t('common.closeEsc')}
         >
           <i className="fas fa-times text-2xl"></i>
         </button>
@@ -62,7 +64,7 @@ export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: Im
               }}
               className="absolute left-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-50"
               disabled={currentIndex === 0}
-              title="Previous (←)"
+              title={t('common.previousArrow')}
             >
               <i className="fas fa-chevron-left text-xl"></i>
             </button>
@@ -74,7 +76,7 @@ export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: Im
               }}
               className="absolute right-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-50"
               disabled={currentIndex === images.length - 1}
-              title="Next (→)"
+              title={t('common.nextArrow')}
             >
               <i className="fas fa-chevron-right text-xl"></i>
             </button>
@@ -91,7 +93,7 @@ export function ImageModal({ images, currentIndex, onClose, onNext, onPrev }: Im
         {/* Image */}
         <img
           src={currentImage}
-          alt={`Attachment ${currentIndex + 1}`}
+          alt={t('common.attachmentAlt', { count: currentIndex + 1 })}
           className="max-w-full max-h-full object-contain"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.key === 'Enter' && e.stopPropagation()}

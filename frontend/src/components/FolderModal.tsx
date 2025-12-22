@@ -9,32 +9,33 @@ interface FolderModalProps {
   onClose: () => void;
 }
 
-const FOLDER_ICONS = [
-  { value: 'folder', label: 'Folder', icon: '📁' },
-  { value: 'briefcase', label: 'Briefcase', icon: '💼' },
-  { value: 'home', label: 'Home', icon: '🏠' },
-  { value: 'archive', label: 'Archive', icon: '📦' },
-  { value: 'book', label: 'Book', icon: '📚' },
-  { value: 'star', label: 'Star', icon: '⭐' },
-  { value: 'heart', label: 'Heart', icon: '❤️' },
-  { value: 'code', label: 'Code', icon: '💻' },
-  { value: 'tag', label: 'Tag', icon: '🏷️' },
-  { value: 'inbox', label: 'Inbox', icon: '📥' },
-];
-
-const FOLDER_COLORS = [
-  { value: '#3B82F6', label: 'Blue' },
-  { value: '#10B981', label: 'Green' },
-  { value: '#F59E0B', label: 'Amber' },
-  { value: '#EF4444', label: 'Red' },
-  { value: '#8B5CF6', label: 'Purple' },
-  { value: '#EC4899', label: 'Pink' },
-  { value: '#6B7280', label: 'Gray' },
-  { value: '#14B8A6', label: 'Teal' },
-];
-
 export function FolderModal({ folder, onSave, onClose }: FolderModalProps) {
   const { t } = useTranslation();
+
+  const FOLDER_ICONS = [
+    { value: 'folder', label: t('folders.iconFolder'), icon: '📁' },
+    { value: 'briefcase', label: t('folders.iconBriefcase'), icon: '💼' },
+    { value: 'home', label: t('folders.iconHome'), icon: '🏠' },
+    { value: 'archive', label: t('folders.iconArchive'), icon: '📦' },
+    { value: 'book', label: t('folders.iconBook'), icon: '📚' },
+    { value: 'star', label: t('folders.iconStar'), icon: '⭐' },
+    { value: 'heart', label: t('folders.iconHeart'), icon: '❤️' },
+    { value: 'code', label: t('folders.iconCode'), icon: '💻' },
+    { value: 'tag', label: t('folders.iconTag'), icon: '🏷️' },
+    { value: 'inbox', label: t('folders.iconInbox'), icon: '📥' },
+  ];
+
+  const FOLDER_COLORS = [
+    { value: '#3B82F6', label: t('folders.colorBlue') },
+    { value: '#10B981', label: t('folders.colorGreen') },
+    { value: '#F59E0B', label: t('folders.colorAmber') },
+    { value: '#EF4444', label: t('folders.colorRed') },
+    { value: '#8B5CF6', label: t('folders.colorPurple') },
+    { value: '#EC4899', label: t('folders.colorPink') },
+    { value: '#6B7280', label: t('folders.colorGray') },
+    { value: '#14B8A6', label: t('folders.colorTeal') },
+  ];
+
   const [name, setName] = useState(folder?.name || '');
   const [icon, setIcon] = useState(folder?.icon || 'folder');
   const [color, setColor] = useState(folder?.color || '#3B82F6');

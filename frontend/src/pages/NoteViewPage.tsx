@@ -81,7 +81,7 @@ export function NoteViewPage() {
       const fetchedNote = await offlineNotesApi.get(parseInt(id, 10));
       setNote(fetchedNote);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load note');
+      setError(err instanceof Error ? err.message : t('notes.failedToLoadNote'));
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +97,7 @@ export function NoteViewPage() {
       const updated = await offlineNotesApi.togglePinned(note);
       setNote(updated);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update note');
+      setError(err instanceof Error ? err.message : t('notes.failedToUpdateNote'));
     }
   };
 
@@ -108,7 +108,7 @@ export function NoteViewPage() {
       // Merge updated data with existing note to preserve all fields
       setNote((prev) => (prev ? { ...prev, ...updated } : updated));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update note');
+      setError(err instanceof Error ? err.message : t('notes.failedToUpdateNote'));
     }
   };
 
@@ -118,7 +118,7 @@ export function NoteViewPage() {
       const updated = await offlineNotesApi.toggleArchived(note);
       setNote(updated);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update note');
+      setError(err instanceof Error ? err.message : t('notes.failedToUpdateNote'));
     }
   };
 
@@ -128,7 +128,7 @@ export function NoteViewPage() {
       await offlineNotesApi.delete(note.id);
       navigate('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete note');
+      setError(err instanceof Error ? err.message : t('notes.failedToDeleteNote'));
     }
   };
 
@@ -162,10 +162,11 @@ export function NoteViewPage() {
       <div className="p-6">
         <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">
           <i className="glass-i fas fa-exclamation-triangle mr-2"></i>
-          {error || 'Note not found'}
+          {error || t('notes.noteNotFound')}
         </div>
         <Link to="/" className="mt-4 inline-block text-blue-600 hover:underline">
-          <i className="glass-i fas fa-arrow-left mr-2"></i>Back to Notes
+          <i className="glass-i fas fa-arrow-left mr-2"></i>
+          {t('notes.backToNotes')}
         </Link>
       </div>
     );
@@ -177,14 +178,14 @@ export function NoteViewPage() {
       <div className="note-view-header">
         <Link to="/" className="note-view-back-btn">
           <i className="fas fa-arrow-left"></i>
-          <span>Back to Notes</span>
+          <span>{t('common.backToNotes')}</span>
         </Link>
 
         {/* Share Button - Always visible for own notes */}
         {note.can_edit !== false && (
           <Link to={`/notes/${note.id}/share`} className="note-view-share-btn">
             <i className="fas fa-share-alt"></i>
-            <span>Share Note</span>
+            <span>{t('common.shareNote')}</span>
           </Link>
         )}
       </div>
@@ -239,13 +240,17 @@ export function NoteViewPage() {
                 {note.created_at && (
                   <span className="note-view-meta-item">
                     <i className="fas fa-calendar-plus"></i>
-                    <span>Created {new Date(note.created_at).toLocaleDateString()}</span>
+                    <span>
+                      {t('common.created')} {new Date(note.created_at).toLocaleDateString()}
+                    </span>
                   </span>
                 )}
                 {note.updated_at && (
                   <span className="note-view-meta-item">
                     <i className="fas fa-edit"></i>
-                    <span>Updated {new Date(note.updated_at).toLocaleDateString()}</span>
+                    <span>
+                      {t('common.updated')} {new Date(note.updated_at).toLocaleDateString()}
+                    </span>
                   </span>
                 )}
               </div>
@@ -257,14 +262,14 @@ export function NoteViewPage() {
                 <Link
                   to={`/notes/${note.id}/edit`}
                   className="note-view-action-btn action-edit"
-                  title="Edit"
+                  title={t('common.editTitle')}
                 >
                   <i className="fas fa-edit"></i>
                 </Link>
                 <Link
                   to={`/notes/${note.id}/share`}
                   className="note-view-action-btn action-share"
-                  title="Share"
+                  title={t('common.shareTitle')}
                 >
                   <i className="fas fa-share-alt"></i>
                 </Link>
@@ -274,7 +279,7 @@ export function NoteViewPage() {
                   className={`note-view-action-btn ${
                     note.pinned ? 'action-pin-active' : 'action-pin'
                   }`}
-                  title={note.pinned ? 'Unpin' : 'Pin'}
+                  title={note.pinned ? t('notes.unpinTitle') : t('notes.pinTitle')}
                 >
                   <i className="fas fa-thumbtack"></i>
                 </button>
@@ -284,7 +289,11 @@ export function NoteViewPage() {
                   className={`note-view-action-btn ${
                     note.favorite ? 'action-favorite-active' : 'action-favorite'
                   }`}
-                  title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                  title={
+                    note.favorite
+                      ? t('notes.removeFromFavoritesTitle')
+                      : t('notes.addToFavoritesTitle')
+                  }
                 >
                   <i className="fas fa-heart"></i>
                 </button>
@@ -294,7 +303,7 @@ export function NoteViewPage() {
                   className={`note-view-action-btn ${
                     note.archived ? 'action-archive-active' : 'action-archive'
                   }`}
-                  title={note.archived ? 'Unarchive' : 'Archive'}
+                  title={note.archived ? t('notes.unarchiveTitle') : t('notes.archiveTitle')}
                 >
                   <i className="fas fa-archive"></i>
                 </button>
@@ -302,7 +311,7 @@ export function NoteViewPage() {
                   type="button"
                   onClick={() => setShowDeleteConfirm(true)}
                   className="note-view-action-btn action-delete"
-                  title="Delete"
+                  title={t('common.deleteTitle')}
                 >
                   <i className="fas fa-trash"></i>
                 </button>
@@ -321,12 +330,12 @@ export function NoteViewPage() {
             }`}
           >
             <i className={`fas ${isContentHidden ? 'fa-eye' : 'fa-eye-slash'}`}></i>
-            <span>{isContentHidden ? 'Show Content' : 'Hide Content'}</span>
+            <span>{isContentHidden ? t('notes.showContent') : t('notes.hideContent')}</span>
           </button>
           {isContentHidden && (
             <span className="note-view-privacy-badge">
               <i className="fas fa-shield-alt"></i>
-              <span>Content hidden for privacy</span>
+              <span>{t('common.contentHidden')}</span>
             </span>
           )}
         </div>
@@ -337,13 +346,11 @@ export function NoteViewPage() {
             <div className="note-view-hidden-icon">
               <i className="fas fa-eye-slash"></i>
             </div>
-            <h3 className="note-view-hidden-title">Content Hidden</h3>
-            <p className="note-view-hidden-text">
-              This note's content is hidden for privacy. Click the button above to reveal it.
-            </p>
+            <h3 className="note-view-hidden-title">{t('notes.contentHiddenTitle')}</h3>
+            <p className="note-view-hidden-text">{t('notes.contentHiddenMessage')}</p>
             <button type="button" onClick={toggleHideContent} className="note-view-reveal-btn">
               <i className="fas fa-eye"></i>
-              <span>Show Content</span>
+              <span>{t('common.showContent')}</span>
             </button>
           </div>
         ) : (
@@ -360,7 +367,7 @@ export function NoteViewPage() {
               <div className="note-view-images-section">
                 <h3 className="note-view-images-title">
                   <i className="fas fa-images"></i>
-                  <span>Attached Images ({note.images.length})</span>
+                  <span>{t('common.attachedImages', { count: note.images.length })}</span>
                 </h3>
                 <div className="note-view-images-grid">
                   {note.images.map((image, index) => (
@@ -430,7 +437,7 @@ export function NoteViewPage() {
                 className="note-view-modal-btn btn-delete"
               >
                 <i className="fas fa-trash"></i>
-                <span>Delete</span>
+                <span>{t('common.delete')}</span>
               </button>
             </div>
           </div>

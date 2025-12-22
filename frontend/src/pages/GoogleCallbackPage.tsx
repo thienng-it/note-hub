@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +13,7 @@ const STORAGE_KEYS = {
 } as const;
 
 export function GoogleCallbackPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -78,7 +80,9 @@ export function GoogleCallbackPage() {
                 Authentication Failed
               </h1>
               <p className="text-[var(--text-secondary)] mb-4">{error}</p>
-              <p className="text-sm text-[var(--text-muted)]">Redirecting to login page...</p>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t('common.redirectingToLoginPage')}
+              </p>
             </>
           ) : (
             <>
@@ -91,7 +95,7 @@ export function GoogleCallbackPage() {
               <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
                 Signing you in...
               </h1>
-              <p className="text-[var(--text-secondary)]">Completing Google authentication</p>
+              <p className="text-[var(--text-secondary)]">{t('common.completingGoogleAuth')}</p>
             </>
           )}
         </div>

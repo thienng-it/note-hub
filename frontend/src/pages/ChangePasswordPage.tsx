@@ -56,7 +56,7 @@ export function ChangePasswordPage() {
           aria-label="Back to Profile"
         >
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
-          Back to Profile
+          {t('common.backToProfile')}
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i className="glass-i fas fa-key mr-2 sm:mr-3 text-blue-600" aria-hidden="true"></i>

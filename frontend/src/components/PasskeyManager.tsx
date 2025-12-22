@@ -41,7 +41,7 @@ export function PasskeyManager() {
       const creds = await passkeyService.getCredentials();
       setCredentials(creds);
     } catch (_err) {
-      setError('Failed to load passkeys');
+      setError(t('passkey.failedToLoad'));
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +65,7 @@ export function PasskeyManager() {
       setShowAddModal(true);
     } catch (err: unknown) {
       const error = err as { message?: string };
-      setError(error.message || 'Failed to initialize passkey registration');
+      setError(error.message || t('passkey.failedToInitialize'));
     } finally {
       setIsRegistering(false);
     }
@@ -73,7 +73,7 @@ export function PasskeyManager() {
 
   const handleRegisterConfirm = async () => {
     if (!registrationOptions) {
-      setError('Registration options not available. Please try again.');
+      setError(t('passkey.optionsNotAvailable'));
       setShowAddModal(false);
       return;
     }
@@ -105,14 +105,14 @@ export function PasskeyManager() {
       );
 
       if (result.success) {
-        setSuccess('Passkey registered successfully!');
+        setSuccess(t('passkey.registeredSuccessfully'));
         await loadCredentials();
       } else {
-        setError(result.error || 'Failed to register passkey');
+        setError(result.error || t('passkey.failedToRegister'));
       }
     } catch (err: unknown) {
       const error = err as { message?: string };
-      setError(error.message || 'Failed to register passkey');
+      setError(error.message || t('passkey.failedToRegister'));
     } finally {
       setIsRegistering(false);
     }
@@ -132,14 +132,14 @@ export function PasskeyManager() {
     try {
       const deleted = await passkeyService.deleteCredential(deleteModal.id);
       if (deleted) {
-        setSuccess('Passkey removed successfully');
+        setSuccess(t('passkey.removedSuccessfully'));
         await loadCredentials();
         setDeleteModal(null);
       } else {
-        setError('Failed to remove passkey');
+        setError(t('passkey.failedToRemove'));
       }
     } catch (_err) {
-      setError('Failed to remove passkey');
+      setError(t('passkey.failedToRemove'));
     } finally {
       setIsDeleting(false);
     }
@@ -152,7 +152,7 @@ export function PasskeyManager() {
 
   const handleSaveEdit = async (id: number) => {
     if (!newName.trim()) {
-      setError('Device name cannot be empty');
+      setError(t('passkey.nameCannotBeEmpty'));
       return;
     }
 
@@ -162,14 +162,14 @@ export function PasskeyManager() {
     try {
       const updated = await passkeyService.updateCredentialName(id, newName.trim());
       if (updated) {
-        setSuccess('Passkey name updated successfully');
+        setSuccess(t('passkey.nameUpdatedSuccessfully'));
         setEditingId(null);
         await loadCredentials();
       } else {
-        setError('Failed to update passkey name');
+        setError(t('passkey.failedToUpdateName'));
       }
     } catch (_err) {
-      setError('Failed to update passkey name');
+      setError(t('passkey.failedToUpdateName'));
     }
   };
 
@@ -194,10 +194,7 @@ export function PasskeyManager() {
             clipRule="evenodd"
           />
         </svg>
-        <span>
-          Passkeys are not available in your browser or are not configured on the server. Please use
-          a modern browser with WebAuthn support.
-        </span>
+        <span>{t('passkey.notAvailable')}</span>
       </div>
     );
   }
@@ -206,10 +203,8 @@ export function PasskeyManager() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h4 className="font-medium text-[var(--text-primary)]">Passkeys</h4>
-          <p className="text-sm text-[var(--text-muted)]">
-            Sign in quickly and securely with biometrics or device authentication
-          </p>
+          <h4 className="font-medium text-[var(--text-primary)]">{t('passkey.passkeys')}</h4>
+          <p className="text-sm text-[var(--text-muted)]">{t('passkey.passkeyDescription')}</p>
         </div>
         <button
           type="button"
@@ -240,7 +235,7 @@ export function PasskeyManager() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              Registering...
+              {t('passkey.registering')}
             </>
           ) : (
             <>
@@ -259,7 +254,7 @@ export function PasskeyManager() {
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              Add Passkey
+              {t('passkey.addPasskey')}
             </>
           )}
         </button>
@@ -304,7 +299,9 @@ export function PasskeyManager() {
       )}
 
       {isLoading ? (
-        <div className="text-center py-8 text-[var(--text-muted)]">Loading passkeys...</div>
+        <div className="text-center py-8 text-[var(--text-muted)]">
+          {t('passkey.loadingPasskeys')}
+        </div>
       ) : credentials.length === 0 ? (
         <div className="text-center py-8 text-[var(--text-muted)]">
           <svg
@@ -322,8 +319,8 @@ export function PasskeyManager() {
               d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
             />
           </svg>
-          <p>No passkeys registered yet</p>
-          <p className="text-sm mt-2">Click "Add Passkey" to register your first passkey</p>
+          <p>{t('common.noPasskeysYet')}</p>
+          <p className="text-sm mt-2">{t('common.clickToAddPasskey')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -339,18 +336,21 @@ export function PasskeyManager() {
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     className="px-3 py-1 rounded border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
-                    placeholder="Device name"
+                    placeholder={t('common.deviceNamePlaceholder')}
                   />
                 ) : (
                   <div className="font-medium text-[var(--text-primary)]">
-                    {credential.device_name || 'Unnamed Device'}
+                    {credential.device_name || t('passkey.unnamedDevice')}
                   </div>
                 )}
                 <div className="text-sm text-[var(--text-muted)] mt-1">
-                  <span>Created: {new Date(credential.created_at).toLocaleDateString()}</span>
+                  <span>
+                    {t('common.created')}: {new Date(credential.created_at).toLocaleDateString()}
+                  </span>
                   {credential.last_used_at && (
                     <span className="ml-3">
-                      Last used: {new Date(credential.last_used_at).toLocaleDateString()}
+                      {t('passkey.lastUsed')}:{' '}
+                      {new Date(credential.last_used_at).toLocaleDateString()}
                     </span>
                   )}
                 </div>
@@ -363,14 +363,14 @@ export function PasskeyManager() {
                       onClick={() => handleSaveEdit(credential.id)}
                       className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 transition-colors text-sm"
                     >
-                      Save
+                      {t('passkey.save')}
                     </button>
                     <button
                       type="button"
                       onClick={handleCancelEdit}
                       className="px-3 py-1 rounded bg-gray-600 text-white hover:bg-gray-700 transition-colors text-sm"
                     >
-                      Cancel
+                      {t('passkey.cancel')}
                     </button>
                   </>
                 ) : (
@@ -379,7 +379,7 @@ export function PasskeyManager() {
                       type="button"
                       onClick={() => handleStartEdit(credential)}
                       className="p-2 rounded hover:bg-[var(--bg-secondary)] transition-colors text-[var(--text-muted)]"
-                      title="Edit name"
+                      title={t('common.editNameTitle')}
                     >
                       <svg
                         className="w-4 h-4"
@@ -401,7 +401,7 @@ export function PasskeyManager() {
                       type="button"
                       onClick={() => handleDelete(credential.id)}
                       className="p-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600"
-                      title="Remove passkey"
+                      title={t('common.removePasskeyTitle')}
                     >
                       <svg
                         className="w-4 h-4"
@@ -443,12 +443,8 @@ export function PasskeyManager() {
             />
           </svg>
           <div>
-            <strong className="block mb-1">What are passkeys?</strong>
-            <p>
-              Passkeys provide secure, passwordless authentication using biometrics (fingerprint,
-              face recognition) or your device's security features. They're more secure than
-              passwords and can't be phished.
-            </p>
+            <strong className="block mb-1">{t('passkey.whatArePasskeys')}</strong>
+            <p>{t('passkey.passkeyInfo')}</p>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../api/client';
@@ -117,7 +118,7 @@ export function ForgotPasswordPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="glass-input w-full pl-11 pr-4 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your username or email"
+                    placeholder={t('common.usernameOrEmailPlaceholder')}
                     required
                     autoComplete="username"
                   />
@@ -144,12 +145,12 @@ export function ForgotPasswordPage() {
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <i className="glass-i fas fa-spinner fa-spin" aria-hidden="true"></i>
-                    <span>Processing...</span>
+                    <span>{t('common.processing')}</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
                     <i className="glass-i fas fa-arrow-right" aria-hidden="true"></i>
-                    <span>Next</span>
+                    <span>{t('common.next')}</span>
                   </span>
                 )}
               </button>
@@ -208,12 +209,12 @@ export function ForgotPasswordPage() {
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <i className="glass-i fas fa-spinner fa-spin" aria-hidden="true"></i>
-                    <span>Verifying...</span>
+                    <span>{t('common.verifying')}</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
                     <i className="glass-i fas fa-shield-alt" aria-hidden="true"></i>
-                    <span>Verify</span>
+                    <span>{t('common.verify')}</span>
                   </span>
                 )}
               </button>
@@ -229,7 +230,7 @@ export function ForgotPasswordPage() {
                 className="w-full flex items-center justify-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
-                <span>Back</span>
+                <span>{t('common.back')}</span>
               </button>
             </form>
           )}
@@ -245,11 +246,7 @@ export function ForgotPasswordPage() {
                   Reset Token Generated
                 </h3>
                 <p className="text-sm text-green-600 dark:text-green-400">
-                  {resetToken ? (
-                    <>Your reset token is ready. Click below to reset your password.</>
-                  ) : (
-                    <>Please check your application server logs to retrieve the secure token.</>
-                  )}
+                  {resetToken ? t('common.resetTokenReady') : t('common.checkServerLogs')}
                 </p>
               </div>
 
@@ -261,7 +258,7 @@ export function ForgotPasswordPage() {
                 >
                   <span className="flex items-center justify-center gap-2">
                     <i className="glass-i fas fa-lock" aria-hidden="true"></i>
-                    <span>Reset Password</span>
+                    <span>{t('common.resetPassword')}</span>
                   </span>
                 </button>
               )}
@@ -271,7 +268,7 @@ export function ForgotPasswordPage() {
                 className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-medium text-base border-2 border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
               >
                 <i className="glass-i fas fa-arrow-left" aria-hidden="true"></i>
-                <span>Back to Login</span>
+                <span>{t('common.backToLogin')}</span>
               </Link>
             </div>
           )}
@@ -284,14 +281,16 @@ export function ForgotPasswordPage() {
                 className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors underline-offset-4 hover:underline"
               >
                 <i className="glass-i fas fa-arrow-left mr-1" aria-hidden="true"></i>
-                Back to Login
+                {t('common.backToLogin')}
               </Link>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <p className="mt-8 text-center text-sm text-white/70">Secure password recovery</p>
+        <p className="mt-8 text-center text-sm text-white/70">
+          {t('common.securePasswordRecovery')}
+        </p>
       </div>
     </div>
   );
