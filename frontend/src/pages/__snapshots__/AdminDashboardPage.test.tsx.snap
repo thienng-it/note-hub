@@ -61,7 +61,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <span
               class="hidden sm:inline text-sm font-medium"
             >
-              Total Users
+              common.totalUsers
             </span>
           </div>
         </div>
@@ -79,12 +79,12 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <span
               class="hidden sm:inline"
             >
-              Audit Logs
+              common.auditLogs
             </span>
             <span
               class="sm:hidden"
             >
-              Logs
+              common.logs
             </span>
           </a>
           <a
@@ -124,7 +124,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              Total Users
+              common.totalUsers
             </p>
             <p
               class="stat-card-value"
@@ -157,7 +157,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              2FA Enabled
+              common.2faEnabled
             </p>
             <p
               class="stat-card-value"
@@ -190,7 +190,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              With Email
+              common.withEmail
             </p>
             <p
               class="stat-card-value"
@@ -223,7 +223,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              Admins
+              common.admins
             </p>
             <p
               class="stat-card-value"
@@ -254,7 +254,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              Locked
+              common.locked
             </p>
             <p
               class="stat-card-value"
@@ -434,7 +434,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                       aria-hidden="true"
                       class="fas fa-lock"
                     />
-                    Lock
+                    Lock User
                   </button>
                   <button
                     class="action-btn action-btn-2fa"
@@ -522,7 +522,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                       aria-hidden="true"
                       class="fas fa-lock"
                     />
-                    Lock
+                    Lock User
                   </button>
                   <button
                     class="action-btn action-btn-grant"
@@ -533,7 +533,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                       aria-hidden="true"
                       class="fas fa-crown"
                     />
-                    Grant
+                    Grant Admin
                   </button>
                   <button
                     class="action-btn action-btn-delete"
@@ -544,7 +544,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
                       aria-hidden="true"
                       class="fas fa-trash"
                     />
-                    Delete
+                    Delete User
                   </button>
                 </div>
               </td>

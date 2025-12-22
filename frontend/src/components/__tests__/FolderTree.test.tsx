@@ -123,7 +123,7 @@ describe('FolderTree', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/no folders yet/i)).toBeInTheDocument();
+      expect(screen.getByText(/this folder is empty/i)).toBeInTheDocument();
     });
 
     expect(container.firstChild).toMatchSnapshot();

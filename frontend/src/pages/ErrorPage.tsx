@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,9 +21,8 @@ export function ErrorPage() {
         return {
           icon: 'fa-search',
           iconColor: 'text-gray-400',
-          title: 'Page Not Found',
-          description:
-            "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+          title: t('errors.404.title'),
+          description: t('errors.404.description'),
           tips: [
             'Check the URL for typos',
             'Use the navigation menu to find what you need',
@@ -33,9 +33,8 @@ export function ErrorPage() {
         return {
           icon: 'fa-lock',
           iconColor: 'text-red-400',
-          title: 'Access Denied',
-          description:
-            "You don't have permission to access this resource. Please check your credentials.",
+          title: t('errors.403.title'),
+          description: t('errors.403.description'),
           tips: [
             'Make sure you are logged in',
             'Contact an administrator if you need access',
@@ -46,9 +45,8 @@ export function ErrorPage() {
         return {
           icon: 'fa-exclamation-triangle',
           iconColor: 'text-orange-400',
-          title: 'Server Error',
-          description:
-            "Something went wrong on our end. We're working to fix this issue. Please try again later.",
+          title: t('errors.500.title'),
+          description: t('errors.500.description'),
           tips: [
             'Refresh the page and try again',
             'Clear your browser cache',

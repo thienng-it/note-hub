@@ -10,7 +10,7 @@ exports[`FolderModal > matches snapshot - create mode 1`] = `
     <h2
       class="text-2xl font-bold mb-4 text-[var(--text-primary)]"
     >
-      New Folder
+      Create New Folder
     </h2>
     <form
       class="space-y-4"
@@ -20,7 +20,7 @@ exports[`FolderModal > matches snapshot - create mode 1`] = `
           class="block text-sm font-medium mb-2 text-[var(--text-primary)]"
           for="folderName"
         >
-          Folder name
+          Folder Name
         </label>
         <input
           class="glass-input w-full px-4 py-2 rounded-lg"
@@ -212,7 +212,7 @@ exports[`FolderModal > matches snapshot - edit mode 1`] = `
           class="block text-sm font-medium mb-2 text-[var(--text-primary)]"
           for="folderName"
         >
-          Folder name
+          Folder Name
         </label>
         <input
           class="glass-input w-full px-4 py-2 rounded-lg"

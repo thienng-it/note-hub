@@ -14,7 +14,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-          <p className="text-[var(--text-secondary)]">Loading...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loading')}</p>
         </div>
       </div>
     );

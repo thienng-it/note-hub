@@ -37,7 +37,7 @@ export function ShareTaskPage() {
       setTask(taskData.task);
       setPublicToken(share?.token || null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load task');
+      setError(err instanceof Error ? err.message : t('common.failedToLoadTask'));
     } finally {
       setIsLoading(false);
     }
@@ -51,11 +51,11 @@ export function ShareTaskPage() {
     if (!publicUrl) return;
     try {
       await navigator.clipboard.writeText(publicUrl);
-      setSuccess('Link copied');
+      setSuccess(t('common.linkCopied'));
       setError('');
     } catch {
       setSuccess('');
-      setError('Failed to copy link');
+      setError(t('common.failedToCopyLink'));
     }
   };
 
@@ -67,9 +67,9 @@ export function ShareTaskPage() {
     try {
       const share = await tasksApi.createPublicShare(taskId);
       setPublicToken(share.token);
-      setSuccess('Public link created');
+      setSuccess(t('common.publicLinkCreated'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create public link');
+      setError(err instanceof Error ? err.message : t('common.failedToCreatePublicLink'));
     } finally {
       setIsSharing(false);
     }
@@ -83,10 +83,10 @@ export function ShareTaskPage() {
     try {
       await tasksApi.revokePublicShare(taskId);
       setPublicToken(null);
-      setSuccess('Public link revoked');
+      setSuccess(t('common.publicLinkRevoked'));
       setRevokeModalOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to revoke public link');
+      setError(err instanceof Error ? err.message : t('common.failedToRevokePublicLink'));
     } finally {
       setIsSharing(false);
     }
@@ -97,7 +97,7 @@ export function ShareTaskPage() {
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
           <i className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-          <p className="text-[var(--text-secondary)]">Loading...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -112,7 +112,7 @@ export function ShareTaskPage() {
           aria-label="Back to Tasks"
         >
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
-          Back to Tasks
+          {t('common.backToTasks')}
         </Link>
         <h1 className="text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i className="glass-i fas fa-share-alt mr-3 text-blue-600" aria-hidden="true"></i>
@@ -211,10 +211,10 @@ export function ShareTaskPage() {
         isOpen={revokeModalOpen}
         onClose={() => setRevokeModalOpen(false)}
         onConfirm={revokePublicShare}
-        title="Revoke public link"
-        message="Anyone with the old link will no longer be able to access this task. Continue?"
-        confirmText="Revoke"
-        cancelText="Cancel"
+        title={t('common.revokePublicLinkTitle')}
+        message={t('common.revokeAccessMessage', { type: 'task' })}
+        confirmText={t('common.revoke')}
+        cancelText={t('common.cancel')}
         variant="danger"
         isLoading={isSharing}
       />

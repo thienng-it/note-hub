@@ -14,7 +14,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
     </h3>
     <button
       class="btn-secondary-glass p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
-      title="New Folder"
+      title="Create New Folder"
       type="button"
     >
       <svg
@@ -308,7 +308,7 @@ exports[`FolderTree > matches snapshot - empty folders 1`] = `
     </h3>
     <button
       class="btn-secondary-glass p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
-      title="New Folder"
+      title="Create New Folder"
       type="button"
     >
       <svg
@@ -360,7 +360,7 @@ exports[`FolderTree > matches snapshot - empty folders 1`] = `
     <div
       class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
     >
-      No folders yet. Create one to organize your notes!
+      This folder is empty
     </div>
   </div>
 </div>
@@ -380,7 +380,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
     </h3>
     <button
       class="btn-secondary-glass p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
-      title="New Folder"
+      title="Create New Folder"
       type="button"
     >
       <svg

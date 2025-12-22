@@ -55,7 +55,7 @@ export function PublicNotePage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--bg-primary)] to-[var(--bg-secondary)] p-4">
         <div className="glass-card p-8 rounded-2xl text-center">
           <i className="fas fa-spinner fa-spin text-4xl text-blue-400 mb-4"></i>
-          <p className="text-[var(--text-secondary)]">Loading shared note...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loadingSharedNote')}</p>
         </div>
       </div>
     );

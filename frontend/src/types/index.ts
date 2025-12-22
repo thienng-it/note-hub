@@ -120,11 +120,12 @@ export interface Task {
   images?: string[];
   completed: boolean;
   priority: 'low' | 'medium' | 'high';
-  due_date?: string;
+  due_date?: string | null;
   folder_id?: number | null;
   created_at?: string;
   is_overdue?: boolean;
   updated_at?: string;
+  user_id?: number;
 }
 
 export interface TaskFormData {

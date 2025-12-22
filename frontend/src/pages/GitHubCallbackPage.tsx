@@ -64,7 +64,7 @@ export function GitHubCallbackPage() {
               Authentication Failed
             </h1>
             <p className="text-[var(--text-secondary)] mb-4">{error}</p>
-            <p className="text-sm text-[var(--text-muted)]">Redirecting to login...</p>
+            <p className="text-sm text-[var(--text-muted)]">{t('common.redirectingToLogin')}</p>
           </>
         ) : (
           <>

@@ -155,7 +155,7 @@ export function ProfilePage() {
       const data = JSON.parse(text);
 
       if (!data.notes && !data.tasks) {
-        throw new Error('Invalid backup file format');
+        throw new Error(t('profile.invalidBackupFormat'));
       }
 
       const result = await exportApi.importData({
@@ -165,11 +165,15 @@ export function ProfilePage() {
       });
 
       setImportMessage(
-        `Successfully imported ${result.imported.notes} notes and ${result.imported.tasks} tasks. ` +
-          `Skipped ${result.skipped.notes} existing notes and ${result.skipped.tasks} existing tasks.`,
+        t('profile.importSuccess', {
+          notes: result.imported.notes,
+          tasks: result.imported.tasks,
+          skippedNotes: result.skipped.notes,
+          skippedTasks: result.skipped.tasks,
+        }),
       );
     } catch (error) {
-      setImportError(error instanceof Error ? error.message : 'Import failed');
+      setImportError(error instanceof Error ? error.message : t('profile.importFailed'));
     } finally {
       setIsImporting(false);
       // Reset file input
@@ -190,7 +194,7 @@ export function ProfilePage() {
                 <i className="fas fa-user-circle text-white"></i>
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
-                Profile
+                {t('profile.profile')}
               </h1>
             </div>
           </div>
@@ -206,7 +210,7 @@ export function ProfilePage() {
               }}
             >
               <i className="fas fa-shield-alt text-green-500 mr-2"></i>
-              <span className="font-semibold">2FA Enabled</span>
+              <span className="font-semibold">{t('profile.twoFactorEnabledBadge')}</span>
             </div>
           )}
         </div>
@@ -307,7 +311,7 @@ export function ProfilePage() {
             <Link to="/profile/edit" className="btn-apple">
               <i className="fas fa-edit mr-2"></i>
               <span className="hidden xs:inline">{t('profile.editProfile')}</span>
-              <span className="xs:hidden">Edit</span>
+              <span className="xs:hidden">{t('profile.edit')}</span>
             </Link>
           </div>
 
@@ -324,7 +328,7 @@ export function ProfilePage() {
             <Link to="/profile/change-password" className="btn-apple">
               <i className="fas fa-key mr-2"></i>
               <span className="hidden xs:inline">{t('profile.changePassword')}</span>
-              <span className="xs:hidden">Change</span>
+              <span className="xs:hidden">{t('profile.change')}</span>
             </Link>
           </div>
 
@@ -370,17 +374,17 @@ export function ProfilePage() {
       <div className="modern-search-card">
         <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           <i className="glass-i fas fa-file-export mr-2 text-purple-600"></i>
-          Data Management
+          {t('profile.dataManagement')}
         </h3>
 
         <div className="space-y-4">
           {/* Export Data */}
           <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
             <div className="flex-1">
-              <span className="font-medium text-[var(--text-primary)]">Export Data</span>
-              <p className="text-sm text-[var(--text-muted)]">
-                Download all your notes and tasks as a JSON file
-              </p>
+              <span className="font-medium text-[var(--text-primary)]">
+                {t('profile.exportData')}
+              </span>
+              <p className="text-sm text-[var(--text-muted)]">{t('profile.exportDescription')}</p>
             </div>
             <button
               type="button"
@@ -391,12 +395,12 @@ export function ProfilePage() {
               {isExporting ? (
                 <>
                   <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                  Exporting...
+                  {t('profile.exporting')}
                 </>
               ) : (
                 <>
                   <i className="glass-i fas fa-download mr-2"></i>
-                  Export
+                  {t('profile.export')}
                 </>
               )}
             </button>
@@ -406,10 +410,10 @@ export function ProfilePage() {
           <div className="py-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex-1">
-                <span className="font-medium text-[var(--text-primary)]">Import Data</span>
-                <p className="text-sm text-[var(--text-muted)]">
-                  Upload a backup file to restore your notes and tasks
-                </p>
+                <span className="font-medium text-[var(--text-primary)]">
+                  {t('profile.importData')}
+                </span>
+                <p className="text-sm text-[var(--text-muted)]">{t('profile.importDescription')}</p>
               </div>
               <button
                 type="button"
@@ -421,12 +425,12 @@ export function ProfilePage() {
                 {isImporting ? (
                   <>
                     <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                    Importing...
+                    {t('profile.importing')}
                   </>
                 ) : (
                   <>
                     <i className="glass-i fas fa-upload mr-2"></i>
-                    Import
+                    {t('profile.import')}
                   </>
                 )}
               </button>

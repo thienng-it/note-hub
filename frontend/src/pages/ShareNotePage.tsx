@@ -52,7 +52,7 @@ export function ShareNotePage() {
     try {
       const noteId = id ? Number.parseInt(id, 10) : NaN;
       if (!Number.isFinite(noteId)) {
-        setError('Failed to load note');
+        setError(t('common.failedToLoadNote'));
         setIsLoading(false);
         return;
       }
@@ -67,7 +67,7 @@ export function ShareNotePage() {
       setSharedWith(sharesData.shares || []);
       setPublicToken(publicShare?.token || null);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load note';
+      const errorMessage = err instanceof Error ? err.message : t('common.failedToLoadNote');
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -157,11 +157,11 @@ export function ShareNotePage() {
     if (!publicUrl) return;
     try {
       await navigator.clipboard.writeText(publicUrl);
-      setSuccess('Link copied');
+      setSuccess(t('common.linkCopied'));
       setError('');
     } catch {
       setSuccess('');
-      setError('Failed to copy link');
+      setError(t('common.failedToCopyLink'));
     }
   };
 
@@ -176,9 +176,10 @@ export function ShareNotePage() {
     try {
       const share = await notesApi.createPublicShare(noteId);
       setPublicToken(share.token);
-      setSuccess('Public link created');
+      setSuccess(t('common.publicLinkCreated'));
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create public link';
+      const errorMessage =
+        err instanceof Error ? err.message : t('common.failedToCreatePublicLink');
       setError(errorMessage);
     } finally {
       setIsPublicSubmitting(false);
@@ -196,10 +197,11 @@ export function ShareNotePage() {
     try {
       await notesApi.revokePublicShare(noteId);
       setPublicToken(null);
-      setSuccess('Public link revoked');
+      setSuccess(t('common.publicLinkRevoked'));
       setRevokePublicModalOpen(false);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to revoke public link';
+      const errorMessage =
+        err instanceof Error ? err.message : t('common.failedToRevokePublicLink');
       setError(errorMessage);
     } finally {
       setIsPublicSubmitting(false);
@@ -219,7 +221,7 @@ export function ShareNotePage() {
     setSuccess('');
 
     if (!username.trim()) {
-      setError('Please enter a username');
+      setError(t('common.pleaseEnterUsername'));
       return;
     }
 
@@ -235,7 +237,7 @@ export function ShareNotePage() {
       setUserSuggestions([]);
       fetchNoteAndShares();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to share note';
+      const errorMessage = err instanceof Error ? err.message : t('common.failedToShareNote');
       setError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -256,7 +258,7 @@ export function ShareNotePage() {
       setSuccess(`Share removed for ${unshareModal.userName}`);
       setUnshareModal(null);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to remove share';
+      const errorMessage = err instanceof Error ? err.message : t('common.failedToRemoveShare');
       setError(errorMessage);
     } finally {
       setIsUnsharing(false);
@@ -271,7 +273,7 @@ export function ShareNotePage() {
             className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
             aria-hidden="true"
           ></i>
-          <p className="text-[var(--text-secondary)]">Loading...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -287,11 +289,11 @@ export function ShareNotePage() {
           aria-label="Back to Note"
         >
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
-          Back to Note
+          {t('common.backToNote')}
         </Link>
         <h1 className="modern-search-card text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i className="glass-i fas fa-share-alt mr-3 text-blue-600" aria-hidden="true"></i>
-          Share Note
+          {t('share.shareNote')}
         </h1>
         {note && <p className="mt-2 text-[var(--text-secondary)]">{note.title}</p>}
       </div>
@@ -315,7 +317,9 @@ export function ShareNotePage() {
       )}
 
       <div className="glass-panel p-6 rounded-xl mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Public link</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">
+          {t('common.publicLink')}
+        </h2>
 
         {publicToken ? (
           <div className="space-y-4">
@@ -343,7 +347,7 @@ export function ShareNotePage() {
                 className="btn-secondary-glass px-6 py-2.5 rounded-lg"
               >
                 <i className="glass-i fas fa-external-link-alt mr-2" aria-hidden="true"></i>
-                Open
+                {t('common.open')}
               </a>
               <button
                 type="button"
@@ -352,15 +356,13 @@ export function ShareNotePage() {
                 disabled={isPublicSubmitting}
               >
                 <i className="glass-i fas fa-ban mr-2" aria-hidden="true"></i>
-                Revoke
+                {t('common.revoke')}
               </button>
             </div>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-[var(--text-secondary)]">
-              Create a public link so anyone with the URL can view this note without logging in.
-            </p>
+            <p className="text-[var(--text-secondary)]">{t('share.createPublicLinkDescription')}</p>
             <button
               type="button"
               onClick={createPublicLink}
@@ -370,12 +372,12 @@ export function ShareNotePage() {
               {isPublicSubmitting ? (
                 <>
                   <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
-                  Creating...
+                  {t('share.creating')}
                 </>
               ) : (
                 <>
                   <i className="glass-i fas fa-link mr-2" aria-hidden="true"></i>
-                  Create public link
+                  {t('share.createPublicLink')}
                 </>
               )}
             </button>
@@ -385,7 +387,9 @@ export function ShareNotePage() {
 
       {/* Share Form */}
       <div className="glass-panel p-6 rounded-xl mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Share with User</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">
+          {t('share.shareWithUser')}
+        </h2>
         <form onSubmit={handleShare} className="space-y-4">
           <div className="relative">
             <label
@@ -432,9 +436,7 @@ export function ShareNotePage() {
               </div>
             )}
             {username.length > 0 && username.length < 2 && (
-              <p className="mt-1 text-xs text-[var(--text-muted)]">
-                Type at least 2 characters to search for users
-              </p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{t('share.typeToSearch')}</p>
             )}
           </div>
 
@@ -452,7 +454,7 @@ export function ShareNotePage() {
               className="text-sm text-[var(--text-secondary)]"
               style={{ marginBottom: '1rem' }}
             >
-              Allow editing
+              {t('share.allowEditing')}
             </label>
           </div>
 
@@ -464,12 +466,12 @@ export function ShareNotePage() {
             {isSubmitting ? (
               <>
                 <i className="glass-i fas fa-spinner fa-spin mr-2" aria-hidden="true"></i>
-                Sharing...
+                {t('share.sharing')}
               </>
             ) : (
               <>
                 <i className="glass-i fas fa-share mr-2" aria-hidden="true"></i>
-                Share Note
+                {t('share.shareNote')}
               </>
             )}
           </button>
@@ -478,7 +480,9 @@ export function ShareNotePage() {
 
       {/* Shared With List */}
       <div className="glass-card p-6 rounded-xl">
-        <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">Shared With</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">
+          {t('common.sharedWith')}
+        </h2>
         {sharedWith.length > 0 ? (
           <div className="space-y-3">
             {sharedWith.map((user) => (
@@ -497,9 +501,9 @@ export function ShareNotePage() {
                         className={`fas fa-${user.can_edit ? 'edit' : 'eye'} mr-2`}
                         aria-hidden="true"
                       ></i>
-                      {user.can_edit ? 'Can edit' : 'View only'}
+                      {user.can_edit ? t('common.canEdit') : t('common.viewOnly')}
                       {user.created_at &&
-                        ` • Shared ${new Date(user.created_at).toLocaleDateString()}`}
+                        ` • ${t('common.shared')} ${new Date(user.created_at).toLocaleDateString()}`}
                     </p>
                   </div>
                 </div>
@@ -533,9 +537,9 @@ export function ShareNotePage() {
         onClose={() => setUnshareModal(null)}
         onConfirm={handleUnshareConfirm}
         title={t('share.removeAccessTooltip')}
-        message={`Are you sure you want to remove share access for ${unshareModal?.userName}? They will no longer be able to view or edit this note.`}
-        confirmText="Remove"
-        cancelText="Cancel"
+        message={t('share.removeAccessConfirm', { userName: unshareModal?.userName })}
+        confirmText={t('common.remove')}
+        cancelText={t('common.cancel')}
         variant="danger"
         isLoading={isUnsharing}
       />
@@ -544,10 +548,10 @@ export function ShareNotePage() {
         isOpen={revokePublicModalOpen}
         onClose={() => setRevokePublicModalOpen(false)}
         onConfirm={revokePublicLink}
-        title="Revoke public link"
-        message="Anyone with the old link will no longer be able to access this note. Continue?"
-        confirmText="Revoke"
-        cancelText="Cancel"
+        title={t('common.revokePublicLinkTitle')}
+        message={t('common.revokeAccessMessage', { type: 'note' })}
+        confirmText={t('common.revoke')}
+        cancelText={t('common.cancel')}
         variant="danger"
         isLoading={isPublicSubmitting}
       />

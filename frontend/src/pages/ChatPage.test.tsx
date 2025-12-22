@@ -287,7 +287,7 @@ describe('ChatPage', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/disconnected/i)).toBeInTheDocument();
+        expect(screen.getByText(/reconnecting/i)).toBeInTheDocument();
       });
 
       expect(container).toMatchSnapshot();

@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { aiApi } from '../api/client';
 import type { AIRewriteStyle, AIStatus } from '../types';
@@ -130,10 +131,10 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
             onClick={handleProofread}
             disabled={isLoading}
             className="ai-action-btn ai-btn-proofread"
-            title="Proofread and fix grammar"
+            title={t('common.proofreadTitle')}
           >
             <i className="fas fa-spell-check"></i>
-            <span>Proofread</span>
+            <span>{t('ai.proofread')}</span>
           </button>
 
           <button
@@ -141,10 +142,10 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
             onClick={handleSummarize}
             disabled={isLoading}
             className="ai-action-btn ai-btn-summarize"
-            title="Create a summary"
+            title={t('common.summarizeTitle')}
           >
             <i className="fas fa-compress-alt"></i>
-            <span>Summarize</span>
+            <span>{t('ai.summarize')}</span>
           </button>
 
           <div className="relative">
@@ -153,10 +154,10 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
               onClick={() => setShowStyleMenu(!showStyleMenu)}
               disabled={isLoading}
               className="ai-action-btn ai-btn-rewrite"
-              title="Rewrite in different style"
+              title={t('common.rewriteTitle')}
             >
               <i className="fas fa-pen-fancy"></i>
-              <span>Rewrite</span>
+              <span>{t('ai.rewrite')}</span>
               <i className="fas fa-chevron-down ai-btn-arrow"></i>
             </button>
 
@@ -168,7 +169,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
                   className="ai-style-option"
                 >
                   <i className="fas fa-briefcase"></i>
-                  <span>Professional</span>
+                  <span>{t('ai.professional')}</span>
                 </button>
                 <button
                   type="button"
@@ -176,7 +177,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
                   className="ai-style-option"
                 >
                   <i className="fas fa-smile"></i>
-                  <span>Casual</span>
+                  <span>{t('ai.casual')}</span>
                 </button>
                 <button
                   type="button"
@@ -184,7 +185,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
                   className="ai-style-option"
                 >
                   <i className="fas fa-compress"></i>
-                  <span>Concise</span>
+                  <span>{t('ai.concise')}</span>
                 </button>
               </div>
             )}
@@ -194,7 +195,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
         {isLoading && (
           <span className="ai-loading-indicator">
             <i className="fas fa-spinner fa-spin"></i>
-            <span>Processing...</span>
+            <span>{t('common.processing')}</span>
           </span>
         )}
       </div>
@@ -220,7 +221,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
                 type="button"
                 onClick={handleDismiss}
                 className="ai-modal-close"
-                title="Close"
+                title={t('common.closeTitle')}
               >
                 <i className="fas fa-times"></i>
               </button>
@@ -235,7 +236,7 @@ export function AIActions({ text, onApply, className = '' }: AIActionsProps) {
               {onApply && (
                 <button type="button" onClick={handleApply} className="ai-modal-btn btn-apply">
                   <i className="fas fa-check"></i>
-                  <span>Apply</span>
+                  <span>{t('common.apply')}</span>
                 </button>
               )}
             </div>

@@ -73,7 +73,7 @@ export function ResetPasswordPage() {
               className="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium"
             >
               <i className="glass-i fas fa-key" aria-hidden="true"></i>
-              <span>Request New Reset Link</span>
+              <span>{t('common.requestNewResetLink')}</span>
             </Link>
           </div>
         </div>
@@ -92,7 +92,9 @@ export function ResetPasswordPage() {
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Reset Password
           </h1>
-          <p className="mt-2 text-base text-[var(--text-secondary)]">Enter your new password</p>
+          <p className="mt-2 text-base text-[var(--text-secondary)]">
+            {t('common.enterNewPassword')}
+          </p>
         </div>
 
         {/* Card */}
@@ -117,7 +119,7 @@ export function ResetPasswordPage() {
                 className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-medium text-base border-2 border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
               >
                 <i className="glass-i fas fa-sign-in-alt" aria-hidden="true"></i>
-                <span>Go to Login</span>
+                <span>{t('common.goToLogin')}</span>
               </Link>
             </div>
           ) : (
@@ -159,7 +161,7 @@ export function ResetPasswordPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="glass-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Use at least 12 characters with mixed types"
+                    placeholder={t('common.passwordPlaceholder')}
                     required
                     minLength={12}
                     autoComplete="new-password"
@@ -200,7 +202,7 @@ export function ResetPasswordPage() {
                     value={passwordConfirm}
                     onChange={(e) => setPasswordConfirm(e.target.value)}
                     className="glass-input w-full pl-11 pr-12 py-3.5 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Confirm your new password"
+                    placeholder={t('common.confirmNewPasswordPlaceholder')}
                     required
                     autoComplete="new-password"
                   />
@@ -228,12 +230,12 @@ export function ResetPasswordPage() {
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <i className="glass-i fas fa-spinner fa-spin" aria-hidden="true"></i>
-                    <span>Resetting...</span>
+                    <span>{t('common.resetting')}</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
                     <i className="glass-i fas fa-check-circle" aria-hidden="true"></i>
-                    <span>Reset Password</span>
+                    <span>{t('common.resetPassword')}</span>
                   </span>
                 )}
               </button>
@@ -248,7 +250,7 @@ export function ResetPasswordPage() {
                 className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors underline-offset-4 hover:underline"
               >
                 <i className="glass-i fas fa-arrow-left mr-1" aria-hidden="true"></i>
-                Back to Login
+                {t('common.backToLogin')}
               </Link>
             </div>
           )}
@@ -256,7 +258,7 @@ export function ResetPasswordPage() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-white/70 mb-2">Your personal note-taking companion</p>
+          <p className="text-sm text-white/70 mb-2">{t('common.personalNoteCompanion')}</p>
           <div className="flex justify-center gap-4 text-xs text-white/60">
             <span className="flex items-center gap-1">
               <i className="glass-i fas fa-shield-alt" aria-hidden="true"></i> Secure

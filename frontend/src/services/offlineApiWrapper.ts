@@ -392,6 +392,8 @@ export const offlineFoldersApi = {
       user_id: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      position: 0,
+      is_expanded: false,
     };
 
     await secureFoldersStorage.saveFolder(tempFolder);

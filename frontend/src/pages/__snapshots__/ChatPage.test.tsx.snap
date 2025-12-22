@@ -9,229 +9,13 @@ exports[`ChatPage > Snapshots > matches snapshot - default state with rooms 1`] 
       class="chat-compact-header flex-shrink-0"
     >
       <div
-        class="chat-notification-banner"
-      >
-        <div
-          class="chat-notification-icon"
-        >
-          <i
-            class="fas fa-bell"
-          />
-        </div>
-        <div
-          class="chat-notification-content"
-        >
-          <p
-            class="chat-notification-title"
-          >
-            Enable notifications for new messages
-          </p>
-          <p
-            class="chat-notification-desc"
-          >
-            Get notified when you receive new messages while away
-          </p>
-        </div>
-        <div
-          class="chat-notification-actions"
-        >
-          <button
-            class="chat-notification-btn enable"
-            type="button"
-          >
-            Enable
-          </button>
-          <button
-            aria-label="Dismiss"
-            class="chat-notification-btn dismiss"
-            type="button"
-          >
-            <i
-              class="fas fa-times"
-            />
-          </button>
-        </div>
-      </div>
-    </div>
-    <div
-      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
-    >
-      <div
-        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88  flex flex-col"
-      >
-        <div
-          class="chat-sidebar-header"
-        >
-          <div
-            class="flex items-center justify-between gap-2"
-          >
-            <h2
-              class="chat-sidebar-title"
-            >
-              Conversations
-            </h2>
-            <div
-              class="flex items-center gap-1"
-            >
-              <span
-                class="chat-sidebar-count"
-              >
-                1
-              </span>
-              <button
-                aria-label="Collapse sidebar"
-                class="chat-sidebar-collapse-btn flex"
-                type="button"
-              >
-                <i
-                  class="fas fa-chevron-left"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="chat-sidebar-search"
-          >
-            <i
-              class="fas fa-search chat-sidebar-search-icon"
-            />
-            <input
-              aria-label="Search conversations"
-              class="chat-sidebar-search-input"
-              placeholder="Search conversations..."
-              type="text"
-              value=""
-            />
-          </div>
-          <button
-            aria-label="New Chat"
-            class="chat-sidebar-new-btn"
-            type="button"
-          >
-            <i
-              class="fas fa-plus"
-            />
-            <span>
-              New Chat
-            </span>
-          </button>
-        </div>
-        <div
-          class="chat-sidebar-rooms"
-        >
-          <div
-            class="chat-room-list"
-          >
-            <button
-              class="chat-room-card "
-              type="button"
-            >
-              <div
-                class="chat-room-card-avatar"
-              >
-                <div
-                  class="relative "
-                >
-                  <div
-                    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
-                  >
-                    O
-                  </div>
-                  <span
-                    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
-                    title="online"
-                  />
-                </div>
-              </div>
-              <div
-                class="chat-room-card-content"
-              >
-                <div
-                  class="chat-room-card-header"
-                >
-                  <span
-                    class="chat-room-card-name"
-                  >
-                    otheruser
-                  </span>
-                  <span
-                    class="chat-room-card-time"
-                  >
-                    1/15/2024
-                  </span>
-                </div>
-                <div
-                  class="chat-room-card-body"
-                >
-                  <p
-                    class="chat-room-card-preview"
-                  >
-                    <span
-                      class="chat-room-card-sender"
-                    >
-                      otheruser
-                      :
-                    </span>
-                     
-                    Hello there!
-                  </p>
-                  <span
-                    class="chat-room-card-badge"
-                  >
-                    2
-                  </span>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 hidden md:flex"
-      >
-        <div
-          class="chat-empty-state"
-        >
-          <div
-            class="chat-empty-icon"
-          >
-            <i
-              class="fas fa-comment-dots"
-            />
-          </div>
-          <p
-            class="chat-empty-title"
-          >
-            Select a chat to start messaging
-          </p>
-          <p
-            class="chat-empty-subtitle"
-          >
-            Select a conversation from the list or start a new chat
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
-<div>
-  <div
-    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
-  >
-    <div
-      class="chat-compact-header flex-shrink-0"
-    >
-      <div
-        class="chat-connection-status disconnected"
+        class="chat-connection-status connected"
       >
         <i
-          class="fas fa-wifi-slash mr-2"
+          class="fas fa-wifi mr-2"
         />
         <span>
-          Disconnected
+          Connected
         </span>
       </div>
       <div
@@ -403,6 +187,234 @@ exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
                   </p>
                   <span
                     class="chat-room-card-badge"
+                    title="2 unread"
+                  >
+                    2
+                  </span>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex-1 flex flex-col chat-main overflow-hidden min-h-0 hidden md:flex"
+      >
+        <div
+          class="chat-empty-state"
+        >
+          <div
+            class="chat-empty-icon"
+          >
+            <i
+              class="fas fa-comment-dots"
+            />
+          </div>
+          <p
+            class="chat-empty-title"
+          >
+            Select a chat to start messaging
+          </p>
+          <p
+            class="chat-empty-subtitle"
+          >
+            Select a conversation from the list or start a new chat
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ChatPage > Snapshots > matches snapshot - disconnected state 1`] = `
+<div>
+  <div
+    class="h-full flex flex-col overflow-hidden chat-page-container chat-container chat-page-padding chat-theme-default"
+  >
+    <div
+      class="chat-compact-header flex-shrink-0"
+    >
+      <div
+        class="chat-connection-status disconnected"
+      >
+        <i
+          class="fas fa-wifi-slash mr-2"
+        />
+        <span>
+          Reconnecting...
+        </span>
+      </div>
+      <div
+        class="chat-notification-banner"
+      >
+        <div
+          class="chat-notification-icon"
+        >
+          <i
+            class="fas fa-bell"
+          />
+        </div>
+        <div
+          class="chat-notification-content"
+        >
+          <p
+            class="chat-notification-title"
+          >
+            Enable notifications for new messages
+          </p>
+          <p
+            class="chat-notification-desc"
+          >
+            Get notified when you receive new messages while away
+          </p>
+        </div>
+        <div
+          class="chat-notification-actions"
+        >
+          <button
+            class="chat-notification-btn enable"
+            type="button"
+          >
+            Enable
+          </button>
+          <button
+            aria-label="Dismiss"
+            class="chat-notification-btn dismiss"
+            type="button"
+          >
+            <i
+              class="fas fa-times"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex-1 flex overflow-hidden min-h-0 chat-main-wrapper relative"
+    >
+      <div
+        class="chat-sidebar-enhanced overflow-hidden flex-shrink-0 transition-all duration-300 w-full md:w-80 lg:w-88  flex flex-col"
+      >
+        <div
+          class="chat-sidebar-header"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <h2
+              class="chat-sidebar-title"
+            >
+              Conversations
+            </h2>
+            <div
+              class="flex items-center gap-1"
+            >
+              <span
+                class="chat-sidebar-count"
+              >
+                1
+              </span>
+              <button
+                aria-label="Collapse sidebar"
+                class="chat-sidebar-collapse-btn flex"
+                type="button"
+              >
+                <i
+                  class="fas fa-chevron-left"
+                />
+              </button>
+            </div>
+          </div>
+          <div
+            class="chat-sidebar-search"
+          >
+            <i
+              class="fas fa-search chat-sidebar-search-icon"
+            />
+            <input
+              aria-label="Search conversations"
+              class="chat-sidebar-search-input"
+              placeholder="Search conversations..."
+              type="text"
+              value=""
+            />
+          </div>
+          <button
+            aria-label="New Chat"
+            class="chat-sidebar-new-btn"
+            type="button"
+          >
+            <i
+              class="fas fa-plus"
+            />
+            <span>
+              New Chat
+            </span>
+          </button>
+        </div>
+        <div
+          class="chat-sidebar-rooms"
+        >
+          <div
+            class="chat-room-list"
+          >
+            <button
+              class="chat-room-card "
+              type="button"
+            >
+              <div
+                class="chat-room-card-avatar"
+              >
+                <div
+                  class="relative "
+                >
+                  <div
+                    class="w-10 h-10 text-sm rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold"
+                  >
+                    O
+                  </div>
+                  <span
+                    class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"
+                    title="online"
+                  />
+                </div>
+              </div>
+              <div
+                class="chat-room-card-content"
+              >
+                <div
+                  class="chat-room-card-header"
+                >
+                  <span
+                    class="chat-room-card-name"
+                  >
+                    otheruser
+                  </span>
+                  <span
+                    class="chat-room-card-time"
+                  >
+                    1/15/2024
+                  </span>
+                </div>
+                <div
+                  class="chat-room-card-body"
+                >
+                  <p
+                    class="chat-room-card-preview"
+                  >
+                    <span
+                      class="chat-room-card-sender"
+                    >
+                      otheruser
+                      :
+                    </span>
+                     
+                    Hello there!
+                  </p>
+                  <span
+                    class="chat-room-card-badge"
+                    title="2 unread"
                   >
                     2
                   </span>
@@ -450,6 +462,16 @@ exports[`ChatPage > Snapshots > matches snapshot - empty state (no rooms) 1`] = 
     <div
       class="chat-compact-header flex-shrink-0"
     >
+      <div
+        class="chat-connection-status connected"
+      >
+        <i
+          class="fas fa-wifi mr-2"
+        />
+        <span>
+          Connected
+        </span>
+      </div>
       <div
         class="chat-notification-banner"
       >
@@ -627,6 +649,16 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
       class="chat-compact-header flex-shrink-0"
     >
       <div
+        class="chat-connection-status connected"
+      >
+        <i
+          class="fas fa-wifi mr-2"
+        />
+        <span>
+          Connected
+        </span>
+      </div>
+      <div
         class="chat-notification-banner"
       >
         <div
@@ -743,7 +775,7 @@ exports[`ChatPage > Snapshots > matches snapshot - loading state 1`] = `
               />
             </div>
             <p>
-              Loading chats...
+              Loading messages...
             </p>
           </div>
         </div>
@@ -786,6 +818,16 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
     <div
       class="chat-compact-header flex-shrink-0"
     >
+      <div
+        class="chat-connection-status connected"
+      >
+        <i
+          class="fas fa-wifi mr-2"
+        />
+        <span>
+          Connected
+        </span>
+      </div>
       <div
         class="chat-notification-banner"
       >
@@ -955,6 +997,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with active chat room 1`] = `
                   </p>
                   <span
                     class="chat-room-card-badge"
+                    title="2 unread"
                   >
                     2
                   </span>
@@ -1242,7 +1285,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
           class="fas fa-wifi-slash mr-2"
         />
         <span>
-          Disconnected
+          Reconnecting...
         </span>
       </div>
       <div
@@ -1414,6 +1457,7 @@ exports[`ChatPage > Snapshots > matches snapshot - with error 1`] = `
                   </p>
                   <span
                     class="chat-room-card-badge"
+                    title="2 unread"
                   >
                     2
                   </span>

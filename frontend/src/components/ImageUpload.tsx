@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_BASE_URL, uploadApi } from '../api/client';
 
 interface ImageUploadProps {
@@ -8,6 +9,7 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUploadProps) {
+  const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -17,7 +19,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
     if (!files || files.length === 0) return;
 
     if (images.length + files.length > maxImages) {
-      setError(`Maximum ${maxImages} images allowed`);
+      setError(t('common.maxImagesAllowed', { max: maxImages }));
       return;
     }
 
@@ -30,13 +32,13 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
       for (const file of Array.from(files)) {
         // Validate file type
         if (!file.type.startsWith('image/')) {
-          setError(`${file.name} is not an image file`);
+          setError(t('common.notImageFile', { name: file.name }));
           continue;
         }
 
         // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
-          setError(`${file.name} is too large (max 5MB)`);
+          setError(t('common.fileTooLarge', { name: file.name }));
           continue;
         }
 
@@ -51,7 +53,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
         onImagesChange([...images, ...uploadedPaths]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload images');
+      setError(err instanceof Error ? err.message : t('common.failedToUploadImages'));
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -91,12 +93,12 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
             {uploading ? (
               <>
                 <i className="glass-i fas fa-spinner fa-spin mr-1"></i>
-                Uploading...
+                {t('common.uploading')}
               </>
             ) : (
               <>
                 <i className="glass-i fas fa-image mr-1"></i>
-                Add Images
+                {t('common.addImages')}
               </>
             )}
           </button>
@@ -135,7 +137,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
                 type="button"
                 onClick={() => handleRemoveImage(imagePath)}
                 className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700"
-                title="Remove image"
+                title={t('common.removeImageTitle')}
               >
                 <i className="glass-i fas fa-times text-xs"></i>
               </button>
@@ -144,9 +146,7 @@ export function ImageUpload({ images, onImagesChange, maxImages = 5 }: ImageUplo
         </div>
       )}
 
-      <p className="text-xs text-[var(--text-muted)]">
-        Accepted formats: JPEG, PNG, GIF, WebP. Maximum size: 5MB per image.
-      </p>
+      <p className="text-xs text-[var(--text-muted)]">{t('common.imageFormatsHint')}</p>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApi } from '../api/client';
@@ -44,7 +45,7 @@ export function AuditLogsPage() {
       setTotalPages(data.pagination.total_pages);
     } catch (err) {
       logger.error('Failed to load audit logs:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load audit logs');
+      setError(err instanceof Error ? err.message : t('auditLogs.failedToLoadLogs'));
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +105,7 @@ export function AuditLogsPage() {
       document.body.removeChild(a);
     } catch (err) {
       logger.error('Failed to export audit logs:', err);
-      setError(err instanceof Error ? err.message : 'Failed to export audit logs');
+      setError(err instanceof Error ? err.message : t('auditLogs.failedToExport'));
     } finally {
       setIsExporting(false);
     }
@@ -141,11 +142,11 @@ export function AuditLogsPage() {
                 <i className="fas fa-clipboard-list text-white"></i>
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
-                Audit Logs
+                {t('auditLogs.auditLogs')}
               </h1>
             </div>
             <p className="text-sm sm:text-base text-[var(--text-secondary)] ml-1">
-              View and analyze system activity logs for compliance and security monitoring
+              {t('auditLogs.viewAndAnalyze')}
             </p>
           </div>
         </div>
@@ -154,8 +155,8 @@ export function AuditLogsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link to="/admin" className="modern-btn-secondary">
               <i className="fas fa-arrow-left mr-2"></i>
-              <span className="hidden sm:inline">Back to Admin</span>
-              <span className="sm:hidden">Back</span>
+              <span className="hidden sm:inline">{t('common.backToAdmin')}</span>
+              <span className="sm:hidden">{t('common.back')}</span>
             </Link>
           </div>
         </div>
@@ -167,7 +168,7 @@ export function AuditLogsPage() {
           <div className="stat-card stat-card-purple">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="stat-card-label">Total Logs</p>
+                <p className="stat-card-label">{t('common.totalLogs')}</p>
                 <p className="stat-card-value">{stats.total_logs.toLocaleString()}</p>
                 <div className="stat-card-progress"></div>
               </div>
@@ -180,7 +181,7 @@ export function AuditLogsPage() {
           <div className="stat-card stat-card-blue">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="stat-card-label">Last 24 Hours</p>
+                <p className="stat-card-label">{t('common.last24Hours')}</p>
                 <p className="stat-card-value">{stats.recent_activity_24h.toLocaleString()}</p>
                 <div className="stat-card-progress"></div>
               </div>
@@ -193,7 +194,7 @@ export function AuditLogsPage() {
           <div className="stat-card stat-card-indigo">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="stat-card-label">Most Common Action</p>
+                <p className="stat-card-label">{t('common.mostCommonAction')}</p>
                 <p className="stat-card-value uppercase">{stats.by_action[0]?.action || 'N/A'}</p>
                 <div className="stat-card-progress"></div>
               </div>
@@ -206,7 +207,7 @@ export function AuditLogsPage() {
           <div className="stat-card stat-card-cyan">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="stat-card-label">Active Users</p>
+                <p className="stat-card-label">{t('common.activeUsers')}</p>
                 <p className="stat-card-value">{stats.most_active_users.length}</p>
                 <div className="stat-card-progress"></div>
               </div>
@@ -222,7 +223,9 @@ export function AuditLogsPage() {
       <div className="glass-panel p-4 sm:p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
           <i className="fas fa-filter text-[var(--text-secondary)]"></i>
-          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Filters</h2>
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+            {t('common.filters')}
+          </h2>
         </div>
         <div className="responsive-grid">
           <div>
@@ -230,7 +233,7 @@ export function AuditLogsPage() {
               htmlFor="filter-user-id"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
             >
-              User ID
+              {t('auditLogs.userId')}
             </label>
             <input
               id="filter-user-id"
@@ -238,7 +241,7 @@ export function AuditLogsPage() {
               value={filterUserId}
               onChange={(e) => setFilterUserId(e.target.value)}
               className="glass-input"
-              placeholder="e.g., 42"
+              placeholder={t('auditLogs.userIdPlaceholder')}
             />
           </div>
           <div>
@@ -246,7 +249,7 @@ export function AuditLogsPage() {
               htmlFor="filter-entity-type"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
             >
-              Entity Type
+              {t('auditLogs.entityType')}
             </label>
             <select
               id="filter-entity-type"
@@ -254,11 +257,11 @@ export function AuditLogsPage() {
               onChange={(e) => setFilterEntityType(e.target.value)}
               className="glass-input"
             >
-              <option value="">All</option>
-              <option value="note">Note</option>
-              <option value="task">Task</option>
-              <option value="user">User</option>
-              <option value="export">Export</option>
+              <option value="">{t('common.all')}</option>
+              <option value="note">{t('common.note')}</option>
+              <option value="task">{t('common.task')}</option>
+              <option value="user">{t('common.user')}</option>
+              <option value="export">{t('common.export')}</option>
             </select>
           </div>
           <div>
@@ -266,7 +269,7 @@ export function AuditLogsPage() {
               htmlFor="filter-action"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
             >
-              Action
+              {t('auditLogs.action')}
             </label>
             <select
               id="filter-action"
@@ -274,11 +277,11 @@ export function AuditLogsPage() {
               onChange={(e) => setFilterAction(e.target.value)}
               className="glass-input"
             >
-              <option value="">All</option>
-              <option value="view">View</option>
-              <option value="create">Create</option>
-              <option value="update">Update</option>
-              <option value="delete">Delete</option>
+              <option value="">{t('common.all')}</option>
+              <option value="view">{t('common.view')}</option>
+              <option value="create">{t('common.create')}</option>
+              <option value="update">{t('common.update')}</option>
+              <option value="delete">{t('common.delete')}</option>
             </select>
           </div>
           <div>
@@ -286,7 +289,7 @@ export function AuditLogsPage() {
               htmlFor="filter-start-date"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
             >
-              Start Date
+              {t('auditLogs.startDate')}
             </label>
             <input
               id="filter-start-date"
@@ -301,7 +304,7 @@ export function AuditLogsPage() {
               htmlFor="filter-end-date"
               className="block text-sm font-medium text-[var(--text-secondary)] mb-1"
             >
-              End Date
+              {t('auditLogs.endDate')}
             </label>
             <input
               id="filter-end-date"
@@ -320,7 +323,7 @@ export function AuditLogsPage() {
               className="btn-apple flex-1 sm:flex-initial"
             >
               <i className="glass-i fas fa-check mr-2" aria-hidden="true"></i>
-              <span>Apply Filters</span>
+              <span>{t('common.applyFilters')}</span>
             </button>
             <button
               type="button"
@@ -328,7 +331,7 @@ export function AuditLogsPage() {
               className="btn-secondary-glass flex-1 sm:flex-initial"
             >
               <i className="glass-i fas fa-times mr-2" aria-hidden="true"></i>
-              <span>Clear Filters</span>
+              <span>{t('common.clearFilters')}</span>
             </button>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -344,7 +347,7 @@ export function AuditLogsPage() {
               }}
             >
               <i className="glass-i fas fa-file-csv mr-2" aria-hidden="true"></i>
-              <span>{isExporting ? 'Exporting...' : 'Export CSV'}</span>
+              <span>{isExporting ? t('auditLogs.exporting') : t('auditLogs.exportCSV')}</span>
             </button>
             <button
               type="button"
@@ -358,7 +361,7 @@ export function AuditLogsPage() {
               }}
             >
               <i className="glass-i fas fa-file-code mr-2" aria-hidden="true"></i>
-              <span>{isExporting ? 'Exporting...' : 'Export JSON'}</span>
+              <span>{isExporting ? t('auditLogs.exporting') : t('auditLogs.exportJSON')}</span>
             </button>
           </div>
         </div>
@@ -379,22 +382,22 @@ export function AuditLogsPage() {
             <thead className="bg-[var(--bg-tertiary)]">
               <tr>
                 <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                  Time
+                  {t('auditLogs.time')}
                 </th>
                 <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                  User
+                  {t('auditLogs.user')}
                 </th>
                 <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                  Action
+                  {t('auditLogs.action')}
                 </th>
                 <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden md:table-cell">
-                  Entity
+                  {t('auditLogs.entity')}
                 </th>
                 <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden lg:table-cell">
-                  IP Address
+                  {t('auditLogs.ipAddress')}
                 </th>
                 <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hidden xl:table-cell">
-                  Metadata
+                  {t('auditLogs.metadata')}
                 </th>
               </tr>
             </thead>
@@ -409,7 +412,7 @@ export function AuditLogsPage() {
                       className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
                       aria-hidden="true"
                     ></i>
-                    <p>Loading audit logs...</p>
+                    <p>{t('common.loadingAuditLogs')}</p>
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
@@ -422,8 +425,8 @@ export function AuditLogsPage() {
                       className="glass-i fas fa-inbox text-4xl mb-4 text-[var(--text-muted)]"
                       aria-hidden="true"
                     ></i>
-                    <p className="text-lg">No audit logs found</p>
-                    <p className="text-sm mt-2">Try adjusting your filter criteria</p>
+                    <p className="text-lg">{t('common.noAuditLogsFound')}</p>
+                    <p className="text-sm mt-2">{t('common.tryAdjustingFilters')}</p>
                   </td>
                 </tr>
               ) : (
@@ -467,7 +470,7 @@ export function AuditLogsPage() {
                       {log.metadata && Object.keys(log.metadata).length > 0 ? (
                         <details className="cursor-pointer">
                           <summary className="text-blue-600 dark:text-blue-400 hover:underline">
-                            View metadata
+                            {t('auditLogs.viewMetadata')}
                           </summary>
                           <pre className="mt-2 p-2 bg-[var(--bg-secondary)] rounded text-xs overflow-x-auto">
                             {JSON.stringify(log.metadata, null, 2)}
@@ -488,7 +491,7 @@ export function AuditLogsPage() {
         {totalPages > 1 && (
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3">
             <div className="text-sm text-[var(--text-secondary)]">
-              Page {page} of {totalPages}
+              {t('auditLogs.page')} {page} {t('auditLogs.of')} {totalPages}
             </div>
             <div className="flex gap-2">
               <button
@@ -498,7 +501,7 @@ export function AuditLogsPage() {
                 className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 <i className="glass-i fas fa-chevron-left" aria-hidden="true"></i>
-                <span className="hidden sm:inline">Previous</span>
+                <span className="hidden sm:inline">{t('auditLogs.previous')}</span>
               </button>
               <button
                 type="button"
@@ -506,7 +509,7 @@ export function AuditLogsPage() {
                 disabled={page === totalPages}
                 className="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border-color)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                <span className="hidden sm:inline">Next</span>
+                <span className="hidden sm:inline">{t('auditLogs.next')}</span>
                 <i className="glass-i fas fa-chevron-right" aria-hidden="true"></i>
               </button>
             </div>

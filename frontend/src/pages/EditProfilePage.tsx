@@ -46,7 +46,7 @@ export function EditProfilePage() {
         await i18n.changeLanguage(formData.preferred_language);
       }
       await refreshUser();
-      navigate('/profile', { state: { message: 'Profile updated successfully' } });
+      navigate('/profile', { state: { message: t('profile.profileUpdatedSuccessfully') } });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update profile';
       setError(errorMessage);

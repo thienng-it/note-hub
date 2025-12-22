@@ -102,7 +102,7 @@ export function Setup2FAPage() {
             className="glass-i fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"
             aria-hidden="true"
           ></i>
-          <p className="text-[var(--text-secondary)]">Loading 2FA setup...</p>
+          <p className="text-[var(--text-secondary)]">{t('common.loading2FASetup')}</p>
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ export function Setup2FAPage() {
           aria-label="Back to Profile"
         >
           <i className="glass-i fas fa-arrow-left mr-2" aria-hidden="true"></i>
-          Back to Profile
+          {t('common.backToProfile')}
         </Link>
         <h1 className="text-2xl md:text-3xl font-bold flex items-center text-[var(--text-primary)]">
           <i className="glass-i fas fa-shield-alt mr-3 text-blue-600" aria-hidden="true"></i>
@@ -186,7 +186,7 @@ export function Setup2FAPage() {
           /* Secret Key View */
           <div className="text-center mb-6">
             <p className="mb-4 text-[var(--text-secondary)]">
-              If you can't scan the QR code, enter this secret key manually into your authenticator
+              {t('2fa.manualEntryInstructions')}
               app.
             </p>
             <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-color)]">
@@ -250,7 +250,7 @@ export function Setup2FAPage() {
               type="button"
               onClick={refreshSecret}
               className="py-3 px-4 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg font-medium transition-colors duration-200"
-              title="Generate new QR code"
+              title={t('common.generateNewQRTitle')}
             >
               <i className="glass-i fas fa-sync-alt" aria-hidden="true"></i>
             </button>
@@ -261,8 +261,8 @@ export function Setup2FAPage() {
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-300">
             <i className="glass-i fas fa-info-circle mr-2" aria-hidden="true"></i>
-            <strong>Tip:</strong> After enabling 2FA, you'll need to enter a code from your
-            authenticator app each time you log in.
+            <strong>{t('common.tip')}</strong> After enabling 2FA, you'll need to enter a code from
+            your authenticator app each time you log in.
           </p>
         </div>
       </div>
