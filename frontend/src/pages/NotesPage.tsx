@@ -124,7 +124,7 @@ export function NotesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [view, query, tagFilter]);
+  }, [view, query, tagFilter, t]);
 
   const loadFolders = useCallback(async () => {
     try {

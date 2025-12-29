@@ -53,7 +53,7 @@ export function NoteEditPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     if (id) {

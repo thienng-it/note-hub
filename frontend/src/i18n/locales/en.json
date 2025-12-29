@@ -10,6 +10,9 @@
     "confirmNewPasswordPlaceholder": "Confirm your new password",
     "usernameOrEmailPlaceholder": "Enter your username or email",
     "deviceNamePlaceholder": "Device name",
+    "redirectingToLoginPage": "Redirecting to login page...",
+    "noPasskeysYet": "No passkeys registered yet",
+    "clickToAddPasskey": "Click \"Add Passkey\" to register your first passkey",
     "unlockUserTitle": "Unlock user account",
     "lockUserTitle": "Lock user account",
     "revokeAdminTitle": "Revoke admin privileges",
@@ -108,7 +111,13 @@
     "backToAdmin": "Back to Admin",
     "noOtpRequired": "No OTP Required",
     "completingGoogleAuth": "Completing Google authentication...",
-    "securityWarning": "Security Warning"
+    "securityWarning": "Security Warning",
+    "createNewNote": "Create New Note",
+    "editNote": "Edit Note",
+    "newNote": "New Note",
+    "chooseTemplate": "Choose a Template",
+    "skipTemplates": "Skip",
+    "backToNotes": "Back to Notes"
   },
   "auth": {
     "login": {
@@ -252,7 +261,10 @@
     "confirmFolderConfirm": "Upload & Import",
     "resultMessage": "Imported {{imported}} notes, updated {{updated}}, failed {{failed}}.",
     "fileError": "{{file}}: {{error}}",
-    "failed": "Markdown import failed"
+    "failed": "Markdown import failed",
+    "templateDescription": "Start with a pre-made template or create from scratch",
+    "tagsHelp": "Separate tags with commas",
+    "noFolder": "No folder (root level)"
   },
   "tasks": {
     "title": "Tasks",
