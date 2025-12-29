@@ -85,7 +85,7 @@ export function NoteViewPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     loadNote();

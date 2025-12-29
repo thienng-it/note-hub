@@ -72,7 +72,7 @@ export function ShareNotePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     if (id) {

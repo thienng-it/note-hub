@@ -45,7 +45,7 @@ export function PasskeyManager() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadCredentials();

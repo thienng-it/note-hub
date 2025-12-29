@@ -73,7 +73,7 @@ export function AdminDashboardPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, searchQuery]);
+  }, [page, searchQuery, t]);
 
   useEffect(() => {
     loadUsers();
