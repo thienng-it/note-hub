@@ -372,7 +372,9 @@
     "invalidBackupFormat": "Invalid backup file format",
     "importFailed": "Import failed",
     "edit": "Edit",
-    "change": "Change"
+    "change": "Change",
+    "setup": "Setup",
+    "disable": "Disable"
   },
   "share": {
     "shareNote": "Share Note",
