@@ -814,6 +814,37 @@ if (isRedisEnabled) {
    Example: feat(auth): add Google OAuth support
    ```
 
+6. **Pull Request Workflow:**
+   When pushing code and creating PRs, follow these steps:
+   
+   a. **Lint & Fix:**
+      ```bash
+      cd frontend && npm run lint
+      # Fix any errors before proceeding
+      ```
+      
+   b. **Create Branch:**
+      ```bash
+      git checkout -b type/short-description
+      # Example: fix/profile-page-ui-ux
+      ```
+      
+   c. **Push & Create PR:**
+      ```bash
+      git push -u origin <branch-name>
+      
+      # Use GitHub CLI to create PR
+      gh pr create --title "type(scope): description" --body "## Summary
+      <Brief description>
+      
+      ## Changes
+      - Change 1
+      - Change 2
+      
+      ## Testing
+      - Test details"
+      ```
+
 ## Environment Variables
 
 ### Backend Required:
