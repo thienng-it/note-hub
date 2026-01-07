@@ -242,7 +242,7 @@ export function ProfilePage() {
                 {t('profile.userId')}
               </span>
             </div>
-            <span className="text-[var(--text-secondary)] font-mono text-sm sm:text-base">
+            <span className="text-[var(--text-secondary)] font-mono text-sm sm:text-base text-left sm:text-right">
               {user.id}
             </span>
           </div>
@@ -254,7 +254,7 @@ export function ProfilePage() {
                   {t('profile.memberSince')}
                 </span>
               </div>
-              <span className="text-[var(--text-secondary)] text-sm sm:text-base">
+              <span className="text-[var(--text-secondary)] text-sm sm:text-base text-left sm:text-right">
                 {new Date(user.created_at).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -333,32 +333,34 @@ export function ProfilePage() {
           </div>
 
           {/* 2FA Settings */}
-          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
-            <div>
-              <span className="font-medium text-[var(--text-primary)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
+            <div className="flex-1">
+              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
                 {t('profile.enable2FA')}
               </span>
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
                 {user.has_2fa ? t('profile.twoFactorEnabled') : t('profile.twoFactorDisabled')}
               </p>
             </div>
             {user.has_2fa ? (
               <Link
                 to="/profile/2fa/disable"
-                className="btn-apple"
+                className="btn-apple self-start sm:self-center"
                 style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
               >
                 <i className="fas fa-shield-alt mr-2"></i>
-                {t('profile.disable2FA')}
+                <span className="hidden xs:inline">{t('profile.disable2FA')}</span>
+                <span className="xs:hidden">{t('profile.disable')}</span>
               </Link>
             ) : (
               <Link
                 to="/profile/2fa/setup"
-                className="btn-apple"
+                className="btn-apple self-start sm:self-center"
                 style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
               >
                 <i className="fas fa-shield-alt mr-2"></i>
-                {t('profile.setup2FA')}
+                <span className="hidden xs:inline">{t('profile.setup2FA')}</span>
+                <span className="xs:hidden">{t('profile.setup')}</span>
               </Link>
             )}
           </div>
@@ -457,64 +459,67 @@ export function ProfilePage() {
           </div>
 
           <div className="py-3 border-t border-[var(--border-color)]">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex-1">
-                <span className="font-medium text-[var(--text-primary)]">
-                  {t('markdownImport.sectionTitle')}
-                </span>
-                <p className="text-sm text-[var(--text-muted)]">
-                  {t('markdownImport.sectionDescription')}
-                </p>
+            <div className="flex flex-col gap-3 mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+                <div className="flex-1">
+                  <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
+                    {t('markdownImport.sectionTitle')}
+                  </span>
+                  <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+                    {t('markdownImport.sectionDescription')}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleMarkdownImportFilesClick}
+                    disabled={isMarkdownImporting}
+                    className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
+                  >
+                    {isMarkdownImporting ? (
+                      <>
+                        <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
+                        {t('markdownImport.importing')}
+                      </>
+                    ) : (
+                      <>
+                        <i className="glass-i fas fa-file-alt mr-2"></i>
+                        {t('markdownImport.file')}
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleMarkdownImportFolderClick}
+                    disabled={isMarkdownImporting}
+                    className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
+                  >
+                    {isMarkdownImporting ? (
+                      <>
+                        <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
+                        {t('markdownImport.importing')}
+                      </>
+                    ) : (
+                      <>
+                        <i className="glass-i fas fa-folder-open mr-2"></i>
+                        {t('markdownImport.folder')}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-              <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] mr-3">
+              <label className="flex items-center gap-2 text-xs sm:text-sm text-[var(--text-secondary)]">
                 <input
                   type="checkbox"
                   checked={markdownOverwrite}
                   onChange={(e) => setMarkdownOverwrite(e.target.checked)}
                   disabled={isMarkdownImporting}
+                  className="w-4 h-4"
                 />
                 <span>{t('markdownImport.overwrite')}</span>
               </label>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleMarkdownImportFilesClick}
-                  disabled={isMarkdownImporting}
-                  className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
-                >
-                  {isMarkdownImporting ? (
-                    <>
-                      <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                      {t('markdownImport.importing')}
-                    </>
-                  ) : (
-                    <>
-                      <i className="glass-i fas fa-file-alt mr-2"></i>
-                      {t('markdownImport.file')}
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleMarkdownImportFolderClick}
-                  disabled={isMarkdownImporting}
-                  className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
-                >
-                  {isMarkdownImporting ? (
-                    <>
-                      <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                      {t('markdownImport.importing')}
-                    </>
-                  ) : (
-                    <>
-                      <i className="glass-i fas fa-folder-open mr-2"></i>
-                      {t('markdownImport.folder')}
-                    </>
-                  )}
-                </button>
-              </div>
               <input
                 ref={markdownFileInputRef}
                 type="file"

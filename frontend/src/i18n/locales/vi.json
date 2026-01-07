@@ -530,7 +530,9 @@
     "invalidBackupFormat": "Định dạng tệp sao lưu không hợp lệ",
     "importFailed": "Nhập thất bại",
     "edit": "Sửa",
-    "change": "Đổi"
+    "change": "Đổi",
+    "setup": "Bật",
+    "disable": "Tắt"
   },
   "share": {
     "shareNote": "Chia sẻ ghi chú",
