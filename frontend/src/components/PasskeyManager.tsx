@@ -210,7 +210,8 @@ export function PasskeyManager() {
           type="button"
           onClick={handleRegister}
           disabled={isRegistering}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50"
+          className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
         >
           {isRegistering ? (
             <>
@@ -239,21 +240,7 @@ export function PasskeyManager() {
             </>
           ) : (
             <>
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                role="img"
-                aria-label="Add"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
+              <i className="fas fa-plus mr-2"></i>
               {t('passkey.addPasskey')}
             </>
           )}
