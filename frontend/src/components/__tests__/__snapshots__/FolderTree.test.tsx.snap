@@ -8,7 +8,8 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
     class="flex items-center justify-between mb-3"
   >
     <h3
-      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+      class="text-sm font-semibold"
+      style="color: var(--text-primary);"
     >
       Folders
     </h3>
@@ -38,8 +39,8 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
     class="space-y-1"
   >
     <button
-      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
-      style="margin-bottom: 1rem;"
+      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left bg-blue-50 dark:bg-blue-900/20"
+      style="margin-bottom: 1rem; color: rgb(30, 64, 175);"
       type="button"
     >
       <svg
@@ -59,6 +60,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
       </svg>
       <span
         class="text-sm font-medium"
+        style="color: inherit;"
       >
         All Notes
       </span>
@@ -68,7 +70,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
       style="margin-bottom: 0.5rem;"
     >
       <button
-        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
+        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 backdrop-blur-sm"
         style="padding-left: 0.75rem;"
         tabindex="0"
         type="button"
@@ -119,11 +121,13 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
         >
           <span
             class="text-sm font-medium truncate"
+            style="color: var(--text-primary);"
           >
             Work
           </span>
           <span
-            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+            class="text-xs ml-2"
+            style="color: var(--text-secondary);"
           >
             8
           </span>
@@ -157,7 +161,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
           style="margin-bottom: 0.5rem;"
         >
           <button
-            class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
+            class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 backdrop-blur-sm"
             style="padding-left: 2.25rem;"
             tabindex="0"
             type="button"
@@ -189,11 +193,13 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
             >
               <span
                 class="text-sm font-medium truncate"
+                style="color: var(--text-primary);"
               >
                 Project A
               </span>
               <span
-                class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+                class="text-xs ml-2"
+                style="color: var(--text-secondary);"
               >
                 5
               </span>
@@ -227,7 +233,7 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
       style="margin-bottom: 0.5rem;"
     >
       <button
-        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
+        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 backdrop-blur-sm"
         style="padding-left: 0.75rem;"
         tabindex="0"
         type="button"
@@ -259,11 +265,13 @@ exports[`FolderTree > matches snapshot - default state 1`] = `
         >
           <span
             class="text-sm font-medium truncate"
+            style="color: var(--text-primary);"
           >
             Personal
           </span>
           <span
-            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+            class="text-xs ml-2"
+            style="color: var(--text-secondary);"
           >
             2
           </span>
@@ -302,7 +310,8 @@ exports[`FolderTree > matches snapshot - empty folders 1`] = `
     class="flex items-center justify-between mb-3"
   >
     <h3
-      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+      class="text-sm font-semibold"
+      style="color: var(--text-primary);"
     >
       Folders
     </h3>
@@ -332,8 +341,8 @@ exports[`FolderTree > matches snapshot - empty folders 1`] = `
     class="space-y-1"
   >
     <button
-      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
-      style="margin-bottom: 1rem;"
+      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left bg-blue-50 dark:bg-blue-900/20"
+      style="margin-bottom: 1rem; color: rgb(30, 64, 175);"
       type="button"
     >
       <svg
@@ -353,6 +362,7 @@ exports[`FolderTree > matches snapshot - empty folders 1`] = `
       </svg>
       <span
         class="text-sm font-medium"
+        style="color: inherit;"
       >
         All Notes
       </span>
@@ -374,7 +384,8 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
     class="flex items-center justify-between mb-3"
   >
     <h3
-      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+      class="text-sm font-semibold"
+      style="color: var(--text-primary);"
     >
       Folders
     </h3>
@@ -404,8 +415,8 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
     class="space-y-1"
   >
     <button
-      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-      style="margin-bottom: 1rem;"
+      class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700"
+      style="margin-bottom: 1rem; color: var(--text-primary);"
       type="button"
     >
       <svg
@@ -425,6 +436,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
       </svg>
       <span
         class="text-sm font-medium"
+        style="color: inherit;"
       >
         All Notes
       </span>
@@ -434,7 +446,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
       style="margin-bottom: 0.5rem;"
     >
       <button
-        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-700 dark:text-blue-400 shadow-sm border border-blue-200/50 dark:border-blue-700/50"
+        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 shadow-sm border border-blue-200/50 dark:border-blue-700/50"
         style="padding-left: 0.75rem;"
         tabindex="0"
         type="button"
@@ -485,11 +497,13 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
         >
           <span
             class="text-sm font-medium truncate"
+            style="color: rgb(30, 64, 175);"
           >
             Work
           </span>
           <span
-            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+            class="text-xs ml-2"
+            style="color: var(--text-secondary);"
           >
             8
           </span>
@@ -523,7 +537,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
           style="margin-bottom: 0.5rem;"
         >
           <button
-            class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
+            class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 backdrop-blur-sm"
             style="padding-left: 2.25rem;"
             tabindex="0"
             type="button"
@@ -555,11 +569,13 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
             >
               <span
                 class="text-sm font-medium truncate"
+                style="color: var(--text-primary);"
               >
                 Project A
               </span>
               <span
-                class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+                class="text-xs ml-2"
+                style="color: var(--text-secondary);"
               >
                 5
               </span>
@@ -593,7 +609,7 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
       style="margin-bottom: 0.5rem;"
     >
       <button
-        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm"
+        class="glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 backdrop-blur-sm"
         style="padding-left: 0.75rem;"
         tabindex="0"
         type="button"
@@ -625,11 +641,13 @@ exports[`FolderTree > matches snapshot - with selected folder 1`] = `
         >
           <span
             class="text-sm font-medium truncate"
+            style="color: var(--text-primary);"
           >
             Personal
           </span>
           <span
-            class="text-xs text-gray-500 dark:text-gray-400 ml-2"
+            class="text-xs ml-2"
+            style="color: var(--text-secondary);"
           >
             2
           </span>
