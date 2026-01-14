@@ -290,8 +290,8 @@ export function FolderItem({
         tabIndex={0}
         className={`glass-list-item flex items-center gap-2 px-3 py-3 rounded-xl cursor-pointer transition-all relative group w-full text-left ${
           isSelected
-            ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-700 dark:text-blue-400 shadow-sm border border-blue-200/50 dark:border-blue-700/50'
-            : 'hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 text-gray-700 dark:text-gray-300 backdrop-blur-sm'
+            ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 shadow-sm border border-blue-200/50 dark:border-blue-700/50'
+            : 'hover:bg-gradient-to-r hover:from-gray-50/80 hover:to-gray-100/80 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 backdrop-blur-sm'
         }`}
         style={{
           paddingLeft: `${level * 1.5 + 0.75}rem`,
@@ -335,9 +335,14 @@ export function FolderItem({
 
         {/* Folder name and count */}
         <div className="flex-1 flex items-center justify-between min-w-0">
-          <span className="text-sm font-medium truncate">{folder.name}</span>
+          <span
+            className="text-sm font-medium truncate"
+            style={{ color: isSelected ? '#1e40af' : 'var(--text-primary)' }}
+          >
+            {folder.name}
+          </span>
           {((folder.note_count ?? 0) > 0 || (folder.task_count ?? 0) > 0) && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+            <span className="text-xs ml-2" style={{ color: 'var(--text-secondary)' }}>
               {(folder.note_count ?? 0) + (folder.task_count ?? 0)}
             </span>
           )}

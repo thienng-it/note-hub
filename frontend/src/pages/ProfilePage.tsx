@@ -184,399 +184,276 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="page-padding space-y-6">
-      {/* Modern Header Section */}
-      <div className="modern-search-card">
-        <div className="flex items-center gap-4 mb-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-1">
-              <div className="modern-icon-badge bg-gradient-to-br from-cyan-500 to-blue-600">
-                <i className="fas fa-user-circle text-white"></i>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] truncate">
-                {t('profile.profile')}
-              </h1>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {user.has_2fa && (
-            <div
-              className="modern-stat-badge"
-              style={{
-                background: 'rgba(52, 199, 89, 0.1)',
-                borderColor: 'rgba(52, 199, 89, 0.2)',
-              }}
-            >
-              <i className="fas fa-shield-alt text-green-500 mr-2"></i>
-              <span className="font-semibold">{t('profile.twoFactorEnabledBadge')}</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* User Info Card */}
-      <div className="modern-search-card">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold flex-shrink-0">
-            {user.username.charAt(0).toUpperCase()}
-          </div>
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
-              {user.username}
-            </h2>
-            {user.email && (
-              <p className="text-sm sm:text-base text-[var(--text-secondary)] break-all">
-                <i className="glass-i fas fa-envelope mr-2"></i>
-                {user.email}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-3 sm:space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-1 sm:gap-4">
-            <div>
-              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
-                {t('profile.userId')}
-              </span>
-            </div>
-            <span className="text-[var(--text-secondary)] font-mono text-sm sm:text-base text-left sm:text-right">
-              {user.id}
-            </span>
-          </div>
-
-          {user.created_at && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-1 sm:gap-4">
-              <div>
-                <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
-                  {t('profile.memberSince')}
-                </span>
-              </div>
-              <span className="text-[var(--text-secondary)] text-sm sm:text-base text-left sm:text-right">
-                {new Date(user.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Settings Card */}
-      <div className="modern-search-card">
-        <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] mb-3 sm:mb-4">
-          <i className="glass-i fas fa-cog mr-2"></i>
-          {t('profile.settings')}
-        </h3>
-
-        <div className="space-y-3 sm:space-y-4">
-          {/* Theme Toggle */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
-            <div className="flex-1">
-              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
-                {t('profile.theme')}
-              </span>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                {t('profile.themeDescription')}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="btn-secondary-glass flex items-center gap-2 px-3 sm:px-4 py-2 hover:scale-105 transition-all touch-no-select self-start sm:self-center"
-            >
-              <i
-                className={`fas fa-${theme === 'dark' ? 'sun text-yellow-500' : 'moon text-blue-500'}`}
-              ></i>
-              <span className="text-[var(--text-primary)] capitalize text-sm sm:text-base">
-                {theme}
-              </span>
-            </button>
-          </div>
-
-          {/* Edit Profile Link */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
-            <div className="flex-1">
-              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
-                {t('profile.editProfile')}
-              </span>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                {t('profile.languageDescription')}
-              </p>
-            </div>
-            <Link to="/profile/edit" className="btn-apple">
-              <i className="fas fa-edit mr-2"></i>
-              <span className="hidden xs:inline">{t('profile.editProfile')}</span>
-              <span className="xs:hidden">{t('profile.edit')}</span>
-            </Link>
-          </div>
-
-          {/* Change Password Link */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
-            <div className="flex-1">
-              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
-                {t('auth.login.password')}
-              </span>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                {t('profile.passwordDescription')}
-              </p>
-            </div>
-            <Link to="/profile/change-password" className="btn-apple">
-              <i className="fas fa-key mr-2"></i>
-              <span className="hidden xs:inline">{t('profile.changePassword')}</span>
-              <span className="xs:hidden">{t('profile.change')}</span>
-            </Link>
-          </div>
-
-          {/* 2FA Settings */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 sm:py-3 border-b border-[var(--border-color)] gap-2 sm:gap-4">
-            <div className="flex-1">
-              <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
-                {t('profile.enable2FA')}
-              </span>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                {user.has_2fa ? t('profile.twoFactorEnabled') : t('profile.twoFactorDisabled')}
-              </p>
-            </div>
-            {user.has_2fa ? (
-              <Link
-                to="/profile/2fa/disable"
-                className="btn-apple self-start sm:self-center"
-                style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
-              >
-                <i className="fas fa-shield-alt mr-2"></i>
-                <span className="hidden xs:inline">{t('profile.disable2FA')}</span>
-                <span className="xs:hidden">{t('profile.disable')}</span>
-              </Link>
-            ) : (
-              <Link
-                to="/profile/2fa/setup"
-                className="btn-apple self-start sm:self-center"
-                style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
-              >
-                <i className="fas fa-shield-alt mr-2"></i>
-                <span className="hidden xs:inline">{t('profile.setup2FA')}</span>
-                <span className="xs:hidden">{t('profile.setup')}</span>
-              </Link>
-            )}
-          </div>
-
-          {/* Passkey Management */}
-          <div className="py-3">
-            <PasskeyManager />
-          </div>
-        </div>
-      </div>
-
-      {/* Export/Import Data Card */}
-      <div className="modern-search-card">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-          <i className="glass-i fas fa-file-export mr-2 text-purple-600"></i>
-          {t('profile.dataManagement')}
-        </h3>
-
-        <div className="space-y-4">
-          {/* Export Data */}
-          <div className="flex items-center justify-between py-3 border-b border-[var(--border-color)]">
-            <div className="flex-1">
-              <span className="font-medium text-[var(--text-primary)]">
-                {t('profile.exportData')}
-              </span>
-              <p className="text-sm text-[var(--text-muted)]">{t('profile.exportDescription')}</p>
-            </div>
-            <button
-              type="button"
-              onClick={handleExport}
-              disabled={isExporting}
-              className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isExporting ? (
-                <>
-                  <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                  {t('profile.exporting')}
-                </>
-              ) : (
-                <>
-                  <i className="glass-i fas fa-download mr-2"></i>
-                  {t('profile.export')}
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* Import Data */}
-          <div className="py-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex-1">
-                <span className="font-medium text-[var(--text-primary)]">
-                  {t('profile.importData')}
-                </span>
-                <p className="text-sm text-[var(--text-muted)]">{t('profile.importDescription')}</p>
-              </div>
-              <button
-                type="button"
-                onClick={handleImportClick}
-                disabled={isImporting}
-                className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}
-              >
-                {isImporting ? (
-                  <>
-                    <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                    {t('profile.importing')}
-                  </>
-                ) : (
-                  <>
-                    <i className="glass-i fas fa-upload mr-2"></i>
-                    {t('profile.import')}
-                  </>
+    <div className="page-padding">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full mx-auto">
+        {/* LEFT COLUMN: Profile Hero */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="modern-search-card sticky top-6">
+            <div className="flex flex-col items-center text-center p-4">
+              <div className="relative mb-6">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-5xl font-bold shadow-xl ring-4 ring-white/10">
+                  {user.username.charAt(0).toUpperCase()}
+                </div>
+                {user.has_2fa && (
+                  <div
+                    className="absolute bottom-1 right-1 bg-green-500 text-white p-2 rounded-full shadow-lg"
+                    title={t('profile.twoFactorEnabled')}
+                  >
+                    <i className="fas fa-shield-alt text-sm"></i>
+                  </div>
                 )}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="application/json,.json"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </div>
-            {importMessage && (
-              <div className="mt-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 text-sm">
-                <i className="glass-i fas fa-check-circle mr-2"></i>
-                {importMessage}
               </div>
-            )}
-            {importError && (
-              <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">
-                <i className="glass-i fas fa-exclamation-circle mr-2"></i>
-                {importError}
-              </div>
-            )}
-          </div>
 
-          <div className="py-3 border-t border-[var(--border-color)]">
-            <div className="flex flex-col gap-3 mb-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                <div className="flex-1">
-                  <span className="font-medium text-[var(--text-primary)] text-sm sm:text-base">
-                    {t('markdownImport.sectionTitle')}
+              <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
+                {user.username}
+              </h1>
+              {user.email && (
+                <p className="text-[var(--text-secondary)] mb-6 flex items-center justify-center gap-2">
+                  <i className="glass-i fas fa-envelope text-sm"></i>
+                  {user.email}
+                </p>
+              )}
+
+              <div className="w-full grid grid-cols-2 gap-3 mb-6">
+                <div className="glass-panel p-3 text-center">
+                  <span className="block text-xs font-medium text-[var(--text-muted)] uppercase mb-1">
+                    ID
                   </span>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                    {t('markdownImport.sectionDescription')}
+                  <span className="font-mono font-bold text-[var(--text-primary)]">#{user.id}</span>
+                </div>
+                <div className="glass-panel p-3 text-center">
+                  <span className="block text-xs font-medium text-[var(--text-muted)] uppercase mb-1">
+                    Joined
+                  </span>
+                  <span className="font-bold text-[var(--text-primary)] text-sm">
+                    {user.created_at ? new Date(user.created_at).getFullYear() : '-'}
+                  </span>
+                </div>
+              </div>
+
+              <Link to="/profile/edit" className="btn-apple w-full justify-center">
+                <i className="fas fa-edit mr-2"></i>
+                {t('profile.editProfile')}
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Settings & Tools */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Quick Actions Grid */}
+          <section>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+              <i className="glass-i fas fa-sliders-h text-blue-500"></i>
+              Quick Settings
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Theme Card */}
+              <button
+                onClick={toggleTheme}
+                className="glass-card p-5 text-left hover:scale-[1.02] transition-transform group flex flex-col items-start"
+              >
+                <div
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-xl ${theme === 'dark' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-blue-500/20 text-blue-600'}`}
+                >
+                  <i className={`fas fa-${theme === 'dark' ? 'sun' : 'moon'}`}></i>
+                </div>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">
+                  {t('profile.theme')}
+                </h3>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  Currently set to {theme} mode
+                </p>
+              </button>
+
+              {/* Password Card */}
+              <Link
+                to="/profile/change-password"
+                className="glass-card p-5 text-left hover:scale-[1.02] transition-transform group flex flex-col items-start"
+              >
+                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-600 flex items-center justify-center mb-3 text-xl">
+                  <i className="fas fa-key"></i>
+                </div>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">
+                  {t('auth.login.password')}
+                </h3>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {t('profile.passwordDescription')}
+                </p>
+              </Link>
+            </div>
+          </section>
+
+          {/* Security Section */}
+          <section>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+              <i className="glass-i fas fa-shield-alt text-green-500"></i>
+              Security
+            </h2>
+            <div className="modern-search-card space-y-6">
+              {/* 2FA Toggle */}
+              <div className="flex items-center justify-between p-4 glass-panel rounded-xl">
+                <div>
+                  <h3 className="font-semibold text-[var(--text-primary)]">
+                    {t('profile.enable2FA')}
+                  </h3>
+                  <p className="text-sm text-[var(--text-secondary)] mt-1">
+                    {user.has_2fa ? t('profile.twoFactorEnabled') : t('profile.twoFactorDisabled')}
                   </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleMarkdownImportFilesClick}
-                    disabled={isMarkdownImporting}
-                    className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
+                {user.has_2fa ? (
+                  <Link
+                    to="/profile/2fa/disable"
+                    className="btn-apple bg-gradient-to-r from-red-500 to-red-600 shadow-red-500/20"
                   >
-                    {isMarkdownImporting ? (
-                      <>
-                        <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                        {t('markdownImport.importing')}
-                      </>
-                    ) : (
-                      <>
-                        <i className="glass-i fas fa-file-alt mr-2"></i>
-                        {t('markdownImport.file')}
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleMarkdownImportFolderClick}
-                    disabled={isMarkdownImporting}
-                    className="btn-apple disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
+                    {t('profile.disable')}
+                  </Link>
+                ) : (
+                  <Link
+                    to="/profile/2fa/setup"
+                    className="btn-apple bg-gradient-to-r from-green-500 to-green-600 shadow-green-500/20"
                   >
-                    {isMarkdownImporting ? (
-                      <>
-                        <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
-                        {t('markdownImport.importing')}
-                      </>
-                    ) : (
-                      <>
-                        <i className="glass-i fas fa-folder-open mr-2"></i>
-                        {t('markdownImport.folder')}
-                      </>
+                    {t('profile.setup')}
+                  </Link>
+                )}
+              </div>
+
+              {/* Passkeys */}
+              <div>
+                <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase mb-3 px-1">
+                  Passkeys
+                </h3>
+                <PasskeyManager />
+              </div>
+            </div>
+          </section>
+
+          {/* Data Management */}
+          <section>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+              <i className="glass-i fas fa-database text-orange-500"></i>
+              Data & Storage
+            </h2>
+            <div className="modern-search-card">
+              <div className="grid grid-cols-1 gap-4">
+                {/* JSON Export/Import */}
+                <div className="flex flex-col sm:flex-row gap-4 p-4 border-b border-[var(--border-color)]">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-[var(--text-primary)]">Backup & Restore</h3>
+                    <p className="text-sm text-[var(--text-secondary)] mt-1">
+                      Export your data to JSON or restore from a backup.
+                    </p>
+
+                    {(importMessage || importError) && (
+                      <div
+                        className={`mt-3 p-2 rounded text-sm ${importMessage ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}
+                      >
+                        {importMessage || importError}
+                      </div>
                     )}
-                  </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 self-start">
+                    <button
+                      onClick={handleExport}
+                      disabled={isExporting}
+                      className="btn-secondary-glass"
+                    >
+                      <i
+                        className={`fas ${isExporting ? 'fa-spinner fa-spin' : 'fa-download'} mr-2`}
+                      ></i>
+                      Export
+                    </button>
+                    <button
+                      onClick={handleImportClick}
+                      disabled={isImporting}
+                      className="btn-secondary-glass"
+                    >
+                      <i
+                        className={`fas ${isImporting ? 'fa-spinner fa-spin' : 'fa-upload'} mr-2`}
+                      ></i>
+                      Import
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="application/json,.json"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+
+                {/* Markdown Import */}
+                <div className="p-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-[var(--text-primary)]">Markdown Import</h3>
+                      <p className="text-sm text-[var(--text-secondary)] mt-1">
+                        Import notes from markdown files or folders.
+                      </p>
+
+                      <label className="flex items-center gap-2 mt-2 text-sm text-[var(--text-secondary)] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={markdownOverwrite}
+                          onChange={(e) => setMarkdownOverwrite(e.target.checked)}
+                          disabled={isMarkdownImporting}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        {t('markdownImport.overwrite')}
+                      </label>
+
+                      {(markdownImportMessage || markdownImportError) && (
+                        <div
+                          className={`mt-3 p-2 rounded text-sm ${markdownImportMessage ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}
+                        >
+                          {markdownImportMessage || markdownImportError}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2 self-start">
+                      <button
+                        onClick={handleMarkdownImportFilesClick}
+                        disabled={isMarkdownImporting}
+                        className="btn-secondary-glass"
+                      >
+                        <i
+                          className={`fas ${isMarkdownImporting ? 'fa-spinner fa-spin' : 'fa-file-alt'} mr-2`}
+                        ></i>
+                        Files
+                      </button>
+                      <button
+                        onClick={handleMarkdownImportFolderClick}
+                        disabled={isMarkdownImporting}
+                        className="btn-secondary-glass"
+                      >
+                        <i
+                          className={`fas ${isMarkdownImporting ? 'fa-spinner fa-spin' : 'fa-folder-open'} mr-2`}
+                        ></i>
+                        Folder
+                      </button>
+                      <input
+                        ref={markdownFileInputRef}
+                        type="file"
+                        accept="text/markdown,.md,.markdown"
+                        multiple
+                        onChange={handleMarkdownFilesChange}
+                        className="hidden"
+                      />
+                      <input
+                        ref={markdownFolderInputRef}
+                        type="file"
+                        multiple
+                        onChange={handleMarkdownFilesChange}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <label className="flex items-center gap-2 text-xs sm:text-sm text-[var(--text-secondary)]">
-                <input
-                  type="checkbox"
-                  checked={markdownOverwrite}
-                  onChange={(e) => setMarkdownOverwrite(e.target.checked)}
-                  disabled={isMarkdownImporting}
-                  className="w-4 h-4"
-                />
-                <span>{t('markdownImport.overwrite')}</span>
-              </label>
-              <input
-                ref={markdownFileInputRef}
-                type="file"
-                accept="text/markdown,.md,.markdown"
-                multiple
-                onChange={handleMarkdownFilesChange}
-                className="hidden"
-              />
-              <input
-                ref={markdownFolderInputRef}
-                type="file"
-                multiple
-                onChange={handleMarkdownFilesChange}
-                className="hidden"
-              />
             </div>
-            {markdownImportMessage && (
-              <div className="mt-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 text-sm">
-                <i className="glass-i fas fa-check-circle mr-2"></i>
-                {markdownImportMessage}
-              </div>
-            )}
-            {markdownImportError && (
-              <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">
-                <i className="glass-i fas fa-exclamation-circle mr-2"></i>
-                {markdownImportError}
-              </div>
-            )}
-          </div>
+          </section>
         </div>
-      </div>
-
-      {/* Security Info */}
-      <div className="modern-search-card">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-          <i className="glass-i fas fa-shield-alt mr-2 text-green-600"></i>
-          {t('profile.securityTips')}
-        </h3>
-
-        <ul className="space-y-3 text-[var(--text-secondary)]">
-          <li className="flex items-start gap-3">
-            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>{t('profile.securityTip1')}</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>{t('profile.securityTip2')}</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>{t('profile.securityTip3')}</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <i className="glass-i fas fa-check-circle text-green-500 mt-1"></i>
-            <span>{t('profile.securityTip4')}</span>
-          </li>
-        </ul>
       </div>
 
       <ConfirmModal

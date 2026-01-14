@@ -222,7 +222,7 @@ export function TasksPage() {
       const updated = await offlineTasksApi.update(editingTask.id, {
         title: editingTask.title,
         description: editingTask.description,
-        due_date: editingTask.due_date,
+        due_date: editingTask.due_date || undefined,
         priority: editingTask.priority,
       });
       setTasks(tasks.map((t) => (t.id === updated.id ? updated : t)));
@@ -515,7 +515,7 @@ export function TasksPage() {
                     onChange={(e) => setNewFolderId(e.target.value ? Number(e.target.value) : null)}
                     className="glass-input w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">{t('notes.noFolder')}</option>
+                    <option value="">{t('common.noFolder')}</option>
                     {flattenFolders(folders).map((folder) => (
                       <option key={folder.id} value={folder.id}>
                         {folder.name}
@@ -524,26 +524,28 @@ export function TasksPage() {
                   </select>
                 </div>
               </div>
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border-color)]">
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors"
+                  className="px-6 py-2.5 rounded-xl border border-[var(--border-color)] hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] transition-all hover:scale-[1.02] active:scale-[0.98] font-medium"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="btn-primary px-4 py-2 rounded-lg font-medium disabled:opacity-50"
+                  className="btn-apple px-8 py-2.5 rounded-xl font-semibold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreating ? (
                     <>
-                      <i className="glass-i fas fa-spinner fa-spin mr-2"></i>Creating...
+                      <i className="glass-i fas fa-spinner fa-spin mr-2"></i>
+                      {t('common.creating')}
                     </>
                   ) : (
                     <>
-                      <i className="glass-i fas fa-plus mr-2"></i>Create Task
+                      <i className="glass-i fas fa-plus mr-2"></i>
+                      {t('tasks.createTask')}
                     </>
                   )}
                 </button>

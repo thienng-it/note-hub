@@ -26,7 +26,7 @@ export function FolderTree({
   return (
     <div className="folder-tree">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
           {t('folders.title')}
         </h3>
         <button
@@ -52,11 +52,14 @@ export function FolderTree({
         {/* All Notes - special item */}
         <button
           type="button"
-          style={{ marginBottom: '1rem' }}
+          style={{
+            marginBottom: '1rem',
+            color: selectedFolderId === null ? '#1e40af' : 'var(--text-primary)',
+          }}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left ${
             selectedFolderId === null
-              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+              ? 'bg-blue-50 dark:bg-blue-900/20'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
           onClick={() => onSelectFolder(null)}
         >
@@ -75,7 +78,9 @@ export function FolderTree({
               d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
             />
           </svg>
-          <span className="text-sm font-medium">{t('folders.allNotes')}</span>
+          <span className="text-sm font-medium" style={{ color: 'inherit' }}>
+            {t('folders.allNotes')}
+          </span>
         </button>
 
         {/* Folder tree */}
