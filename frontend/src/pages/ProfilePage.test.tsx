@@ -43,7 +43,6 @@ describe('ProfilePage', () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByText('Profile')).toBeInTheDocument();
     expect(screen.getByText('testuser')).toBeInTheDocument();
     expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });
@@ -55,19 +54,18 @@ describe('ProfilePage', () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByText('Settings')).toBeInTheDocument();
-    expect(screen.getByText('Theme')).toBeInTheDocument();
-    expect(screen.getByText('Password')).toBeInTheDocument();
+    expect(screen.getByText('Quick Settings')).toBeInTheDocument();
+    expect(screen.getByText(/theme/i)).toBeInTheDocument();
   });
 
-  it('shows security tips', () => {
+  it('shows security section', () => {
     render(
       <TestWrapper>
         <ProfilePage />
       </TestWrapper>,
     );
 
-    expect(screen.getByText('Security Tips')).toBeInTheDocument();
-    expect(screen.getByText(/strong, unique password/i)).toBeInTheDocument();
+    expect(screen.getByText('Security')).toBeInTheDocument();
+    expect(screen.getByText('Passkeys')).toBeInTheDocument();
   });
 });
