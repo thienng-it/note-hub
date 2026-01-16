@@ -179,7 +179,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
             <p
               class="stat-card-label"
             >
-              common.activeUsers
+              Active Users
             </p>
             <p
               class="stat-card-value"
@@ -213,7 +213,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
         <h2
           class="text-lg font-semibold text-[var(--text-primary)]"
         >
-          common.filters
+          Filters
         </h2>
       </div>
       <div
@@ -248,27 +248,27 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
             <option
               value=""
             >
-              common.all
+              All
             </option>
             <option
               value="note"
             >
-              common.note
+              Note
             </option>
             <option
               value="task"
             >
-              common.task
+              Task
             </option>
             <option
               value="user"
             >
-              common.user
+              User
             </option>
             <option
               value="export"
             >
-              common.export
+              Export
             </option>
           </select>
         </div>
@@ -286,22 +286,22 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
             <option
               value=""
             >
-              common.all
+              All
             </option>
             <option
               value="view"
             >
-              common.view
+              View
             </option>
             <option
               value="create"
             >
-              common.create
+              Create
             </option>
             <option
               value="update"
             >
-              common.update
+              Update
             </option>
             <option
               value="delete"
@@ -354,7 +354,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
               class="glass-i fas fa-check mr-2"
             />
             <span>
-              common.applyFilters
+              Apply Filters
             </span>
           </button>
           <button
@@ -366,7 +366,7 @@ exports[`AuditLogsPage > matches snapshot - default state 1`] = `
               class="glass-i fas fa-times mr-2"
             />
             <span>
-              common.clearFilters
+              Clear Filters
             </span>
           </button>
         </div>
