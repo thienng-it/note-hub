@@ -179,7 +179,8 @@
     "failedToLoadTask": "Không thể tải nhiệm vụ",
     "open": "Mở",
     "copyLink": "Sao chép liên kết",
-    "personalMessagePlaceholder": "Thêm tin nhắn cá nhân..."
+    "personalMessagePlaceholder": "Thêm tin nhắn cá nhân...",
+    "noFolder": "Không có thư mục (cấp gốc)"
   },
   "templates": {
     "notes": {
@@ -886,7 +887,8 @@
   },
   "2fa": {
     "manualEntryInstructions": "Nếu bạn không thể quét mã QR, hãy nhập khóa bí mật này theo cách thủ công vào ứng dụng xác thực của bạn:",
-    "setup": "Thiết lập xác thực hai yếu tố"
+    "setup": "Thiết lập xác thực hai yếu tố",
+    "setupTitle": "Thiết lập xác thực hai yếu tố"
   },
   "offline": {
     "workingOffline": "Làm việc ngoại tuyến",

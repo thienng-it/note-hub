@@ -123,7 +123,7 @@ export function Setup2FAPage() {
           </Link>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center justify-center gap-3 text-[var(--text-primary)]">
             <i className="glass-i fas fa-shield-alt text-blue-600" aria-hidden="true"></i>
-            <span>{t('2fa.setupTitle', 'Setup Two-Factor Authentication')}</span>
+            <span>{t('2fa.setupTitle')}</span>
           </h1>
         </div>
 
