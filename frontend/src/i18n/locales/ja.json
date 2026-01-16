@@ -179,7 +179,8 @@
     "failedToLoadTask": "タスクの読み込みに失敗しました",
     "open": "開く",
     "copyLink": "リンクをコピー",
-    "personalMessagePlaceholder": "個人的なメッセージを追加..."
+    "personalMessagePlaceholder": "個人的なメッセージを追加...",
+    "noFolder": "フォルダなし（ルートレベル）"
   },
   "templates": {
     "notes": {
@@ -884,7 +885,8 @@
   },
   "2fa": {
     "manualEntryInstructions": "QRコードをスキャンできない場合は、この秘密鍵を認証アプリに手動で入力してください：",
-    "setup": "二要素認証の設定"
+    "setup": "二要素認証の設定",
+    "setupTitle": "二要素認証の設定"
   },
   "offline": {
     "workingOffline": "オフラインで作業中",

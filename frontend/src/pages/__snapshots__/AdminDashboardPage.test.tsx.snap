@@ -61,7 +61,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <span
               class="hidden sm:inline text-sm font-medium"
             >
-              common.totalUsers
+              Total Users
             </span>
           </div>
         </div>
@@ -79,12 +79,12 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <span
               class="hidden sm:inline"
             >
-              common.auditLogs
+              Audit Logs
             </span>
             <span
               class="sm:hidden"
             >
-              common.logs
+              Logs
             </span>
           </a>
           <a
@@ -124,7 +124,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              common.totalUsers
+              Total Users
             </p>
             <p
               class="stat-card-value"
@@ -157,7 +157,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              common.2faEnabled
+              2FA Enabled
             </p>
             <p
               class="stat-card-value"
@@ -190,7 +190,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              common.withEmail
+              With Email
             </p>
             <p
               class="stat-card-value"
@@ -223,7 +223,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              common.admins
+              Admins
             </p>
             <p
               class="stat-card-value"
@@ -254,7 +254,7 @@ exports[`AdminDashboardPage > matches snapshot 1`] = `
             <p
               class="stat-card-label"
             >
-              common.locked
+              Locked
             </p>
             <p
               class="stat-card-value"

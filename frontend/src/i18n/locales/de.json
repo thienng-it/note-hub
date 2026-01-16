@@ -179,7 +179,8 @@
     "failedToLoadTask": "Aufgabe konnte nicht geladen werden",
     "open": "Öffnen",
     "copyLink": "Link kopieren",
-    "personalMessagePlaceholder": "Persönliche Nachricht hinzufügen..."
+    "personalMessagePlaceholder": "Persönliche Nachricht hinzufügen...",
+    "noFolder": "Kein Ordner (Stammebene)"
   },
   "templates": {
     "notes": {
@@ -884,7 +885,8 @@
   },
   "2fa": {
     "manualEntryInstructions": "Wenn Sie den QR-Code nicht scannen können, geben Sie diesen geheimen Schlüssel manuell in Ihre Authenticator-App ein:",
-    "setup": "Zwei-Faktor-Authentifizierung einrichten"
+    "setup": "Zwei-Faktor-Authentifizierung einrichten",
+    "setupTitle": "Zwei-Faktor-Authentifizierung einrichten"
   },
   "offline": {
     "workingOffline": "Offline arbeiten",
