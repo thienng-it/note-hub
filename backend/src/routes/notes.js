@@ -54,7 +54,7 @@ function extractFirstHeadingTitle(markdown) {
     .split(/\r?\n/);
   for (const line of lines) {
     const match = /^\s*#\s+(.+?)\s*$/.exec(line);
-    if (match && match[1]) {
+    if (match?.[1]) {
       return match[1].trim();
     }
   }
