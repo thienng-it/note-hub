@@ -306,7 +306,9 @@
     "titleLabel": "Title",
     "folderLabel": "Folder (optional)",
     "contentHiddenTitle": "Content Hidden",
-    "contentHiddenMessage": "This note's content is hidden for privacy. Click the button above to reveal it."
+    "contentHiddenMessage": "This note's content is hidden for privacy. Click the button above to reveal it.",
+    "startCreatingNotes": "Start creating notes to organize them",
+    "createOrMoveToFolder": "Create notes or move existing notes into this folder"
   },
   "markdownImport": {
     "sectionTitle": "Import Markdown",
