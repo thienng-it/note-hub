@@ -397,7 +397,9 @@
     "titleLabel": "Tiêu đề",
     "folderLabel": "Thư mục (tùy chọn)",
     "contentHiddenTitle": "Nội dung đã ẩn",
-    "contentHiddenMessage": "Nội dung ghi chú này đã được ẩn để bảo mật. Nhấp vào nút phía trên để hiển thị."
+    "contentHiddenMessage": "Nội dung ghi chú này đã được ẩn để bảo mật. Nhấp vào nút phía trên để hiển thị.",
+    "startCreatingNotes": "Bắt đầu tạo ghi chú để sắp xếp chúng",
+    "createOrMoveToFolder": "Tạo ghi chú hoặc di chuyển ghi chú hiện có vào thư mục này"
   },
   "markdownImport": {
     "sectionTitle": "Nhập Markdown",
@@ -415,8 +417,6 @@
     "resultMessage": "Đã nhập {{imported}} ghi chú, cập nhật {{updated}}, thất bại {{failed}}.",
     "fileError": "{{file}}: {{error}}",
     "failed": "Nhập Markdown thất bại",
-    "startCreatingNotes": "Bắt đầu tạo ghi chú để sắp xếp chúng",
-    "createOrMoveToFolder": "Tạo ghi chú hoặc di chuyển ghi chú hiện có vào thư mục này",
     "skipTemplates": "Bỏ qua mẫu",
     "templateDescription": "Bắt đầu với mẫu được định dạng sẵn hoặc tạo ghi chú trống",
     "tags": "Thẻ",

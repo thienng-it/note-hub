@@ -250,6 +250,7 @@ export function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Theme Card */}
               <button
+                type="button"
                 onClick={toggleTheme}
                 className="glass-card p-5 text-left hover:scale-[1.02] transition-transform group flex flex-col items-start"
               >
@@ -354,6 +355,7 @@ export function ProfilePage() {
                   </div>
                   <div className="flex flex-wrap gap-2 self-start">
                     <button
+                      type="button"
                       onClick={handleExport}
                       disabled={isExporting}
                       className="btn-secondary-glass"
@@ -364,6 +366,7 @@ export function ProfilePage() {
                       Export
                     </button>
                     <button
+                      type="button"
                       onClick={handleImportClick}
                       disabled={isImporting}
                       className="btn-secondary-glass"
@@ -413,6 +416,7 @@ export function ProfilePage() {
                     </div>
                     <div className="flex flex-wrap gap-2 self-start">
                       <button
+                        type="button"
                         onClick={handleMarkdownImportFilesClick}
                         disabled={isMarkdownImporting}
                         className="btn-secondary-glass"
@@ -423,6 +427,7 @@ export function ProfilePage() {
                         Files
                       </button>
                       <button
+                        type="button"
                         onClick={handleMarkdownImportFolderClick}
                         disabled={isMarkdownImporting}
                         className="btn-secondary-glass"
