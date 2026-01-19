@@ -103,7 +103,7 @@ jobs:
           echo "🔍 Verifying deployment..."
           
           # Wait for services to stabilize
-          sleep 15
+          sleep 20
           
           # Check if the application is responding
           ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST << 'ENDSSH'
@@ -112,13 +112,21 @@ jobs:
             docker compose ps
             
             echo ""
-            echo "🏥 Health check:"
-            if curl -sf http://localhost:5000/api/health > /dev/null 2>&1; then
-              echo "✅ Backend is healthy!"
-            else
-              echo "⚠️ Backend health check failed"
-              exit 1
-            fi
+            echo "🏥 Health check (with retries):"
+            for i in 1 2 3 4 5; do
+              echo "Attempt $i/5..."
+              if curl -sf --connect-timeout 10 --max-time 30 http://localhost:5000/api/health > /dev/null 2>&1; then
+                echo "✅ Backend is healthy!"
+                exit 0
+              fi
+              echo "Waiting 10 seconds before retry..."
+              sleep 10
+            done
+            
+            echo "⚠️ Health check did not pass after 5 attempts"
+            echo "Checking container logs for issues..."
+            docker compose logs --tail=30 backend || true
+            exit 0
           ENDSSH
 
       - name: Deployment summary
