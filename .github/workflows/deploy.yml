@@ -1,14 +1,20 @@
 name: Deploy to Production
 
+# Trigger deployment ONLY when a PR is merged to main (best practice)
+# Direct pushes to main will NOT trigger deployment
 on:
-  push:
+  pull_request:
     branches:
       - main
-  workflow_dispatch:  # Allow manual trigger
+    types:
+      - closed
+  workflow_dispatch:  # Allow manual trigger for emergency deployments
 
 jobs:
   # Run tests before deployment
   test:
+    # Only run if the PR was merged (not just closed)
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     name: Pre-deployment Tests
 
