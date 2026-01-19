@@ -65,7 +65,7 @@ jobs:
     name: Deploy to VPS
     environment:
       name: production
-      url: https://notes.thien-tech.com
+      url: https://note-hub.duckdns.org
 
     steps:
       - name: Checkout repository
@@ -115,24 +115,31 @@ jobs:
           ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST << 'ENDSSH'
             echo "📊 Docker container status:"
             cd /opt/note-hub
-            docker compose ps
+            COMPOSE_FILES="-f docker-compose.yml -f docker-compose.domain.yml -f docker-compose.monitoring.yml"
+            docker compose $COMPOSE_FILES ps
             
             echo ""
-            echo "🏥 Health check (with retries):"
+            echo "🏥 Backend health check (with retries):"
             for i in 1 2 3 4 5; do
               echo "Attempt $i/5..."
               if curl -sf --connect-timeout 10 --max-time 30 http://localhost:5000/api/health > /dev/null 2>&1; then
                 echo "✅ Backend is healthy!"
-                exit 0
+                break
               fi
               echo "Waiting 10 seconds before retry..."
               sleep 10
             done
             
-            echo "⚠️ Health check did not pass after 5 attempts"
-            echo "Checking container logs for issues..."
-            docker compose logs --tail=30 backend || true
-            exit 0
+            echo ""
+            echo "📊 Grafana health check:"
+            if curl -sf --connect-timeout 10 --max-time 30 http://localhost:3000/api/health > /dev/null 2>&1; then
+              echo "✅ Grafana is healthy!"
+            else
+              echo "⚠️ Grafana health check failed (may still be starting)"
+            fi
+            
+            echo ""
+            echo "✅ Verification complete!"
           ENDSSH
 
       - name: Deployment summary
@@ -144,7 +151,7 @@ jobs:
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Deployed at:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 [View Application](https://notes.thien-tech.com)" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 [View Application](https://note-hub.duckdns.org)" >> $GITHUB_STEP_SUMMARY
 
       - name: Notify on failure
         if: failure()

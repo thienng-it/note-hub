@@ -415,7 +415,7 @@
     "resultMessage": "{{imported}}件をインポート、{{updated}}件を更新、{{failed}}件失敗しました。",
     "fileError": "{{file}}: {{error}}",
     "failed": "Markdownのインポートに失敗しました",
-    "startCreatingNotes": "メモの作成を開始して整理しましょう",
+    "startCreatingNotes": "最初のメモを作成して、思考の整理を始めましょう。",
     "createOrMoveToFolder": "メモを作成するか、既存のメモをこのフォルダに移動してください",
     "skipTemplates": "テンプレートをスキップ",
     "templateDescription": "事前フォーマットされたテンプレートから始めるか、空白のメモを作成",
