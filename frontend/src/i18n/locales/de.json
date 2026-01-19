@@ -415,7 +415,7 @@
     "resultMessage": "{{imported}} Notizen importiert, {{updated}} aktualisiert, {{failed}} fehlgeschlagen.",
     "fileError": "{{file}}: {{error}}",
     "failed": "Markdown-Import fehlgeschlagen",
-    "startCreatingNotes": "Beginnen Sie mit dem Erstellen von Notizen, um sie zu organisieren",
+    "startCreatingNotes": "Erstellen Sie Ihre erste Notiz, um Ihre Gedanken zu organisieren",
     "createOrMoveToFolder": "Erstellen Sie eine Notiz oder verschieben Sie vorhandene Notizen in diesen Ordner",
     "skipTemplates": "Vorlagen überspringen",
     "templateDescription": "Beginnen Sie mit einer vorformatierten Vorlage oder erstellen Sie eine leere Notiz",

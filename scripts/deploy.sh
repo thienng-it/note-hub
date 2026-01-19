@@ -24,7 +24,11 @@ NC='\033[0m' # No Color
 
 # Configuration
 DEPLOYMENT_PATH="${1:-${DEPLOYMENT_PATH:-/opt/note-hub}}"
-DOCKER_COMPOSE_FILE="docker-compose.yml"
+# IMPORTANT: Use all compose files for proper routing
+# - docker-compose.yml: Base services (frontend, backend, traefik)
+# - docker-compose.domain.yml: Host-based routing (prevents subdomain conflicts)
+# - docker-compose.monitoring.yml: Monitoring stack (Grafana, Prometheus)
+DOCKER_COMPOSE_FILES="-f docker-compose.yml -f docker-compose.domain.yml -f docker-compose.monitoring.yml"
 BACKUP_DIR="${DEPLOYMENT_PATH}/backups"
 
 # Helper functions
@@ -145,27 +149,29 @@ pull_latest_changes() {
 deploy_with_docker() {
     print_header "Deploying with Docker Compose"
     
+    print_info "Using compose files: $DOCKER_COMPOSE_FILES"
+    
     # Pull latest images
     print_info "Pulling latest Docker images..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" pull || print_warning "Some images could not be pulled"
+    docker compose $DOCKER_COMPOSE_FILES pull || print_warning "Some images could not be pulled"
     
     # Build services
     print_info "Building Docker images..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" build --no-cache || error_exit "Failed to build Docker images"
+    docker compose $DOCKER_COMPOSE_FILES build --no-cache || error_exit "Failed to build Docker images"
     print_success "Docker images built successfully"
     
     # Restart services with zero-downtime
     print_info "Restarting services..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" up -d --remove-orphans || error_exit "Failed to restart services"
+    docker compose $DOCKER_COMPOSE_FILES up -d --remove-orphans || error_exit "Failed to restart services"
     print_success "Services restarted successfully"
     
     # Wait for services to be healthy
     print_info "Waiting for services to be healthy..."
-    sleep 10
+    sleep 15
     
     # Check service health
     print_info "Checking service health..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" ps
+    docker compose $DOCKER_COMPOSE_FILES ps
 }
 
 # Verify deployment
@@ -174,19 +180,27 @@ verify_deployment() {
     
     # Check if backend is responding
     print_info "Checking backend health..."
-    if docker compose -f "$DOCKER_COMPOSE_FILE" exec -T backend wget --spider -q http://localhost:5000/api/health; then
+    if docker compose $DOCKER_COMPOSE_FILES exec -T backend wget --spider -q http://localhost:5000/api/health; then
         print_success "Backend is healthy"
     else
         print_warning "Backend health check failed (may not be critical if service is starting)"
     fi
     
+    # Check Grafana health
+    print_info "Checking Grafana health..."
+    if docker compose $DOCKER_COMPOSE_FILES exec -T grafana wget --spider -q http://localhost:3000/api/health; then
+        print_success "Grafana is healthy"
+    else
+        print_warning "Grafana health check failed (may not be critical if service is starting)"
+    fi
+    
     # Check running containers
     print_info "Running containers:"
-    docker compose -f "$DOCKER_COMPOSE_FILE" ps
+    docker compose $DOCKER_COMPOSE_FILES ps
     
     # Show recent logs
     print_info "Recent logs (last 20 lines):"
-    docker compose -f "$DOCKER_COMPOSE_FILE" logs --tail=20
+    docker compose $DOCKER_COMPOSE_FILES logs --tail=20
 }
 
 # Cleanup old Docker resources
@@ -231,9 +245,13 @@ main() {
     print_success "NoteHub has been deployed successfully!"
     print_info "Deployment completed at: $(date)"
     print_info ""
+    print_info "Services accessible at:"
+    print_info "  - NoteHub: https://note-hub.duckdns.org"
+    print_info "  - Grafana: https://grafana-notehub.duckdns.org"
+    print_info ""
     print_info "Next steps:"
-    print_info "  - Monitor logs: docker compose -f $DOCKER_COMPOSE_FILE logs -f"
-    print_info "  - Check status: docker compose -f $DOCKER_COMPOSE_FILE ps"
+    print_info "  - Monitor logs: docker compose $DOCKER_COMPOSE_FILES logs -f"
+    print_info "  - Check status: docker compose $DOCKER_COMPOSE_FILES ps"
     print_info "  - Rollback if needed: Restore from $BACKUP_DIR"
 }
 

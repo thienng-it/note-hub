@@ -113,6 +113,8 @@
     "verify": "Verificar",
     "shareNote": "Compartir nota",
     "backToNotes": "Volver a Notas",
+    "startCreatingNotes": "Crea tu primera nota para empezar a organizar tus pensamientos.",
+    "createOrMoveToFolder": "Crea notas o mueve notas existentes a esta carpeta",
     "contentHidden": "Contenido oculto por privacidad",
     "favorites": "Favoritos",
     "shared": "Compartido",

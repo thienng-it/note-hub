@@ -307,7 +307,7 @@
     "folderLabel": "Folder (optional)",
     "contentHiddenTitle": "Content Hidden",
     "contentHiddenMessage": "This note's content is hidden for privacy. Click the button above to reveal it.",
-    "startCreatingNotes": "Start creating notes to organize them",
+    "startCreatingNotes": "Create your first note to start organizing your thoughts.",
     "createOrMoveToFolder": "Create notes or move existing notes into this folder"
   },
   "markdownImport": {
