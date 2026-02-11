@@ -166,7 +166,9 @@ app.use(`${API_VERSION}/public`, markAsV1, publicRoutes);
 import * as responseHandler from './utils/responseHandler.js';
 
 // Load package.json using require (created via createRequire)
-const packageJson = require('../package.json');
+// Use path resolution to handle both local dev and deployed environments
+const packageJsonPath = fileURLToPath(new URL('../package.json', import.meta.url));
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
 // Prometheus metrics endpoint (must be before other routes to avoid auth)
 app.get('/metrics', metricsEndpoint);
