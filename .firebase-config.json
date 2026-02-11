@@ -1,0 +1,22 @@
+{
+  "firebase": {
+    "projectId": "note-hub-80f76",
+    "projectNumber": "990819462432",
+    "hostingUrl": "https://note-hub-80f76.web.app",
+    "alternateUrl": "https://note-hub-80f76.firebaseapp.com",
+    "analyticsId": "G-EDSV8Y84BY",
+    "region": "us-central1"
+  },
+  "setup": {
+    "sdkInstalled": false,
+    "backendDeployed": false,
+    "frontendDeployed": false
+  },
+  "commands": {
+    "setupSDK": "./scripts/setup-firebase-sdk.sh",
+    "deploy": "./scripts/deploy-firebase.sh",
+    "deployPreview": "firebase hosting:channel:deploy preview",
+    "viewLogs": "firebase hosting:logs",
+    "viewAnalytics": "open https://console.firebase.google.com/project/note-hub-80f76/analytics"
+  }
+}

@@ -1,0 +1,47 @@
+{
+    "users": {
+        "admin": {
+            "username": "admin",
+            "password": "${NOTES_ADMIN_PASSWORD}",
+            "role": "admin"
+        },
+        "demo": {
+            "username": "demo",
+            "password": "Demo12345678!",
+            "role": "user"
+        },
+        "testUser": {
+            "username": "testuser_e2e",
+            "email": "testuser_e2e@example.com",
+            "password": "TestUser12345!",
+            "role": "user"
+        },
+        "newUser": {
+            "username": "newuser_e2e_{{timestamp}}",
+            "email": "newuser_e2e_{{timestamp}}@example.com",
+            "password": "NewUser12345!"
+        }
+    },
+    "invalidCredentials": {
+        "wrongPassword": {
+            "username": "demo",
+            "password": "wrongpassword123"
+        },
+        "nonExistentUser": {
+            "username": "nonexistent_user_12345",
+            "password": "SomePassword123!"
+        },
+        "emptyCredentials": {
+            "username": "",
+            "password": ""
+        },
+        "sqlInjection": {
+            "username": "admin' OR '1'='1",
+            "password": "password' OR '1'='1"
+        },
+        "xssAttempt": {
+            "username": "<script>alert('xss')</script>",
+            "password": "<img src=x onerror=alert('xss')>"
+        }
+    }
+}

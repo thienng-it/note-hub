@@ -1,0 +1,67 @@
+{
+    "validNotes": {
+        "simple": {
+            "title": "Test Note",
+            "content": "This is a simple test note."
+        },
+        "markdown": {
+            "title": "Markdown Note",
+            "content": "# Heading\n\n**Bold text** and *italic text*\n\n- List item 1\n- List item 2\n\n```javascript\nconst hello = 'world';\n```"
+        },
+        "longContent": {
+            "title": "Long Content Note",
+            "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        },
+        "withTags": {
+            "title": "Tagged Note",
+            "content": "Note with tags",
+            "tags": [
+                "work",
+                "important",
+                "project"
+            ]
+        },
+        "pinned": {
+            "title": "Pinned Note",
+            "content": "This note is pinned",
+            "isPinned": true
+        },
+        "favorite": {
+            "title": "Favorite Note",
+            "content": "This note is favorited",
+            "isFavorite": true
+        },
+        "specialChars": {
+            "title": "Special Characters: <>&\"'`!@#$%",
+            "content": "Content with special chars: <script>alert('test')</script> & \"quotes\" 'apostrophes'"
+        },
+        "unicode": {
+            "title": "Unicode Note 日本語 한국어 🎉",
+            "content": "Unicode content: 你好世界 🌍 Émoji: 👍 Ñoño"
+        },
+        "codeBlocks": {
+            "title": "Code Examples",
+            "content": "```python\ndef hello():\n    print('Hello, World!')\n```\n\n```sql\nSELECT * FROM users WHERE id = 1;\n```"
+        }
+    },
+    "invalidNotes": {
+        "emptyTitle": {
+            "title": "",
+            "content": "Note without title"
+        },
+        "emptyContent": {
+            "title": "Empty Content Note",
+            "content": ""
+        },
+        "veryLongTitle": {
+            "title": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "content": "Note with very long title"
+        }
+    },
+    "searchTerms": {
+        "existing": "test",
+        "nonExisting": "xyznonexistent123",
+        "regexChars": "[a-z]*",
+        "sqlInjection": "'; DROP TABLE notes; --"
+    }
+}

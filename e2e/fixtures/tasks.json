@@ -1,0 +1,62 @@
+{
+    "validTasks": {
+        "simple": {
+            "title": "Test Task"
+        },
+        "withDescription": {
+            "title": "Task with Description",
+            "description": "This is the task description"
+        },
+        "highPriority": {
+            "title": "High Priority Task",
+            "priority": "high"
+        },
+        "mediumPriority": {
+            "title": "Medium Priority Task",
+            "priority": "medium"
+        },
+        "lowPriority": {
+            "title": "Low Priority Task",
+            "priority": "low"
+        },
+        "withDueDate": {
+            "title": "Task with Due Date",
+            "dueDate": "2025-12-31"
+        },
+        "overdue": {
+            "title": "Overdue Task",
+            "dueDate": "2024-01-01"
+        },
+        "completed": {
+            "title": "Completed Task",
+            "isCompleted": true
+        }
+    },
+    "invalidTasks": {
+        "emptyTitle": {
+            "title": "",
+            "description": "Task without title"
+        },
+        "invalidPriority": {
+            "title": "Invalid Priority Task",
+            "priority": "super-high"
+        },
+        "invalidDueDate": {
+            "title": "Invalid Date Task",
+            "dueDate": "not-a-date"
+        }
+    },
+    "filterValues": {
+        "status": [
+            "all",
+            "active",
+            "completed"
+        ],
+        "priority": [
+            "all",
+            "high",
+            "medium",
+            "low"
+        ]
+    }
+}
