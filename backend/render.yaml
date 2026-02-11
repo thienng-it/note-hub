@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: notehub-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        value: https://note-hub-80f76.web.app,https://note-hub-80f76.firebaseapp.com,http://localhost:5173
+      - key: JWT_SECRET
+        generateValue: true
+      - key: REFRESH_TOKEN_SECRET
+        generateValue: true
+      - key: NOTES_ADMIN_PASSWORD
+        generateValue: true
+    autoDeploy: true
+    
+databases:
+  - name: notehub-db
+    databaseName: notehub
+    user: notehub
+    plan: free
+
