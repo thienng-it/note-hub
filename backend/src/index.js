@@ -7,16 +7,12 @@
  */
 
 import fs from 'node:fs';
-import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // ESM compatibility: define __dirname and __filename
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// ESM compatibility: create require for package.json
-const require = createRequire(import.meta.url);
 
 // Load .env from project root
 import dotenv from 'dotenv';

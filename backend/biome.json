@@ -23,6 +23,9 @@
       },
       "correctness": {
         "noUnusedVariables": "error"
+      },
+      "complexity": {
+        "noStaticOnlyClass": "off"
       }
     }
   },
