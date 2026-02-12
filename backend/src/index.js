@@ -85,10 +85,14 @@ app.use(
   }),
 );
 
-// CORS configuration
+// CORS configuration - support multiple origins from comma-separated env var
+const corsOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+  : '*';
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: corsOrigins === '*' ? '*' : corsOrigins,
     credentials: true,
   }),
 );

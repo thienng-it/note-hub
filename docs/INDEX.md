@@ -2,7 +2,13 @@
 
 Welcome to the NoteHub documentation. This index helps you navigate all available documentation.
 
-## 📖 Main Documentation
+## � Quick Start
+
+- **[QUICKSTART](../QUICKSTART.md)** ⭐ NEW - Get started with NoteHub in 5 minutes
+- **[REPO_STRUCTURE](REPO_STRUCTURE.md)** ⭐ NEW - Repository structure and navigation guide
+- **[CLEANUP_SUMMARY](CLEANUP_SUMMARY.md)** ⭐ NEW - December 2024 repository reorganization
+
+## �📖 Main Documentation
 
 - [README](README.md) - Complete project overview, features, installation, and quick start guide
 - **[DOCKER_COMPOSE_FIX_SUMMARY](DOCKER_COMPOSE_FIX_SUMMARY.md)** ⭐ NEW - Summary of Docker Compose local development fixes
@@ -41,6 +47,9 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 ## 📚 Guides
 
 ### Deployment & Infrastructure
+- **[FLY_IO_DEPLOYMENT](deployment/FLY_IO_DEPLOYMENT.md)** ⭐ NEW - Deploy backend to Fly.io (free tier)
+- **[DEPLOY_TO_FIREBASE](deployment/DEPLOY_TO_FIREBASE.md)** ⭐ NEW - Deploy frontend to Firebase Hosting (free tier)
+- **[DATABASE_ON_FLYIO](deployment/DATABASE_ON_FLYIO.md)** ⭐ NEW - SQLite database setup on Fly.io persistent volume
 - [HETZNER_DEPLOYMENT](guides/HETZNER_DEPLOYMENT.md) - Hetzner deployment guide
 - **[DOCKER_COMPOSE_LOCAL_DEV](guides/DOCKER_COMPOSE_LOCAL_DEV.md)** ⭐ NEW - Complete Docker Compose local development guide with troubleshooting
 - [DUAL_DEPLOYMENT_EXAMPLE](guides/DUAL_DEPLOYMENT_EXAMPLE.md) - Dual deployment example
@@ -48,6 +57,9 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 - [ENVIRONMENT_CONFIGURATION](guides/ENVIRONMENT_CONFIGURATION.md) - Environment configuration
 - [DOCKER_OPTIMIZATION](../DOCKER_OPTIMIZATION.md) - Docker build and image optimization guide
 - [REQUIRED_FILES](../REQUIRED_FILES.md) - Required files for each application deployment
+
+### Docker Configurations
+- [Docker Compose Files](docker-configs/) - All docker-compose configurations organized by use case
 
 ### SSL/HTTPS Setup
 - [SSL_HTTPS_SETUP](guides/SSL_HTTPS_SETUP.md) - SSL/HTTPS setup guide
@@ -152,12 +164,32 @@ Welcome to the NoteHub documentation. This index helps you navigate all availabl
 
 ## Quick Links
 
-- **Getting Started**: [README](README.md)
-- **Deployment**: [HETZNER_DEPLOYMENT](guides/HETZNER_DEPLOYMENT.md)
-- **Architecture**: [ARCHITECTURE](architecture/ARCHITECTURE.md)
-- **API Docs**: [JWT_API](api/JWT_API.md) | [API_CHANGELOG](api/API_CHANGELOG.md)
-- **Security**: [SECURITY](security/SECURITY.md)
-- **Testing**: [TEST_SUITE_SUMMARY](testing/TEST_SUITE_SUMMARY.md)
-- **CI/CD**: [CI_CD](project/CI_CD.md) | [Drone CI Setup](guides/DRONE_CI_SETUP.md)
-- **SSL/HTTPS**: [SSL_HTTPS_SETUP](guides/SSL_HTTPS_SETUP.md)
-- **Contributing**: [CONTRIBUTING](guides/CONTRIBUTING.md)
+### Getting Started
+- **[QUICKSTART](../QUICKSTART.md)** - 5-minute setup guide
+- **[README](README.md)** - Complete overview
+- **[REPO_STRUCTURE](REPO_STRUCTURE.md)** - Repository navigation
+
+### Deployment (Free Tier)
+- **[Fly.io Backend](deployment/FLY_IO_DEPLOYMENT.md)** - Free 256MB RAM backend hosting
+- **[Firebase Frontend](deployment/DEPLOY_TO_FIREBASE.md)** - Free static hosting
+- **[Database Setup](deployment/DATABASE_ON_FLYIO.md)** - SQLite on Fly.io volume
+
+### Production Deployment
+- **[Hetzner VPS](guides/HETZNER_DEPLOYMENT.md)** - Self-hosted production deployment
+- **[Drone CI](guides/DRONE_CI_DEPLOYMENT.md)** - Automated CI/CD pipeline
+- **[Docker Configs](docker-configs/)** - All compose configurations
+
+### Development
+- **[Local Docker](guides/DOCKER_COMPOSE_LOCAL_DEV.md)** - Local development with Docker
+- **[Architecture](architecture/ARCHITECTURE.md)** - System design patterns
+- **[Contributing](guides/CONTRIBUTING.md)** - Contribution guidelines
+
+### Security & Testing
+- **[Security Policy](security/SECURITY.md)** - Comprehensive security docs
+- **[Test Suite](testing/TEST_SUITE_SUMMARY.md)** - Testing documentation
+- **[API Documentation](api/JWT_API.md)** - REST API reference
+
+### Configuration
+- **[SSL/HTTPS Setup](guides/SSL_HTTPS_SETUP.md)** - HTTPS configuration
+- **[CI/CD](project/CI_CD.md)** - Continuous integration
+- **[Database Migration](guides/DATABASE_MIGRATION_GUIDE.md)** - DB schema management

@@ -1,0 +1,681 @@
+# =============================================================================
+# Docker Compose for NoteHub - Full Stack Deployment with Traefik
+# =============================================================================
+#
+# Deploy NoteHub on any VPS (Hetzner, DigitalOcean, etc.)
+#
+# IMPORTANT: Environment Configuration
+# All services use efficient .env file loading via 'env_file' directive.
+# This automatically loads ALL variables from .env, avoiding duplication.
+# Critical variables are explicitly defined in 'environment' section with
+# validation (e.g., :?) to ensure they are set.
+#
+# Setup:
+#   1. Copy .env.example to .env:  cp .env.example .env
+#   2. Edit .env with your configuration
+#   3. Run docker compose as shown below
+#
+# Development Mode (default - uses SQLite with local data):
+#   docker compose up -d
+#   docker compose exec backend node scripts/seed_db.js
+#
+# Production Mode (uses environment variables for cloud DB):
+#   docker compose --profile production up -d
+#   # Do NOT run seed script - use pre-configured cloud database
+#
+# With MySQL (development):
+#   docker compose --profile mysql up -d
+#   docker compose exec backend-mysql node scripts/seed_db.js
+#
+# Services:
+#   - traefik: Reverse proxy and load balancer (port 80)
+#   - frontend: React SPA served by nginx (internal)
+#   - backend: Node.js/Express API (internal port 5000)
+#   - mysql: MySQL 8.0 database (optional, internal port 3306)
+#
+# Environment Modes:
+#   - NODE_ENV=development: Local SQLite, seeding allowed
+#   - NODE_ENV=production: Cloud DB URL, seeding blocked
+#
+# Migration from nginx to Traefik:
+#   - Traefik handles all routing, SSL termination, and compression
+#   - Services use Docker labels for automatic configuration
+#   - Dynamic configuration updates without container restarts
+#   - Better support for microservices and load balancing
+#
+# Build Optimizations:
+#   - BuildKit cache mounts for faster rebuilds
+#   - Multi-stage builds to minimize image size
+#   - Pinned base image versions for reproducibility
+#   - Production-only dependencies in final images
+#
+# =============================================================================
+
+# YAML anchors for common configurations
+x-traefik-common: &traefik-common
+  image: traefik:v3.2
+  restart: unless-stopped
+  command:
+    - "--api.dashboard=false"
+    - "--providers.docker=true"
+    - "--providers.docker.exposedbydefault=false"
+    - "--providers.docker.network=notehub-network"
+    - "--providers.file.directory=/etc/traefik/dynamic"
+    - "--providers.file.watch=true"
+    - "--entrypoints.web.address=:80"
+    - "--entrypoints.websecure.address=:443"
+    - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+    - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+    - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
+    - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    - "--log.level=INFO"
+    - "--accesslog=true"
+    - "--ping=true"
+    - "--metrics.prometheus=true"
+    - "--metrics.prometheus.addEntryPointsLabels=true"
+    - "--metrics.prometheus.addServicesLabels=true"
+    - "--entrypoints.metrics.address=:9091"
+  environment:
+    - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+  networks:
+    - notehub-network
+  healthcheck:
+    test: ["CMD", "traefik", "healthcheck", "--ping"]
+    interval: 30s
+    timeout: 5s
+    retries: 3
+    start_period: 5s
+  deploy:
+    resources:
+      limits:
+        memory: 256M
+      reservations:
+        memory: 64M
+
+x-build-args: &build-args
+  # Enable BuildKit features
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+services:
+  # ==========================================================================
+  # Traefik - Reverse Proxy and Load Balancer with SSL/HTTPS
+  # ==========================================================================
+  traefik:
+    <<: *traefik-common
+    container_name: notehub-traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./letsencrypt:/letsencrypt
+
+  # ==========================================================================
+  # Frontend - React SPA (Development)
+  # ==========================================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.traefik
+      args:
+        - VITE_API_URL=
+      # Enable BuildKit cache
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/frontend:cache
+      cache_to:
+        - type=inline
+    container_name: notehub-frontend
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      backend:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
+    networks:
+      - notehub-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+
+      # Frontend routing - serve static files (HTTP)
+      - "traefik.http.routers.frontend-http.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.routers.frontend-http.priority=1"
+      - "traefik.http.routers.frontend-http.middlewares=security-headers@file,compression@file"
+
+      # Frontend routing - serve static files (HTTPS)
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.priority=1"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend.middlewares=security-headers@file,compression@file"
+
+      # Service configuration
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  # ==========================================================================
+  # Backend - Node.js/Express API (Development - SQLite)
+  # ==========================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+      # Enable BuildKit cache
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/backend:cache
+      cache_to:
+        - type=inline
+    container_name: notehub-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Development mode (allows seeding)
+      - NODE_ENV=development
+
+      # JWT Configuration
+      - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
+      - PORT=5000
+
+      # Admin Credentials (REQUIRED: set in .env file)
+      - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+
+      # Database - SQLite (default for development)
+      - NOTES_DB_PATH=${NOTES_DB_PATH:-/app/data/notes.db}
+
+      # OAuth Configuration (Optional: for Google Single Sign-On)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
+    volumes:
+      - notehub-data:/app/data
+      - notehub-uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+
+      # API routing - proxy /api/* to backend (HTTP)
+      - "traefik.http.routers.backend-api-http.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-api-http.entrypoints=web"
+      - "traefik.http.routers.backend-api-http.priority=10"
+
+      # API routing - proxy /api/* to backend (HTTPS)
+      - "traefik.http.routers.backend-api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-api.entrypoints=websecure"
+      - "traefik.http.routers.backend-api.priority=10"
+      - "traefik.http.routers.backend-api.tls=true"
+      - "traefik.http.routers.backend-api.tls.certresolver=letsencrypt"
+
+      # Uploads routing - proxy /uploads/* to backend (HTTP)
+      - "traefik.http.routers.backend-uploads-http.rule=PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-uploads-http.entrypoints=web"
+      - "traefik.http.routers.backend-uploads-http.priority=10"
+
+      # Uploads routing - proxy /uploads/* to backend (HTTPS)
+      - "traefik.http.routers.backend-uploads.rule=PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-uploads.entrypoints=websecure"
+      - "traefik.http.routers.backend-uploads.priority=10"
+      - "traefik.http.routers.backend-uploads.tls=true"
+      - "traefik.http.routers.backend-uploads.tls.certresolver=letsencrypt"
+
+      # Health check routing (HTTP)
+      - "traefik.http.routers.backend-health-http.rule=Path(`/health`)"
+      - "traefik.http.routers.backend-health-http.entrypoints=web"
+      - "traefik.http.routers.backend-health-http.priority=10"
+
+      # Health check routing (HTTPS)
+      - "traefik.http.routers.backend-health.rule=Path(`/health`)"
+      - "traefik.http.routers.backend-health.entrypoints=websecure"
+      - "traefik.http.routers.backend-health.priority=10"
+      - "traefik.http.routers.backend-health.tls=true"
+      - "traefik.http.routers.backend-health.tls.certresolver=letsencrypt"
+
+      # Socket.io routing - proxy /socket.io/* to backend (HTTP)
+      - "traefik.http.routers.backend-socketio-http.rule=PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.backend-socketio-http.entrypoints=web"
+      - "traefik.http.routers.backend-socketio-http.priority=10"
+
+      # Socket.io routing - proxy /socket.io/* to backend (HTTPS with WebSocket support)
+      - "traefik.http.routers.backend-socketio.rule=PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.backend-socketio.entrypoints=websecure"
+      - "traefik.http.routers.backend-socketio.priority=10"
+      - "traefik.http.routers.backend-socketio.tls=true"
+      - "traefik.http.routers.backend-socketio.tls.certresolver=letsencrypt"
+
+      # Service configuration (shared by all routers)
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
+
+  # ==========================================================================
+  # Traefik - Reverse Proxy (Production) with SSL/HTTPS
+  # ==========================================================================
+  traefik-prod:
+    <<: *traefik-common
+    container_name: notehub-traefik-prod
+    profiles:
+      - production
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./letsencrypt:/letsencrypt
+
+  # ==========================================================================
+  # Frontend - React SPA (Production)
+  # ==========================================================================
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.traefik
+      args:
+        - VITE_API_URL=${VITE_API_URL:-}
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/frontend:cache
+      cache_to:
+        - type=inline
+    container_name: notehub-frontend-prod
+    restart: unless-stopped
+    profiles:
+      - production
+    env_file:
+      - .env
+    depends_on:
+      backend-prod:
+        condition: service_healthy
+      traefik-prod:
+        condition: service_healthy
+    networks:
+      - notehub-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
+    labels:
+      - "traefik.enable=true"
+
+      # Frontend routing (HTTP)
+      - "traefik.http.routers.frontend-prod-http.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend-prod-http.entrypoints=web"
+      - "traefik.http.routers.frontend-prod-http.priority=1"
+      - "traefik.http.routers.frontend-prod-http.middlewares=security-headers@file,compression@file"
+
+      # Frontend routing (HTTPS)
+      - "traefik.http.routers.frontend-prod.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend-prod.entrypoints=websecure"
+      - "traefik.http.routers.frontend-prod.priority=1"
+      - "traefik.http.routers.frontend-prod.tls=true"
+      - "traefik.http.routers.frontend-prod.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend-prod.middlewares=security-headers@file,compression@file"
+
+      # Service configuration
+      - "traefik.http.services.frontend-prod.loadbalancer.server.port=80"
+
+  # ==========================================================================
+  # Backend - Node.js/Express API (Production - Cloud DB)
+  # ==========================================================================
+  backend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/backend:cache
+      cache_to:
+        - type=inline
+    container_name: notehub-backend-prod
+    restart: unless-stopped
+    profiles:
+      - production
+    env_file:
+      - .env
+    environment:
+      # Production mode (blocks seeding)
+      - NODE_ENV=production
+
+      # JWT Configuration (REQUIRED: use strong secret in production)
+      - JWT_SECRET=${SECRET_KEY:?Set SECRET_KEY in .env file for production}
+      - PORT=5000
+
+      # Admin Credentials (REQUIRED: set in .env file)
+      - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+
+      # Database URL for cloud DB (MySQL/PostgreSQL)
+      # Example: mysql://user:pass@host:3306/database
+      - DATABASE_URL=${DATABASE_URL:-}
+
+      # OR separate MySQL config
+      - MYSQL_HOST=${MYSQL_HOST:-}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USER=${MYSQL_USER:-}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-}
+
+      # OAuth Configuration (Optional: for Google Single Sign-On)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
+    volumes:
+      - notehub-uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    labels:
+      - "traefik.enable=true"
+
+      # API routing (HTTP)
+      - "traefik.http.routers.backend-prod-api-http.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-prod-api-http.entrypoints=web"
+      - "traefik.http.routers.backend-prod-api-http.priority=10"
+
+      # API routing (HTTPS)
+      - "traefik.http.routers.backend-prod-api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-prod-api.entrypoints=websecure"
+      - "traefik.http.routers.backend-prod-api.priority=10"
+      - "traefik.http.routers.backend-prod-api.tls=true"
+      - "traefik.http.routers.backend-prod-api.tls.certresolver=letsencrypt"
+
+      # Uploads routing (HTTP)
+      - "traefik.http.routers.backend-prod-uploads-http.rule=PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-prod-uploads-http.entrypoints=web"
+      - "traefik.http.routers.backend-prod-uploads-http.priority=10"
+
+      # Uploads routing (HTTPS)
+      - "traefik.http.routers.backend-prod-uploads.rule=PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-prod-uploads.entrypoints=websecure"
+      - "traefik.http.routers.backend-prod-uploads.priority=10"
+      - "traefik.http.routers.backend-prod-uploads.tls=true"
+      - "traefik.http.routers.backend-prod-uploads.tls.certresolver=letsencrypt"
+
+      # Health check routing (HTTP)
+      - "traefik.http.routers.backend-prod-health-http.rule=Path(`/health`)"
+      - "traefik.http.routers.backend-prod-health-http.entrypoints=web"
+      - "traefik.http.routers.backend-prod-health-http.priority=10"
+
+      # Health check routing (HTTPS)
+      - "traefik.http.routers.backend-prod-health.rule=Path(`/health`)"
+      - "traefik.http.routers.backend-prod-health.entrypoints=websecure"
+      - "traefik.http.routers.backend-prod-health.priority=10"
+      - "traefik.http.routers.backend-prod-health.tls=true"
+      - "traefik.http.routers.backend-prod-health.tls.certresolver=letsencrypt"
+
+      # Service configuration
+      - "traefik.http.services.backend-prod.loadbalancer.server.port=5000"
+
+  # ==========================================================================
+  # Traefik - Reverse Proxy (MySQL Profile) with SSL/HTTPS
+  # ==========================================================================
+  traefik-mysql:
+    <<: *traefik-common
+    container_name: notehub-traefik-mysql
+    profiles:
+      - mysql
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic/dynamic.yml:ro
+      - ./letsencrypt:/letsencrypt
+
+  # ==========================================================================
+  # Backend with MySQL - Node.js/Express API (use --profile mysql)
+  # ==========================================================================
+  backend-mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.node
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/backend:cache
+      cache_to:
+        - type=inline
+    container_name: notehub-backend-mysql
+    restart: unless-stopped
+    profiles:
+      - mysql
+    env_file:
+      - .env
+    environment:
+      # Development mode (allows seeding)
+      - NODE_ENV=development
+
+      # JWT Configuration
+      - JWT_SECRET=${SECRET_KEY:-change-me-in-production}
+      - PORT=5000
+
+      # Admin Credentials (REQUIRED: set in .env file)
+      - NOTES_ADMIN_USERNAME=${NOTES_ADMIN_USERNAME:-admin}
+      - NOTES_ADMIN_PASSWORD=${NOTES_ADMIN_PASSWORD:?Set NOTES_ADMIN_PASSWORD in .env file}
+
+      # MySQL Database Configuration
+      # IMPORTANT: Use container name 'mysql' not 'localhost'
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
+
+      # OAuth Configuration (Optional: for Google Single Sign-On)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
+    volumes:
+      - notehub-uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    labels:
+      - "traefik.enable=true"
+
+      # API routing (HTTP)
+      - "traefik.http.routers.backend-mysql-api-http.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-mysql-api-http.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-api-http.priority=10"
+
+      # API routing (HTTPS)
+      - "traefik.http.routers.backend-mysql-api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-mysql-api.entrypoints=websecure"
+      - "traefik.http.routers.backend-mysql-api.priority=10"
+      - "traefik.http.routers.backend-mysql-api.tls=true"
+      - "traefik.http.routers.backend-mysql-api.tls.certresolver=letsencrypt"
+
+      # Uploads routing (HTTP)
+      - "traefik.http.routers.backend-mysql-uploads-http.rule=PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-mysql-uploads-http.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-uploads-http.priority=10"
+
+      # Uploads routing (HTTPS)
+      - "traefik.http.routers.backend-mysql-uploads.rule=PathPrefix(`/uploads`)"
+      - "traefik.http.routers.backend-mysql-uploads.entrypoints=websecure"
+      - "traefik.http.routers.backend-mysql-uploads.priority=10"
+      - "traefik.http.routers.backend-mysql-uploads.tls=true"
+      - "traefik.http.routers.backend-mysql-uploads.tls.certresolver=letsencrypt"
+
+      # Health check routing (HTTP)
+      - "traefik.http.routers.backend-mysql-health-http.rule=Path(`/health`)"
+      - "traefik.http.routers.backend-mysql-health-http.entrypoints=web"
+      - "traefik.http.routers.backend-mysql-health-http.priority=10"
+
+      # Health check routing (HTTPS)
+      - "traefik.http.routers.backend-mysql-health.rule=Path(`/health`)"
+      - "traefik.http.routers.backend-mysql-health.entrypoints=websecure"
+      - "traefik.http.routers.backend-mysql-health.priority=10"
+      - "traefik.http.routers.backend-mysql-health.tls=true"
+      - "traefik.http.routers.backend-mysql-health.tls.certresolver=letsencrypt"
+
+      # Service configuration
+      - "traefik.http.services.backend-mysql.loadbalancer.server.port=5000"
+
+  # ==========================================================================
+  # MySQL Database (use --profile mysql)
+  # ==========================================================================
+  mysql:
+    image: mysql:8.4
+    container_name: notehub-mysql
+    restart: unless-stopped
+    profiles:
+      - mysql
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env file}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-notehub}
+      - MYSQL_USER=${MYSQL_USER:?Set MYSQL_USER in .env file}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env file}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks:
+      - notehub-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # ==========================================================================
+  # Frontend with MySQL Backend (use --profile mysql)
+  # ==========================================================================
+  frontend-mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.traefik
+      args:
+        - VITE_API_URL=
+      cache_from:
+        - type=registry,ref=ghcr.io/${GITHUB_REPOSITORY:-thienng-it/note-hub}/frontend:cache
+      cache_to:
+        - type=inline
+    container_name: notehub-frontend-mysql
+    restart: unless-stopped
+    profiles:
+      - mysql
+    env_file:
+      - .env
+    depends_on:
+      backend-mysql:
+        condition: service_healthy
+      traefik-mysql:
+        condition: service_healthy
+    networks:
+      - notehub-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
+    labels:
+      - "traefik.enable=true"
+
+      # Frontend routing (HTTP)
+      - "traefik.http.routers.frontend-mysql-http.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend-mysql-http.entrypoints=web"
+      - "traefik.http.routers.frontend-mysql-http.priority=1"
+      - "traefik.http.routers.frontend-mysql-http.middlewares=security-headers@file,compression@file"
+
+      # Frontend routing (HTTPS)
+      - "traefik.http.routers.frontend-mysql.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend-mysql.entrypoints=websecure"
+      - "traefik.http.routers.frontend-mysql.priority=1"
+      - "traefik.http.routers.frontend-mysql.tls=true"
+      - "traefik.http.routers.frontend-mysql.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend-mysql.middlewares=security-headers@file,compression@file"
+
+      # Service configuration
+      - "traefik.http.services.frontend-mysql.loadbalancer.server.port=80"
+
+networks:
+  notehub-network:
+    name: notehub-network
+    driver: bridge
+
+volumes:
+  notehub-data:
+    driver: local
+  notehub-uploads:
+    driver: local
+  mysql-data:
+    driver: local
